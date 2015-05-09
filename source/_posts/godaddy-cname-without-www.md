@@ -59,6 +59,8 @@ CNBLOG.ME
 
 ## DNS 解析测试
 
+### Linux
+
 使用 dig 命令测试，可见 www.cnblog.me 已经成功 CNAME 到 cynthia903.github.io 。
 
 ```
@@ -69,6 +71,22 @@ $ dig -t cname www.cnblog.me
 
 ;; ANSWER SECTION:
 www.cnblog.me.          3277    IN      CNAME   cynthia903.github.io.
+```
+
+### Windows
+
+使用 nslookup 命令测试：
+
+```
+$ nslookup www.cnblog.me
+服务器:  cache-b.guangzhou.gd.cn
+Address:  202.96.128.166	// 当前使用的 DNS 服务器。如果无法解析，可以换用谷歌的试试（nslookup www.cnblog.me 8.8.8.8）
+
+非权威应答:
+名称:    github.map.fastly.net
+Address:  199.27.78.133
+Aliases:  www.cnblog.me
+          cynthia903.github.io
 ```
 
 # 参考

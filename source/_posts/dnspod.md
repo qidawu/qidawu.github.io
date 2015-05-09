@@ -4,7 +4,7 @@ updated:
 tags: DNS
 ---
 
-由于众所周知的原因，GoDaddy 在国内的域名解析服务一直都很不稳定，因此抽空改用了国内的 DNSPod 服务，步骤如下。
+由于众所周知的原因，GoDaddy 的 Nameservers 有时会被墙，导致其在国内的域名解析服务一直都很不稳定，因此抽空改用了国内的 DNSPod 服务，步骤如下。
 
 # 注册 DNSPod 账号
 

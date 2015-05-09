@@ -8,7 +8,7 @@ tags: Eclipse
 
 ## Abbreviate package names
 
-缩写包名
+如果你被强加了很长的包名导致影响阅读，缩写包名也许是个不错的做法。
 
 # Code Style
 
@@ -27,6 +27,8 @@ tags: Eclipse
 ### Auto activation triggers for Java
 
 ### Favorites
+
+配置静态方法代码提示，使用代码提示（Alt+/）时，会 import 对应的类。
 
 ## Mark Occurrences
 
