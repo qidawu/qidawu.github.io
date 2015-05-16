@@ -5,6 +5,7 @@
 # Site
 title: Cyn's Blog
 subtitle: 纸上得来终觉浅，绝知此事要躬行。
+## subtitle: 先跑起来，再好起来
 description: 学习笔记 知识总结 思考感悟
 author: Cyn
 email: cynthia903@qq.com
@@ -81,6 +82,8 @@ stylus:
 ## Docs: http://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: https://github.com/cynthia903/cynthia903.github.io
-  branch: master
+  # repo: https://github.com/cynthia903/cynthia903.github.io
+  # branch: master
+  repo: https://gitcafe.com/cynthia903/cynthia903.git
+  branch: gitcafe-pages
   message: Site updated at {{ now("YYYY-MM-DD HH:mm:ss") }}
