@@ -2,6 +2,7 @@ title: "使用 DNSPod 解决 GoDaddy 域名解析不稳定的问题"
 date: 2015-04-26 16:12:25
 updated: 
 tags: DNS
+description: "由于众所周知的原因，GoDaddy 的 Nameservers 有时会被墙，导致其在国内的域名解析服务一直都很不稳定，因此抽空改用了国内的 DNSPod 服务，步骤如下。"
 ---
 
 由于众所周知的原因，GoDaddy 的 Nameservers 有时会被墙，导致其在国内的域名解析服务一直都很不稳定，因此抽空改用了国内的 DNSPod 服务，步骤如下。

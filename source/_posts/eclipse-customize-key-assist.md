@@ -2,6 +2,7 @@ title: "Eclipse 系列之自定义高效快捷键"
 date: 2015-04-19 14:45:44
 updated: 
 tags: Eclipse
+description: "好的快捷键可以提高编码的效率。"
 ---
 
 > 好的快捷键可以提高编码的效率。

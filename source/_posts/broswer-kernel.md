@@ -2,6 +2,7 @@ title: "浏览器与内核总结"
 date: 2015-04-06 11:48:19
 updated: 
 tags: 前端
+description: "工作中需要测试 JavaScript 浏览器兼容性，简单总结如下。"
 ---
 
 工作中需要测试 JavaScript 浏览器兼容性，简单总结如下。

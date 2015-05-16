@@ -2,6 +2,7 @@ title: "GUN/Bash 系列之快捷键总结"
 date: 2015-04-19 14:34:30
 updated: 
 tags: Bash
+description: "下面总结的是 GNU/Bash 中部分最实用的命令名称及默认情况下它们关联的快捷键。更多快捷键请参考 GNU/Bash 文档的 Readline 库。"
 ---
 
 下面总结的是 GNU/Bash 中部分最实用的命令名称及默认情况下它们关联的快捷键。更多快捷键请参考 GNU/Bash 文档的 Readline 库。

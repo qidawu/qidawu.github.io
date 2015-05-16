@@ -2,6 +2,7 @@ title: "Eclipse 系列之常用默认快捷键"
 date: 2015-04-21 23:52:06
 updated: 
 tags: Eclipse
+description: "常用的 Eclipse 默认快捷键，总结如下。"
 ---
 
 常用的 Eclipse 默认快捷键，总结如下：

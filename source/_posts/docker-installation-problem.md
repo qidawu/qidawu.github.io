@@ -2,6 +2,7 @@ title: "Docker 启动失败问题处理"
 date: 2015-04-03 13:52:11
 updated: 
 tags: Docker
+description: "Q1 参加了一场 Docker 技术分享后，发现了 Docker 这个好东西，回头动手安装，打算跑起来体验一番，却遇到了一些蛋疼的问题。"
 ---
 
 Q1 参加了一场 Docker 技术分享后，发现了 Docker 这个好东西，回头动手安装，打算跑起来体验一番，却遇到了一些蛋疼的问题。
