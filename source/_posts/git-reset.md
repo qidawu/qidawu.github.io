@@ -20,8 +20,10 @@ Git 相比 SVN 的其中一个卓越之处，就在于有各种“后悔药”�
 
 `reset` 命令有三种参数形式，本文只介绍最常用的一种：
 
-```
+```bash
 git reset [<mode>] [<commit>]
+
+Reset the current branch head (HEAD) to <commit>, optionally modifying index and working tree to match.
 ```
 
 该命令用于重置工作目录、暂存区域的修改，或回退本地仓库的版本。
@@ -32,19 +34,19 @@ mode 参数必须是以下五种的一种：
 
 ### `--soft`
 
-HEAD Only
+> HEAD Only
 
 Git 本地仓库的版本回退速度之所以快，全因为 Git 在内部有个指向当前版本的 HEAD 指针，当你回退版本的时候，Git 仅仅是把 HEAD 指针往回移动。
 
 ### `--mixed`
 
-HEAD and Index
+> HEAD and Index
 
-默认参数。除了回退本地仓库的版本，还会重置暂存区域（也称为 Index 索引文件）。
+默认参数。除了回退本地仓库的版本，还会重置暂存区域（也称为 Index File 索引文件）。
 
 这个默默无闻的 `--mixed` 参数其实很常见，每次运行 `git status` 时都会看到它的作用：
 
-```
+```bash
 Changes to be committed:
   (use "git reset HEAD <file>..." to unstage)
 
@@ -54,26 +56,53 @@ Changes to be committed:
 
 由于该命令实在太常用了，因此会被设为 alias 以便使用：
 
-```
+```bash
 $ git config --global alias.unstage 'reset HEAD'
 $ git unstage
 ```
 
 ### `--hard`
 
-HEAD, Index, and Working Directory
+> HEAD, Index, and Working Directory
 
-终极武器，将包括工作目录在内的三个工作区域全部重置或回退，工作目录将重置干净，慎用。
+终极武器，将包括工作目录在内的三个工作区域全部重置或回退，工作目录将重置得一干二净，慎用。
 
-```
-$ git reset --hard
+常见的做法是回退到上一个版本，连同工作目录，就像一切从未发生过一样：
+
+```bash
+$ git reset --hard HEAD~1
 HEAD is now at ......
 
 $ git status
 nothing to commit, working directory clean
 ```
 
+这么做的前提是“回退前的版本”还未 `push` 到远程仓库。
+
 ### `--merge`
+
+待补充。
+
 ### `--keep`
 
+待补充。
+
 ## commit 参数
+
+commit 参数的常见形式：
+
+* `HEAD` 表示当前版本。
+* 上一个版本为 `HEAD^` ，上上一个版本为 `HEAD^^` ，以此类推。
+* 上 100 个版本，简写为 `HEAD~100` 。
+
+# 例子
+
+Undo add
+Undo a commit and redo
+Undo a commit, making it a topic branch
+Undo commits permanently
+Undo a merge or pull
+Undo a merge or pull inside a dirty working tree
+Interrupted workflow
+Reset a single file in the index
+Keep changes in working tree while discarding some previous commits
