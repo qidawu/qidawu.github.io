@@ -30,7 +30,7 @@ Reset the current branch head (HEAD) to <commit>, optionally modifying index and
 
 ## mode 参数
 
-mode 参数必须是以下五种的一种：
+mode 参数必须是以下五种中的一种：
 
 ### `--soft`
 
@@ -77,7 +77,7 @@ $ git status
 nothing to commit, working directory clean
 ```
 
-这么做的前提是“回退前的版本”还未 `push` 到远程仓库。
+如果“回退前的版本”已经 `push` 到远程仓库，则不建议这么做。
 
 ### `--merge`
 
@@ -89,20 +89,31 @@ nothing to commit, working directory clean
 
 ## commit 参数
 
-commit 参数的常见形式：
+commit 参数有三种常见形式：
+
+### SHA1
+
+使用 SHA1 值回退到指定的版本，适用于 SH1 值已知的情况：
+
+```bash
+$ git reset 17ef24c
+```
+
+### HEAD
+
+更常用的参数，适用于偷懒：
 
 * `HEAD` 表示当前版本。
 * 上一个版本为 `HEAD^` ，上上一个版本为 `HEAD^^` ，以此类推。
 * 上 100 个版本，简写为 `HEAD~100` 。
+* `ORIG_HEAD` 表示上一个 `HEAD` ，一般用于撤销 `reset` 。（"reset" copies the old head to .git/ORIG_HEAD）
+
+### HEAD@{}
+
+Git 在 1.8.5 版本之后，加入了 `HEAD@{}` 功能，它通过一个链表记录 `HEAD` 的移动路径，链表头部的 `HEAD@{0}` 即 `HEAD` 指针。这个功能可以用于回退到一个早已忘记的提交。
+
+这个功能一般配合 `reflog` 命令使用。
 
 # 例子
 
-Undo add
-Undo a commit and redo
-Undo a commit, making it a topic branch
-Undo commits permanently
-Undo a merge or pull
-Undo a merge or pull inside a dirty working tree
-Interrupted workflow
-Reset a single file in the index
-Keep changes in working tree while discarding some previous commits
+更多例子参见 `git help reset` 的 EXAMPLES 部分。
