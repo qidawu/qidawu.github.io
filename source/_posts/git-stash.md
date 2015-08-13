@@ -24,6 +24,8 @@ error: Your local changes to the following files would be overwritten by merge:
 Please, commit your changes or stash them before you can merge.
 ```
 
+如上所示，有 `commit` 和 `stash` 两种处理方法：
+
 ## commit 处理
 
 把改动提交到本地仓库，再次 `git pull` 拉取远程仓库的代码，如无冲突，会自动产生一次“合并”提交：
