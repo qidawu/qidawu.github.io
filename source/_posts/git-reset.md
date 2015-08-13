@@ -1,4 +1,4 @@
-title: "git-reset"
+title: "git reset 命令回退版本"
 date: 2015-08-09 22:11:03
 updated: 
 tags: Git

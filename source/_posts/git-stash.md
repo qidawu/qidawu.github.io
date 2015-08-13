@@ -4,12 +4,14 @@ updated:
 tags: Git
 ---
 
-> Stashing takes the dirty state of your working directory – that is, your modified tracked files and staged changes – and saves it on a stack of unfinished changes that you can reapply at any time.
-
-stash 命令可以将“修改过的被追踪的文件（modified tracked files）”和“暂存的变更（staged changes）”暂存到临时堆栈中，并将工作目录还原干净。该命令可以用于两种场景：
+`stash` 命令可以用于两种场景：
 
 * [暂存当前分支的修改，以便切换分支](http://git-scm.com/book/zh/v1/Git-工具-储藏（Stashing）)
 * 解决冲突
+
+这是因为 `stash` 命令可以将“修改过的被追踪的文件（modified tracked files）”和“暂存的变更（staged changes）”暂存到临时堆栈中，并将工作目录还原干净，以便后续的操作。
+
+> Stashing takes the dirty state of your working directory – that is, your modified tracked files and staged changes – and saves it on a stack of unfinished changes that you can reapply at any time.
 
 # 解决冲突
 
@@ -44,11 +46,11 @@ $ git lg
 $ git pull --rebase
 ```
 
-rebase 的详细原理在此暂且不表。
+`rebase` 的详细原理在此暂且不表。
 
 ## stash 处理
 
-推荐使用 stash 处理，所有合并都在工作目录中完成，不会产生无谓的“合并”提交。
+推荐使用 `stash` 处理，所有合并都在工作目录中完成，不会产生无谓的“合并”提交。
 
 ```bash
 $ git stash
