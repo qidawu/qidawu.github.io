@@ -26,7 +26,7 @@ git reset [<mode>] [<commit>]
 Reset the current branch head (HEAD) to <commit>, optionally modifying index and working tree to match.
 ```
 
-该命令用于重置工作目录、暂存区域的修改，或回退本地仓库的版本。
+该命令用于回退本地仓库当前分支下的版本，并可以选择重置暂存区域、工作目录的修改。
 
 ## mode 参数
 
@@ -103,10 +103,10 @@ $ git reset 17ef24c
 
 更常用的参数，适用于偷懒：
 
-* `HEAD` 表示当前版本。
+* `HEAD` 表示当前版本（默认参数）。
 * 上一个版本为 `HEAD^` ，上上一个版本为 `HEAD^^` ，以此类推。
 * 上 100 个版本，简写为 `HEAD~100` 。
-* `ORIG_HEAD` 表示上一个 `HEAD` ，一般用于撤销 `reset` 。（"reset" copies the old head to .git/ORIG_HEAD）
+* `ORIG_HEAD` 表示上一个 `HEAD` ，一般用于撤销上一次 `reset` 。（"reset" copies the old head to .git/ORIG_HEAD）
 
 ### HEAD@{}
 
