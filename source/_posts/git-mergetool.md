@@ -27,13 +27,42 @@ tags: Git
 
 # mergetool 如何使用？
 
+安装好心仪的 mergetool 后，使用如下命令配置，例如使用 meld：
+
 ## 用于 git diff
 
-待补充
+首先配置好 git
+
+```bash
+git config --global diff.external ~/meld.sh
+```
+
+然后编写 `meld.sh` 脚本
+
+```bash
+vim ~/meld.sh
+```
+
+用于接收 `git diff` 命令传来的两个需要比较的文件名参数：
+
+```bash
+#!/bin/sh
+meld $2 $5
+```
+
+如果对涉及到的所有参数感兴趣，可以在脚本补充一段 `echo $0 $*`。
+
+最后对于 Linux/Unix、OS X，还需要增加脚本的可执行权限：
+
+```bash
+chmod +x ~/meld.sh
+```
+
+以上配置好后，就能愉快的使用可视化的 `git diff` 了。
 
 ## 用于 git mergetool
 
-安装好心仪的 mergetool 后，使用如下命令配置，例如使用 meld：
+首先配置好 git
 
 ```bash
 git config --global merge.tool meld
@@ -51,7 +80,7 @@ CONFLICT (content): Merge conflict in index.html Automatic merge failed; fix con
 git mergetool
 ```
 
-可以调用图形化工具愉快的解决冲突。
+就可以调用图形化工具愉快的解决冲突了。
 
 在解决了所有文件的所有冲突后，运行 `git add` 将把它们标记为已解决状态即可（一旦暂存，就表示冲突已经解决）。
 
