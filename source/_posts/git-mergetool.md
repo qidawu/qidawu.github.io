@@ -1,6 +1,6 @@
 title: "git mergetool 工具解决冲突"
 date: 2015-08-07 15:35:15
-updated: 
+updated: 2015-09-11 15:35:15
 tags: Git
 ---
 
@@ -25,22 +25,22 @@ tags: Git
 * 支持双方或三方文件、目录对比
 * GUI 界面好看 :)
 
-# mergetool 如何使用？
+# meld 如何使用？
 
-安装好心仪的 mergetool 后，使用如下命令配置，例如使用 meld：
+安装好 meld ，还需进行如下配置：
 
 ## 用于 git diff
 
 首先配置好 git
 
 ```bash
-git config --global diff.external ~/meld.sh
+$ git config --global diff.external ~/meld.sh
 ```
 
 然后编写 `meld.sh` 脚本
 
 ```bash
-vim ~/meld.sh
+$ vim ~/meld.sh
 ```
 
 用于接收 `git diff` 命令传来的两个需要比较的文件名参数：
@@ -55,17 +55,17 @@ meld $2 $5
 最后对于 Linux/Unix、OS X，还需要增加脚本的可执行权限：
 
 ```bash
-chmod +x ~/meld.sh
+$ chmod +x ~/meld.sh
 ```
 
-以上配置好后，就能愉快的使用可视化的 `git diff` 了。
+以上配置好后，就可以调用图形化工具愉快的使用 `git diff` 了。
 
 ## 用于 git mergetool
 
 首先配置好 git
 
 ```bash
-git config --global merge.tool meld
+$ git config --global merge.tool meld
 ```
 
 如果合并的时候出现如下冲突：
@@ -77,7 +77,7 @@ CONFLICT (content): Merge conflict in index.html Automatic merge failed; fix con
 使用如下命令：
 
 ```bash
-git mergetool
+$ git mergetool
 ```
 
 就可以调用图形化工具愉快的解决冲突了。
