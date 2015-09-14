@@ -9,10 +9,6 @@ tags: Git
 * [暂存当前分支的修改，以便切换分支](http://git-scm.com/book/zh/v1/Git-工具-储藏（Stashing）)
 * 解决冲突
 
-这是因为 `stash` 命令可以将“修改过的被追踪的文件（modified tracked files）”和“暂存的变更（staged changes）”暂存到临时堆栈中，并将工作目录还原干净，以便后续的操作。
-
-> Stashing takes the dirty state of your working directory – that is, your modified tracked files and staged changes – and saves it on a stack of unfinished changes that you can reapply at any time.
-
 # 解决冲突
 
 如果工作目录的代码做了改动但尚未提交，拉取远程仓库的新提交时，往往会提示冲突：
@@ -65,7 +61,11 @@ On branch master
 nothing to commit, working directory clean
 ```
 
-可以看到工作目录干净了，`pull` 命令将能够拉取并顺利合并：
+可以看到工作目录干净了。这是因为 `stash` 命令可以将“修改过的被追踪的文件（modified tracked files）”和“暂存的变更（staged changes）”暂存到临时堆栈中，并将工作目录还原干净，以便后续的操作。
+
+> Stashing takes the dirty state of your working directory – that is, your modified tracked files and staged changes – and saves it on a stack of unfinished changes that you can reapply at any time.
+
+继续执行 `pull` 命令将能够拉取并顺利合并：
 
 ```bash
 $ git pull
@@ -77,7 +77,7 @@ $ git pull
 $ git stash pop
 ```
 
-如果有冲突，手工编辑解决并再次跟踪即可：
+如果有冲突，手工编辑或使用 `git mergetool` 解决并再次跟踪即可：
 
 ```bash
 $ git add .
