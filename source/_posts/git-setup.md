@@ -38,7 +38,7 @@ $ sudo brew install git
 
 ## 配置提交作者
 
-开始使用 Git 之前，第一件重要的事情是配置提交作者，首先做如下检查：
+开始使用 Git 之前，第一件重要的事情就是配置提交作者，首先做如下检查：
 
 ```bash
 $ git config -l | grep user
@@ -112,3 +112,4 @@ Identity added: ~/.ssh/github_rsa
 
 * 《[How To Use Environment Variables in Windows](http://best-windows.vlaurie.com/environment-variables.html)》
 * 《[Unix / Linux ssh-add Command Examples to Add SSH Key to Agent](http://linux.101hacks.com/unix/ssh-add/)》
+* 《[自定义 Git - 配置 Git](http://git-scm.com/book/zh/v1/%E8%87%AA%E5%AE%9A%E4%B9%89-Git-%E9%85%8D%E7%BD%AE-Git)》
