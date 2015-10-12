@@ -4,6 +4,38 @@ updated:
 tags: [DNS, CDN]
 ---
 
+基于 DNS 解析方式的 GSLB 的实现关键，就在于让 DNS “智能化” —— 即通过建立 IP 地址访问列表，判断用户的访问来源，以确定其访问对象的位置。下面简单介绍下如何实现智能 DNS：
+
+## IP 地址收集策略
+
+由于 CDN 使用 LDNS 进行寻址，因此我们只需要收集互联网上 DNS 服务器的 IP 地址。这样一来，收集的数量就会大大降低。为了更进一步缩小范围，一般使用 IP 地址加子网掩码的形式，如 123.175.0.0/16。在 IP 列表文件，就这么一行，却可以囊括很多 DNS 服务器。
+
+## IP 地址收集方法
+
+除了可以跟第三方购买 IP 地址段之外，这里重点介绍下如何自行收集 IP 地址段。
+
+![ICANN](https://upload.wikimedia.org/wikipedia/en/thumb/4/4f/ICANN.svg/171px-ICANN.svg.png)
+
+[ICANN](https://en.wikipedia.org/wiki/ICANN) —— 一个负责 IP 地址的空间分配，以及域名及相关系统的管理。与之关联的五个 [RIR](https://en.wikipedia.org/wiki/Regional_Internet_registry) 机构负责替 ICANN 分配与登记部分 IP 地址段。
+
+通过 shell 脚本抓取 IP 地址段：
+
+
+
+## IP 地址列表处理
+
+通过上述方法收集来的 IP，把它们各自合并、去重、排序。将处理好后的 IP 地址列表文件按 ISP 进行分类，如：unicom_acl.conf、telecom_acl.conf、edu_acl.conf、……。
+
+## IP 地址列表使用
+
+# 谁来分配和管理 IP ？
+
+[ICANN](https://en.wikipedia.org/wiki/ICANN) 主要负责域名的管理、 IP 地址的空间分配、顶级域名系统以及根域名服务器系统的管理。
+五个 [RIR](https://en.wikipedia.org/wiki/Regional_Internet_registry) 机构负责替 ICANN 分管部分 IP 地址的分配与登记。
+
+
+
+
 # GSLB 横向对比
 
 GSLB（Global Server Load Balance，全局负载均衡，负责流量调度）作为 CDN 系统架构中最核心的部分，有三种常见的实现方式，其对比如下：
@@ -15,8 +47,6 @@ GSLB（Global Server Load Balance，全局负载均衡，负责流量调度）�
 |效率|效率约等于 DNS 系统本身处理效率|依靠服务器做处理，对硬件资源的要求高|效率约等于 IP 设备本身效率|
 |扩展性|扩展性和通用性好|扩展性较差，需对各种应用协议进行定制开发|通用性好，但适用范围有限|
 |商用性|在 Web 加速领域使用较多|国内流媒体 CDN 应用较多|尚无商用案例|
-
-# 注意点
 
 可见，基于 DNS 解析方式的 GSLB 有两个注意点：
 
@@ -31,9 +61,3 @@ GSLB（Global Server Load Balance，全局负载均衡，负责流量调度）�
 DNS 的查询机制给使用它的互联网应用带来额外的时延，有时时延还比较大，为了解决问题，引入了“缓存”机制。缓存是指 DNS 查询结果在本地 DNS 服务器中缓存，当其它主机向它发起查询请求时，它就直接向主机返回缓存中能够找到的结果，直到数据过期。
 
 在基于 DNS 解析方式下无论采用何种工作方式，都会有一些请求不会到达 GSLB，这是 DNS 系统本身的缓存机制在起作用。当用户请求的域名在本地 DNS 或本机（客户端浏览器）得到了解析结果，这些请求就不会达到 GSLB。Cache 更新时间越短，用户请求达到 GSLB 的几率越大。由于 DNS 的缓存机制屏蔽掉相当一部分用户请求，从而大大减轻了 GSLB 处理压力，使得系统抗流量冲击能力显著提升，这也是很多商业 CDN 选择 DNS 机制做全局负载均衡的原因之一。但弊端在于，如果在 DNS 缓存刷新间隔之内系统发生影响用户服务的变化，比如某个节点故障，某个链路拥塞等，用户依然会被调度到故障点去。
-
-# 谁来分配和管理 IP ？
-
-[ICANN](https://en.wikipedia.org/wiki/ICANN) 主要负责域名的管理、 IP 地址的空间分配、顶级域名系统以及根域名服务器系统的管理。
-五个 [RIR](https://en.wikipedia.org/wiki/Regional_Internet_registry) 机构负责替 ICANN 分管部分 IP 地址的分配与登记。
-
