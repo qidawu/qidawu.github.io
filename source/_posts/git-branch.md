@@ -123,7 +123,7 @@ $ git merge --no-ff cyn/python_cli
 版本发布之后，应该标记该新版本，以便后续回滚到指定版本：
 
 ```bash
-$ git tag -a v1.0 -m "XX 项目 v1.0 版本"
+$ git tag v1.0 -m "XX 项目 v1.0 版本"
 $ git push origin v1.0
 ```
 
