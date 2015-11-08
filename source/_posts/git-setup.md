@@ -10,7 +10,7 @@ tags: Git
 
 ## Windows
 
-推荐使用 [绿色便携版](http://git-scm.com/download/wint) ，优势如下：
+需要安装 Git for Windows 的客户端 [msysgit](https://github.com/msysgit/msysgit)。推荐使用 [绿色便携版](http://git-scm.com/download/wint) ，优势如下：
 
 * 无需安装，无需写注册表，无需管理员权限；
 * 可以从任意目录运行，甚至 U 盘；
@@ -113,3 +113,4 @@ Identity added: ~/.ssh/github_rsa
 * 《[How To Use Environment Variables in Windows](http://best-windows.vlaurie.com/environment-variables.html)》
 * 《[Unix / Linux ssh-add Command Examples to Add SSH Key to Agent](http://linux.101hacks.com/unix/ssh-add/)》
 * 《[自定义 Git - 配置 Git](http://git-scm.com/book/zh/v1/%E8%87%AA%E5%AE%9A%E4%B9%89-Git-%E9%85%8D%E7%BD%AE-Git)》
+* 《[Git for Windows 1.x 归档版本下载地址](https://github.com/msysgit/msysgit/tags)》
