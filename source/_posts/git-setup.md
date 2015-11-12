@@ -63,6 +63,22 @@ $ git config --global user.email "你的邮箱"
 
 现在，可以愉快的开始使用 Git 了。更多配置请参考 [这里](http://git-scm.com/docs/git-config) 。
 
+## 配置格式化与空白
+
+> 格式化与空白是许多开发人员在协作时，特别是在跨平台情况下，遇到的令人头疼的细小问题。由于编辑器的不同或者Windows程序员在跨平台项目中的文件行尾加入了回车换行符，一些细微的空格变化会不经意地进入大家合作的工作或提交的补丁中。不用怕，Git 的一些配置选项会帮助你解决这些问题。
+
+### core.autocrlf
+
+Git 在你提交时**自动地**把行结束符 CRLF 转换成 LF，而在签出代码时把 LF 转换成 CRLF。假如团队成员只在 Windows 上写程序，可以关闭此功能，避免 Git 自动格式化代码后干扰代码对比：
+
+```bash
+$ git config --global core.autocrlf false
+```
+
+### core.whitespace
+
+Git 预先设置了一些选项来探测和修正空白问题，配置方法待补充。
+
 # 常见问题
 
 Git 长期使用上的一点不便，解决方案仅供参考。
