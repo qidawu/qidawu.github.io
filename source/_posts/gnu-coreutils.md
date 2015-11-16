@@ -12,12 +12,12 @@ GNU/CoreUtils 是一组类 Unix 操作系统所需的基础软件包。它包含
 
 |命令|描述|备注|
 |---|---|---|
-|`cp`|Copy files and directories|`cp -rp` 备份目录。<br/>`-r` 递归复制目录，否则提示“略过目录‘xxx’”<br/>`-p` 保留源文件或目录的属性（包括属主、属组、权限、修改时间等）<br/>`-f` 强制覆盖|
+|`cp`|Copy files and directories|`cp -rp` 备份目录。<br/>`-r` 递归复制目录，否则提示“略过目录‘xxx’”。<br/>`-p` 保留源文件或目录的属性（包括属主、属组、权限、修改时间等）。<br/>`-f` 强制覆盖。|
 |`mv`|Move (rename) files||
-|`rm`|Remove files or directories|`rm -rf` 强制递归删除文件或目录<br/>`-r` 递归删除，将指定目录下的所有文件及子目录一并处理。<br/>`-f` 强制删除文件或目录。|
+|`rm`|Remove files or directories|`rm -rf` 强制递归删除文件或目录。<br/>`-r` 递归删除，将指定目录下的所有文件及子目录一并处理。<br/>`-f` 强制删除文件或目录。|
 |`ln`|Create a link to a file|`-s` 创建软链接。|
 |`mkdir`|Create a directory|`-p` 递归创建目录。|
-|`rmdir`|Remove empty directories|`-p` 递归删除空目录。<br/>目录非空会删除失败并提示：`rmdir: failed to remove 'xxx': Directory not empty`|
+|`rmdir`|Remove empty directories|`-p` 递归删除空目录，如果目录非空会删除失败并提示：`rmdir: failed to remove 'xxx': Directory not empty`|
 
 ## Directory listing
 
@@ -31,8 +31,8 @@ GNU/CoreUtils 是一组类 Unix 操作系统所需的基础软件包。它包含
 
 |命令|描述|备注|
 |---|---|---|
-|`chown`|Change file owner and group|`chown root:root /there/is/a/file`|
-|`chgrp`|Change group ownership||
+|`chown`|Change file owner and group|`chown -R owner:group /there/is/a/file`<br/>`-R` 递归修改，常用于一次性更改某一目录内所有的文件、目录。目标属主必须在 `/etc/passwd`。|
+|`chgrp`|Change group ownership|`-R` 递归修改，目标属组必须在 `/etc/group`。|
 |`chmod`|Change access permissions||
 |`touch`|Change file timestamps|改变文件访问和修改时间，也可用于快速创建一个文件。|
 
@@ -53,15 +53,15 @@ GNU/CoreUtils 是一组类 Unix 操作系统所需的基础软件包。它包含
 |---|---|---|
 |`cat`|Concatenates and prints files on the standard output|常用于连接并输出多个文件的内容。|
 |`tac`|Concatenates and prints files on the standard output in reverse|常用于反向连接并输出多个文件的内容。|
-|`nl`|Numbers lines of files||
+|`nl`|Numbers lines of files|`-b` 指定行号的方式，主要有 `a` `t`两种：<br/>`-b a` 无论是否是空行，同样列出行号。<br/>`-b t` 默认值，不列出空行行号。|
 |`base64`|base64 encode/decode data and print to standard output||
 
 ## Output of parts of files
 
 |命令|描述|备注|
 |---|---|---|
-|`head`|Output the first part of files||
-|`tail`|Output the last part of files||
+|`head`|Output the first part of files|默认输出 10 行|
+|`tail`|Output the last part of files|`-n` 输出倒数 n 行（默认输出 10 行）<br/>`-f` 不停读取输出文件的最新内容，常用于实时监视日志输出，用 `Ctrl＋C` 来终止。|
 |`split`|Split a file into pieces|用于按行、按大小分割文件|
 |`csplit`|Split a file into context-determined pieces||
 
@@ -69,15 +69,15 @@ GNU/CoreUtils 是一组类 Unix 操作系统所需的基础软件包。它包含
 
 |命令|描述|备注|
 |---|---|---|
-|`sort`|Sort text files||
+|`sort`|Sort text files|详见[本文](http://www.cnblog.me/2015/11/15/gnu-text-utilities/)|
 |`shuf`|Shuffling text||
-|`uniq`|Uniquify files||
+|`uniq`|Uniquify files|详见[本文](http://www.cnblog.me/2015/11/15/gnu-text-utilities/)|
 
 ## Operating on fields
 
 |命令|描述|备注|
 |---|---|---|
-|`cut`|Print selected parts of lines||
+|`cut`|Print selected parts of lines|详见[本文](http://www.cnblog.me/2015/11/15/gnu-text-utilities/)|
 |`paste`|Merge lines of files|合并多个文件的所有行|
 |`join`|Joins lines of two files on a common field|合并两个文件中相同位置的行|
 
@@ -85,7 +85,7 @@ GNU/CoreUtils 是一组类 Unix 操作系统所需的基础软件包。它包含
 
 |命令|描述|备注|
 |---|---|---|
-|`tr`|Translate or delete characters||
+|`tr`|Translate or delete characters|详见[本文](http://www.cnblog.me/2015/11/15/gnu-text-utilities/)|
 |`expand`|Convert tabs to spaces||
 |`unexpand`|Convert spaces to tabs||
 
@@ -93,7 +93,7 @@ GNU/CoreUtils 是一组类 Unix 操作系统所需的基础软件包。它包含
 
 |命令|描述|备注|
 |---|---|---|
-|`wc`|Print the number of bytes, words, and lines in files||
+|`wc`|Print the number of bytes, words, and lines in files|详见[本文](http://www.cnblog.me/2015/11/15/gnu-text-utilities/)|
 |`sum`|||
 |`cksum`|||
 |`md5sum`|||
@@ -159,7 +159,7 @@ GNU/CoreUtils 是一组类 Unix 操作系统所需的基础软件包。它包含
 
 |命令|描述|备注|
 |---|---|---|
-|`tee`|Redirect output to multiple files or processes||
+|`tee`|Redirect output to multiple files or processes|详见[本文](http://www.cnblog.me/2015/11/15/gnu-text-utilities/)|
 
 ## Conditions
 
