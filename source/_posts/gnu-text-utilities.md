@@ -135,17 +135,26 @@ def
 1、统计 Nginx 独立 IP 数：
 
 ```
-cut -d " " -f 1 nginx_log | sort | uniq | wc –l
+$ cut -d " " -f 1 nginx_log | sort | uniq | wc –l
 ```
 
 2、统计当前用户最常用的 10 条命令：
 
 ```
-cut -d " " -f 1 ~/.bash_history | sort | uniq -c | sort -nr | head
+$ cut -d " " -f 1 ~/.bash_history | sort | uniq -c | sort -nr | head
 ```
 
-3、对指定文件进行分组排序，并以逆序显示有重复行的分组：
+3、统计重复行，逆序方式：
 
 ```
-sort /data/tradehistory_20150804.txt | uniq -cd | sort -nr
+$ sort /data/tradehistory_20150804.txt | uniq -cd | sort -nr
+```
+
+4、统计多个文件：
+
+```
+$ cat /data/tradehistory_2015080*.txt | cut -d ',' -f 13 | sort | uniq -c | sort -nr
+29549 20150803
+24086 20150805
+19520 20150804
 ```
