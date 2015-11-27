@@ -15,7 +15,7 @@ GNU/CoreUtils 是一组类 Unix 操作系统所需的基础软件包。它包含
 |`cp`|Copy files and directories|`cp -rp` 备份目录。<br/>`-r` 递归复制目录，否则提示“略过目录‘xxx’”。<br/>`-p` 保留源文件或目录的属性（包括属主、属组、权限、修改时间等）。<br/>`-f` 强制覆盖。|
 |`mv`|Move (rename) files||
 |`rm`|Remove files or directories|`rm -rf` 强制递归删除文件或目录。<br/>`-r` 递归删除，将指定目录下的所有文件及子目录一并处理。<br/>`-f` 强制删除文件或目录。|
-|`ln`|Create a link to a file|`-s` 创建软链接。|
+|`ln`|Create a link to a file|`ln -s TARGET LINK_NAME` 创建软链接。|
 |`mkdir`|Create a directory|`-p` 递归创建目录。|
 |`rmdir`|Remove empty directories|`-p` 递归删除空目录，如果目录非空会删除失败并提示：`rmdir: failed to remove 'xxx': Directory not empty`|
 
