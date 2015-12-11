@@ -57,17 +57,56 @@ Hello world
 
 |标签|描述|
 |---|---|
-|`<jsp:include />`|用于在当前页面中包含静态或动态资源|
-|`<jsp:useBean />`|寻找和初始化一个 JavaBean 组件|
-|`<jsp:setProperty />`|设置 JavaBean 组件的值|
-|`<jsp:getProperty />`|将 JavaBean 组件的值插入到 output 中|
-|`<jsp:forward />`|从一个 JSP 文件向另一个文件传递一个包含用户请求的 request 对象|
-|`<jsp:plugin />`|用于在生成的 HTML 页面中包含 Applet 和 JavaBean 对象|
-|`<jsp:element />`|动态创建一个 XML 元素|
-|`<jsp:attribute />`|定义动态创建的 XML 元素的属性|
-|`<jsp:body />`|定义动态创建的 XML 元素的主体|
-|`<jsp:text />`|用于封装模板数据|
+|`<jsp:include>`|用于在当前页面中包含静态或动态资源|
+|`<jsp:useBean>`|寻找和初始化一个 JavaBean 组件|
+|`<jsp:setProperty>`|设置 JavaBean 组件的值|
+|`<jsp:getProperty>`|将 JavaBean 组件的值插入到 output 中|
+|`<jsp:forward>`|从一个 JSP 文件向另一个文件传递一个包含用户请求的 request 对象|
+|`<jsp:plugin>`|用于在生成的 HTML 页面中包含 Applet 和 JavaBean 对象|
+|`<jsp:element>`|动态创建一个 XML 元素|
+|`<jsp:attribute>`|定义动态创建的 XML 元素的属性|
+|`<jsp:body>`|定义动态创建的 XML 元素的主体|
+|`<jsp:text>`|用于封装模板数据|
 
 # JSTL
+
+JSP 标准标签库（JSP Standard Tag Library）是一个 JSP 标签集合，它封装了 JSP 应用的通用核心功能。
+
+它的出现，是因为人们开始注重软件的分层设计，不希望在 JSP 页面中出现 JAVA 逻辑代码。同时也由于自定义标签的开发难度较大、不利于技术的标准化，因此产生了 JSTL。
+
+JSTL 和 EL 的结合，基本可以让页面再无 `<% %>` 代码。
+
+JSTL 标准标签库可分为五类：
+
+## 核心标签库
+
+JSTL的核心标签库标签共13个，从功能上可以分为4类：
+* 表达式控制标签：out、set、remove、catch
+* 流程控制标签：if、choose、when、otherwise
+* 循环标签：forEach、forTokens
+* URL操作标签：import、url、redirect
+
+## 格式化标签库
+
+|标签|描述|
+|---|---|
+|`<fmt:formatNumber>`|使用指定的格式或精度格式化数字|
+|`<fmt:formatDate>`|使用指定的风格或模式格式化日期和时间|
+
+## SQL 标签库
+
+不常用，跳过。
+
+## XML 标签库
+
+不常用，跳过。
+
+## 函数标签库
+
+配合其它标签库或者 EL 表达式使用。
+
+|标签|描述|
+|---|---|
+|``||
 
 # EL
