@@ -117,3 +117,7 @@ Git 在 1.8.5 版本之后，加入了 `HEAD@{}` 功能，它通过一个链表�
 # 例子
 
 更多例子参见 `git help reset` 的 EXAMPLES 部分。
+
+# 参考
+
+《[Git 中 HEAD 和 ORIG_HEAD 指针分别指的是什么？](http://www.th7.cn/Program/c/201409/280832.shtml)》
