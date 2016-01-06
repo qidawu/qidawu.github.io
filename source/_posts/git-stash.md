@@ -51,7 +51,7 @@ $ git pull --rebase
 推荐使用 `stash` 处理，所有合并都在工作目录中完成，不会产生无谓的“合并”提交。
 
 ```bash
-$ git stash
+$ git stash save "填写你的备注"
 Saved working directory and index state ......
 ```
 
