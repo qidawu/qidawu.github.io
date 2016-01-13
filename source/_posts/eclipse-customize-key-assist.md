@@ -21,49 +21,49 @@ description: "好的快捷键可以提高编码的效率。"
 
 |Command|Binding|Description|
 |---|---|---|
-|Line Up|Alt+K|↑|
-|Line Down|Alt+J|↓|
-|Previous Column|Alt+H|←|
-|Next Column|Alt+L|→|
-|Line Start|Alt+A||
-|Line End|Alt+E||
-|Previous Word|Alt+B||
-|Next Word|Alt+F||
-|Go to Next Member|Alt+G||
-|Go to Previous Member|Alt+Shift+G||
-|Open Implementation|Alt+Q||
+|Line Up|`Alt + K`|↑|
+|Line Down|`Alt + J`|↓|
+|Previous Column|`Alt + H`|←|
+|Next Column|`Alt + L`|→|
+|Line Start|`Alt + A`||
+|Line End|`Alt + E`||
+|Previous Word|`Alt + B`||
+|Next Word|`Alt + F`||
+|Go to Next Member|`Alt + G`||
+|Go to Previous Member|`Alt + Shift + G`||
+|Open Implementation|`Alt + Q`||
 
 ## 通用类
 
 |Command|Binding|
 |---|---|
-|Delete|Alt+D|
-|Select Enclosing Element|Alt+S|
-|File Search|Ctrl+H|
-|Activate Editor|Alt+`|
-|Next View|Alt+V|
-|Rerun JUnit Test|Alt+R|
-|Run Maven Clean|Alt+Shift+X, C|
+|Delete|`Alt + D`|
+|Select Enclosing Element|`Alt + S`|
+|File Search|`Ctrl + H`|
+|Next View|`Alt + V`|
+|Rerun JUnit Test|`Alt + R`|
+|Run Maven Clean|`Alt + Shift + X, C`|
 
 ## Git 类
 
 |Command|Binding|
 |---|---|
-|Pull|Alt+1|
-|Commit|Alt+2|
-|Show in History|Alt+3|
-|Compare with HEAD Revision|Alt+4|
-|Replace with HEAD Revision|Alt+5|
+|Pull|`Alt + 1`|
+|Commit|`Alt + 2`|
+|Show in History|`Alt + 3`|
+|Compare with HEAD Revision|`Alt + 4`|
+|Replace with HEAD Revision|`Alt + 5`|
+|Show In (Git Repositories)|`Alt + 6`|
 
 ## SVN 类
 
 |Command|Binding|
 |---|---|
-|更新|Alt+1|
-|提交|Alt+2|
-|Show History|Alt+3|
-|Compare with Local Base Revision|Alt+4|
-|复原|Alt+5|
+|更新|`Alt + 1`|
+|提交|`Alt + 2`|
+|Show History|`Alt + 3`|
+|Compare with Local Base Revision|`Alt + 4`|
+|复原|`Alt + 5`|
 
 注意，Eclipse 有 Bug 在配置完以上 SVN 快捷键之后，快捷键是无法使用的，需要为当前的视图（Perspective）添加一个 SVN 的工具。配置如下：
 
