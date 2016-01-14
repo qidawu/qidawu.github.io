@@ -6,19 +6,74 @@ tags: Java
 
 # @RequestMapping
 
-[`@RequestMapping`](http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestMapping.html)
+[`@RequestMapping`](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestMapping.html) 用于将 HTTP 请求映射到指定的 Handler 类或方法。标注了这个注解的方法可以拥有非常灵活的方法签名。其方法参数可以是下列任一类型。
 
-Annotation for mapping web requests onto specific handler classes and/or handler methods.
+本文将分为三类介绍：
 
-Handler methods which are annotated with this annotation are allowed to have very flexible signatures. They may have arguments of the following types, in arbitrary order (任意顺序):
+## 引用类型
 
-## @PathVariable
+### Request / Response
 
-[`@PathVariable`](http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/PathVariable.html) 用于标注某个方法参数与某个 *URI 模板变量（URI template variable）* 的绑定关系，常用于 *RESTful URL*，例如 `/hotels/{hotel}`。
+用于访问当前 `javax.servlet.http.HttpServletRequest` / `javax.servlet.http.HttpServletResponse`。
 
-## @RequestParam
+```java
+@RequestMapping("/index")
+public void go(HttpServletRequest request, HttpServletResponse response) {
+    request.getHeader("host"); // 读取指定 HTTP 请求头
+    response.getWriter().write("hello world"); // 浏览器将会显示：hello world
+}
+```
 
-[`@RequestParam`](http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/bind/annotation/RequestParam.html) 用于标注某个方法参数与某个 *WEB 请求参数（web request parameter）* 的绑定关系。
+### InputStream / Reader
+
+用于访问当前请求内容的 `java.io.InputStream` / `java.io.Reader`
+
+### OutputStream / Writer
+
+用于生成当前响应内容的 `java.io.OutputStream` / `java.io.Writer`
+
+```java
+@RequestMapping("/index")
+public void go(Writer writer) {
+    writer.write("hello world"); // 浏览器将会显示：hello world
+}
+```
+
+### Session
+
+用于访问当前 `javax.servlet.http.HttpSession`
+
+```java
+@RequestMapping("/index")
+public void go(HttpSession session) {
+    session.getAttribute("xxx");
+}
+```
+
+### HttpEntity<?>
+
+[`HttpEntity<?>`](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/http/HttpEntity.html) 用于同时访问 *HTTP 请求头和请求体（HTTP request headers and contents）* 。
+
+```
+@RequestMapping("/index")
+public void go(HttpEntity<String> httpEntity) {
+    String body = httpEntity.getBody();
+    HttpHeaders headers = httpEntity.getHeaders();
+    String host = headers.getFirst("host");
+}
+```
+
+## 基本数据类型
+
+尽管使用引用类型的方法参数更接近于人们所熟悉的 Servlet 编程，但在 Spring 编程中却不建议这么做。因为这样会导致 JavaBean 与 Servlet 容器耦合，难以进行单元测试（如 Mock 测试）。最佳实践应当是传入注解后的基本数据类型，下面介绍这些常用的注解：
+
+### @PathVariable
+
+[`@PathVariable`](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/PathVariable.html) 用于标注某个方法参数与某个 *URI 模板变量（URI template variable）* 的绑定关系，常用于 *RESTful URL*，例如 `/hotels/{hotel}`。
+
+### @RequestParam
+
+[`@RequestParam`](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestParam.html) 用于标注某个方法参数与某个 *HTTP 请求参数（HTTP request parameter）* 的绑定关系。
 
 使用时需要注意 `required` 这个属性：
 
@@ -26,81 +81,40 @@ Handler methods which are annotated with this annotation are allowed to have ver
 * 方法参数写了 `@RequestParam`，默认的 `required` 为 `true`
 * 方法参数同时写了 `@RequestParam` + `defaultValue`，默认的 `required` 为 `false`
 
-## @RequestHeader
+### @RequestHeader
 
-用于标注某个方法参数与某个 *WEB 请求头（web request header）* 的绑定关系。
+[`@RequestHeader`](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestHeader.html) 用于标注某个方法参数与某个 *HTTP 请求头（HTTP request header）* 的绑定关系。
 
-## @RequestBody
+### @RequestBody
 
-用于标注某个方法参数与某个 *WEB 请求体（web request body）* 的绑定关系。使用 `@RequestBody` 将会使用合适的 `HttpMessageConverter` 将 *WEB 请求体（web request body）* 写入指定对象。
+[`@RequestBody`](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestBody.html) 用于标注某个方法参数与某个 *HTTP 请求体（HTTP request body）* 的绑定关系。 `@RequestBody` 会调用合适的 [message converters](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/http/converter/HttpMessageConverter.html) 将 *HTTP 请求体（HTTP request body）* 写入指定对象。
 
-## @CookieValue
+### @CookieValue
 
-用于标注某个方法参数与某个 *HTTP cookie* 的绑定关系。方法参数可以是 `javax.servlet.http.Cookie`，也可以是具体的 Cookie 值（如字符串、数字类型等）。
+[`@CookieValue`](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/CookieValue.html) 用于标注某个方法参数与某个 *HTTP cookie* 的绑定关系。方法参数可以是 `javax.servlet.http.Cookie`，也可以是具体的 Cookie 值（如字符串、数字类型等）。
 
-## Request / Response
-
-用于访问当前 `javax.servlet.http.HttpServletRequest` / `javax.servlet.http.HttpServletResponse`。
+举个例子：
 
 ```java
+@ResponseBody
 @RequestMapping("/index")
-public void go(HttpServletRequest request, HttpServletResponse response) {
-    response.getWriter().write("hello world");
-}
+public Employee getEmployeeBy(
+    @RequestParam("name") String name, 
+    @RequestHeader("host") String host, 
+    @RequestBody String body) {...}
 ```
 
-## InputStream / Reader
+## Model
 
-用于访问当前请求内容的 `java.io.InputStream` / `java.io.Reader`
+[`HttpMethod`](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/http/HttpMethod.html) 用于访问 *HTTP 请求方法（HTTP request method）* 。
 
-## OutputStream / Writer
+### Map / Model / ModelMap
 
-用于生成当前响应内容的 `java.io.OutputStream` / `java.io.Writer`
-
-```java
-@RequestMapping("/index")
-public void go(Writer writer) {
-    writer.write("hello world");
-}
-```
-
-浏览器显示：
-
-```
-hello world
-```
-
-## Session
-
-用于访问当前 `javax.servlet.http.HttpSession`
-
-```java
-@RequestMapping("/index")
-public void go(HttpSession session) {
-    System.out.println(session.getAttribute(xxx));
-}
-```
-
-## Locale
-
-用于访问当前请求的区域设置（`java.util.Locale`）。
-
-```java
-@RequestMapping("/index")
-public void go(Locale locale) {
-    System.out.println(locale);
-}
-```
-
-## HttpEntity<?>
-
-## Map / Model / ModelMap
-
-用于在 `Controller` 层填充将暴露给 `View` 层的 `Model` 。
+`Map` / [`Model`](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/ui/Model.html) / [`ModelMap`](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/ui/ModelMap.html) 用于在 `Controller` 层填充将会暴露给 `View` 层的 `Model` 对象。
 
 # @ResponseBody
 
-用于标注某个方法返回值与 *WEB 响应体（response body）* 的绑定关系。使用 `@ResponseBody` 将会跳过 `ViewResolver` 部分，调用适合的 `HttpMessageConverter`，将方法返回值作为 *WEB 响应体（response body）* 写入输出流。
+用于标注某个方法返回值与 *WEB 响应体（response body）* 的绑定关系。 `@ResponseBody` 会跳过 `ViewResolver` 部分，调用合适的 [message converters](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/http/converter/HttpMessageConverter.html)，将方法返回值作为 *WEB 响应体（response body）* 写入输出流。
 
 ```java
 @RequestMapping("/index")
