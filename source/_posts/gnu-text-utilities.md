@@ -17,7 +17,7 @@ GNU/CoreUtils 的 Text utilities 提供了一些便利的文本处理命令，�
 
 管道的处理流程如下图：
 
-![pipe](http://cnblog.me/img/gnu-text-utilities/pipe.png)
+![pipe](/img/gnu-text-utilities/pipe.png)
 
 # 命令
 
@@ -128,7 +128,7 @@ def
 
 `tee` 是一种双向重定向命令，用于可以将数据流处理过程中的**某段结果**保存到文件，其处理过程如下：
 
-![tee](http://cnblog.me/img/gnu-text-utilities/tee.png)
+![tee](/img/gnu-text-utilities/tee.png)
 
 # 例子
 

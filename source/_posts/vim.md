@@ -4,7 +4,7 @@ updated:
 tags: GNU/Linux
 ---
 
-![Vim](http://cnblog.me/img/vim/vim.png)
+![Vim](/img/vim/vim.png)
 
 使用 [Vim](http://www.vim.org/) 也有好几年了，虽然这款“编辑器之神”的学习曲线非常陡峭，但一旦上手将会极大提高文本编辑效率，因此值得投入精力学习。
 
