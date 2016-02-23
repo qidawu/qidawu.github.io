@@ -1,16 +1,28 @@
 title: Spring MVC 常用注解
-date: 2016-01-13 20:32:08
+date: 2016-01-14 23:32:08
 updated:
 tags: Java
 ---
 
+一张图简要描述 Spring MVC 的处理流程：
+
+![Spring MVC](/img/spring-mvc/spring-mvc.png)
+
+* Spring MVC 的核心前端控制器 `DispatcherServlet` 接收 HTTP 请求并询问 `Handler mapping` 该请求应该转发到哪个 `Controller` 方法。
+* `Controller` 业务处理完毕，返回 *逻辑视图名(通常是一个字符串)* 。
+* 最后 `viewResolver` 解析逻辑视图名并返回相应的 `View`,如 JSP、FreeMarker。
+
+下面介绍编写 `Controller` 过程中常用的注解：
+
 # @RequestMapping
 
-[`@RequestMapping`](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestMapping.html) 用于将 HTTP 请求映射到指定的 Handler 类或方法。标注了这个注解的方法可以拥有非常灵活的方法签名。其方法参数可以是下列任一类型。
+[`@RequestMapping`](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestMapping.html) 用于将 HTTP 请求映射到指定的 `Controller` 类或方法。标注了这个注解的方法可以拥有非常灵活的方法签名。其方法参数可以是下列任一类型。
 
 本文将分为三类介绍：
 
-## 引用类型
+## 常规类型
+
+使用这类方法参数有点类似于传统的 Servlet 编程，因此称之为常规类型：
 
 ### Request / Response
 
@@ -46,7 +58,7 @@ public void go(Writer writer) {
 ```java
 @RequestMapping("/index")
 public void go(HttpSession session) {
-    session.getAttribute("xxx");
+    session.getAttribute("xxx"); // 读取指定 Session 值
 }
 ```
 
@@ -54,7 +66,7 @@ public void go(HttpSession session) {
 
 [`HttpEntity<?>`](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/http/HttpEntity.html) 用于同时访问 *HTTP 请求头和请求体（HTTP request headers and contents）* 。
 
-```
+```java
 @RequestMapping("/index")
 public void go(HttpEntity<String> httpEntity) {
     String body = httpEntity.getBody();
@@ -63,9 +75,9 @@ public void go(HttpEntity<String> httpEntity) {
 }
 ```
 
-## 基本数据类型
+## 注解类型
 
-尽管使用引用类型的方法参数更接近于人们所熟悉的 Servlet 编程，但在 Spring 编程中却不建议这么做。因为这样会导致 JavaBean 与 Servlet 容器耦合，难以进行单元测试（如 Mock 测试）。最佳实践应当是传入注解后的基本数据类型，下面介绍这些常用的注解：
+尽管使用常规类型的方法参数更接近于人们所熟悉的传统 Servlet 编程，但在 Spring 编程中却不建议这么做。因为这样会导致 JavaBean 与 Servlet 容器耦合，侵入性强，难以进行单元测试（如 Mock 测试）。最佳实践应当是传入注解后被解析好的数据类型，下面介绍这些常用的注解：
 
 ### @PathVariable
 
@@ -104,9 +116,7 @@ public Employee getEmployeeBy(
     @RequestBody String body) {...}
 ```
 
-## Model
-
-[`HttpMethod`](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/http/HttpMethod.html) 用于访问 *HTTP 请求方法（HTTP request method）* 。
+## 其它类型
 
 ### Map / Model / ModelMap
 
