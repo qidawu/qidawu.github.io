@@ -22,7 +22,41 @@ var person = new Object();person.name = "Nicholas";person.age = 29;
 var person = {    name : "Nicholas",    age : 29};
 ```
 
-使用这种对象字面量语法要求的代码量更少，而且能够给人以封装数据的感觉。实际上，对象字面量也是向函数传递大量可选参数的首选方式。一般来讲，命名参数虽然容易处理，但在有多个可选参数的情况下就会显示不够灵活。最好的做法是对那些必需值使用命名参数，而使用对象字面量来封装多个可选参数。
+使用这种对象字面量语法要求的代码量更少，而且能够给人以封装数据的感觉。实际上，对象字面量也是向函数传递大量可选参数的首选方式。一般来讲，命名参数虽然容易处理，但在有多个可选参数的情况下就会显示不够灵活。例如：
+
+```javascript
+function doSomething(arg0, arg1, arg2, arg3, arg4) {　　
+    ... 
+}
+
+doSomething('', 'foo', 5, [], false);    // 这里必须传够五个参数，无法跳过中间某个可选参数
+```
+
+但最好的做法是对那些必需值使用命名参数，而使用对象字面量来封装多个可选参数：
+
+```javascript
+function doSomething() {
+    // 不传任何参数也能正常运行
+    if (!arguments[0]) {
+        return false;
+    }
+
+    // 为 undefined 的参数设置默认值
+    var oArgs = arguments[0]
+        arg0  = oArgs.arg0 || "",
+        arg1  = oArgs.arg1 || "",
+        arg2  = oArgs.arg2 || 0,
+        arg3  = oArgs.arg3 || [],
+        arg4  = oArgs.arg4 || false;
+}
+
+// 传入可选参数而不报错
+doSomething({
+    arg1: "foo",
+    arg2: 5,
+    arg4: false
+});
+```
 
 ## 属性和方法
 
