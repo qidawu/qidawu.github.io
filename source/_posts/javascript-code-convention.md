@@ -15,7 +15,7 @@ tags: JavaScript
 
 # 编程风格
 
-本节编程风格（Style Guideline）是用于规约单文件中代码，使团队编程风格保持一致。
+本节编程风格（Style Guideline）是用于规范单文件中的代码，使团队编程风格保持一致。
 
 ## 缩进层级
 
@@ -263,13 +263,100 @@ typeof doSomeThing === 'string';    // true
 
 * 由于 `click` 事件在移动端浏览器有 300 毫秒的延迟，因此要求使用 zepto.js 的 `tap` 事件替代所有 `click` 事件。
 
-## HTML 渲染
+## UI 层保持松耦合
 
-* Ajax 请求统一返回 `ResponseVO<T>`
-* 使用模板引擎 [artTemplate](https://github.com/aui/artTemplate) 进行 HTML 渲染，内置了几个格式化工具：
-  * 货币格式化：[accounting.js](http://openexchangerates.github.io/accounting.js/)
-  * 日期格式化：datetime.js
-  * 算数对象（用于执行数学任务）：[Math](http://www.w3school.com.cn/jsref/jsref_obj_math.asp)
+保持 Web UI 层的松耦合，以便在以下场景中调试代码，定位问题：
+
+* 当发生了文本或结构相关的问题，通过查找 HTML 即可定位；
+* 当发生了样式相关的问题，通过查找 CSS 即可定位；
+* 当发生了行为和交互相关的问题，通过查找 JavaScript 即可定位。
+
+这种快速定位问题的能力是 Web 界面可维护性的核心关键。
+
+### 将 JavaScript 从 CSS 中抽离
+
+禁止使用 CSS 表达式（CSS Expression）。
+
+```javascript
+// 不好的写法
+.box {
+    width: expression(document.body.offsetWidth + "px");
+}
+```
+
+CSS 表达式是 IE8 及更早版本中的一个特性，它允许你将 JavaScript 直接插入到 CSS 中，这样可以在 CSS 代码中直接执行运算或其它操作。但 CSS 表达式会带来两个问题：
+
+* 性能问题
+* 代码可维护性问题
+
+### 将 CSS 从 JavaScript 中抽离
+
+禁止在 JavaScript 脚本中直接操作 CSS 样式：
+
+```javascript
+// 不好的写法
+element.style.color = 'red';
+element.style.left = '10px';
+element.style.cssText = 'color: red; left: 10px';
+```
+
+当需要通过 JavaScript 来操作元素样式的时候，最佳方法是操作 CSS 的 `className`：
+
+```javascript
+element.className = 'className';    // 原生方法
+$(element).addClass('className');   // jQuery
+```
+
+CSS 的 `className` 应该成为 CSS 和 JavaScript 之间通信的桥梁。JavaScript 不应当直接操作 CSS 样式，以便保持和 CSS 的松耦合。
+
+### 将 JavaScript 从 HTML 中抽离
+
+禁止在 HTML 标签中嵌入 JavaScript 脚本：
+
+```javascript
+<!-- 不好的写法，不该直接为 HTML 标签的 on 属性挂载事件处理程序 -->
+<button onclick="doSomeThing()" id="btn-action">Click Me</button>
+```
+
+这样会导致 HTML 页面和 JavaScript 脚本紧紧耦合。正确的做法应当是在外部脚本文件中添加事件处理程序：
+
+```javascript
+var doSomeThing() {  }
+
+document.getElementById('btn-action')
+            .addEventListener("click", doSomeThing, false);    // DOM 2级添加事件
+$('#btn-action').click(doSomeThing);    // jQuery
+```
+
+这种做法的优势在于，函数 `doSomeThing()` 的定义和事件处理程序的绑定都是在同一个文件中完成的。如果函数名称需要修改，则只需修改一个文件即可；如果点击发生时想额外做一些动作，也只需在一处做修改。
+
+此外，不到迫不得已，不建议在 HTML 页面中嵌入 JavaScript 脚本：
+
+```javascript
+<!--  不好的做法 -->
+<script>
+    doSomeThing();
+</script>
+```
+
+### 将 HTML 从 JavaScript 中抽离
+
+不建议在 JavaScript 脚本文件中嵌入 HTML 操作：
+
+```javascript
+// 不好的做法
+var div = document.getElementById('my-div');
+div.innerHTML = "<h3>Error</h3><p>Invalid e-mail address.</p>";
+```
+
+这样会导致 JavaScript 脚本和 HTML 标签紧紧耦合，从而降低了代码的可维护性，增加了跟踪文本和结构性问题的复杂度。正常来说，调试上述这段标签的典型方法，应当是先去浏览器调试工具中的 DOM 树中查找，然后打开页面的 HTML 源码对比其不同。一旦 JavaScript 脚本文件中做了除简单 DOM 操作之外的事情，如渲染标签，追踪 Bug 就变得很麻烦。因为脚本和标签都耦合成一坨了，让人望而却步。
+
+HTML 文本和标签应该只存放于一个地方：可以控制你 HTML 代码的地方。最为推崇的做法是利用 **JavaScript 模板引擎** 解决这个问题。
+
+项目中我引入了模板引擎 [artTemplate](https://github.com/aui/artTemplate) 进行 HTML 渲染，并通过修改源码内置了两个常用的格式化工具：
+
+* 货币格式化：[accounting.js](http://openexchangerates.github.io/accounting.js/)
+* 日期格式化：datetime.js
 
 详见 DEMO：finance-marketres-mobi\js\utility\util-demo.html
 
