@@ -297,7 +297,61 @@ foo = value;           // 3、直接使用未经声明的变量，即隐式的�
 
 ## 事件处理
 
-* 由于 `click` 事件在移动端浏览器有 300 毫秒的延迟，因此要求使用 zepto.js 的 `tap` 事件替代所有 `click` 事件。
+### 解耦事件处理
+
+事件处理常见的问题是将事件处理程序和业务逻辑紧紧耦合在一起，降低了代码的可维护性：
+
+```javascript
+// 不好的写法
+var handleClick = function(event) {
+    // DOM Level 2
+    event.preventDefault();
+    event.stopPropagation();
+
+    // 耦合业务逻辑
+    var popup = document.getElementById("popup");
+    popup.style.left = event.clientX + "px";
+    popup.style.top = event.clientY + "px";
+    popup.className = "reveal";
+}
+
+document.getElementById('btn-action')
+            .addEventListener("click", handleClick, false);    // DOM Level 2
+```
+
+正确的做法应该是解耦事件处理程序和业务逻辑，提高代码的可维护性：
+
+```javascript
+// 好的写法
+
+    // 事件处理程序，唯一能接触 event 对象的函数
+var handleClick = function(event) {
+        // DOM Level 2
+        event.preventDefault();
+        event.stopPropagation();
+
+        showPopup(event.clientX, event.clientY);
+    },
+    // 抽取业务逻辑，与事件隔离，便于重用与测试
+    showPopup = function(x, y) {
+        var popup = document.getElementById("popup");
+        popup.style.left = x + "px";
+        popup.style.top = y + "px";
+        popup.className = "reveal";
+    }
+
+document.getElementById('btn-action')
+            .addEventListener("click", handleClick, false);    // DOM Level 2
+```
+
+可见，业务逻辑不应该依赖于 `event` 对象来完成功能，原因如下：
+
+* 好的 API 一定是对于期望和依赖都是透明的，因此方法接口应该表明哪些数据是必要的。将 `event` 对象作为参数并不能告诉你 `event` 的哪些属性是有用的，用来干什么？
+* 如果想测试这个方法，你必须构建一个 `event` 对象并作为参数传入。这迫使你关注方法内部实现，以确切地知道这个方法使用了哪些信息，这样才能正确地写出测试代码。
+
+### tap 事件
+
+由于 `click` 事件在移动端浏览器有 300 毫秒的延迟，因此要求使用 zepto.js 的 `tap` 事件替代所有 `click` 事件。
 
 ## UI 层保持松耦合
 
@@ -360,7 +414,7 @@ CSS 的 `className` 应该成为 CSS 和 JavaScript 之间通信的桥梁。Java
 var doSomeThing() {  }
 
 document.getElementById('btn-action')
-            .addEventListener("click", doSomeThing, false);    // DOM 2级添加事件
+            .addEventListener("click", doSomeThing, false);    // DOM Level 2
 $('#btn-action').click(doSomeThing);    // jQuery
 ```
 
