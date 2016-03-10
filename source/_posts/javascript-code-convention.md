@@ -1,5 +1,5 @@
 title: Javascript 前端开发规范
-date: 2016-03-05 20:03:01
+date: 2016-03-09 22:03:01
 updated:
 tags: JavaScript
 ---
@@ -295,6 +295,106 @@ foo = value;           // 3、直接使用未经声明的变量，即隐式的�
 * ECMAScript 6 可以使用最新的原生模块标准语法；
 * 否则可以使用主流的模块框架规范，如 AMD 和 CMD（[AMD 和 CMD 的区别有哪些？](https://www.zhihu.com/question/20351507/answer/14859415)）。
 
+## 不是你的对象不要动
+
+JavaScript 独一无二之处在于任何东西都不是神圣不可侵犯的。默认情况下，你可以修改任何你可以触及的对象。解析器根本就不在乎这些对象是开发者定义的还是默认执行环境的一部分——只要是能访问到的对象都可以修改。如果你的代码没有创建这些对象，禁止修改它们，包括：
+
+* 原生对象（`Object`、`Array` 等等）；
+* 文档对象模型（DOM）（`document` 等等）；
+* 浏览器对象模型（BOM）（`window` 等等）；
+* 类库的对象（`$`、`jQuery` 等等）。
+
+### 原则
+
+#### 不覆盖方法
+
+覆盖方法将会导致所有依赖该方法的代码失效：
+
+```javascript
+// 不好的写法 - 覆盖了 DOM 方法
+document.getElementById = function() {
+    // 任意代码
+};
+```
+
+#### 不新增方法
+
+新增方法将会导致未来潜在的命名冲突，因为一个对象此刻没有某个方法不代表它未来没有。更糟糕的是如果将来原生的方法和你新增的方法行为不一致，将会陷入一场代码维护的噩梦：
+
+```javascript
+// 不好的写法，在 DOM 对象上增加了方法
+document.getElementsByClassName = function(classes) {
+    // 非原生实现。
+    // 该新增方法在 HTML 5 中被官方实现了，这将会导致所有依赖该方法的代码报错。
+};
+// 不好的写法，在原生对象上增加了方法
+Array.prototype.reverseSort = function() {
+    return this.sort().reverse();
+};
+// 不好的写法，在库对象上增加了方法
+$.doSomeThing = function() {
+    // 任意代码
+};
+```
+
+#### 不删除方法
+
+删除方法将会导致所有依赖该方法的代码运行时错误。对于已发布的库来说，无用的方法应该被标识位“废弃”而不是直接删掉：
+
+```javascript
+// 不好的写法 - 删除了 DOM 方法
+document.getElementById = null;
+```
+
+### 解决办法
+
+下面介绍一些解决方法：
+
+#### 继承
+
+如果一种类型的对象已经做到了你想要的大多数工作，那么继承它然后再新增一些功能是最好的做法。JavaScript 中有两种基本的继承形式：
+
+* 基于对象的继承
+* 基于类型的继承
+
+例如：
+
+```javascript
+var MyError = function(message) {
+    this.message = message;
+};
+
+MyError.prototype = new Error();    // 基于类型的继承，继承自原生的 Error 类
+```
+
+#### 门面模式
+
+JavaScript 的继承有一些很大的限制，就是无法继承自 DOM 或 BOM 对象。解决办法是利用门面模式为这些已存在的对象创建一个新的接口，达到二次封装的效果。jQuery 和 YUI 的 DOM 接口都使用了门面模式。例如：
+
+```javascript
+// 自定义一个 DOM 对象包装器
+var DOMWrapper = function(element) {
+    this.element = element;
+};
+
+DOMWrapper.prototype = {
+    constructor: DOMWrapper,
+    addClass: function(className) {
+        this.element.className += ' ' + className;
+    },
+    remove: function() {
+        this.element.parentNode.removeChild(this.element);
+    }
+};
+
+// 用法
+var wrapper = new DOMWrapper(document.getElementById("my-div"));
+// 添加一个 className
+wrapper.addClass("selected");
+// 删除元素
+wrapper.remove();
+```
+
 ## 事件处理
 
 ### 解耦事件处理
@@ -453,5 +553,6 @@ HTML 文本和标签应该只存放于一个地方：可以控制你 HTML 代码
 # 参考
 
 * 《编写可维护的 JavaScript》
+* 《JavaScript 高级程序设计》
 * 《JavaScript 权威指南》
 * 《JavaScript 语言精粹》
