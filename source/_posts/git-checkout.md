@@ -25,7 +25,7 @@ $ git status
 Changes not staged for commit:
   (use "git add/rm <file>..." to update what will be committed)
   (use "git checkout -- <file>..." to discard changes in working directory)
-  
+
       modified:   /there/is/a/modified/file
 ```
 
@@ -43,6 +43,8 @@ Changes to be committed:
       modified:   /there/is/a/modified/file
 ```
 
+### 先取消暂存修改
+
 Git 提示我们，可以使用 `reset` 命令取消暂存：
 
 ```
@@ -56,9 +58,11 @@ $ git status
 Changes not staged for commit:
   (use "git add/rm <file>..." to update what will be committed)
   (use "git checkout -- <file>..." to discard changes in working directory)
-  
+
       modified:   /there/is/a/modified/file
 ```
+
+### 再撤销本地修改
 
 这时按提示使用 `checkout` 即可：
 
@@ -74,6 +78,8 @@ nothing to commit, working directory clean
 ```
 
 可以看到，结合使用 `reset` 和 `checkout` 命令，可以撤销 index 和 working tree 的修改。
+
+### 一步到位
 
 那么有更便捷的、一步到位的办法吗？有，指定提交即可：
 
@@ -126,10 +132,10 @@ This form copy entries from <tree-ish> to the index for all <paths>. (It does no
 
 与 `checkout` 命令的参数一模一样，区别是什么？
 
-|命令|操作目标|描述|
-|---|---|---|
-|`checkout`|工作目录（working tree）|用于撤销本地修改|
-|`reset`|暂存区（index）|只用于覆盖暂存区|
+| 命令         | 操作目标               | 描述       |
+| ---------- | ------------------ | -------- |
+| `checkout` | 工作目录（working tree） | 用于撤销本地修改 |
+| `reset`    | 暂存区（index）         | 只用于覆盖暂存区 |
 
 因此 `git reset <paths>` 等于 `git add <paths>` 的逆向操作。
 

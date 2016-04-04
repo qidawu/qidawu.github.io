@@ -8,6 +8,8 @@ tags: Git
 
 # 命令方式
 
+## 定制输出格式 1
+
 `git log` 的默认输出格式非常不便于查阅提交历史，使用时可以带上以下三个参数：
 
 ``` bash
@@ -20,20 +22,11 @@ $ git log --graph --oneline --decorate
 *   17ef24c 基准版本
 ```
 
-命令的输出形象地展示了提交历史，包括本地分支比远程分支领先了多少个提交版本。要想进一步筛选出这部分准备 `push` 到远程仓库的提交，可以使用 `..` 参数过滤：
+命令的输出形象地展示了提交历史，包括本地分支比远程分支领先了多少个提交版本。
 
-``` bash
-$ git log --graph --oneline --decorate origin/master..HEAD
-*   e6f4e18 (HEAD, master) Merge branch 'master' of origin
-|  
-*   abfa93b 本地仓库的提交
-```
+## 定制输出格式 2
 
-`..` 是一种双点语法，用于区分出指定分支的提交，一边留空则默认为 `HEAD` 。
-
-## 定制输出格式
-
-如果对输出格式不满意，可以使用 `--pretty` 参数定制输出格式。但由于该参数的选项较多，推荐设置为别名（alias）使用：
+如果对输出格式还不满意，可以使用 `--pretty` 参数定制输出格式。但由于该参数的选项较多，推荐设置为别名（alias）使用：
 
 ``` bash
 $ git config --global alias.lg log --graph --pretty=format:'%Cred%h%Creset - %s %Cgreen(%cr) %C(bold blue)<%an>'
@@ -48,9 +41,22 @@ $ git lg
 
 格式化输出，代码着色，而且附上了作者、提交时间和祖先图谱。
 
-## 搜索提交历史
+## 筛选提交历史
 
-待补充。
+当某个特性分支开发完成之后，我们想要筛选并看清将要合并到主干的是哪些代码，从而理解它们到底做了些什么，是否真的要并入。可以用 `--not` 选项屏蔽 `master` 分支，这样就会剔除重复的提交历史，看起来更清晰：
+
+```bash
+$ git log feature-cache --not origin/master
+```
+
+也可用于筛选出准备 `push` 到远程仓库的提交，例如：
+
+```bash
+$ git log --graph --oneline --decorate HEAD --not origin/master
+*   e6f4e18 (HEAD, master) Merge branch 'master' of origin
+|  
+*   abfa93b 本地仓库的提交
+```
 
 # 图形化方式
 
