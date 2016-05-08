@@ -82,8 +82,8 @@ stylus:
 ## Docs: http://hexo.io/docs/deployment.html
 deploy:
   type: git
-  # repo: https://github.com/cynthia903/cynthia903.github.io
-  # branch: master
-  repo: https://gitcafe.com/cynthia903/cynthia903.git
-  branch: gitcafe-pages
   message: Site updated at {{ now("YYYY-MM-DD HH:mm:ss") }}
+  repo:
+    github: git@github.com:cynthia903/cynthia903.github.io.git,master
+    coding: git@git.coding.net:cynthia903/cynthia903,coding-pages
+    # gitcafe: git@gitcafe.com:cynthia903/cynthia903.git,gitcafe-pages
