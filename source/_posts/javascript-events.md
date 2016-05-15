@@ -6,44 +6,14 @@ tags: JavaScript
 ---
 
 本文目的：
-- 理解事件流
-- 理解并能按需使用各种事件处理程序
+- 按需使用各种事件处理程序
 - 理解事件对象
-- 理解事件委托
-- 了解不同的事件类型
+- 理解事件流
+- 理解事件绑定和事件委托的区别
 
-# 事件流
+# 事件绑定
 
-事件流描述的是从页面中接收事件的顺序。但有意思的是，IE 和 Netscape 开发团队居然提出了差不多是 **完全相反** 的事件流概念。下面以一个 HTML 页面为例，演示不同浏览器下的事件流：
-
-```html
-<!DOCTYPE html>
-<html>
-<body>
-    <div id="myDiv">Click Me</div>
-</body>
-</html>
-```
-
-## 事件冒泡
-
-IE 的事件流叫做“**事件冒泡（Event Bubbling）**”，即事件开始时由最具体的元素（文档中嵌套层次最深的那个节点）先接收，然后逐级向上传播到较为不具体的节点（文档）。
-
-如果点击了 HTML 页面中的 `<div>` 元素， `click` 事件会按照如下顺序传播：
-
-
-
-## 事件捕获
-
-Netscape 的事件流叫做“**事件捕获（Event Capturing）**”，即事件开始时由不太具体的节点先接收，而最具体的节点应该最后接收。
-
-如果点击了 HTML 页面中的 `<div>` 元素， `click` 事件会按照如下顺序传播：
-
-
-
-# 事件处理程序
-
-事件就是用户或浏览器自身执行的某种动作，例如 `onclick` 、 `onload` ，都是事件的名字。而响应某个事件的函数就叫做 **事件处理程序（Event Handlers）**。为事件指定处理程序的方式有以下几种：
+事件是用户或浏览器自身执行的某种动作，例如 `onclick` 、 `onload` ，都是事件的名字。而响应某个事件的函数就叫做 **事件处理程序（Event Handlers）**。为事件绑定处理程序的方式有以下几种：
 
 ## HTML
 
@@ -81,7 +51,7 @@ function onclick(event) {
 }
 ```
 
-优点：简单、粗暴，兼容性好。
+优点：简单、粗暴，浏览器兼容性好。
 
 缺点：
 
@@ -90,7 +60,7 @@ function onclick(event) {
 
 - HTML 与 JavaScript 代码紧密耦合。如果要重命名事件处理程序，就要改动两个地方，容易改漏、改错。
 
-## DOM 0级
+## DOM Level 0
 
 做法：首先获取目标 HTML 元素的引用，然后将一个事件处理程序赋值给其指定的事件属性：
 
@@ -98,9 +68,9 @@ function onclick(event) {
 <input type="button" id='btn' value="Click Me" />
 
 <script type="text/javascript">
-    var btn = document.getElementById('myDiv');
+    var btn = document.getElementById('btn');
 
-    // 添加事件处理程序
+    // 绑定事件处理程序
     btn.onclick = function() {
         alert('Clicked');
         alert(this.id);    // 输出“myDiv” —— this 指向事件的目标元素
@@ -127,21 +97,178 @@ function onclick(event) {
 
 优点：
 
-- 传统、常用、兼容性好。
+- 传统、常用、浏览器兼容性好。
 - 解决了 HTML 事件处理程序的两个缺点。
 
 缺点：一个事件只能绑定唯一一个事件处理程序。
 
-## DOM 2级
+## DOM Level 2
+
+做法：
+
+```javascript
+<input type="button" id='btn' value="Click Me" />
+
+<script type="text/javascript">
+    var btn = document.getElementById('btn'),
+        showMessage = function() {
+            alert('Clicked');
+            alert(this.id);    // 输出“myDiv” —— this 指向事件的目标元素
+        };
+
+    // 绑定事件处理程序。false 表示在“冒泡阶段”和“目标阶段”触发
+    btn.addEventListener('click', showMessage, false);
+
+    // 删除事件处理程序。注意，匿名函数无法移除
+    btn.removeEventListener('click', showMessage, false);
+</script>
+```
+
+优点：一个事件可以绑定多个事件处理程序，以绑定的顺序执行。
+
+缺点：浏览器兼容性差，IE8 及以下版本不支持。
 
 ## IE
 
-## 跨浏览器
+IE 实现了与 DOM 2 级类似的两个方法：
 
+```javascript
+<input type="button" id='btn' value="Click Me" />
 
+<script type="text/javascript">
+    var btn = document.getElementById('btn'),
+        showMessage = function() {
+            alert('Clicked');
+            alert(this === window);    // 输出“true” —— 注意 this 指向 window
+        };
+
+    // 绑定事件处理程序。仅在“冒泡阶段”和“目标阶段”触发
+    btn.attachEvent('onclick', showMessage);
+
+    // 删除事件处理程序。注意，匿名函数无法移除
+    btn.detachEvent('onclick', showMessage);
+</script>
+```
+
+优点：一个事件可以绑定多个事件处理程序，以绑定的顺序 **逆序** 执行。
+
+缺点：浏览器兼容性差，仅支持 IE 及 Opera。
+
+## Cross-Browser
+
+鉴于上述几种方式的各有优劣，为了以跨浏览器的方式处理事件，可以定义自己的  `EventUtil`：
+
+```javascript
+var EventUtil = {
+
+    addHandler: function(element, type, handler){
+        if (element.addEventListener){
+            element.addEventListener(type, handler, false);
+        } else if (element.attachEvent){
+            element.attachEvent(“on” + type, handler);
+        } else {
+            element[“on” + type] = handler;
+        }
+    },
+
+    removeHandler: function(element, type, handler){
+        if (element.removeEventListener){
+            element.removeEventListener(type, handler, false);
+        } else if (element.detachEvent){
+            element.detachEvent(“on” + type, handler);
+        } else {
+            element[“on” + type] = null;
+        }
+    }
+
+};
+```
 
 # 事件对象
 
+在触发 DOM 上的某个事件时，会产生一个事件对象 `event` ，这个对象中包含着所有与事件有关的信息。尽管触发的事件类型不同，可用属性和方法也会不同，但是所有事件都会包含下列常用成员：
+
+| DOM Level 2         | Type     | IE             | Type    | Description                              |
+| ------------------- | -------- | -------------- | ------- | ---------------------------------------- |
+| `type`              | String   | `type`         | String  | 被触发的事件类型                                 |
+| `eventPhase`        | Integer  | -              | -       | 调用事件处理程序的所处阶段：`1` 表示捕获阶段，`2` 表示“处于目标”，`3` 表示冒泡阶段 |
+| `target`            | Element  | `srcElement`   | Element | 事件的目标元素                                  |
+| `currentTarget`     | Element  | -              | -       | 当前正在处理事件的元素。如果事件处于目标元素，则 `this === currentTarget === target` |
+| `stopPropagation()` | Function | `cancelBubble` | Boolean | 取消事件的进一步捕获或冒泡                            |
+| `preventDefault()`  | Function | `returnValue`  | Boolean | 取消事件的默认行为                                |
+
+# 事件流
+
+事件流描述的是从页面中接收事件的顺序。但有意思的是，历史上 IE 和 Netscape 开发团队居然提出了 **完全相反** 的事件流概念 —— IE 使用“**事件冒泡（Event Bubbling）**”、Netscape 使用“**事件捕获（Event Capturing）**”。下图演示了这两种事件流的区别：
+
+![事件流（Event Flow）](/img/javascript/event-flow.png)
+
+[DOM Level 2 事件处理程序](/2016/05/08/javascript-events/#DOM-Level-2) 规定的事件流，共包含三个阶段（运行效果如上图从 1 到 10）：
+
+1. 事件捕获阶段，可用于事件截获
+2. 处于目标阶段
+3. 事件冒泡阶段，可用于[事件委托（Event Delegation）]()
+
+下面这段代码演示了 DOM Level 2 的整个事件流：
+
+```html
+<!DOCTYPE html>
+<html>
+<body>
+<input type="button" id='btn' value="Click Me" />
+
+<script type="text/javascript">
+
+    // 仅在“事件捕获阶段”和“处于目标阶段”触发
+    document.body.addEventListener('click', function(event){
+        alert(event.eventPhase + ' body');
+    }, true);
+  
+    // 仅在“事件冒泡阶段”和“处于目标阶段”触发
+    document.getElementById('btn').addEventListener('click', function(event){
+        alert(event.eventPhase + ' input');
+    }, false);
+
+    // 仅在“事件冒泡阶段”和“处于目标阶段”触发
+    document.addEventListener('click', function(event){
+        alert(event.eventPhase + ' document');
+    }, false);
+
+</script>
+</body>
+</html>
+```
+
+点击 `input` 按钮，将依次输出：
+
+```
+1 body
+2 input
+3 document
+```
+
 # 事件委托
 
-# 事件类型
+Web 开发过程中常会遇到这两类问题：
+
+1. 如果页面中绑定了大量的事件处理程序（例如为每个按钮都添加一个 `onclick` 事件处理程序），将直接影响页面的整体运行性能，因为：
+    1. 函数即对象，对象越多，越占用内存，性能就越差。
+    2. 事件绑定前，必须先找到指定的 DOM 元素。而 DOM 元素查找次数越多，页面的交互就绪时间就越长。
+2. 如果页面中的元素是动态生成的，将要再次绑定事件处理程序，例如：
+
+```javascript
+var links = document.getElementsByTagName('a'),
+        showMessage = function(event) {
+            event.preventDefault();    // 预期是阻止页面中所有 A 链接的默认事件——不进行跳转
+            console.log(event.target.href);
+        };
+for (var i = 0; i < links.length; i++) {
+    links[i].addEventListener('click', showMessage, false);
+}
+
+var newLink = document.createElement("a");
+newLink.innerHTML = 'Click Me';
+newLink.href = 'http://localhost';
+document.body.appendChild(newLink);    // 实际是添加元素后，该元素的行为依然我行我素
+```
+
