@@ -1,15 +1,14 @@
 ---
-title: JavaScript 事件总结
+title: JavaScript 事件绑定机制
 date: 2016-05-08 17:53:54
 updated:
 tags: JavaScript
 ---
 
 本文目的：
-- 按需使用各种事件处理程序
+- 理解并能按需使用各种事件绑定 API
 - 理解事件对象
 - 理解事件流
-- 理解事件绑定和事件委托的区别
 
 # 事件绑定
 
@@ -104,7 +103,7 @@ function onclick(event) {
 
 ## DOM Level 2
 
-做法：
+做法：目前最主流的写法，可以支持事件冒泡或捕获：
 
 ```javascript
 <input type="button" id='btn' value="Click Me" />
@@ -130,7 +129,7 @@ function onclick(event) {
 
 ## IE
 
-IE 实现了与 DOM 2 级类似的两个方法：
+IE 实现了与 DOM 2 级类似的两个方法，只支持事件冒泡：
 
 ```javascript
 <input type="button" id='btn' value="Click Me" />
@@ -199,15 +198,24 @@ var EventUtil = {
 
 # 事件流
 
-事件流描述的是从页面中接收事件的顺序。但有意思的是，历史上 IE 和 Netscape 开发团队居然提出了 **完全相反** 的事件流概念 —— IE 使用“**事件冒泡（Event Bubbling）**”、Netscape 使用“**事件捕获（Event Capturing）**”。下图演示了这两种事件流的区别：
+最后总结下与事件处理程序息息相关的“事件流”。事件流是指从页面中接收事件的顺序。但有意思的是，历史上 IE 和 Netscape 开发团队居然提出了 **完全相反** 的事件流概念 —— IE 使用“**事件冒泡（Event Bubbling）**”、Netscape 使用“**事件捕获（Event Capturing）**”。下图演示了这两种事件流的区别：
 
 ![事件流（Event Flow）](/img/javascript/event-flow.png)
 
-[DOM Level 2 事件处理程序](/2016/05/08/javascript-events/#DOM-Level-2) 规定的事件流，共包含三个阶段（运行效果如上图从 1 到 10）：
+下表列出了四种事件绑定所使用的事件流模型：
+
+|             | 事件冒泡 or 事件捕获？      |
+| ----------- | ------------------ |
+| HTML        | 取决于 IE or Netscape |
+| DOM Level 0 | 取决于 IE or Netscape |
+| DOM Level 2 | 事件冒泡 + 事件捕获        |
+| IE          | 事件冒泡               |
+
+下面重点讲解 DOM Level 2 事件处理程序所规定的事件流，其共包含三个阶段（其运行效果如上图从 1 到 10）：
 
 1. 事件捕获阶段，可用于事件截获
 2. 处于目标阶段
-3. 事件冒泡阶段，可用于[事件委托（Event Delegation）]()
+3. 事件冒泡阶段，可用于[事件委托（Event Delegation）](/2016/05/22/javascript-event-delegation)
 
 下面这段代码演示了 DOM Level 2 的整个事件流：
 
@@ -247,28 +255,8 @@ var EventUtil = {
 3 document
 ```
 
-# 事件委托
+可见，DOM Level 2 是同时支持事件冒泡 + 事件捕获的。
 
-Web 开发过程中常会遇到这两类问题：
+# 参考
 
-1. 如果页面中绑定了大量的事件处理程序（例如为每个按钮都添加一个 `onclick` 事件处理程序），将直接影响页面的整体运行性能，因为：
-    1. 函数即对象，对象越多，越占用内存，性能就越差。
-    2. 事件绑定前，必须先找到指定的 DOM 元素。而 DOM 元素查找次数越多，页面的交互就绪时间就越长。
-2. 如果页面中的元素是动态生成的，将要再次绑定事件处理程序，例如：
-
-```javascript
-var links = document.getElementsByTagName('a'),
-        showMessage = function(event) {
-            event.preventDefault();    // 预期是阻止页面中所有 A 链接的默认事件——不进行跳转
-            console.log(event.target.href);
-        };
-for (var i = 0; i < links.length; i++) {
-    links[i].addEventListener('click', showMessage, false);
-}
-
-var newLink = document.createElement("a");
-newLink.innerHTML = 'Click Me';
-newLink.href = 'http://localhost';
-document.body.appendChild(newLink);    // 实际是添加元素后，该元素的行为依然我行我素
-```
-
+- 《JavaScript 高级程序设计》
