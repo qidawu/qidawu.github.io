@@ -22,7 +22,7 @@ tags: JavaScript
 
 # 核心（ECMAScript）
 
-以网景的 Netscape Navigator 内置的 JavaScript 1.1 为蓝本，由 ECMA-262 定义的 ECMAScript 是一种与 Web 浏览器没有依赖关系的脚本语言标准，它由下列基础部分组成：
+以网景的 Netscape Navigator 内置的 JavaScript 1.1 为蓝本，由 ECMA-262 定义的 ECMAScript 是一种 **与 Web 浏览器没有依赖关系** 的脚本语言标准，它由下列基础部分组成：
 
 * 语法（Syntax）
 * 类型（Types）
@@ -32,14 +32,15 @@ tags: JavaScript
 * 操作符（Operators）
 * 对象（Objects）
 
-ECMA-262 定义的只是这门语言的基础，而在此基础之上，**宿主环境（host environment）** 可以构建更完善的脚本语言。
-
 ## 宿主环境
 
-例如我们常见的 Web 浏览器就是 ECMAScript 实现中可能的宿主环境之一。宿主环境不仅提供基本的 ECMAScript 实现，同时也会提供该语言的扩展，以便语言与环境之间对接交互。而这些扩展——如 DOM，则利用 ECMAScript 的核心类型（Types）和语法（Syntax）提供更多更具体的功能，以便实现针对环境的操作。其它宿主环境还包括：
+ECMA-262 定义的只是这门语言的基础部分，而在此基础之上，**宿主环境（host environment）** 可以构建更完善的脚本语言。常见的宿主环境有：
 
-* Node.js（一种服务端 JavaScript 平台）
+* Web Broswer
+* Node.js
 * Adobe Flash
+
+以我们最常见的 Web Broswer 为例，不仅提供了基本的 ECMAScript 实现，同时还提供了该语言的扩展，以便语言与环境之间对接交互。而这些扩展——如 DOM，则利用 ECMAScript 的核心类型（Types）和语法（Syntax）提供更多更具体的功能，以便实现针对环境的操作。
 
 ## 版本
 
