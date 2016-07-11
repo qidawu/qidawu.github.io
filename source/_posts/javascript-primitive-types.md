@@ -37,6 +37,9 @@ String 类型用于表示 16 位 Unicode 字符组成的字符序列，即字符
 这些转换规则对于理解流控制语句（如 `if` 语句）、布尔操作符（`!`、`&&`、`||`）自动执行相应的 Boolean 转换非常重要，例如：
 
 ```javascript
+if('false') {console.log('true')}
+true    // 输出 true，因为进行了自动类型转换
+
 window.hello;    // undefined，因为该成员属性不存在
 var foo = window.hello || 'unknown';    // 布尔操作符 || 可以用来填充默认值
 foo;    // 值为 'unknown'
@@ -102,19 +105,28 @@ var floatNum2 = 10.0;  // 浮点数值本身表示整数——解析为 10
 var num1 = parseInt('  70');       // 70（忽略字符串前面的空格，直至找到第一个非空格字符）
 var num2 = parseInt('blue');       // NaN（如果第一个字符不是数字字符或者负号，返回 NaN）
 var num3 = parseInt("");           // NaN（转换空字符串，也返回 NaN）
-var num4 = parseInt("1234blue");   // 1234（解析直至遇到一个非数字字符）var num5 = parseInt(22.5);         // 22（小数点并不是有效的数字字符）```
+var num4 = parseInt("1234blue");   // 1234（解析直至遇到一个非数字字符）
+var num5 = parseInt(22.5);         // 22（小数点并不是有效的数字字符）
+```
 
 如果字符串中的第一个字符是数字字符，`parseInt()` 也能够识别出各种整数格式：
 
 ```javascript
-var num6 = parseInt("70");         // 70(十进制数)var num5 = parseInt("070");        // 存在分歧，ECMAScript 3 认为是 56 (八进制),ECMAScript 5 认为是 70 (十进制)var num3 = parseInt("0xA");        // 10(十六进制数)
+var num6 = parseInt("70");         // 70(十进制数)
+var num5 = parseInt("070");        // 存在分歧，ECMAScript 3 认为是 56 (八进制),ECMAScript 5 认为是 70 (十进制)
+var num3 = parseInt("0xA");        // 10(十六进制数)
 ```
 
 为了消除在使用 `parseInt()` 函数时可能导致的上述困惑，可以为这个函数提供第二个参数：转换时使用的基数（即多少进制）：
 
 ```javascript
-var num1 = parseInt("10", 2);    // 2 (按二进制解析)var num2 = parseInt("10", 8);    // 8 (按八进制解析)var num3 = parseInt("10", 10);   // 10 (按十进制解析)var num4 = parseInt("10", 16);   // 16 (按十六进制解析)```
-多数情况下，我们要解析的都是十进制数值，因此始终将 10 作为第二个参数是非常必要的。
+var num1 = parseInt("10", 2);    // 2 (按二进制解析)
+var num2 = parseInt("10", 8);    // 8 (按八进制解析)
+var num3 = parseInt("10", 10);   // 10 (按十进制解析)
+var num4 = parseInt("10", 16);   // 16 (按十六进制解析)
+```
+
+多数情况下，我们要解析的都是十进制数值，因此始终将 10 作为第二个参数是非常必要的。
 
 # 基本包装类型
 
