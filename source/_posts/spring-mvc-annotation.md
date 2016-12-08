@@ -93,6 +93,27 @@ public void go(HttpEntity<String> httpEntity) {
 * 方法参数写了 `@RequestParam`，默认的 `required` 为 `true`
 * 方法参数同时写了 `@RequestParam` + `defaultValue`，默认的 `required` 为 `false`
 
+例子：
+
+```
+POST /test HTTP/1.1
+Host: localhost:8080
+Content-Type: application/x-www-form-urlencoded
+
+data=123,234
+```
+
+```
+GET /test?data=123,234 HTTP/1.1
+Host: localhost:8080
+```
+
+```java
+@RequestMapping("/test")
+public void test(@RequestParam("data") ArrayList<String> data) {
+}
+```
+
 ### @RequestHeader
 
 [`@RequestHeader`](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestHeader.html) 用于标注某个方法参数与某个 *HTTP 请求头（HTTP request header）* 的绑定关系。
@@ -100,6 +121,22 @@ public void go(HttpEntity<String> httpEntity) {
 ### @RequestBody
 
 [`@RequestBody`](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestBody.html) 用于标注某个方法参数与某个 *HTTP 请求体（HTTP request body）* 的绑定关系。 `@RequestBody` 会调用合适的 [message converters](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/http/converter/HttpMessageConverter.html) 将 *HTTP 请求体（HTTP request body）* 写入指定对象。
+
+例子：
+
+```
+POST /test HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+
+["123", "234"]
+```
+
+```java
+@RequestMapping("/test")
+public void test(@RequestBody List<String> data) {
+}
+```
 
 ### @CookieValue
 
