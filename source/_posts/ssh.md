@@ -65,33 +65,83 @@ Linux 系统中，这些文件分别存放在以下位置：
 
 公私钥创建与添加流程：
 
-1. 创建一对公私钥：
+一、创建一对公私钥：
 
 ```bash
-ssh-keygen -t rsa -C who@where
+$ ssh-keygen -t rsa -C who@where
 询问密码时，保持为空并回车
 ```
 
-2. 将私钥添加到 SSH 认证代理程序 `ssh-agent` ：
+二、启动 SSH 认证代理程序：
 
 ```bash
-ssh-add ~/.ssh/id_rsa
+$ eval `ssh-agent`
+Agent pid 1760
 ```
 
-3. 将公钥上传到服务端，添加到**被登录帐户**的**可信列表文件**：
+三、添加私钥：
 
 ```bash
-scp ~/.ssh/id_rsa.pub who@where:~/.ssh/authorized_keys
+$ ssh-add ~/.ssh/id_rsa
+Identity added: ~/.ssh/id_rsa
+$ ssh-add -l
+2048 8a:63:12:ae:b1:4c:be:03:e7:7f:92:3e:e5:44:56:bb ~/.ssh/id_rsa (RSA)
 ```
 
-4. 修改服务端文件权限：
+四、将公钥上传到服务端，添加到**被登录帐户**的**可信列表文件**：
 
 ```bash
-chmod 700 ~/.ssh
-chmod 600 ~/.ssh/*
+$ scp ~/.ssh/id_rsa.pub who@where:~/.ssh/authorized_keys
+```
+
+五、修改服务端文件权限：
+
+```bash
+$ chmod 700 ~/.ssh
+$ chmod 600 ~/.ssh/*
 ```
 
 之后再使用 `ssh` 登录时，客户端的 `ssh-agent` 会发送私钥去和服务端上的公钥做匹配，如果匹配成功就可以免密登录了。
+
+# 常用命令
+
+## ssh-add
+
+```bash
+$ ssh-add -D
+All identities removed.
+
+$ ssh-add -l
+The agent has no identities.
+
+$ ssh-add -h
+ssh-add: unknown option -- h
+usage: ssh-add [options] [file ...]
+Options:
+  -l          List fingerprints of all identities.
+  -E hash     Specify hash algorithm used for fingerprints.
+  -L          List public key parameters of all identities.
+  -k          Load only keys and not certificates.
+  -c          Require confirmation to sign using identities
+  -t life     Set lifetime (in seconds) when adding identities.
+  -d          Delete identity.
+  -D          Delete all identities.
+  -x          Lock agent.
+  -X          Unlock agent.
+  -s pkcs11   Add keys from PKCS#11 provider.
+  -e pkcs11   Remove keys provided by PKCS#11 provider.
+
+```
+
+参考：http://linux.101hacks.com/unix/ssh-add/
+
+## scp
+
+```bash
+-r 递归复制（用以传输文件夹）
+-p 传输时保留文件权限及时间戳
+-C 传输时进行数据压缩
+```
 
 # 参考
 
