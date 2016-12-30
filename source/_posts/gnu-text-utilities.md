@@ -94,25 +94,40 @@ wc [选项] [文本文件]
 
 ## tr
 
-`tr` 命令用于替换指定的字符（注意不接收文件参数），其命令格式如下：
+`tr` 命令用于替换或删除指定的字符（注意不接收文件参数），其命令格式如下：
 
-```
+```bash
 tr [options] string1 string2
 ```
 
 可用于将小写转换成大写：
 
-```
-$ echo abcdef | tr 'a-z' 'A-Z'
+```bash
+$ echo 'abcdef' | tr 'a-z' 'A-Z'
 ABCDEF
 ```
 
-也可用于删除指定的字符：
+ `-d` 参数可用于删除指定的字符：
 
+```bash
+$ echo 'abcdef' | tr -d 'def'
+abc
 ```
-$ echo abcdef | tr -d abc 
-def
+
+`-s` 参数可用于删除所有重复出现字符序列，只保留第一个；即将重复出现字符串压缩为一个字符串：
+
+```bash
+$ echo 'abbbbbbbbbc' | tr -s 'b'
+abc
 ```
+
+`-d` 和 `-s` 常用于删除所有换行符 `\n` 和合并空格 `[:space:]`：
+
+```bash
+$ cat logfile | tr -d '\n\t' | tr -s [:space:]
+```
+
+
 
 ## tee
 
