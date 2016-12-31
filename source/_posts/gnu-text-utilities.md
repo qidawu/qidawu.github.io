@@ -13,6 +13,57 @@ GNU/CoreUtils 的 Text utilities 提供了一些便利的文本处理命令，�
 
 下面介绍一些最常用的利用管道进行组合的命令：
 
+## grep
+
+`grep` 命令使用正则表达式以行为单位进行文本搜索（global search regular expression(RE) and print out the line），其命令格式如下：
+
+```
+grep [选项] 'PATTERN' [文本文件]
+```
+
+| 选项                   | 描述            |
+| -------------------- | ------------- |
+| `-c, --count`        | 打印匹配的行数       |
+| `-n, --line-number`  | 打印行号          |
+| `-v, --revert-match` | 反转查找          |
+| `-A , --after`       | 可加数字，表示打印后面n行 |
+| `-B , --before`      | 可加数字，表示打印前面n行 |
+
+## tr
+
+`tr` 命令用于替换或删除指定的字符（注意不接收文件参数），其命令格式如下：
+
+```bash
+tr [options] string1 string2
+```
+
+可用于将小写转换成大写：
+
+```bash
+$ echo 'abcdef' | tr 'a-z' 'A-Z'
+ABCDEF
+```
+
+ `-d` 参数可用于删除指定的字符：
+
+```bash
+$ echo 'abcdef' | tr -d 'def'
+abc
+```
+
+`-s` 参数可用于删除所有重复出现字符序列，只保留第一个；即将重复出现字符串压缩为一个字符串：
+
+```bash
+$ echo 'abbbbbbbbbc' | tr -s 'b'
+abc
+```
+
+`-d` 和 `-s` 常用于删除所有换行符 `\n` 和合并空格 `[:space:]`：
+
+```bash
+$ cat logfile | tr -d '\n\t' | tr -s [:space:]
+```
+
 ## cut
 
 `cut` 命令以行为单位，用于截取某段数据，如字节、字符和字段。其命令格式如下：
@@ -91,43 +142,6 @@ wc [选项] [文本文件]
 | `-l, --lines`           | 只显示行数  |
 | `-w, --words`           | 只显示字数  |
 | `-c, --chars 或 --bytes` | 只显示字节数 |
-
-## tr
-
-`tr` 命令用于替换或删除指定的字符（注意不接收文件参数），其命令格式如下：
-
-```bash
-tr [options] string1 string2
-```
-
-可用于将小写转换成大写：
-
-```bash
-$ echo 'abcdef' | tr 'a-z' 'A-Z'
-ABCDEF
-```
-
- `-d` 参数可用于删除指定的字符：
-
-```bash
-$ echo 'abcdef' | tr -d 'def'
-abc
-```
-
-`-s` 参数可用于删除所有重复出现字符序列，只保留第一个；即将重复出现字符串压缩为一个字符串：
-
-```bash
-$ echo 'abbbbbbbbbc' | tr -s 'b'
-abc
-```
-
-`-d` 和 `-s` 常用于删除所有换行符 `\n` 和合并空格 `[:space:]`：
-
-```bash
-$ cat logfile | tr -d '\n\t' | tr -s [:space:]
-```
-
-
 
 ## tee
 
