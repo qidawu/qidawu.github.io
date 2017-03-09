@@ -53,6 +53,12 @@ $ git branch -d feature-test
 $ git push --delete origin feature-test
 ```
 
+列出远程和本地分支（remote-tracking branches and local branches）确认下：
+
+```bash
+$ git branch -a
+```
+
 # 总结
 
 ## 代码提交指南
