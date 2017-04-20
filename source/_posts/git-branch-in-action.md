@@ -1,7 +1,7 @@
 ---
 title: Git 分支模型实践
 date: 2016-04-05 08:48:24
-updated:
+updated: 2017-04-20 18:48:24
 tags: Git
 ---
 
@@ -9,9 +9,51 @@ tags: Git
 
 # 分支模型实践
 
+## 创建版本分支
+
+首先，项目管理员（Master）从 `master` 分支中创建出版本分支 `release-*` 进行新版本的开发，`*` 为发布日期：
+
+```bash
+$ git checkout -b release-20190101
+
+do something and commit...
+
+$ git push origin release-20190101
+```
+
+### 合并分支
+
+开发完成并发版之后，Master 需要**整理**版本分支并合并回 `master` 分支。
+
+### 标记新版本
+
+Master 标记该新版本，以便后续回顾：
+
+```bash
+$ git tag release-20190101 -m "XX 项目 v1.0 版本"
+$ git push origin release-20190101
+```
+
+注意，在默认情况下，`git push` 并不会把标签（tag）推送到远端仓库上，只有通过显式命令才能分享标签到远端仓库。其命令格式如同推送分支，运行 `git push origin [tagname]` 即可。如果要一次推送所有本地新增的标签上去，可以使用 `--tags` 选项。
+
+### 清理分支
+
+最后是一些清理工作，Master 需要删除已开发完成的版本分支，避免分支越来越多导致不好管理：
+
+```bash
+$ git branch -d release-20190101
+$ git push --delete origin release-20190101
+```
+
+列出所有远程和本地分支确认下：
+
+```bash
+$ git branch -a
+```
+
 ## 创建特性分支
 
-首先，开发人员（Developer）从 `dev` 分支中创建出特性分支：
+首先，开发人员（Developer）从 `master` 分支中创建出特性分支：
 
 ```bash
 $ git checkout -b feature-test
@@ -23,41 +65,11 @@ $ git push origin feature-test
 
 ### 定期合并
 
-由于特性分支可能会跨版本开发，因此需要定期维护：主要的工作就是定期将 `dev` 分支合并（`merge`）进来，保持同步。
+由于特性分支可能会跨版本开发，因此需要定期维护：主要的工作就是定期将 `master` 分支合并进来，保持同步。
 
 ### 决断代码
 
 特性分支开发完成之后，如果想要筛选出将要被合并的提交有哪些，可以参考[这里](/2015/08/04/git-log/#筛选提交历史)。
-
-## 合并特性分支
-
-开发完成后，开发人员（Developer）需要申请将特性分支合并回预发布分支，以便发布新版本。具体做法就是[发起一次合并请求](/2016/04/04/git-permissions/#发起合并请求)即可，项目管理员（Master）在代码审查通过后就会接受该次合并请求。
-
-## 标记新版本
-
-版本发布之后，Master 应该标记该新版本，以便后续回顾：
-
-```bash
-$ git tag v1.0 -m "XX 项目 v1.0 版本"
-$ git push origin v1.0
-```
-
-注意，在默认情况下，`git push` 并不会把标签（tag）推送到远端仓库上，只有通过显式命令才能分享标签到远端仓库。其命令格式如同推送分支，运行 `git push origin [tagname]` 即可。如果要一次推送所有本地新增的标签上去，可以使用 `--tags` 选项。
-
-## 删除特性分支
-
-最后是一些清理工作，Master 需要删除已开发完成的分支，避免分支越来越多导致不好管理：
-
-```bash
-$ git branch -d feature-test
-$ git push --delete origin feature-test
-```
-
-列出远程和本地分支（remote-tracking branches and local branches）确认下：
-
-```bash
-$ git branch -a
-```
 
 # 总结
 
@@ -69,9 +81,8 @@ $ git branch -a
 
 ## 分支管理指南
 
-* 主分支 `master` 、预发布分支 `release-*` 一般不提交代码，只合并代码。
-* 开发人员只需发起合并请求。合并特性代码到预发布分支的操作，由项目管理员负责。
-* 各特性分支要定期将 `dev` 分支合并进来，并在发起合并请求前将预发布分支也合并进来，避免后续处理合并请求时产生冲突，以减轻项目管理员的工作负担。
+* 主分支 `master` 一般不提交代码，只合并代码。
+* 各特性分支要定期将 `master` 分支合并进来，避免后续处理合并请求时产生冲突，以减轻项目管理员的工作负担。
 * 发版之后，项目管理员要记得打 tag 。
 
 # 参考
