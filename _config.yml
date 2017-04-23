@@ -3,18 +3,18 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Cyn's Blog
+title: Qida's Blog
 subtitle: 纸上得来终觉浅，绝知此事要躬行。
 ## subtitle: 先跑起来，再好起来
 description: 学习笔记 知识总结 思考感悟
-author: Cyn
+author: qida
 email: cynthia903@qq.com
 language: zh-CN
 timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://cnblog.me
+url: https://qidawu.github.io/
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
@@ -84,6 +84,6 @@ deploy:
   type: git
   message: Site updated at {{ now("YYYY-MM-DD HH:mm:ss") }}
   repo:
-    github: git@github.com:cynthia903/cynthia903.github.io.git,master
+    github: git@github.com:qidawu/qidawu.github.io.git,master
     coding: git@git.coding.net:cynthia903/cynthia903,coding-pages
     # gitcafe: git@gitcafe.com:cynthia903/cynthia903.git,gitcafe-pages
