@@ -1,7 +1,8 @@
+---
 title: "浅析基于 DNS 解析方式的 GSLB"
 date: 2015-09-30 22:33:55
 updated:
-tags: [DNS, CDN]
+tags: DNS
 ---
 
 GSLB（Global Server Load Balance，全局负载均衡）作为 CDN 系统架构中最核心的部分，负责流量调度。本文站在服务提供方的视角，做一些技术总结。
@@ -10,13 +11,13 @@ GSLB（Global Server Load Balance，全局负载均衡）作为 CDN 系统架构
 
 下表是三种常见的实现方式对比：
 
-|比较项|基于 DNS 解析方式|基于 HTTP 重定向方式|基于 IP 路由方式|
-|---|---|---|---|
-|性能|本地 DNS 服务器和用户终端 DNS 缓存能力使 GSLB 的负载得到有效分担|GSLB 处理压力大，容易成为系统性能的瓶颈|借助 IP 网络设备完成负载均衡，没有单点性能瓶颈|
-|准确度|定位准确度取决于本地 DNS 覆盖范围，用户的**本地 DNS 设置错误会造成定位不准确**|在对用户 IP 地址数据进行有效维护的前提下，定位准确且精度高|就近性调度准确，但对设备健康性等动态信息响应会有延迟|
-|效率|效率约等于 DNS 系统本身处理效率|依靠服务器做处理，对硬件资源的要求高|效率约等于 IP 设备本身效率|
-|扩展性|扩展性和通用性好|扩展性较差，需对各种应用协议进行定制开发|通用性好，但适用范围有限|
-|商用性|在 Web 加速领域使用较多|国内流媒体 CDN 应用较多|尚无商用案例|
+| 比较项  | 基于 DNS 解析方式                              | 基于 HTTP 重定向方式                   | 基于 IP 路由方式                 |
+| ---- | ---------------------------------------- | ------------------------------- | -------------------------- |
+| 性能   | 本地 DNS 服务器和用户终端 DNS 缓存能力使 GSLB 的负载得到有效分担 | GSLB 处理压力大，容易成为系统性能的瓶颈          | 借助 IP 网络设备完成负载均衡，没有单点性能瓶颈  |
+| 准确度  | 定位准确度取决于本地 DNS 覆盖范围，用户的**本地 DNS 设置错误会造成定位不准确** | 在对用户 IP 地址数据进行有效维护的前提下，定位准确且精度高 | 就近性调度准确，但对设备健康性等动态信息响应会有延迟 |
+| 效率   | 效率约等于 DNS 系统本身处理效率                       | 依靠服务器做处理，对硬件资源的要求高              | 效率约等于 IP 设备本身效率            |
+| 扩展性  | 扩展性和通用性好                                 | 扩展性较差，需对各种应用协议进行定制开发            | 通用性好，但适用范围有限               |
+| 商用性  | 在 Web 加速领域使用较多                           | 国内流媒体 CDN 应用较多                  | 尚无商用案例                     |
 
 其中，基于 DNS 解析方式的 GSLB 有两个注意点：
 
@@ -48,13 +49,13 @@ DNS 的查询机制给使用它的互联网应用带来额外的时延，有时�
 
 [ICANN](https://en.wikipedia.org/wiki/ICANN) —— 一个负责 IP 地址分配以及域名管理的机构，与之关联的五个 [RIR](https://en.wikipedia.org/wiki/Regional_Internet_registry) 机构负责替 ICANN 分配与登记部分区域的 IP 地址段：
 
-|RIR|Region|
-|---|---|---|
-|[AFRINIC](http://www.afrinic.net/)|Africa region|
-|[APNIC](http://www.apnic.net/)|Asia and Pacific region|
-|[ARIN](http://www.arin.net/)|Canada, many Caribbean and North Atlantic islands, and the United States|
-|[LACNIC](http://www.lacnic.net/)|Latin America and parts of the Caribbean|
-|[RIPE NCC](http://www.ripe.net/)|Europe, the Middle East and parts of Central Asia|
+| RIR                                | Region                                   |
+| ---------------------------------- | ---------------------------------------- |
+| [AFRINIC](http://www.afrinic.net/) | Africa region                            |
+| [APNIC](http://www.apnic.net/)     | Asia and Pacific region                  |
+| [ARIN](http://www.arin.net/)       | Canada, many Caribbean and North Atlantic islands, and the United States |
+| [LACNIC](http://www.lacnic.net/)   | Latin America and parts of the Caribbean |
+| [RIPE NCC](http://www.ripe.net/)   | Europe, the Middle East and parts of Central Asia |
 
 可见，亚太地区的 IP 地址由 APNIC 分配，访问[这里](https://www.apnic.net/publications/research-and-insights/stats)可以知道在何处得到 IP 地址分配的有用信息。进入 FTP ，阅读 README 以了解该下载哪个文件以及文件的格式。下载 `delegated-apnic-latest` 文件，过滤出分配给中国大陆（CN）的 IP 地址。
 
