@@ -23,11 +23,11 @@ $ git push origin release-20190101
 
 ### 合并分支
 
-开发完成并发版之后，Master 需要**整理**版本分支并合并回 `master` 分支。
+版本开发完毕，Master 需要**整理**版本分支（例如从中挑选出能够发版的提交，剔除掉不能发版的提交），合并回 `master` 分支并进行发版。
 
 ### 标记新版本
 
-Master 标记该新版本，以便后续回顾：
+发版完毕，Master 打 Tag 标记该新版本，以便后续回顾：
 
 ```bash
 $ git tag release-20190101 -m "XX 项目 v1.0 版本"
@@ -38,14 +38,14 @@ $ git push origin release-20190101
 
 ### 清理分支
 
-最后是一些清理工作，Master 需要删除已开发完成的版本分支，避免分支越来越多导致不好管理：
+最后是一些清理工作，Master 需要删除已完成开发的版本分支，避免分支越来越多导致不好管理：
 
 ```bash
 $ git branch -d release-20190101
 $ git push --delete origin release-20190101
 ```
 
-列出所有远程和本地分支确认下：
+最后，列出所有远程和本地分支确认下：
 
 ```bash
 $ git branch -a
