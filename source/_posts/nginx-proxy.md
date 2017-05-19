@@ -33,7 +33,7 @@ http {
 }
 ```
 
-`proxy_pass` 指令用于配置被代理服务器的协议和地址。除了配置单机，还可以配置集群，详见 [Nginx 负载均衡](/2017/05/013/nginx-upstream/) 。
+`proxy_pass` 指令用于配置被代理服务器的协议和地址。除了配置单机，还可以配置集群，详见 [Nginx 负载均衡](/2017/05/13/nginx-upstream/) 。
 
 # 解决代理后的问题
 
@@ -84,7 +84,7 @@ request.getScheme() // 实际的 http 或 https
 request.isSecure() // 对应的 false 或 true
 request.getRemoteAddr() // 用户 IP
 request.getHeader("X-Real-IP") // 用户 IP
-request.getServerName() // cnblog.me
-request.getRequestURL() // http://cnblog.me/index 或 https://cnblog.me/index
+request.getServerName() // example.com
+request.getRequestURL() // 对应的 http://example.com/index 或 https://example.com/index
 response.sendRedirect(...) // 实际的 http 或 https
 ```

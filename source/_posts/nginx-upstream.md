@@ -76,11 +76,13 @@ upstream backend {
 
 `hash` 指令指定集群使用基于**指定 hash 散列键**的负载均衡方法。散列键可以包含文本，变量及其组合。请注意，从集群中添加或删除服务器可能会导致大量键被重新映射到不同的服务器。
 
-解决办法是使用 `consistent` 参数启用  [ketama](http://www.last.fm/user/RJ/journal/2007/04/10/392555/) 一致性 hash 算法。 该算法确保在添加或删除时，只会有少量键被重新映射到不同的服务器。这有助于为缓存服务器实现更高的缓存命中率。
+解决办法是使用 `consistent` 参数启用  [ketama](http://www.last.fm/user/RJ/journal/2007/04/10/392555/) 一致性 hash 算法。 该算法将每个 server 虚拟成 n 个节点，均匀分布到 hash 环上。每次请求，根据配置的参数计算出一个 hash 值，在 hash 环上查找离这个 hash 最近的虚拟节点，对应的 server 作为该次请求的后端服务器。该算法确保在添加或删除服务器时，只会有少量键被重新映射到不同的服务器。这有助于为缓存服务器实现更高的缓存命中率。
 
-## 会话保持
+## sticky cookie
 
-通过 cookie 实现客户端与后端服务器的会话保持，在一定条件下可以保证同一个客户端访问的都是同一个后端服务器。常见配置如下：
+会话保持是负载均衡的一个基本功能，为了确保与某个客户相关的所有应用请求能够由同一台服务器进行处理，我们需要在负载均衡上启用会话保持功能，以确保负载均衡的部署不会影响到正常的业务处理。而基于源地址的会话保持的问题在于，当多个客户是通过代理或地址转换的方式来访问服务器时，由于都分配到同一台服务器上，会导致服务器之间的负载失衡。
+
+通过 cookie 实现客户端与后端服务器的会话保持，在一定条件下可以保证同一个客户端访问的都是同一个后端服务器。使用 Nginx `sticky` 指令，配置如下：
 
 ```
 upstream backend {
@@ -135,24 +137,22 @@ http {
 
 ## $upstream_addr
 
-该模块中很常用的一个变量，用于标识集群中服务器的 IP 和端口。
-
-一般会加入到 Nginx 日志中，用于排查问题来源：
-
-```
-log_format  main  '"$http_x_forwarded_for" - "$upstream_addr" - $remote_user [$time_local] "$request" '
-                  '$status $body_bytes_sent "$http_referer" '
-                  '"$http_user_agent" $remote_addr $request_time_msec'
-```
-
-同时还可以脱敏后加入到响应头中，用于排查问题来源：
+该模块中很常用的一个变量，用于标识集群中服务器的 IP 和端口。一般会加入到 Nginx 日志、同时脱敏后加入到响应头中，用于排查问题来源：
 
 ```
 http {
+
+    ...
+
+    log_format  main  '"$http_x_forwarded_for" - "$upstream_addr" - $remote_user [$time_local] "$request" '
+                  '$status $body_bytes_sent "$http_referer" '
+                  '"$http_user_agent" $remote_addr $request_time_msec'
+    access_log  logs/access.log  main;
+
     map $upstream_addr $short_address {
         ~^\d+\.\d+\.\d+\.(.*) '';
     }
-  
+
     server {
         server_name example.com;
         listen 80;

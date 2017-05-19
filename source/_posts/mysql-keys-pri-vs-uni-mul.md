@@ -27,12 +27,6 @@ $ DESC table_name;
 
 `SHOW INDEX` 可以以列为单位，查看该表索引的具体信息，例如：
 
-* 索引名 `Key_name`
-* 索引唯一性 `Non_unique`
-* 联合索引中的顺序 `Seq_in_index`
-* 列名 `Column_name`
-* 索引类型 `Index_type`
-
 ```
 $ SHOW INDEX FROM table_name;
 
@@ -46,7 +40,17 @@ $ SHOW INDEX FROM table_name;
 +------------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
 ```
 
-`SHOW CREATE TABLE` 可以查看该表的建表语句，留意最后三行：
+各字段含义：
+
+- 索引名 `Key_name`
+- 索引唯一性 `Non_unique`
+- 联合索引中的顺序 `Seq_in_index`
+- 列名 `Column_name`
+- 索引类型 `Index_type`
+
+
+
+`SHOW CREATE TABLE` 可以查看该表的建表语句，留意最后三行如何创建索引：
 
 ```
 SHOW CREATE TABLE table_name;
