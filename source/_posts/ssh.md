@@ -183,6 +183,21 @@ Options:
 -C 传输时进行数据压缩
 ```
 
+### 批量 scp 目录
+
+利用 bash 的 `for` 循环实现批量 `scp` 目录：
+
+```bash
+#!/bin/bash
+
+HOST_IP=('192.168.0.1' '192.168.0.2' '192.168.0.3')
+
+for ip in ${HOST_IP[@]}  
+do  
+	scp -rp /some/files ${ip}:/some/
+done  
+```
+
 # 参考
 
 《[5 Unix / Linux ssh-add Command Examples to Add SSH Key to Agent](http://linux.101hacks.com/unix/ssh-add/)》
