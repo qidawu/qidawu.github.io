@@ -128,10 +128,53 @@ http {
 
 健康检查（Health Check）是保障集群可用性的重要手段，有三种常见的健康检查方法：
 
-* 使用社区版 Nginx 的 `max_fails` 和 `fail_timeout` 指令进行被动式检查，详见：《[nginx中健康检查(health_check)机制深入分析](https://segmentfault.com/a/1190000002446630)》；
+* 使用社区版 Nginx 的 `max_fails` 和 `fail_timeout` 指令进行被动式检查，不推荐使用，详见：《[nginx中健康检查(health_check)机制深入分析](https://segmentfault.com/a/1190000002446630)》；
 * 使用[商业版 Nginx Plus](http://nginx.com/products/) 进行主动式检查，缺点是要收费；
 * 使用 Nginx 第三方模块编译，例如：[nginx_upstream_check_module](https://github.com/yaoweibin/nginx_upstream_check_module) ；
-* 使用 [Tengine](http://tengine.taobao.org/) 内置的[主动式健康检查](http://tengine.taobao.org/document_cn/http_upstream_check_cn.html)功能。
+* 使用 [Tengine](http://tengine.taobao.org/) 内置的[主动式健康检查](http://tengine.taobao.org/document_cn/http_upstream_check_cn.html)功能（该内置模块等同于第 3 点）。
+
+## 主动式健康检查
+
+以 `nginx_upstream_check_module` 第三方模块为例，演示配置如下：
+
+```
+upstream backend1 {
+    check interval=3000 rise=2 fall=5 timeout=1000 type=http;
+    check_keepalive_requests 100;
+    check_http_send "HEAD /m/monitor.html HTTP/1.1\r\nConnection: keep-alive\r\nHost: check.com\r\n\r\n";
+    check_http_expect_alive http_2xx http_3xx;
+}
+```
+
+这段配置表示：
+
+1. `check` 指令配置：每隔 `interval` 毫秒主动发送一个 `http` 健康检查包给后端服务器。请求超时时间为 `timeout` 毫秒。如果连续失败次数达到 `fall_count`，服务器就被认为是 down；如果连续成功次数达到 `rise_count`，服务器就被认为是 up。
+2. `check_keepalive_requests` 指令配置：一个连接发送的请求数。
+3. `check_http_send` 指令配置：请求包的内容（注意，这里必须[配置 `Host` 请求头否则可能报错](https://my.oschina.net/liuleidefeng/blog/786739)）。
+4. `check_http_expect_alive` 指令配置：响应状态码为 `2XX` 和 `3XX` 表示请求成功、服务健康。
+
+查看 Tomcat access.log 如下：
+
+```
+127.0.0.1 - - [06/Jun/2017:21:03:30 +0800] "HEAD /m/monitor.html HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2017:21:03:33 +0800] "HEAD /m/monitor.html HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2017:21:03:36 +0800] "HEAD /m/monitor.html HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2017:21:03:39 +0800] "HEAD /m/monitor.html HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2017:21:03:42 +0800] "HEAD /m/monitor.html HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2017:21:03:45 +0800] "HEAD /m/monitor.html HTTP/1.1" 200 -
+```
+
+此时关闭某台后端服务器，一段时间后再访问，请求会被路由到其它服务器；重启后，该服务器自动加入集群。通过健康状态页面 `/status` 可见：
+
+```
+Nginx http upstream check status
+
+Check upstream server number: 2, generation: 2
+
+Index	Upstream	Name	Status	Rise counts	Fall counts	Check type	Check port
+0	backend1	127.0.0.1:8080	up	4741	0	http	0
+1	backend1	127.0.0.1:8081	down	0	2340	http	0
+```
 
 # 常用变量
 
