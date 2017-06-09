@@ -17,7 +17,7 @@ updated:
 
 # jstat
 
-`jstat` (JVM Statistics Monitoring Tool) 命令用于监控 JVM 的性能统计信息。
+`jstat` (JVM Statistics Monitoring Tool) 命令用于监控当前 JVM 的性能统计信息。
 
 命令格式：
 
@@ -98,6 +98,107 @@ Tomcat 参数调整 JVM 各区：
 | -XX:MaxNewSize  | Heap 新生代的最大值；                            |
 | -XX:PermSize    | Perm 初始值；                                |
 | -XX:MaxPermSize | Perm 最大值；                                |
+
+# jmap
+
+`jmap` (Memory Map) 命令用于查看堆内存。
+
+常用参数：
+
+* `-heap` 查看当前堆内存的配置、各区使用情况，以及 GC 算法。
+
+例如下面通过 `jmap -heap pid` 命令发现了某个服务 O 区内存被占满的问题：
+
+```
+$ jmap -heap 21090
+Attaching to process ID 21090, please wait...
+Debugger attached successfully.
+Server compiler detected.
+JVM version is 24.79-b02
+
+using thread-local object allocation.
+Parallel GC with 4 thread(s)
+
+Heap Configuration:
+   MinHeapFreeRatio = 0
+   MaxHeapFreeRatio = 100
+   MaxHeapSize      = 3145728000 (3000.0MB)
+   NewSize          = 2097152000 (2000.0MB)
+   MaxNewSize       = 2097152000 (2000.0MB)
+   OldSize          = 5439488 (5.1875MB)
+   NewRatio         = 2
+   SurvivorRatio    = 8
+   PermSize         = 268435456 (256.0MB)
+   MaxPermSize      = 268435456 (256.0MB)
+   G1HeapRegionSize = 0 (0.0MB)
+
+Heap Usage:
+PS Young Generation
+Eden Space:
+   capacity = 1762656256 (1681.0MB)
+   used     = 1420607552 (1354.7969360351562MB)
+   free     = 342048704 (326.20306396484375MB)
+   80.59470172725499% used
+From Space:
+   capacity = 138412032 (132.0MB)
+   used     = 0 (0.0MB)
+   free     = 138412032 (132.0MB)
+   0.0% used
+To Space:
+   capacity = 138412032 (132.0MB)
+   used     = 0 (0.0MB)
+   free     = 138412032 (132.0MB)
+   0.0% used
+PS Old Generation
+   capacity = 1048576000 (1000.0MB)
+   used     = 1048403072 (999.8350830078125MB)
+   free     = 172928 (0.1649169921875MB)
+   99.98350830078125% used
+PS Perm Generation
+   capacity = 268435456 (256.0MB)
+   used     = 67917928 (64.7715835571289MB)
+   free     = 200517528 (191.2284164428711MB)
+   25.30139982700348% used
+```
+
+该例子中，`Old Generation` 达到 99.98350830078125% used，O 区内存被占满，接下来通过 `jstack` 继续排查问题。
+
+# jstack
+
+`jstack` 命令用于查看当前线程堆栈信息，根据堆栈信息我们可以定位到具体代码，所以它在 JVM 性能调优中使用得非常多。
+
+``` 
+$ jstack 21090 > /tmp/localfile
+$ less /tmp/localfile
+
+Full thread dump Java HotSpot(TM) 64-Bit Server VM (24.79-b02 mixed mode):
+
+"Attach Listener" daemon prio=10 tid=0x00007f67e03b4800 nid=0x7bb9 waiting on condition [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"catalina-exec-8000" daemon prio=10 tid=0x00007f67ba4a0000 nid=0x795a waiting on condition [0x00007f6558c0a000]
+   java.lang.Thread.State: WAITING (parking)
+	at sun.misc.Unsafe.park(Native Method)
+	- parking to wait for  <0x00000007886ab360> (a java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject)
+	at java.util.concurrent.locks.LockSupport.park(LockSupport.java:186)
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2043)
+	at org.apache.http.pool.PoolEntryFuture.await(PoolEntryFuture.java:139)
+	at org.apache.http.pool.AbstractConnPool.getPoolEntryBlocking(AbstractConnPool.java:307)
+	at org.apache.http.pool.AbstractConnPool.access$000(AbstractConnPool.java:65)
+	at org.apache.http.pool.AbstractConnPool$2.getPoolEntry(AbstractConnPool.java:193)
+	at org.apache.http.pool.AbstractConnPool$2.getPoolEntry(AbstractConnPool.java:186)
+	at org.apache.http.pool.PoolEntryFuture.get(PoolEntryFuture.java:108)
+	at org.apache.http.impl.conn.PoolingClientConnectionManager.leaseConnection(PoolingClientConnectionManager.java:212)
+	at org.apache.http.impl.conn.PoolingClientConnectionManager$1.getConnection(PoolingClientConnectionManager.java:199)
+	at org.apache.http.impl.client.DefaultRequestDirector.execute(DefaultRequestDirector.java:424)
+	at org.apache.http.impl.client.AbstractHttpClient.doExecute(AbstractHttpClient.java:884)
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:82)
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:107)
+	at com.xxx.xxx.xxx.HttpClientService.doPost(HttpClientService.java:103)
+	......
+```
+
+该例子中导出的 `/tmp/localfile` 文件异常大，里面有大量 `java.lang.Thread.State: WAITING (parking)` 状态的线程，导致 O 区内存被占满，根据堆栈可以定位到具体的问题代码，可以初步判断是 HTTP 连接耗尽资源导致的问题。
 
 # 参考
 
