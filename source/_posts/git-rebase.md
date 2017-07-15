@@ -5,7 +5,7 @@ updated:
 tags: Git
 ---
 
-本文介绍一个生僻但推荐使用的命令 `rebase`（衍合）。
+本文介绍一个生僻但相当好用的命令 `rebase`（衍合）。
 
 # 使用场景
 
@@ -15,6 +15,38 @@ tags: Git
 2. 生成干净补丁
 
 ## 整理提交历史
+
+使用 `git rebase [-i | --interactive]` 命令整理分支提交，首先选取整理范围：
+
+```bash
+$ git rebase -i e7ce3f8
+
+  1 pick dc6baf3 本地分支提交的版本
+  2 pick 915fe84 先被推送到远程分支的版本
+  3
+  4 # Rebase 1ff20826..61527529 onto 1ff20826 (2 commands)
+  5 #
+  6 # Commands:
+  7 # p, pick = use commit
+  8 # r, reword = use commit, but edit the commit message
+  9 # e, edit = use commit, but stop for amending
+ 10 # s, squash = use commit, but meld into previous commit
+ 11 # f, fixup = like "squash", but discard this commit's log message
+ 12 # x, exec = run command (the rest of the line) using shell
+ 13 # d, drop = remove commit
+ 14 #
+ 15 # These lines can be re-ordered; they are executed from top to bottom.
+ 16 #
+ 17 # If you remove a line here THAT COMMIT WILL BE LOST.
+ 18 #
+ 19 # However, if you remove everything, the rebase will be aborted.
+ 20 #
+ 21 # Note that empty commits are commented out
+```
+
+可见，我们可以选取、编辑、合并、丢弃指定提交。
+
+## 整理提交历史2
 
 开发过程中，常常需要定期将最新的远程分支拉取（`pull`）到本地分支，保持本地代码最新（up to date）。如果拉取频繁，`pull` 默认的 `merge` 行为会造成祖先图谱（ancestry graph）无谓的复杂：
 
@@ -63,7 +95,7 @@ $ git config branch.master.rebase true
 
 ### 命令原理
 
- 下面进一步介绍`rebase` 命令的原理: 
+ 下面进一步介绍 `rebase` 命令的原理：
 
 1. 把本地分支从上一次 `pull` 之后的变更暂存起来；
 2. 恢复到上一次 `pull` 时的情况；
