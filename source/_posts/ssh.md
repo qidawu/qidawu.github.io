@@ -252,12 +252,12 @@ for ip in ${HOST_IP[@]}
   done
 ```
 
-进行如下文件操作：
+进行如下文件操作测试：
 
 * 新增文件：web-banner-20170717.jpg
 * 删除文件：web-banner-20170716.jpg
 
-从输出可见，只会同步增量文件列表：
+从输出可见，只会增量同步并删除指定的文件：
 
 ```
 sending incremental file list
