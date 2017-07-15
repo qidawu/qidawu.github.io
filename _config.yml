@@ -85,5 +85,5 @@ deploy:
   message: Site updated at {{ now("YYYY-MM-DD HH:mm:ss") }}
   repo:
     github: git@github.com:qidawu/qidawu.github.io.git,master
-    coding: git@git.coding.net:qidawu/qidawu.coding.me.git,master
+    # coding: git@git.coding.net:qidawu/qidawu.coding.me.git,master
     # gitcafe: git@gitcafe.com:cynthia903/cynthia903.git,gitcafe-pages
