@@ -115,7 +115,7 @@ $ chmod 600 ~/.ssh/*
 ssh 远程时，通常命令如下：
 
 ```bash
-$ ssh -p port user@hostname
+$ ssh [-p port] [user@]hostname [command]
 ```
 
 参数繁琐，一旦服务器较多，要一个个记住并且敲入时非常低效。
@@ -145,7 +145,35 @@ $ ssh 别名
 
 # 常用命令
 
+## ssh
+
+命令用法：
+
+```bash
+$ ssh [-p port] [user@]hostname [command]
+```
+
+`ssh` 命令执行时，会从下列来源中按序获取配置参数：
+
+1. 命令行参数
+2. 用户配置文件 `~/.ssh/config`
+3. 系统配置文件 `/etc/ssh/ssh_config`
+
+最先获取到的参数值将被优先使用。
+
+
+
+例如：
+
+```bash
+$ ssh pc2 /sbin/ifconfig
+```
+
+`pc2` 是从 `~/.ssh/config` 中获取的 hostname 别名。
+
 ## ssh-add
+
+命令常见用法：
 
 ```bash
 $ ssh-add -D
@@ -170,12 +198,13 @@ Options:
   -X          Unlock agent.
   -s pkcs11   Add keys from PKCS#11 provider.
   -e pkcs11   Remove keys provided by PKCS#11 provider.
-
 ```
 
 参考：http://linux.101hacks.com/unix/ssh-add/
 
 ## scp
+
+命令常用参数：
 
 ```bash
 -r 递归复制（用以传输文件夹）
@@ -183,7 +212,7 @@ Options:
 -C 传输时进行数据压缩
 ```
 
-### 批量 scp 目录
+### 批量 scp
 
 利用 bash 的 `for` 循环实现批量 `scp` 目录：
 
@@ -193,11 +222,52 @@ Options:
 HOST_IP=('192.168.0.1' '192.168.0.2' '192.168.0.3')
 
 for ip in ${HOST_IP[@]}  
-do  
-	scp -rp /some/files ${ip}:/some/
-done  
+  do
+    scp -rp /some/files ${ip}:/some/
+  done
+```
+
+## rsync
+
+批量 `scp` 的缺点是会全量同步，且删除行为无法同步，可以用 `rsync` 命令优化：
+
+```bash
+拉取：
+$ rsync [option...] [user@]host:src... [dest]
+
+推送：
+$ rsync [option...] src... [user@]host:dest
+```
+
+### 批量 rsync
+
+```bash
+#!/bin/bash
+
+HOST_IP=('192.168.0.1' '192.168.0.2' '192.168.0.3')
+
+for ip in ${HOST_IP[@]}
+  do
+    rsync -avH --delete /some/* ${ip}:/some/
+  done
+```
+
+进行如下文件操作：
+
+* 新增文件：web-banner-20170717.jpg
+* 删除文件：web-banner-20170716.jpg
+
+从输出可见，只会同步增量文件列表：
+
+```
+sending incremental file list
+resmarket/static/site/v1/img/banner/
+resmarket/static/site/v1/img/banner/web-banner-20170717.jpg
+deleting resmarket/static/site/v1/img/banner/web-banner-20170716.jpg
 ```
 
 # 参考
 
 《[5 Unix / Linux ssh-add Command Examples to Add SSH Key to Agent](http://linux.101hacks.com/unix/ssh-add/)》
+
+[《rsync同步的艺术》–linux命令五分钟系列之四十二](http://roclinux.cn/?p=2643)
