@@ -66,11 +66,6 @@ $ jstat -gcutil -h6 21891 250 7
 
  `-gcutil` 选项每列说明：
 
-![JVM 堆内存布局](/img/java/jvm_space.jpg)
-
-堆内存（Heap） = 年轻代 + 年老代 + 永久代
-年轻代 = Eden 区 + 两个 Survivor 区（From 和 To）
-
 | 列名   | 描述                                  |
 | ---- | ----------------------------------- |
 | S0   | Heap 上的 Survivor space 0 区（单位**%**） |
@@ -160,6 +155,14 @@ PS Perm Generation
    free     = 200517528 (191.2284164428711MB)
    25.30139982700348% used
 ```
+
+各区描述如下：
+
+![JVM 堆内存布局](/img/java/jvm_space.jpg)
+
+堆内存 = 新生代（Eden 区 + 两个 Survivor 区（From、To）） + 老年代 + 永久代
+
+Heap = Young Generation(Eden Space + From Space + To Space) + Old Generation + Perm Generation
 
 该例子中，`Old Generation` 达到 99.98350830078125% used，O 区内存被占满，接下来通过 `jstack` 继续排查问题。
 
