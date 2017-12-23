@@ -37,3 +37,24 @@ origin  git@git.kd.ssj:finance-web/finance-market.git (fetch)
 origin  git@git.kd.ssj:finance-web/finance-market.git (push)
 ```
 
+# 4 批量更新本地仓库
+
+适用于一堆 git 仓库放在同一个目录下，可以用这个方法进行批量替换：
+
+1. 检查一下现在的 url：
+
+```
+cat ./finance-*/.git/config | grep 'git@'
+```
+
+2. 批量替换：
+
+```
+ls -1 ./仓库名-*/.git/config | xargs  sed -i 's/git@.*\:/git@github.com:/g'
+```
+3. 再次检查一下结果：
+
+```
+cat ./finance-*/.git/config | grep 'git@'
+```
+
