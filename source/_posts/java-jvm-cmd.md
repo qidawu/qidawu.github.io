@@ -85,17 +85,15 @@ Heap = Young Generation(Eden Space + From Space + To Space) + Old Generation + P
 
 Tomcat 参数可以调整 JVM 各区：
 
-| 参数              | 描述                                       |
-| --------------- | ---------------------------------------- |
-| -Xms            | Heap 初始值（S0+S1+E+O），Server 端 JVM 建议将 -Xms 和 -Xmx 设为相同值； |
-| -Xmx            | Heap 最大值；                                |
-| -Xmn            | Heap 最小值；                                |
-| -XX:NewSize     | Heap 新生代（S0+S1+E）的初始值，新生代与老年代的大小比例默认为 2:1； |
-| -XX:MaxNewSize  | Heap 新生代的最大值；                            |
-| -XX:PermSize    | Perm 初始值；                                |
-| -XX:MaxPermSize | Perm 最大值；                                |
-
-
+| 参数                               | 描述                                       |
+| -------------------------------- | ---------------------------------------- |
+| `-Xss`                           | 设置每个线程可使用的内存大小                           |
+| `-Xms`、`-Xmx`                    | Heap 堆（S0+S1+E+O）的初始值和最大值，Server 端 JVM 建议将 `-Xms` 和 `-Xmx` 设为相同值； |
+| `-Xmn`                           | Heap 堆内新生代（S0+S1+E）的大小，通过这个值我们也可以得到老年代的大小：`-Xmx` 减去 `-Xmn`； 设置 `-Xmn` 的效果等同于设置了相同的 `-XX:NewSize` 和 `-XX:MaxNewSize`。 |
+| `-XX:NewSize`、`-XX:MaxNewSize`   | Heap 堆内新生代（S0+S1+E）的初始值和最大值，新生代与老年代的大小比例默认为 2:1； |
+| `-XX:NewRatio`                   | 设置新生代和老年代的比值，例如该值为3，则表示新生代和老年代比值为1:3。    |
+| ` -XX:SurvivorRatio`             | 设置新生代中 E 区和 S 区的比例， 即 -XX:SurvivorRatio=eden/s0=eden/s1。 |
+| `-XX:PermSize`、`-XX:MaxPermSize` | Perm 初始值和最大值；                            |
 
 例如上述例子通过 `jmap -heap pid` 命令发现了某个服务 O 区内存被占满的问题：`Old Generation` 达到 99.98350830078125% used，O 区内存被占满，可以通过 `jstack` 继续排查问题。
 
