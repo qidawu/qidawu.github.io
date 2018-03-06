@@ -9,7 +9,7 @@ tags: Nginx
 
 一张图了解两种代理模式的区别：
 
-![两种代理模式](/img/sa/proxy.jpg)
+![两种代理模式](/img/nginx/proxy.jpg)
 
 常见应用场景：
 
@@ -37,6 +37,8 @@ http {
 
 # 解决代理后的问题
 
+## 一、上游无法获取真实的访问来源信息
+
 使用反向代理之后，上游服务器（如 Tomcat）无法获取真实的访问来源信息（如协议、域名、访问 IP），例如下面代码：
 
 ```java
@@ -50,7 +52,7 @@ response.sendRedirect(...) // 总是重定向到 http
 
 这个问题需要在 Nginx 和 Tomcat 中做一些配置以解决问题。
 
-## Nginx 配置
+### Nginx 配置
 
 使用 `proxy_set_header` 指令为上游服务器添加请求头：
 
@@ -67,7 +69,7 @@ http {
 }
 ```
 
-## Tomcat 配置
+### Tomcat 配置
 
 在 Tomcat 的 `server.xml` 中配置 [RemoteIpValve](http://tomcat.apache.org/tomcat-7.0-doc/api/org/apache/catalina/valves/RemoteIpValve.html) 让代码能够获取真实 IP 和协议：
 
@@ -88,3 +90,46 @@ request.getServerName() // example.com
 request.getRequestURL() // 对应的 http://example.com/index 或 https://example.com/index
 response.sendRedirect(...) // 实际的 http 或 https
 ```
+
+## 二、全局 proxy_set_header 失效
+
+先来看下 `proxy_set_header` 的语法：
+
+```
+语法:	proxy_set_header field value;
+默认值: proxy_set_header Host $proxy_host;
+        proxy_set_header Connection close;
+上下文: http, server, location
+
+允许重新定义或者添加发往后端服务器的请求头。value 可以包含文本、变量或者它们的组合。当且仅当当前配置级别中没有定义 proxy_set_header 指令时，会从上面的级别继承配置。 默认情况下，只有两个请求头会被重新定义：
+
+proxy_set_header Host       $proxy_host;
+proxy_set_header Connection close;
+```
+
+这里隐含一个坑：如果当前配置级别中定义了 `proxy_set_header` 指令，哪怕只配置了一个，都会导致无法从上面的级别继承配置，即导致全局级别的 `proxy_set_header` 配置失效。例如下述 HTTP [长连接配置](http://nginx.org/en/docs/http/ngx_http_upstream_module.html#keepalive)：
+
+```
+upstream http_backend {
+    server 127.0.0.1:8080;
+
+    keepalive 16;
+}
+
+server {
+    ...
+
+    location /http/ {
+        proxy_pass http://http_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        ...
+    }
+}
+```
+
+导致全局级别的 `proxy_set_header` 配置失效：
+
+![proxy_set_header 失效](/img/nginx/problem_of_proxy_set_header.png)
+
+解决办法是在 `location` 中重新配置这四个请求头。
