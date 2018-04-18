@@ -334,7 +334,7 @@ typeof doSomeThing === 'string';    // true
 
 ### 创建私有作用域
 
-此外，还可以使用立即执行的匿名函数（immediately executed anonymous function）来创建私有作用域，从而解决全局变量污染的问题。这种函数一般是没有返回值的：
+此外，还可以使用[立即执行的匿名函数（immediately executed anonymous function）](http://www.zuojj.com/archives/631.html)来创建私有作用域，从而解决全局变量污染的问题。这种函数一般是没有返回值的：
 
 ```javascript
 (function() {
