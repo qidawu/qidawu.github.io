@@ -157,3 +157,5 @@ MySQL 不能将 `BLOB` 和 `TEXT` 列全部长度的字符串进行索引，也�
 https://dev.mysql.com/doc/refman/5.7/en/data-types.html
 
 https://dev.mysql.com/doc/refman/5.7/en/column-count-limit.html
+
+《[MySQL数据类型：UNSIGNED注意事项](https://www.cnblogs.com/blankqdb/archive/2012/11/03/blank_qdb.html)》

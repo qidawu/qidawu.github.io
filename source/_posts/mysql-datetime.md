@@ -120,6 +120,8 @@ select date_add(@dt, interval 1 year);
 select date_add(@dt, interval -1 day);       -- sub 1 day
 ```
 
-参考
+# 参考
+
+https://dev.mysql.com/doc/refman/5.7/en/functions.html
 
 https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html
