@@ -38,7 +38,7 @@ tags: Java
 
 ## 依赖范围
 
-依赖范围用于控制依赖与这三种 classpath（编译、测试、运行）的关系，即是否有效：
+依赖范围 `scope` 用于控制依赖与这三种 classpath（编译、测试、运行）的关系，即是否有效：
 
 | 依赖范围（Scope） | 编译classpath | 测试classpath | 运行classpath | 例子                                       |
 | ----------- | ----------- | ----------- | ----------- | ---------------------------------------- |
@@ -62,6 +62,10 @@ Maven 调解依赖有两个基本原则：
    假设 X 是 A 的传递性依赖：A->B->C->X(1.0) 依赖路径长度为 3，A->D->X(2.0) 长度为 2，则 X(2.0) 会先被解析使用。
 2. 第二原则：**第一声明者优先**。
    在依赖路径长度相等的前提下，在 POM 中，依赖声明的顺序决定了谁会先被解析使用。
+
+## 可选依赖
+
+可选依赖 `optional` 为 `true` 时，该依赖不会被传递进来。
 
 ## 依赖排除
 
@@ -128,6 +132,40 @@ Maven 调解依赖有两个基本原则：
 </project>
 ```
 
+# 常见问题
+
+## 解决依赖冲突
+
+例如在使用 Spring Boot 时，其依赖引入了一个有缺陷的 Jackson 框架版本 1.9.X，此时需要覆盖起步依赖引入的传递依赖：
+
+方式一，如果项目未使用 Jackson 相关功能，可以使用 `<exclusions>` 排除依赖：
+
+```xml
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-web</artifactId>
+  <exclusions>
+    <exclusion>
+      <groupId>com.fasterxml.jackson.core</groupId>
+    </exclusion>
+  </exclusions>
+</dependency>
+```
+
+方式二，如果项目使用了，可以利用“就近原则”，覆盖传递依赖的版本号，修复缺陷：
+
+```xml
+<dependency>
+  <groupId>com.fasterxml.jackson.core</groupId>
+  <artifactId>jackson-databind</artifactId>
+  <version>2.4.3</version>
+</dependency>
+```
+
 ## 依赖下载问题
 
 有时候某个依赖下载有问题时，会导致本地环境找不到相关类。此时可以找到本地仓库下的相关 jar 包目录，排查下是否只有 `*.lastupdated` 文件而没有相应 jar 包。如果是，则删掉该目录重新下载依赖即可。
+
+# 参考
+
+http://maven.apache.org/guides/introduction/introduction-to-optional-and-excludes-dependencies.html
