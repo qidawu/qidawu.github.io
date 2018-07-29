@@ -85,6 +85,20 @@ $ git push origin feature-test
 * 各特性分支要定期将 `master` 分支合并进来，避免后续处理合并请求时产生冲突，以减轻项目管理员的工作负担。
 * 发版之后，项目管理员要记得打 tag 。
 
+# 技巧
+
+```
+-r
+--remotes
+List or delete (if used with -d) the remote-tracking branches.
+```
+
+删除本地远程分支
+
+```bash
+$ git branch -r -d origin/branch-name
+```
+
 # 参考
 
 * 《[分布式 Git](https://git-scm.com/book/zh/v1/%E5%88%86%E5%B8%83%E5%BC%8F-Git)》
