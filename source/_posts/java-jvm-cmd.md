@@ -5,8 +5,75 @@ date: 2017-02-16 20:10:12
 updated:
 ---
 
+最近为了做春节活动，研究了下性能压测和 JVM 调优，先来看一张 JVM 监控图。
 
-# jps
+![JVM 监控](/img/java/jvm_monitor.png)
+
+可以看出，内存分配不太合理，Old 区和 Metaspace 可以合理减小、增加新生代空间以减少 Young GC 次数，提升压测性能。
+
+下面介绍一些基础知识。
+
+# JVM 内存分区
+
+各区描述如下：
+
+![JVM 堆内存布局](/img/java/jvm_space.jpg)
+
+堆内存 = 
+* 新生代（Eden 区 + 两个 Survivor 区（From、To）） + 
+* 老年代（Old 区） + 
+* 永久代（Perm 区）
+
+Heap = 
+
+* Young Generation (Eden Space + From Space + To Space) + 
+* Old Generation (Old Space) + 
+* Perm Generation (Perm Space)
+
+如果是 JDK 8+ 还有些调整，后面介绍。
+
+
+
+Tomcat 参数可以调整 JVM 各区：
+
+## 堆
+
+| 参数           | 描述                                                         |
+| -------------- | ------------------------------------------------------------ |
+| `-Xms`、`-Xmx` | Heap 堆（E+S0+S1+O）的初始值和最大值，Server 端 JVM 建议将 `-Xms` 和 `-Xmx` 设为相同值； |
+
+## 新生代、老年代
+
+| 参数                            | 描述                                                         |
+| ------------------------------- | ------------------------------------------------------------ |
+| `-Xmn`                          | Heap 堆内新生代（E+S0+S1）的大小，通过这个值我们也可以得到老年代的大小：`-Xmx` 减去 `-Xmn`； 设置 `-Xmn` 的效果等同于设置了相同的 `-XX:NewSize` 和 `-XX:MaxNewSize`。 |
+| `-XX:NewSize`、`-XX:MaxNewSize` | Heap 堆内新生代（E+S0+S1）的初始值和最大值，新生代与老年代的大小比例默认为 2:1； |
+| `-XX:NewRatio`                  | 设置新生代和老年代的比值，例如该值为 3，则表示新生代和老年代比值为1:3。 |
+| ` -XX:SurvivorRatio`            | 设置新生代中 E 区和 S 区的比例， 即 -XX:SurvivorRatio=eden/s0=eden/s1。 |
+
+## 永久代
+
+JDK 7 及以下：
+
+| 参数              | 描述          |
+| ----------------- | ------------- |
+| `-XX:PermSize`    | Perm 的初始值 |
+| `-XX:MaxPermSize` | Perm 的最大值 |
+
+## 元空间
+
+JDK 8 开始，永久代(PermGen)的概念被废弃掉了，取而代之的是一个称为 Metaspace 的存储空间。Metaspace 使用的是本地内存，而不是堆内存，也就是说在默认情况下 Metaspace 的大小只与本地内存大小有关。当然你也可以通过以下的几个参数对 Metaspace 进行控制： 
+
+| 参数                     | 描述               |
+| ------------------------ | ------------------ |
+| ` -XX:MetaspaceSize `    | Metaspace 的初始值 |
+| ` -XX:MaxMetaspaceSize ` | Metaspace 的最大值 |
+
+# 常用命令
+
+除了调优，还有些常用命令可以用来排查问题，简单介绍下：
+
+## jps
 
 `jps` (JVM Process Status Tool) 命令的功能与 `ps` 类似，用于列出正在运行的 JVM 进程状态。
 
@@ -15,7 +82,7 @@ updated:
 - `-q` 只输出 LVMID
 - `-v` 输出虚拟机进程启动时 JVM 参数
 
-# jmap
+## jmap
 
 `jmap` (Memory Map) 命令用于查看堆内存。
 
@@ -75,29 +142,9 @@ PS Perm Generation
    25.30139982700348% used
 ```
 
-各区描述如下：
-
-![JVM 堆内存布局](/img/java/jvm_space.jpg)
-
-堆内存 = 新生代（Eden 区 + 两个 Survivor 区（From、To）） + 老年代 + 永久代
-
-Heap = Young Generation(Eden Space + From Space + To Space) + Old Generation + Perm Generation
-
-Tomcat 参数可以调整 JVM 各区：
-
-| 参数                               | 描述                                       |
-| -------------------------------- | ---------------------------------------- |
-| `-Xss`                           | 设置每个线程可使用的内存大小                           |
-| `-Xms`、`-Xmx`                    | Heap 堆（S0+S1+E+O）的初始值和最大值，Server 端 JVM 建议将 `-Xms` 和 `-Xmx` 设为相同值； |
-| `-Xmn`                           | Heap 堆内新生代（S0+S1+E）的大小，通过这个值我们也可以得到老年代的大小：`-Xmx` 减去 `-Xmn`； 设置 `-Xmn` 的效果等同于设置了相同的 `-XX:NewSize` 和 `-XX:MaxNewSize`。 |
-| `-XX:NewSize`、`-XX:MaxNewSize`   | Heap 堆内新生代（S0+S1+E）的初始值和最大值，新生代与老年代的大小比例默认为 2:1； |
-| `-XX:NewRatio`                   | 设置新生代和老年代的比值，例如该值为3，则表示新生代和老年代比值为1:3。    |
-| ` -XX:SurvivorRatio`             | 设置新生代中 E 区和 S 区的比例， 即 -XX:SurvivorRatio=eden/s0=eden/s1。 |
-| `-XX:PermSize`、`-XX:MaxPermSize` | Perm 初始值和最大值；                            |
-
 例如上述例子通过 `jmap -heap pid` 命令发现了某个服务 O 区内存被占满的问题：`Old Generation` 达到 99.98350830078125% used，O 区内存被占满，可以通过 `jstack` 继续排查问题。
 
-# jstat
+## jstat
 
 `jstat` (JVM Statistics Monitoring Tool) 命令用于监控当前 JVM 的性能统计信息。
 
@@ -164,7 +211,7 @@ $ jstat -gcutil -h6 21891 250 7
 | FGCT | 从应用程序启动到采样时 Full GC 所用的时间（单位秒）         |
 | GCT  | 从应用程序启动到采样时用于垃圾回收的**总时间**（单位秒）         |
 
-# jstack
+## jstack
 
 `jstack` 命令用于查看当前线程堆栈信息，根据堆栈信息我们可以定位到具体代码，所以它在 JVM 性能调优中使用得非常多。
 
