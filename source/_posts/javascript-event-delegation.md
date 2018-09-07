@@ -2,7 +2,7 @@
 title: Javascript 事件委托机制
 date: 2016-05-22 19:05:06
 updated:
-tags: JavaScript
+tags: 前端
 ---
 
 本文目的：

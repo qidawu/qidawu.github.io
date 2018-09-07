@@ -2,7 +2,7 @@
 title: Javascript 编程最佳实践
 date: 2016-03-10 22:03:01
 updated:
-tags: JavaScript
+tags: 前端
 ---
 
 # 前言

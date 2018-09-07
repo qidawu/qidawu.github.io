@@ -1,7 +1,8 @@
+---
 title: Javascript 简介
 date: 2016-02-10 16:57:00
 updated:
-tags: JavaScript
+tags: 前端
 ---
 
 一个完整的 JavaScript 实现由下列三个不同的部分组成：

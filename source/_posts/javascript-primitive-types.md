@@ -1,7 +1,7 @@
 title: Javascript 基本数据类型
 date: 2016-02-11 16:25:12
 updated:
-tags: JavaScript
+tags: 前端
 ---
 
 尽管 ECMAScript 是一门弱类型语言，但它的内部提供了五种基本数据类型以便开发者使用。下面分别介绍：

@@ -2,7 +2,7 @@
 title: 自动化构建工具 Gulp.js
 date: 2016-12-05 22:35:50
 updated:
-tags: JavaScript
+tags: 前端
 ---
 
 下表整理了自动化构建工具 [Gulp.js](https://www.gulpjs.com.cn/) 在实践项目中常用的插件：

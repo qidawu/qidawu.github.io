@@ -1,7 +1,7 @@
 title: Javascript 引用类型之 Object
 date: 2016-02-17 10:54:08
 updated:
-tags: JavaScript
+tags: 前端
 ---
 
 # Object
@@ -13,13 +13,18 @@ ECMAScript 中使用最多的类型就是 `Object`。虽然 `Object` 的实例�
 创建 `Object` 实例的方式有两种。第一种是使用 `new` 操作符后跟 `Object` 构造函数，如下所示：
 
 ```javascript
-var person = new Object();person.name = "Nicholas";person.age = 29;
+var person = new Object();
+person.name = "Nicholas";
+person.age = 29;
 ```
 
 另一种方式是使用对象字面量表示法。对象字面量是对象定义的一种简写形式，目的在于简化创建包含大量属性的对象的过程：
 
 ```javascript
-var person = {    name : "Nicholas",    age : 29};
+var person = {
+    name : "Nicholas",
+    age : 29
+};
 ```
 
 使用这种对象字面量语法要求的代码量更少，而且能够给人以封装数据的感觉。

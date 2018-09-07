@@ -1,7 +1,8 @@
+---
 title: Javascript 类型判断
 date: 2016-02-19 19:43:32
 updated:
-tags: JavaScript
+tags: 前端
 ---
 
 鉴于 ECMAScript 是松散类型（loosely typed）的，因此需要有一种手段来检测给定变量的数据类型——`typeof` 和 `instanceof` 操作符提供了这方面的信息：

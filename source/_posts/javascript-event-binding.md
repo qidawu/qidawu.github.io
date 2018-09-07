@@ -2,7 +2,7 @@
 title: JavaScript 事件绑定机制
 date: 2016-05-08 17:53:54
 updated:
-tags: JavaScript
+tags: 前端
 ---
 
 本文目的：

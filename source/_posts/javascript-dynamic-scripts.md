@@ -2,7 +2,7 @@
 title: Javascript 动态加载脚本
 date: 2016-04-30 21:10:01
 updated:
-tags: JavaScript
+tags: 前端
 ---
 
 本文演示如何动态加载脚本。即脚本在页面加载时不存在，但将来的某一时刻通过修改 DOM 动态添加脚本，从而实现按需加载脚本。

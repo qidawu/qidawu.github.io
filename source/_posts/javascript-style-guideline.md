@@ -2,7 +2,7 @@
 title: Javascript 编程风格规范
 date: 2016-03-09 22:03:01
 updated:
-tags: JavaScript
+tags: 前端
 ---
 
 # 前言

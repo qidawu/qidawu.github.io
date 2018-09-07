@@ -2,7 +2,7 @@
 title: 前端模块化框架 Require.js
 date: 2016-07-05 22:29:13
 updated:
-tags: JavaScript
+tags: 前端
 ---
 
 下面整理了一些 RequireJS 的简单实践：
