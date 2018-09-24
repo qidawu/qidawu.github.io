@@ -1,11 +1,26 @@
 ---
-title: JVM 监控常用命令
+title: JVM 常用监控工具
 tags: Java
 date: 2017-02-16 20:10:12
 updated:
 ---
 
-# jps
+命令行工具：
+
+* jps
+* jinfo
+* jmap
+* jstat
+* jstack
+
+图形化工具：
+
+* JVisualVM
+* Eclipse Memory Analyzer
+
+# 命令行工具
+
+## jps
 
 `jps` (JVM Process Status Tool) 命令的功能与 `ps` 类似，用于列出正在运行的 JVM 进程状态。
 
@@ -14,7 +29,7 @@ updated:
 - `-q` 只输出 LVMID
 - `-v` 输出虚拟机进程启动时 JVM 参数
 
-# jmap
+## jmap
 
 `jmap` (Memory Map) 命令用于查看堆内存。
 
@@ -78,7 +93,7 @@ PS Perm Generation  // JDK8+ 没有该区域
 
 例如上述例子通过 `jmap -heap pid` 命令发现了某个服务 O 区内存被占满的问题：`Old Generation` 达到 99.98350830078125% used，O 区内存被占满，可以通过 `jstack` 继续排查 JVM 内存的**动态使用情况**。
 
-# jstat
+## jstat
 
 `jstat` (JVM Statistics Monitoring Tool) 命令用于监控当前 JVM 的性能统计信息。
 
@@ -145,7 +160,7 @@ $ jstat -gcutil -h6 21891 250 7
 | FGCT | 从应用程序启动到采样时 Full GC 所用的时间（单位秒）         |
 | GCT  | 从应用程序启动到采样时用于垃圾回收的**总时间**（单位秒）         |
 
-# jstack
+## jstack
 
 `jstack` 命令用于查看当前线程堆栈信息，根据堆栈信息我们可以定位到具体代码，所以它在 JVM 性能调优中使用得非常多。
 
@@ -181,6 +196,10 @@ Full thread dump Java HotSpot(TM) 64-Bit Server VM (24.79-b02 mixed mode):
 ```
 
 该例子中导出的 `/tmp/localfile` 文件异常大，里面有大量 `java.lang.Thread.State: WAITING (parking)` 状态的线程，导致 O 区内存被占满，根据堆栈可以定位到具体的问题代码，可以初步判断是 HTTP 连接耗尽资源导致的问题。
+
+# 图形化工具
+
+## JVisualVM
 
 # 参考
 
