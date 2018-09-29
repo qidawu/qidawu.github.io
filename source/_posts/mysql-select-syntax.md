@@ -5,7 +5,9 @@ updated:
 tags: MySQL
 ---
 
-`SELECT` 语法常用如下：
+# 基础语法
+
+`SELECT` 基础语法如下：
 
 ```mysql
 SELECT
