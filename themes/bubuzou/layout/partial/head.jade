@@ -1,0 +1,19 @@
+meta(charset="utf-8")
+meta(name="X-UA-Compatible", content="IE=edge")
+meta(name="baidu-site-verification", content="1EB8XoOl0C")
+meta(name="google-site-verification", content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM")
+
+title 
+    block site_title
+        = config.title
+meta(name="viewport", content="width=device-width, initial-scale=1")
+block description
+    meta(name="description", content= page.desc ? page.desc : config.description)
+meta(name="keywords", content= page.keywords ? page.keywords : config.keywords)
+meta(name="author", content= config.author)
+link(rel="short icon", href=url_for(theme.favicon))
+link(rel="stylesheet", href=url_for("css/bubuzou.css"))
+
+- var xml = config.url + '/atom.xml'
+    link(rel="search", type="application/opensearchdescription+xml", href=xml, title=config.title)
+    

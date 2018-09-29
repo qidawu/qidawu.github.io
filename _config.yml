@@ -86,7 +86,7 @@ sitemap:
 
 ## Themes: http://hexo.io/themes/
 # theme: landscape
-theme: jacman
+theme: bubuzou
 stylus: 
   compress: true
 
