@@ -5,9 +5,9 @@ updated:
 tags: 前端
 ---
 
-下面整理了一些 RequireJS 的简单实践：
+某段时期前端技术选型上使用过 Require.js 解决前端模块化的问题，下面整理了一些简单实践：
 
-# RequireJS 使用
+# Require.js 使用
 
 第一步，按功能将 JS 分门别类：
 
@@ -83,7 +83,7 @@ require(['mod/sub'], function(sub) {
 
 通过 AMD 规范定义的两个关键函数 `define()` 和 `require()` ，我们可以很轻松的在老版本 ES5 上实现模块化功能，解决依赖关系混乱和全局变量的问题。
 
-# RequireJS 构建
+# Require.js 构建
 
 需要注意的是，模块拆分之后脚本文件数量会变多，HTTP 请求也会相应增多。使用 RequireJS 的[优化工具](http://www.requirejs.org/docs/optimization.html) `r.js` 合并压缩相关联的脚本文件，可以解决这个问题。
 

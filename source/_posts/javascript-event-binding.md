@@ -127,6 +127,11 @@ function onclick(event) {
 
 缺点：浏览器兼容性差，IE8 及以下版本不支持。
 
+API：`element.addEventListener(event, function, useCapture)` 。其中 `useCapture` 可选，布尔值，指定事件是否在捕获或冒泡阶段执行：
+
+* `true` 捕获阶段执行
+* `false` 冒泡阶段执行（默认值）
+
 ## IE
 
 IE 实现了与 DOM 2 级类似的两个方法，只支持事件冒泡：
@@ -187,14 +192,14 @@ var EventUtil = {
 
 在触发 DOM 上的某个事件时，会产生一个事件对象 `event` ，这个对象中包含着所有与事件有关的信息。尽管触发的事件类型不同，可用属性和方法也会不同，但是所有事件都会包含下列常用成员：
 
-| DOM Level 2         | Type     | IE             | Type    | Description                              |
-| ------------------- | -------- | -------------- | ------- | ---------------------------------------- |
-| `type`              | String   | `type`         | String  | 被触发的事件类型                                 |
+| DOM Level 2         | Type     | IE             | Type    | Description                                                  |
+| ------------------- | -------- | -------------- | ------- | ------------------------------------------------------------ |
+| `type`              | String   | `type`         | String  | 被触发的事件类型                                             |
 | `eventPhase`        | Integer  | -              | -       | 调用事件处理程序的所处阶段：`1` 表示捕获阶段，`2` 表示“处于目标”，`3` 表示冒泡阶段 |
-| `target`            | Element  | `srcElement`   | Element | 事件的目标元素                                  |
+| `target`            | Element  | `srcElement`   | Element | 事件的目标元素                                               |
 | `currentTarget`     | Element  | -              | -       | 当前正在处理事件的元素。如果事件处于目标元素，则 `this === currentTarget === target` |
-| `stopPropagation()` | Function | `cancelBubble` | Boolean | 取消事件的进一步捕获或冒泡                            |
-| `preventDefault()`  | Function | `returnValue`  | Boolean | 取消事件的默认行为                                |
+| `stopPropagation()` | Function | `cancelBubble` | Boolean | 取消事件的进一步捕获或冒泡                                   |
+| `preventDefault()`  | Function | `returnValue`  | Boolean | 取消事件的默认行为。该方法将通知 Web 浏览器不要执行与事件关联的默认动作（如果存在这样的动作）。例如，如果 `type` 属性是 "submit"，可以阻止提交表单。 |
 
 # 事件流
 
