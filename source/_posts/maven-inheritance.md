@@ -35,54 +35,6 @@ tags: Java
 </project>
 ```
 
-## Spring Boot 例子
-
-下面以 Spring Boot 为例演示：
-
-### 继承方式
-
-Maven 用户可以继承 `spring-boot-starter-parent` POM 项目以获得合理的默认配置：
-
-```xml
-<!-- Inherit defaults from Spring Boot -->
-<parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.0.1.RELEASE</version>
-</parent>
-```
-
-你只需要指定 parent 的 `<version>` 版本号。之后如果你需要引入其它起步依赖，你可以安全的省略起步依赖的 `<version>` 版本号，parent 会统一管理。
-
-父项目还提供了以下功能：
-
-- Java 1.8 作为默认的编译器级别
-- UTF-8 源码编码
-- 提供统一的依赖版本管理（继承 pom `spring-boot-dependencies`），可以让你在自己的 pom 中引入依赖时省略版本号定义，保障依赖间的兼容性
-- 合理的 [resource filtering](https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html) 配置
-- 合理的 plugin configuration 配置
-
-### 组合方式
-
-不是每个人都喜欢继承 `spring-boot-starter-parent` POM 项目。每个公司可能拥有自己的标准父项目，或者你更愿意明确声明所有 Maven 配置。
-
-即使如此，你仍然可以通过以组合方式使用 `scope=import`  的 `spring-boot-dependencies` 依赖来享受依赖管理的好处，如下所示：
-
-```xml
-<dependencyManagement>
-    <dependencies>
-        <dependency>
-            <!-- Import dependency management from Spring Boot -->
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-dependencies</artifactId>
-            <version>2.0.1.RELEASE</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
-    </dependencies>
-</dependencyManagement>
-```
-
 ## 依赖管理
 
 `<dependencyManagement>` 用于在具有层级关系的项目间统一管理依赖的版本，一般用在父项目中，通过它来管理 jar 包的版本，让子项目中引用一个依赖而不用显式的指定版本号，以达到**依赖版本统一管理**的目的。
@@ -192,6 +144,10 @@ Maven 用户可以继承 `spring-boot-starter-parent` POM 项目以获得合理�
     </modules>
 </project>
 ```
+
+# 例子
+
+可以参考 Spring Boot 项目的例子。
 
 # 参考
 
