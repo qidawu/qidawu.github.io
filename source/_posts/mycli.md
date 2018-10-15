@@ -5,7 +5,7 @@ updated:
 tags: MySQL
 ---
 
-[MyCli](http://mycli.net/) 是一个 MySQL 命令行工具，支持**自动补全**和**语法高亮**。也可用于 MariaDB 和 Percona。
+工作中常用到 mysql 自带的命令行工具，但实在难用。推荐一款 MySQL 命令行工具——[MyCli](http://mycli.net/)，支持**自动补全**和**语法高亮**。也可用于 MariaDB 和 Percona。
 
 功能如下：
 
@@ -22,3 +22,10 @@ $ easy_install mycli
 ```
 
 其它系统的安装方式，请参考：http://mycli.net/install
+
+Windows 下使用 `cmd` 连接数据库，如下：
+
+```
+mycli -hlocalhost -P3306 -uroot -p123456
+```
+
