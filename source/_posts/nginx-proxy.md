@@ -37,7 +37,7 @@ http {
 
 # 解决代理后的问题
 
-## 一、上游无法获取真实的访问来源信息
+## 上游无法获取真实的访问来源信息
 
 使用反向代理之后，上游服务器（如 Tomcat）无法获取真实的访问来源信息（如协议、域名、访问 IP），例如下面代码：
 
@@ -52,7 +52,7 @@ response.sendRedirect(...) // 总是重定向到 http
 
 这个问题需要在 Nginx 和 Tomcat 中做一些配置以解决问题。
 
-### Nginx 配置
+Nginx 配置：
 
 使用 `proxy_set_header` 指令为上游服务器添加请求头：
 
@@ -69,7 +69,7 @@ http {
 }
 ```
 
-### Tomcat 配置
+Tomcat 配置：
 
 在 Tomcat 的 `server.xml` 中配置 [RemoteIpValve](http://tomcat.apache.org/tomcat-7.0-doc/api/org/apache/catalina/valves/RemoteIpValve.html) 让代码能够获取真实 IP 和协议：
 
@@ -91,7 +91,7 @@ request.getRequestURL() // 对应的 http://example.com/index 或 https://exampl
 response.sendRedirect(...) // 实际的 http 或 https
 ```
 
-## 二、全局 proxy_set_header 失效
+## 全局 proxy_set_header 失效
 
 先来看下 `proxy_set_header` 的语法：
 
@@ -107,23 +107,27 @@ proxy_set_header Host       $proxy_host;
 proxy_set_header Connection close;
 ```
 
-这里隐含一个坑：如果当前配置级别中定义了 `proxy_set_header` 指令，哪怕只配置了一个，都会导致无法从上面的级别继承配置，即导致全局级别的 `proxy_set_header` 配置失效。例如下述 HTTP [长连接配置](http://nginx.org/en/docs/http/ngx_http_upstream_module.html#keepalive)：
+这里隐含一个坑：**如果当前配置级别中定义了 `proxy_set_header` 指令，哪怕只配置了一个，都会导致无法从上面的级别继承配置**，即导致全局级别的 `proxy_set_header` 配置失效。例如下述 HTTP [长连接配置](http://nginx.org/en/docs/http/ngx_http_upstream_module.html#keepalive)：
 
 ```
-upstream http_backend {
-    server 127.0.0.1:8080;
+http {
+    proxy_set_header Host              $host;
+    proxy_set_header X-Real-IP         $remote_addr;
+    proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
 
-    keepalive 16;
-}
+    upstream backend {
+        server 127.0.0.1:8080;
+        keepalive 16;
+    }
 
-server {
-    ...
-
-    location /http/ {
-        proxy_pass http://http_backend;
-        proxy_http_version 1.1;
-        proxy_set_header Connection "";
-        ...
+    server {
+        location / {
+            proxy_pass http://backend;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            ...
+        }
     }
 }
 ```
