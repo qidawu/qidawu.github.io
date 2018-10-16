@@ -21,24 +21,42 @@ do something and commit...
 $ git push origin release-20190101
 ```
 
-### 合并分支
+版本分支 `release-*` 一般是锁起来的，不允许随便提交代码。
 
-版本开发完毕，Master 需要**整理**版本分支（例如从中挑选出能够发版的提交，剔除掉不能发版的提交），合并回 `master` 分支并进行发版。
+## 创建特性分支
 
-### 标记新版本
-
-发版完毕，Master 打 Tag 标记该新版本，以便后续回顾：
+然后，开发人员（Developer）从版本分支中创建出特性分支，并在其上进行特性开发：
 
 ```bash
-$ git tag release-20190101 -m "XX 项目 v1.0 版本"
-$ git push origin release-20190101
+$ git checkout -b feature-test
+
+do something and commit...
+
+$ git push origin feature-test
+```
+
+由于特性分支可能会跨版本开发，因此需要定期维护：主要的工作就是定期将 `master` 分支或版本分支合并进来，保持同步，代码够新。使用命令：[rebase](https://qidawu.github.io/2015/08/20/git-rebase/)。
+
+## Merge Request
+
+开发完毕后，开发人员（Developer）需要**整理特性分支**——例如从中挑选出能够发版的提交，剔除掉不能发版的提交。如果想要筛选出将要被合并的提交有哪些，可以参考[这里](/2015/08/04/git-log/#筛选提交历史)。
+
+整理完毕后，给项目管理员（Master）发起一个 MR，请求合并到版本分支。
+
+## 标记新版本
+
+当版本分支发布完毕，Master 打 Tag 标记该新版本，以便后续回顾：
+
+```bash
+$ git tag tag-20190101 -m "XX 项目 v1.0 版本"
+$ git push origin tag-20190101
 ```
 
 注意，在默认情况下，`git push` 并不会把标签（tag）推送到远端仓库上，只有通过显式命令才能分享标签到远端仓库。其命令格式如同推送分支，运行 `git push origin [tagname]` 即可。如果要一次推送所有本地新增的标签上去，可以使用 `--tags` 选项。
 
-### 清理分支
+## 清理分支
 
-最后是一些清理工作，Master 需要删除已完成开发的版本分支，避免分支越来越多导致不好管理：
+最后是一些清理工作，Master 需要删除已完成开发的版本分支、特性分支，避免分支越来越多导致不好管理。例如：
 
 ```bash
 $ git branch -d release-20190101
@@ -50,26 +68,6 @@ $ git push --delete origin release-20190101
 ```bash
 $ git branch -a
 ```
-
-## 创建特性分支
-
-首先，开发人员（Developer）从 `master` 分支中创建出特性分支：
-
-```bash
-$ git checkout -b feature-test
-
-do something and commit...
-
-$ git push origin feature-test
-```
-
-### 定期合并
-
-由于特性分支可能会跨版本开发，因此需要定期维护：主要的工作就是定期将 `master` 分支合并进来，保持同步。
-
-### 决断代码
-
-特性分支开发完成之后，如果想要筛选出将要被合并的提交有哪些，可以参考[这里](/2015/08/04/git-log/#筛选提交历史)。
 
 # 总结
 

@@ -1,7 +1,8 @@
+---
 title: Git 学习之路
-tags: Git
-date: 2015-08-01 22:37:58
+date: 2017-05-01 22:37:58
 updated:
+tags: Git
 ---
 
 
@@ -14,11 +15,11 @@ updated:
 * LinuxCast Git 视频教程，手把手指导，可惜教程不再维护了。
 * [Git 官方文档](http://git-scm.com/book/)，第一手官方材料，由浅入深，涉及 Git 各方面的内容，建议有实操经验的同学深入阅读。
 * [GitHub 帮助文档](https://help.github.com)，偏向实操，建议初学者阅读。而且里面涉及到一些 GitHub 特性（图形化操作、Social、Pages）可以与 Git 互补。
+* 廖雪峰的博客
 
 其实网上相关教程、博客、书籍很多，但建议初学者重心先放在：
 
-* 基础命令的实操（推荐 [Git cheatsheet
-](https://training.github.com/kit/downloads/github-git-cheat-sheet.pdf)，按功能分组命令，便于记忆）
+* 基础命令的实操（推荐 [Git cheatsheet](https://training.github.com/kit/downloads/github-git-cheat-sheet.pdf)，按功能分组命令，便于记忆）
 * 简单概念的理解（例如重点关注 Git 文件流转的三个工作区域及远程仓库，至于配置、分支（我知道分支是 Git 的杀手锏功能，但事实上很多人只用到一个 master 分支）、工作流等先统统忽略）
 
 然后安装好 Git，选择好一个代码托管商（如国外 [GitHub](https://www.github.com)，国内 [GitCafe](https://gitcafe.com)），赶紧先跑起来，再好起来！如果你曾大致了解过 Git 这一门技术，你会发现这是属于“记忆型”的技术，需要多用才熟能生巧。
@@ -43,7 +44,8 @@ updated:
 
 * 分支管理与团队工作流程
 * 冲突解决方案
-* stash、amend、reset、log 等实用命令
+* `pull`、`merge`、`log`、`reset`、`checkout` 等实用命令
+* `rebase`、`cherry-pick` 等高级命令
 
 整个过程使用的是“INK 学习法”，并再次将理解的内容整理成 PPT 与团队分享。这轮学习的不同之处在于：
 
