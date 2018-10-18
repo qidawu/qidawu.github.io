@@ -35,6 +35,17 @@ SELECT
 
 `SELECT` 语句可用于检索单个、多个、所有列（星号 `*` 通配符）。每个 *select_expr* 表示您想要检索的列。必须至少有一个 *select_expr*。
 
+## 检索不同的值
+
+修饰符 `ALL` 和 `DISTINCT` 用于指定**重复行是否应该返回**，作用于所有的列，而不仅仅是跟在其后的那一列。例如 `SELECT DISTINCT vend_id, prod_price` ，除非指定的两列完全相同，否则所有的行都会被检索出来。
+
+| 修饰符        | 描述                     |
+| ---------- | ---------------------- |
+| ` ALL`     | 默认值，指定应返回所有匹配的行，包括重复项。 |
+| `DISTINCT` | 指定从结果集中删除重复的行。         |
+
+## 检索表
+
 *table_references* 指示检索表，其语法可参考 [JOIN语法](https://dev.mysql.com/doc/refman/5.7/en/join.html)。`SELECT` 也可以不使用 `FROM` 子句而用来检索计算出的行：
 
 ```mysql
@@ -48,34 +59,6 @@ SELECT 1 + 1;
 SELECT 1 + 1 FROM DUAL;
  -> 2
 ```
-
-## 检索不同的值
-
-修饰符 `ALL` 和 `DISTINCT` 用于指定重复行是否应该返回，作用于所有的列，而不仅仅是跟在其后的那一列。例如 `SELECT DISTINCT vend_id, prod_price` ，除非指定的两列完全相同，否则所有的行都会被检索出来。
-
-| 修饰符        | 描述                     |
-| ---------- | ---------------------- |
-| ` ALL`     | 默认值，指定应返回所有匹配的行，包括重复项。 |
-| `DISTINCT` | 指定从结果集中删除重复的行。         |
-
-## 限制结果集
-
-`LIMIT` 子句可用于限制 `SELECT` 语句返回的结果集：
-
-```mysql
-SELECT * FROM tbl LIMIT 5;     # Retrieve first 5 rows
-SELECT * FROM tbl LIMIT 5,10;  # Retrieve rows 6-15
-SELECT * FROM tbl LIMIT 5 OFFSET 10;  # Retrieve rows 11-15
-```
-
-## 排序数据
-
-`ORDER BY` 子句用于排序，使用以下关键字进行升序或降序排序，要注意关键字只应用于直接位于其前面的列名。如果想在多个列上进行降序排序，必须对每一列指定 `DESC` 关键字。
-
-| 关键字    | 描述       |
-| ------ | -------- |
-| `ASC`  | 升序排序（默认） |
-| `DESC` | 降序排序     |
 
 ## 过滤数据
 
@@ -125,6 +108,25 @@ simple_expr:
 | `%`  | 匹配多个字符  |
 | `_`  | 匹配单个字符  |
 | `[]` | 匹配一个字符集 |
+
+## 排序数据
+
+`ORDER BY` 子句用于排序，使用以下关键字进行升序或降序排序，要注意关键字只应用于直接位于其前面的列名。如果想在多个列上进行降序排序，必须对每一列指定 `DESC` 关键字。
+
+| 关键字 | 描述             |
+| ------ | ---------------- |
+| `ASC`  | 升序排序（默认） |
+| `DESC` | 降序排序         |
+
+## 限制结果集
+
+`LIMIT` 子句可用于限制 `SELECT` 语句返回的结果集：
+
+```mysql
+SELECT * FROM tbl LIMIT 5;     # Retrieve first 5 rows
+SELECT * FROM tbl LIMIT 5,10;  # Retrieve rows 6-15
+SELECT * FROM tbl LIMIT 5 OFFSET 10;  # Retrieve rows 11-15
+```
 
 ## 汇总数据
 
@@ -179,11 +181,12 @@ FROM Products;
 *   `GROUP BY` 子句中列出的每一列都必须是检索列或有效的表达式（但不能是聚集函数）。如果在 `SELECT` 中使用表达式，则必须在 `GROUP BY` 子句中指定相同的表达式。不能使用别名。
 *   除聚集计算语句外，`SELECT` 语句中的每一列都必须在 `GROUP BY` 子句中给出。
 *   如果分组列中包含具有 `NULL` 值的行，则 `NULL` 将作为一个分组返回。如果列中有多行 `NULL` 值，它们将分为一组。
-*   可以使用 `HAVING` 过滤分组。`HAVING` 和 `WHERE` 的差别在于，`WHERE` 在数据分组前进行过滤， `HAVING` 在数据分组后进行过滤。
 
-## 表联结
+`GROUP BY` 可以搭配使用 `HAVING` 过滤分组。`HAVING` 和 `WHERE` 的差别在于，`WHERE` 对分组前的数据进行过滤， `HAVING` 对分组后的数据进行过滤。
 
-### 内联结
+# 表联结
+
+## 内联结
 
 ```mysql
 # 简单的等值语法创建内联结
@@ -201,7 +204,7 @@ ON Vendors.vend_id = Products.vend_id;
 
 由没有联结条件的表关系返回的结果为**笛卡儿积（cartesian product）**。检索出的行的数目将是第一个表中的行数乘以第二个表中的行数。因此应当总是提供联结条件。
 
-### 外联结（左、右）
+## 外联结（左、右）
 
 许多联结将一个表中的行与另一个表中的行相关联，但有时候需要**包含没有关联行**的那些行，例如：
 
@@ -272,3 +275,19 @@ cust_id    num_ord
 
 注意，左、右外联结之间的唯一差别是所关联的表的顺序。换句话说，调整 `FROM` 或 `WHERE` 子句中表的顺序，左外联结可以转换为右外联结。因此，这两种外联结可以互换使用，哪个方便就用哪个。
 
+# 锁定读取
+
+`InnoDB` 支持两种类型的 [锁定读取（Locking Reads）](https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_locking_read)，为事务操作提供额外的**安全性**：
+
+* `SELECT ... LOCK IN SHARE MODE ` 设置**共享（*S*）锁**
+*  `SELECT ... FOR UPDATE` 设置**排它（*X*）锁**
+
+详情请参考《[MySQL 事务模型总结](/2018/10/21/mysql-transaction-model/)》。
+
+# 参考
+
+《MySQL 必知必会》
+
+https://dev.mysql.com/doc/refman/5.7/en/select.html
+
+https://dev.mysql.com/doc/refman/5.7/en/innodb-locking-reads.html
