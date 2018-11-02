@@ -25,14 +25,20 @@ tags: Git
 
 我们需要做的是，为项目成员分配恰当的角色，以限制其权限。
 
-# 锁定受保护分支
+# Protected Branches
 
 在对 Git 不熟悉的时候，时常苦恼于各个分支不受约束，任何开发人员都可以向任何分支直接推送任何提交，各种未经审查的代码、花样百出的 Bug 就这样流窜在预发布分支上。
 
 其实我们可以通过 GitLab 的**受保护分支（Protected Branches）**功能解决该问题，该功能可用于：
 
-* 阻止 Master 角色以外的开发人员直接向此类分支推送代码，保持稳定分支的安全性；
-* 在向受保护分支合并代码前，强制进行代码审查。
+> Keep stable branches secure and force developers to use **merge requests**.
+>
+> By default, protected branches are designed to:
+>
+> - prevent their creation, if not already created, from everybody except Masters
+> - prevent pushes from everybody except Masters
+> - prevent **anyone** from force pushing to the branch
+> - prevent **anyone** from deleting the branch
 
 接下来我们就使用这项功能，锁定我们的受保护分支——主分支 `master` 和预发布分支 `release-*`，以阻止 Developer 直接向这两类分支中推送代码：
 
@@ -54,32 +60,30 @@ To git@website:project.git
 error: failed to push some refs to 'git@website:project.git'
 ```
 
-# 发起合并请求
+# Merge Requests
 
 锁定受保护分支后，要么 Master 需要时刻、主动关注各特性分支的进度，要么 Developer 需要线下、口头向 Master 汇报其特性分支的进度，这两种做法都非常不便于 Master 管理每个预发布分支的合并，尤其在团队大、分支多的情况。
 
 我们可以通过 GitLab 的**发起合并请求（Merge Request）**功能解决该问题，这样既可以让 Developer 更自如的掌控自己分支进度，在必要的时候才主动发起合并请求；又可以减轻 Master 的合并工作量和沟通成本，可谓一举两得。
 
-## 新建合并请求
+## 新建 MR
 
 第一步，按表单要求填写合并请求。注意，对于 Developer 而言：
 
-* `From` 是你的特性分支 `feature-*`；
-* `To` 只可能是预发布分支 `release-*`；
+* `Source branch` 是你的特性分支 `feature-*`；
+* `Tagget branch` 只可能是预发布分支 `release-*`；
 * `Title` 和 `Description` 要填写恰当的分支描述；
-* `Assign to` 是该项目的 Master。
+* `Assignee` 是该项目的 Master。
 
 ![新建合并请求](/img/git/git_new_merge_request.png)
 
-## 审查合并请求
+## 审查 MR
 
-第二步，Master 收到合并请求后，进行代码审查。逐一查看 `Commits` 一栏提交的内容即可，对于需要改进的代码，可以直接在该行添加注释，非常方便。
+第二步，Master 收到合并请求后，进行代码审查。逐一查看 `Commits` 或 `Changes` 一栏提交的内容即可，对于需要改进的代码，可以直接在该行添加注释，非常方便。
 
-![接受合并请求](/img/git/git_accept_merge_request.png)
+如果对整个请求还有疑问的地方，还可以通过 `Discussion` 功能进行线上讨论。
 
-如果对整个请求还有疑问的地方，还可以通过底部的 `Discussion` 功能进行线上讨论。
-
-## 处理合并请求
+## 处理 MR
 
 第三步，针对审查结果进行相应处理：
 

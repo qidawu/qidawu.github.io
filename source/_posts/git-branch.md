@@ -31,10 +31,10 @@ tags: Git
 
 每一类分支都有一个特定目的，如何命名每一类分支？建议用相关的主题关键字进行命名，并且建议将分支名称分置于不同**命名空间（前缀）**下，例如：
 
-| Branch Name | May branch off from | Must merge back into | Is locked? | Description                              |
-| ----------- | ------------------- | -------------------- | ---------- | ---------------------------------------- |
-| `feature-*` | `dev`               | `dev`                | NO         | 特性分支，为了开发某种特定功能而建。                       |
-| `release-*` | `dev`               | `dev` <br/> `master` | YES        | 预发布分支，为了新版本的发布做准备，一般命名为 `release-<版本号>`。 |
+| Branch Name | May branch off from | Must merge back into | Is locked? | Description                                                  |
+| ----------- | ------------------- | -------------------- | ---------- | ------------------------------------------------------------ |
+| `feature-*` | `dev`               | `dev`                | NO         | 特性分支，为了开发某种特定功能而建。开发完成并测试通过后，需发送 Merge Request 到 `release-*` 进行代码审查及合版。 |
+| `release-*` | `dev`               | `dev` <br/> `master` | YES        | 预发布分支，为了新版本的发布做准备，一般命名为 `release-<版本号>`。这是一个稳定分支，只接受审核通过的 Merge Request。 |
 | `hotfix-*`  | `master`            | `dev` <br/> `master` | NO         | 补丁分支，为了修复生产缺陷而建，一般命名为 `hotfix-<issue 编号>` |
 
 与主分支不同，这些辅助性分支总是有一个有限的生命期，因为他们在被合并到主分支之后，就会被移除掉。
