@@ -11,7 +11,7 @@ tags: GNU/Linux
 
 pipeline（管道）是一个或多个命令的序列，用字符 | 分隔。管道的命令格式如下：
 
-```
+```bash
 command [ | command2 ... ]
 ```
 
@@ -53,39 +53,39 @@ $ find /tmp/ -name 2> /dev/null
 
 ### 描述符（Descriptor Number）
 
-| 描述符  | 描述             |
-| ---- | -------------- |
-| 0    | 标准输入（stdin）    |
-| 1    | 标准输出（stdout）   |
-| 2    | 标准错误输出（stderr） |
+| 描述符 | 描述                   |
+| ------ | ---------------------- |
+| `0`    | 标准输入（stdin）      |
+| `1`    | 标准输出（stdout）     |
+| `2`    | 标准错误输出（stderr） |
 
 ### 操作符（Operator）
 
-| 操作符  | 描述                                       |
-| ---- | ---------------------------------------- |
-| <    | 重定向输入（Redirecting Input）                 |
-| >    | 重定向输出（Redirecting Output），与 `1>` 等价      |
-| >>   | 追加到重定向输出（Appending Redirected Output）    |
-| 2>   | 重定向错误输出（Redirecting Error）               |
-| 2>>  | 追加到重定向错误输出（Appending Redirected Error）   |
-| &>   | 重定向标准输出和标准错误输出（Redirecting Standard Output and Standard Error）。 **推荐使用**，它与 `>word 2>&1` 在语义上等价 |
-| >&   | 同上，但不推荐使用                                |
-| 2>&1 | 将标准错误输出重定向到标准输出                          |
+| 操作符 | 描述                                                         |
+| ------ | ------------------------------------------------------------ |
+| `<`    | 重定向输入（Redirecting Input）                              |
+| `>`    | 重定向输出（Redirecting Output），与 `1>` 等价               |
+| `>>`   | 追加到重定向输出（Appending Redirected Output）              |
+| `2>`   | 重定向错误输出（Redirecting Error）                          |
+| `2>>`  | 追加到重定向错误输出（Appending Redirected Error）           |
+| `&>`   | 重定向标准输出和标准错误输出（Redirecting Standard Output and Standard Error）。 **推荐使用**，它与 `>word 2>&1` 在语义上等价 |
+| `>&`   | 同上，但不推荐使用                                           |
+| `2>&1` | 将标准错误输出重定向到标准输出                               |
 
 # 序列（Lists）
 
-list（序列）是一个或多个管道，用操作符 ;, &, &&, 或 || 分隔的序列, 并且可以选择用 ;, &, 或 \<newline\>新行符结束。
+list（序列）是一个或多个管道，用操作符 `;`、`&`、`&&`、`||` 分隔的序列, 并且可以选择用 `;`、`&`、`<newline>` 新行符结束。
 
-| 操作符         | 例子                     | 描述                                       |
-| ----------- | ---------------------- | ---------------------------------------- |
-| &&          | command1 && command2   | 一个 AND 序列。command2 只有在 command1 返回 0 时才被执行 |
-| \|\|        | command1 \|\| command2 | 一个 OR 序列。command2 只有在 command1 返回非 0 状态时才被执行 |
-| ;           | command1; command2     | 结束一个序列。不考虑命令的退出状态，连续执行命令                 |
-| \<newline\> | command\<newline\>     | 结束一个序列                                   |
-| &           | command1 &             | 如果一个命令是由 & 结束的, shell 将在后台的子 shell 中执行这个命令 |
+| 操作符        | 例子                   | 描述                                                         |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
+| `&&`          | command1 && command2   | 一个 AND 序列。command2 只有在 command1 返回 0 时才被执行    |
+| <code>&#124;&#124;</code>       | command1 &#124;&#124; command2 | 一个 OR 序列。command2 只有在 command1 返回非 0 状态时才被执行 |
+| `;`           | command1; command2     | 结束一个序列。不考虑命令的退出状态，连续执行命令             |
+| `<newline>` | command<newline\>     | 结束一个序列                                                 |
+| `&`           | command1 &             | 如果一个命令是由 & 结束的, shell 将在后台的子 shell 中执行这个命令 |
 
 * AND 和 OR 序列的返回状态是序列中最后执行的命令的返回状态。
-* 这些序列操作符中， && 和 || 优先级相同， ; 和 & 优先级相同。
+* 这些序列操作符中， `&&` 和 `||` 优先级相同， `;` 和 `&` 优先级相同。
 
 ## 退出状态（Exit Status）
 

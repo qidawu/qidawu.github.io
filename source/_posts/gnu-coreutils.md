@@ -173,11 +173,13 @@ GNU/CoreUtils 是一组类 Unix 操作系统所需的基础软件包。它包含
 
 ## Printing text
 
-| 命令       | 描述                               | 备注                                       |
-| -------- | -------------------------------- | ---------------------------------------- |
-| `echo`   | Print a line of text             | `-n` 不输出末尾换行符<br/>`-e` 开启转义字符，例如：反斜杠 ``、换行符 `\n` |
-| `printf` | Format and print data            |                                          |
-| `yes`    | Print a string until interrupted | 使用管道自动输入“y”进行文件强制覆盖，方法：`yes | cp 源文件 目的文件` |
+| 命令     | 描述                             | 备注                                                         |
+| -------- | -------------------------------- | ------------------------------------------------------------ |
+| `echo`   | Print a line of text             | `-n` 不输出末尾换行符<br/>`-e` 开启转义字符，例如：反斜杠 `\\`、换行符 `\n` |
+| `printf` | Format and print data            |                                                              |
+| `yes`    | Print a string until interrupted |                                                              |
+
+`yes` 命令小技巧，使用管道自动输入“y”进行文件强制覆盖，方法：`yes | cp 源文件 目的文件`
 
 ## Numeric operations
 
