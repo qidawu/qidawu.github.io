@@ -239,6 +239,23 @@ $ rsync [option...] [user@]host:src... [dest]
 $ rsync [option...] src... [user@]host:dest
 ```
 
+如果双方都修改了同一文件的同一个地方，`rsync` 不管源和目标的修改时间谁先谁后，而是以源作为基准去覆盖目标文件。
+
+常用参数：
+
+* `-a`：归档模式，等价于 `-rlptgoD`（不包括 `-H`, `-A`, `-X`）
+  * `-r`, `--recursive`：递归遍历目录
+  * `-l`, `--links`：复制软链接（symbolic link, symlinks）
+  * `-p`, `--perms`：保留权限
+  * `-t`, `--times`：保留修改时间
+  * `-g`, `--group`：保留属组
+  * `-o`, `--owner`：保留属主
+  * `-D`：等价于：
+    * `--devices`：保留设备文件
+    * `--specials`：保留特殊文件
+* `-v`, `--verbose`：详细输出信息
+* `-H`, `--hard-links`：保留硬链接（hard links）
+
 ### 批量 rsync
 
 ```bash
