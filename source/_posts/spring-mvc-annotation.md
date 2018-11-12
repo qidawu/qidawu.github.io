@@ -9,7 +9,7 @@ tags: Java
 
 一张图简要描述 Spring MVC 的处理流程：
 
-![Spring MVC](/img/spring-mvc/spring-mvc.png)
+![Spring MVC](/img/spring/spring-mvc.png)
 
 * Spring MVC 的核心前端控制器 `DispatcherServlet` 接收 HTTP 请求并询问 `Handler mapping` 该请求应该转发到哪个 `Controller` 方法。
 * `Controller` 业务处理完毕，返回 *逻辑视图名(通常是一个字符串)* 。
