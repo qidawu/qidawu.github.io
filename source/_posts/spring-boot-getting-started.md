@@ -9,18 +9,22 @@ tags: Java
 
 有几种方式可以搭建基于 Spring Boot 的项目：
 
-1. [Spring Initializr](https://start.spring.io/)
+1. [Spring Initializr](https://start.spring.io/) 在线生成项目
 
-> Spring Initializr 从本质上来说就是一个Web应用程序，它能为你生成 Spring Boot 项目结构。虽然不能生成应用程序代码，但它能为你提供一个基本的项目结构，以及一个用于构建代码的 Maven 或 Gradle 构建说明文件。你只需要写应用程序的代码就好了。
+  > Spring Initializr 从本质上来说就是一个Web应用程序，它能为你生成 Spring Boot 项目结构。虽然不能生成应用程序代码，但它能为你提供一个基本的项目结构，以及一个用于构建代码的 Maven 或 Gradle 构建说明文件。你只需要写应用程序的代码就好了。
 
 2. [Spring Boot CLI](https://docs.spring.io/spring-boot/docs/current/reference/html/cli.html) 命令行工具，下载地址[点我](http://repo.spring.io/release/org/springframework/boot/spring-boot-cli/)，命令如下：
 
-```bash
-$ spring init -dweb,data-jpa,h2,thymeleaf --build gradle readingList
-```
+  ```bash
+  $ spring init -dweb,data-jpa,h2,thymeleaf --build gradle readingList
+  ```
 
-3. [Spring Tool Suite](https://spring.io/tools/sts)，一个官方的 IDE，用法参考：《[STS 创建第一个 Spring Boot 项目](http://blog.csdn.net/linabc123000/article/details/68954236)》
+3. [Spring Tool Suite](https://spring.io/tools/sts)，一个官方基于 Eclipse 定制的 IDE，用法参考：《[STS 创建第一个 Spring Boot 项目](http://blog.csdn.net/linabc123000/article/details/68954236)》
+
 4. IntelliJ IDEA
+
+   1. 社区版：离线安装 [Spring Assistant](http://plugins.jetbrains.com/plugin/10229-spring-assistant) 插件（在线安装方式被墙）
+   2. 收费版：直接使用 Spring Initializr 插件
 
 # POM 配置
 

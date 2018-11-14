@@ -28,6 +28,8 @@ Spring 事务管理方式有两种：
 | `NEVER`         | ~~以非事务方式执行，如果当前存在事务，则抛出异常。~~         |
 | `NESTED`        | 如果当前存在事务，则在嵌套事务内执行。如果当前没有事务，则执行与 `REQUIRED` 类似的操作。 |
 
+强烈不建议使用非事务方式执行，因此上述标注删除线的传播行为不建议使用。
+
 # 参考
 
 https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/annotation/Transactional.html
