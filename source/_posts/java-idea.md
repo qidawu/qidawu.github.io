@@ -201,3 +201,7 @@ https://plugins.jetbrains.com/idea
 
 IDEA 重构官方文档：
 https://www.jetbrains.com/help/idea/refactoring-source-code.html
+
+IDEA 高级调试技巧：
+
+http://www.mamicode.com/info-detail-1761996.html

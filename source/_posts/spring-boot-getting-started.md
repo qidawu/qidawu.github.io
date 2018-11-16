@@ -1,5 +1,5 @@
 ---
-title: 《Spring Boot 实战》笔记——项目搭建
+title: Spring Boot 项目搭建
 date: 2018-10-01 16:38:00
 updated:
 tags: Java
@@ -109,4 +109,8 @@ $ java -jar target/myapplication-0.0.1-SNAPSHOT.jar
 $ java -jar target/myapplication-0.0.1-SNAPSHOT.jar -spring.profiles.active=prod
 ```
 
+# 参考
 
+《Spring Boot in Action》
+
+https://docs.spring.io/spring-boot/docs/current/

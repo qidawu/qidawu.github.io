@@ -116,4 +116,6 @@ Require.js 入门教程参考[此前博文](/2016/07/05/javascript-requirejs/)�
 
 [Web前后端分离开发思路](https://segmentfault.com/a/1190000002413526)
 
+[前后端分离后的契约](http://www.cnblogs.com/whitewolf/p/4686154.html)
+
 [什么是基于数据驱动的前端框架？](https://segmentfault.com/q/1010000008376827/a-1020000008379228)

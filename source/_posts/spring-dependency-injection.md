@@ -1,6 +1,6 @@
 ---
 title: Spring 依赖注入总结
-date: 2016-01-03 22:26:34
+date: 2016-06-04 22:26:34
 updated:
 tags: Java
 ---
@@ -127,7 +127,10 @@ public class CDPlayerTest {
 }
 ```
 
-如何处理自动装配的歧义性问题？
+如何处理自动装配的歧义性问题？有两种方案：
+
+* 使用 `@Primary` 注解将可选 bean 中的某一个设为首选的 bean。`@Primary` 能够与 `@Component` 组合用在组件扫描的 bean 上，也可以与 `@Bean` 组合用在 Java 配置的 bean 声明中。 
+* 使用限定符注解 `@Qualifier` 来帮助 Spring 将可选的 bean 的范围缩小到只有一个 bean。
 
 ## 基于 Java 的显式配置
 
@@ -166,22 +169,9 @@ public class CDPlayerConfig {
 }
 ```
 
-### 根据环境配置
+### 条件化的 bean
 
-在开发软件的时候，有一个很大的挑战就是将应用程序从一个环境迁移到另外一个环境。开发阶段中，某些环境相关做法可能并不适合迁移到生产环境中，甚至即便迁移过去也无法正常工作。跨环境部署时会发生变化的几个典型例子：
-
-* 数据库配置
-* 加密算法
-* 与外部系统的集成
-
-解决办法：
-
-* 构建时根据不同的环境分别打包，典型方法是采用 Maven profile。
-* 运行时指定不同的环境变量，典型方法是采用 Spring profile bean。
-
-### 条件化
-
-
+参考另一篇博文：《[Spring 条件化 bean 总结](/2018/10/01/spring-conditional-bean/)》
 
 ## 基于 XML 的显式配置
 
@@ -203,127 +193,16 @@ XML 配置的缺点是比较复杂，且无法从编译期的类型检查中受�
 public class GlobalConfig() {}
 ```
 
-# Spring 容器
-
-Bean Factory
-
-## Application Context
-
-Spring 通过应用上下文（Application Context）装载 bean 的定义并将它们装配起来。Spring 应用上下文全权负责对象的创建、装配、配置它们并管理它们的整个生命周期。Spring 自带了多种应用上下文的实现，它们之间主要的区别仅仅在于如何加载配置：
-
-### XML
-
-* `FileSystemXmlapplicationcontext` 从文件系统下的一个或多个 XML 配置文件中加载上下文定义：
-
-  ```java
-  ApplicationContext ctx = new FileSystemXmlApplicationContext("c:/applicationContext.xml");
-  ```
-
-* `ClassPathXmlApplicationContext` 从类路径下的一个或多个 XML 配置文件中加载上下文定义：
-
-  ```java
-  ApplicationContext ctx = new ClassPathXmlApplicationContext("META-INF/spring/applicationContext.xml");
-  ```
-
-* `XmlWebApplicationContext` 从 Web 应用下的一个或多个 XML 配置文件中加载上下文定义，是 Web 应用程序使用的默认上下文类，因此不必在 `web.xml` 文件中显式指定这个上下文类。以下代码描述了 `web.xml` 中指向将由 `ContextLoaderListener` 监听器类载入的外部 XML 上下文文件的元素：
-
-  ```xml
-  <web-app>
-      <context-param>
-          <param-name>contextConfigLocation</param-name>
-          <param-value>/WEB-INF/applicationContext.xml</param-value>
-      </context-param>
-      <listener>
-          <listener-class>
-              org.springframework.web.context.ContextLoaderListener
-          </listener-class>
-      </listener>
-      <servlet>
-          <servlet-name>sampleServlet</servlet-name>
-          <servlet-class>
-              org.springframework.web.servlet.DispatcherServlet
-          </servlet-class>
-      </servlet>
-   
-  ...
-  </web-app>
-  ```
-
-### Annotation
-
-* `AnnotationConfigApplicationContext` 从一个或多个基于 Java 的配置类中加载 Spring 应用上下文：
-
-  ```java
-  // 使用构造函数来注册配置类 DubboApplication
-  ApplicationContext ctx = new AnnotationConfigApplicationContext(org.apache.dubbo.config.DubboApplication.class);
-  
-  // 此外，还可以使用 register 方法来注册配置类 OtherApplication
-  ctx.register(OtherApplication.class)
-  ```
-
-  ```java
-  package org.apache.dubbo.config；
-  
-  import org.springframework.context.annotation.Bean;
-  import org.springframework.context.annotation.Configuration;
-  
-  @Configuration
-  public class DubboApplication {
-      
-      // 注册配置类将自动注册 @Bean 注解的方法名称返回的 bean
-      @Bean
-      public ApplicationConfig applicationConfig() {
-          ApplicationConfig applicationConfig = new ApplicationConfig();
-          applicationConfig.setName("dubbo-annotation-provider");
-          return applicationConfig;
-      }
-  }
-  ```
-
-* `AnnotationConfigWebApplicationContext` 从一个或多个基于 Java 的配置类中加载 Spring Web 应用上下文，需要显示配置该类：
-
-  ```xml
-  <web-app>
-      <context-param>
-          <param-name>contextClass</param-name>
-          <param-value>
-              org.springframework.web.context.support.AnnotationConfigWebApplicationContext
-          </param-value>
-      </context-param>
-      <context-param>
-          <param-name>contextConfigLocation</param-name>
-          <param-value>
-              demo.AppContext
-          </param-value>
-      </context-param>
-      <listener>
-          <listener-class>
-              org.springframework.web.context.ContextLoaderListener
-          </listener-class>
-      </listener>
-      <servlet>
-          <servlet-name>sampleServlet</servlet-name>
-          <servlet-class>
-              org.springframework.web.servlet.DispatcherServlet
-          </servlet-class>
-          <init-param>
-              <param-name>contextClass</param-name>
-              <param-value>
-                  org.springframework.web.context.support.AnnotationConfigWebApplicationContext
-              </param-value>
-          </init-param>
-      </servlet>
-   
-  ...
-  </web-app>
-  ```
-
-## Bean 的生命周期
-
 # 参考
 
-《Spring 实战（第四版）》
+《[Spring in Action, 4th](https://www.manning.com/books/spring-in-action-fourth-edition)》
+
+《[Dependency Injection, Design patterns using Spring and Guice](https://www.manning.com/books/dependency-injection)》
 
 《[使用 Java 配置进行 Spring bean 管理](https://www.ibm.com/developerworks/cn/webservices/ws-springjava/)》
 
 《[IoC模式（依赖、依赖倒置、依赖注入、控制反转）](https://www.cnblogs.com/fuchongjundream/p/3873073.html)》
+
+[Package org.springframework.context.annotation](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/package-summary.html)
+
+> Annotation support for the Application Context, including JSR-250 "common" annotations, component-scanning, and Java-based metadata for creating Spring-managed objects.
