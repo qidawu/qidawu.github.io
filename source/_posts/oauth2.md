@@ -42,6 +42,10 @@ OAuth 旨在让用户能够对第三方应用授予有限的访问权限。第�
 
 ![OAuth 2.0 授权码模式](/img/security/oauth2.png)
 
+报文如下：
+
+![OAuth 2.0 授权码模式](/img/security/grant_type_of_authorization_code.png)
+
 交互方式上特别注意浏览器会进行几次 302 重定向。流程总结如下：
 
 1. 第三方应用首先向服务提供商申请 `client_id` 应用唯一标识、`client_secret` 密钥，用于后续获取令牌时提供身份校验；
@@ -53,18 +57,17 @@ OAuth 旨在让用户能够对第三方应用授予有限的访问权限。第�
 7. `access_token` 是有有效期的，过期后需要刷新。
 8. 拿到令牌 `access_token` 后，第三方应用就可以访问资源方，获取所需资源。`access_token` 相当于用户的 session id。
 
+# 密码模式
+
+报文如下：
+
+![OAuth 2.0 密码模式](/img/security/grant_type_of_password.png)
+
 # 客户端模式
 
-客户端授权模式用于请求商户资源，而不是用户资源，其请求如下：
+客户端授权模式用于请求商户资源，而不是用户资源，报文如下：
 
-```
-POST /token HTTP/1.1
-Host: authorization-server.com
- 
-grant_type=client_credentials
-&client_id=xxxxxxxxxx
-&client_secret=xxxxxxxxxx
-```
+![OAuth 2.0 客户端模式](/img/security/grant_type_of_client_credentials.png)
 
 以微信公众平台为例，商户在完成接入并[获取 access_token](https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421140183) 之后，可用于如下场景：
 
