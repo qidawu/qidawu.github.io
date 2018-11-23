@@ -70,6 +70,29 @@ Maven 本质上是一个插件框架，它的核心并不执行任何具体的�
 
 ![Maven 常用插件](/img/java/maven_plugins.png)
 
+## 工具
+
+### maven-archetype-plugin
+
+用于生成骨架，后续详细补充。
+
+### maven-dependency-plugin
+
+用于分析项目依赖，例如通过 `mvn dependency:tree` 命令分析 Dubbo 默认依赖的第三方库：
+
+```
+[INFO] +- com.alibaba:dubbo:jar:2.5.9-SNAPSHOT:compile
+[INFO] |  +- org.springframework:spring-context:jar:4.3.10.RELEASE:compile
+[INFO] |  +- org.javassist:javassist:jar:3.21.0-GA:compile
+[INFO] |  \- org.jboss.netty:netty:jar:3.2.5.Final:compile
+```
+
+# IDEA Maven 插件
+
+最后来看下 IDEA Maven 插件提供的 Maven Projects tool window 功能：
+
+![IDEA Maven Projects](/img/java/idea_maven_projects.png)
+
 # 参考
 
 http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html

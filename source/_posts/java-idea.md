@@ -7,7 +7,13 @@ tags: Java
 
 年初也转投 IDEA 阵营了，相比 Eclipse 确实顺畅很多，尤其是多开项目的时候，已经有种回不去的感觉了。这里介绍一些两个 IDE 之间的区别。
 
-首先是 IDEA 版本的选择，建议使用 Community 社区免费版即可，对比 Ultimate 收费版并无太大区别。都支持 Java、Maven、Git 等基本功能。
+# 版本选择
+
+首先是 IDEA 版本的选择，建议使用 Community 社区免费版即可，对比 Ultimate 收费版并无太大区别。都支持 Java、Maven、Git 等基本功能。但社区版会少了一些插件，例如 Spring Initializr。
+
+版本区别详见：https://www.jetbrains.com/idea/features/editions_comparison_matrix.html
+
+# 创建项目
 
 其次创建项目，需要了解 IDEA 的 Project 和 Module 两个概念：
 
@@ -16,9 +22,17 @@ tags: Java
 
 最后尝试新建一个 HelloWorld 示例项目，`.idea` 文件夹和 `HelloWorld.iml` 是 IDEA 帮助我们建立的辅助文件夹和文件，类似于 Eclipse 在我们的 Workspace 下建立的 `.settings` 文件夹和 `.classpath` 、`.project` 文件。 
 
-![IDEA Hello World](/img/java/idea_hello_world.png)
+![IDEA Hello World](/img/java/idea/hello_world.png)
 
 Project 作为工作空间可以自由切换、多开，从 File > Open Recent 中选择即可。
+
+# 导入项目
+
+File > New > Module from Existing Sources... > 选择项目集的根目录，并按如下操作：
+
+![Import Module](/img/java/idea/import_module.png)
+
+![Import Module](/img/java/idea/import_module_search_for_projects_recursively.png)
 
 # 全局配置
 
@@ -61,6 +75,7 @@ File > Other Setting > Default Settings > Terminal，修改 Shell path 为：D:\
 
 推荐一些好用的插件：
 
+- Maven Integration：官方 Maven 插件，参考：[IDEA Maven 插件](/2018/05/01/maven-build-lifecycle/)
 - Lombok Plugin：用于精简冗余代码，必装。
 - [MyBatis Plugin](https://plugins.jetbrains.com/plugin/7293-mybatis-plugin)：最强大的 MyBatis 插件，不过是收费版。
 - Free MyBatis plugin：免费的 MyBatis 插件，提供了一些基本的跳转和代码生成功能。
