@@ -171,7 +171,7 @@ public class CDPlayerConfig {
 
 ### 条件化的 bean
 
-参考另一篇博文：《[Spring 条件化 bean 总结](/2018/10/01/spring-conditional-bean/)》
+参考另一篇博文：《[Spring 条件化 bean 总结](/2018/10/04/spring-conditional-bean/)》
 
 ## 基于 XML 的显式配置
 
@@ -192,6 +192,12 @@ XML 配置的缺点是比较复杂，且无法从编译期的类型检查中受�
 @ImportResource("classpath:applicationContext.xml")
 public class GlobalConfig() {}
 ```
+
+# Aware 接口
+
+[org.springframework.beans.factory.Aware](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/beans/factory/Aware.html)
+
+![Aware 接口](/img/spring/aware_interface.png)
 
 # 参考
 

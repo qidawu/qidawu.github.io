@@ -1,5 +1,5 @@
 ---
-title: Spring Boot 项目搭建
+title: Spring Boot 入门总结
 date: 2018-10-01 16:38:00
 updated:
 tags: Java
@@ -25,6 +25,26 @@ tags: Java
 
    1. 社区版：离线安装 [Spring Assistant](http://plugins.jetbrains.com/plugin/10229-spring-assistant) 插件（在线安装方式被墙）
    2. 收费版：直接使用 Spring Initializr 插件
+
+# 依赖管理
+
+- spring-boot
+- spring-boot-parent
+- spring-boot-dependencies
+  - 用于定义和统一管理 Sprint Boot 的各个依赖版本号。
+
+- spring-boot-starters
+  - Spring Boot 提供的众多起步依赖，用于降低项目依赖的复杂度。起步依赖本质上就是特殊的 Maven 依赖和 Gradle 依赖，利用了**传递依赖**解析，把常用库聚合在一起，组成了几个为特定功能而定制的依赖。参考：[using-boot-starter](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter)
+  - 比起减少依赖数量，起步依赖还引入了一些微妙的变化。向项目中添加了某个起步依赖，实际上指定了应用程序所需的**一类功能**。
+  - 起步依赖引入的库的版本兼容性都是**经过测试**的，可以放心使用。
+- spring-boot-autoconfigure
+  - 包含一系列 Spring Boot 条件化注解 `@ConditionOnXxx`、`@EnableAutoConfiguration`
+
+- spring-boot-test、spring-boot-test-autoconfigure
+- spring-boot-actuator、spring-boot-actuator-autoconfigure
+- spring-boot-devtools
+- spring-boot-tools
+- spring-boot-cli
 
 # POM 配置
 
@@ -52,8 +72,9 @@ Maven 用户可以继承 `spring-boot-starter-parent` POM 项目以获得合理�
 
 - Java 1.8 作为默认的编译器级别
 - UTF-8 源码编码
-- 提供统一的依赖版本管理（继承 pom `spring-boot-dependencies`），可以让你在自己的 pom 中引入依赖时省略版本号定义，保障依赖间的兼容性
-- 合理的 [resource filtering](https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html) 配置
+- 提供统一的依赖版本管理（继承自 Maven POM `spring-boot-dependencies`），可以让你在自己的 pom 中引入依赖时省略版本号定义，保障依赖间的兼容性
+- An execution of the [`repackage` goal](https://docs.spring.io/spring-boot/docs/2.1.0.RELEASE/maven-plugin/repackage-mojo.html) with a `repackage` execution id.
+- 合理的 [resource filtering](https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html) 配置（`application.properties` and `application.yml` including profile-specific files）
 - 合理的 plugin configuration 配置
 
 ## 组合方式
@@ -114,3 +135,7 @@ $ java -jar target/myapplication-0.0.1-SNAPSHOT.jar -spring.profiles.active=prod
 《Spring Boot in Action》
 
 https://docs.spring.io/spring-boot/docs/current/
+
+https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter
+
+https://github.com/spring-projects/spring-boot

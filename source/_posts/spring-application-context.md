@@ -126,6 +126,13 @@ Spring 通过应用上下文（Application Context）装载 bean 的定义并将
 
 # Bean 的作用域
 
+使用 `@Scope` 注解定义 bean 的作用域，它可以与 `@Component` 或 `@Bean` 一起使用：
+
+* 单例(Singleton):在整个应用中，只创建bean的一个实例。
+* 原型(Prototype):每次注入或者通过Spring应用上下文获取的时候，都会创建一个新的bean实例。
+* 会话(Session):在Web应用中，为每个会话创建一个bean实例。
+* 请求(Rquest):在Web应用中，为每个请求创建一个bean实例。
+
 # 参考
 
 《[Spring in Action, 4th](https://www.manning.com/books/spring-in-action-fourth-edition)》

@@ -1,6 +1,6 @@
 ---
-title: Spring 条件化 bean 定义
-date: 2018-10-01 23:29:06
+title: Spring 条件化 bean 总结
+date: 2018-10-04 23:29:06
 updated:
 tags: Java
 ---
@@ -37,24 +37,7 @@ public interface Condition {
 * 读取并探查 `getResourceLoader()` 返回的 `ResourceLoader` 所加载的资源；
 * 借助 `getClassLoader()` 返回的 `ClassLoader` 加载并检查类是否存在。
 
-# Spring Boot 的条件化注解
-
-Spring Boot 没有引入任何形式的代码生成，而是利用了 Spring 4 的条件化 bean 配置特性，以及 Maven 和 Gradle 提供的传递依赖解析，以此实现 Spring 应用程序上下文里的自动配置。Spring Boot 实现的条件化注解如下：
-
-![Spring Boot 实现的条件化注解](/img/spring/conditional_annotation.png)
-
-依赖配置：
-
-```xml
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-autoconfigure</artifactId>
-</dependency>
-```
-
-Spring Boot 的 `@Conditional` 注解实现及相关支持类，详见文档：[Package org.springframework.boot.autoconfigure.condition](https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/autoconfigure/condition/package-summary.html)
-
-# 环境与 profile
+## 环境与 profile
 
 在开发软件的时候，有一个很大的挑战就是将应用程序从一个环境迁移到另外一个环境。开发阶段中，某些环境相关做法可能并不适合迁移到生产环境中，甚至即便迁移过去也无法正常工作。跨环境部署时会发生变化的几个典型例子：
 
@@ -113,6 +96,76 @@ public class GlobalConfig() {
 public @interface Profile {
     String[] value();
 }
+```
+
+# Spring Boot 的条件化注解
+
+Spring Boot 没有引入任何形式的代码生成，而是利用了 Spring 4 的条件化 bean 配置特性，以及 Maven 和 Gradle 提供的传递依赖解析，以此实现 Spring 应用上下文里的**自动配置**。Spring Boot 实现的条件化注解如下：
+
+![Spring Boot 实现的条件化注解](/img/spring/conditional_annotation.png)
+
+Spring Boot 的 `@Conditional` 注解实现及相关支持类，详见文档：[Package org.springframework.boot.autoconfigure.condition](https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/autoconfigure/condition/package-summary.html)
+
+依赖配置：
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-autoconfigure</artifactId>
+</dependency>
+```
+
+通过运行 `DEBUG=true mvn spring-boot:run`，可以看到 DEBUG 级别的日志输出，从而观察自动配置的详情（AUTO-CONFIGURATION REPORT）：
+
+* Positive matches
+* Negative matches
+* Exclusions
+* Unconditional classes
+
+```
+============================
+CONDITIONS EVALUATION REPORT
+============================
+
+Positive matches:
+-----------------
+
+   GenericCacheConfiguration matched:
+      - Cache org.springframework.boot.autoconfigure.cache.GenericCacheConfiguration automatic cache type (CacheCondition)
+
+   JmxAutoConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.jmx.export.MBeanExporter' (OnClassCondition)
+      - @ConditionalOnProperty (spring.jmx.enabled=true) matched (OnPropertyCondition)
+
+   PropertyPlaceholderAutoConfiguration#propertySourcesPlaceholderConfigurer matched:
+      - @ConditionalOnMissingBean (types: org.springframework.context.support.PropertySourcesPlaceholderConfigurer; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+
+Negative matches:
+-----------------
+
+   ActiveMQAutoConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'javax.jms.ConnectionFactory' (OnClassCondition)
+
+   AopAutoConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.aspectj.lang.annotation.Aspect' (OnClassCondition)
+
+Exclusions:
+-----------
+
+    None
+
+Unconditional classes:
+----------------------
+
+    org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration
+
+    org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration
+
+    org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration
+
 ```
 
 # 参考

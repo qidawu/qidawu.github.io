@@ -17,9 +17,9 @@ tags: Java
 AOP 的一些场景如下：
 
 - 日志
-- 事务
-- 安全
-- 缓存
+- 事务，如 Spring Transactional
+- 安全，如 Spring Security
+- 缓存，如 Spring Cache
 
 # AOP 术语
 
