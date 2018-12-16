@@ -1,6 +1,6 @@
 ---
-title: Spring 条件化 bean 总结
-date: 2018-10-04 23:29:06
+title: Spring Bean 条件化配置总结
+date: 2016-06-05 23:29:06
 updated:
 tags: Java
 ---
@@ -10,7 +10,7 @@ tags: Java
 > 假设你希望一个或多个 bean 只有在应用的类路径下包含特定的库时才创建。或者我们希望某个 bean 只有当另外某个特定的 bean 也声明了之后才会创建。我们还可能要求只有某个特定的环境变量设置之后，才会创建某个 bean。
 > 在 Spring 4 之前，很难实现这种级别的条件化配置，但是 Spring 4 引入了一个新的 `@Conditional` 注解，它可以用到带有 `@Bean` 注解的方法上。如果给定的条件计算结果为 `true`，就会创建这个 bean，否则的话，这个 bean 会被忽略。
 
-[@Conditional 注解](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Conditional.html)：
+[@Conditional 注解](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Conditional.html)的源码如下：
 
 ```java
 @Target({ElementType.TYPE, ElementType.METHOD})
@@ -21,7 +21,7 @@ public @interface Conditional {
 }
 ```
 
-[Condition 接口](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Condition.html)：
+[Condition 接口](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Condition.html)的源码如下：
 
 ```java
 public interface Condition {
@@ -29,7 +29,7 @@ public interface Condition {
 }
 ```
 
-通过 `ConditionContext`，我们可以做到如下几点：
+其中，通过 `Condition` 接口的入参 `ConditionContext`，我们可以做到如下几点：
 
 * 借助 `getRegistry()` 返回的 `BeanDefinitionRegistry` 检查 bean 定义；
 * 借助 `getBeanFactory()` 返回的 `ConfigurableListableBeanFactory` 检查 bean 是否存在，甚至探查 bean 的属性；
