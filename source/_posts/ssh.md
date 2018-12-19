@@ -25,52 +25,90 @@ SSH 全称 Secure SHell，顾名思义就是非常安全的 shell 的意思，SS
 
 SSH 是一种加密协议，不仅在登录过程中对密码进行加密传送，而且对登录后执行的命令的数据也进行加密，这样即使别人在网络上监听并截获了你的数据包，他也看不到其中的内容。SSH 协议底层使用 TCP 协议，端口号 22。
 
+# 鉴权方式对比
+
+不同于 `telnet` 只支持 Password 密码鉴权，SSH 同时支持以下几种鉴权方式（Authentication）：
+
+- Password（密码）
+- **Public Key**（公钥）
+- Keyboard Interactive（键盘交互）
+- GSSAPI 
+
+目前 SSH 最常用的鉴权方式有 Password 和 Public key 。Public Key 非对称（asymmetric）鉴权认证使用一对相关联的 Key Pair（一个公钥 Public Key，一个私钥 Private Key）来代替传统的密码（Password）。顾名思义，Public Key 是用来公开的，可以将其放到 SSH 服务器自己的帐号中，而 Private Key 只能由自己保管，用来证明自己身份。
+
+使用 Public Key 加密过的数据只有用与之相对应的 Private Key 才能解密。这样在鉴权的过程中，Public Key 拥有者便可以通过 Public Key 加密一些东西发送给对应的 Private Key 拥有者，如果在通信的双方都拥有对方的 Public Key（自己的 Private Key 只由自己保管），那么就可以通过这对 Key Pair 来安全地交换信息，从而实现相互鉴权。
+
 # OpenSSH
 
-[OpenSSH](http://www.openssh.com/) 是 SSH 协议的**免费开源实现**。OpenSSH 套件使用 `ssh` 程序替代 `telnet` 和 `rlogin` ，使用 `scp` 替代 `rcp` ，使用 `sftp` 替代 `ftp` 。OpenSSH 套件还包含一个 `sshd` 服务端程序（一个运行于服务端的独立守护进程（standalone daemon）），以及一系列 SSH 工具：
+[OpenSSH](http://www.openssh.com/) 是 SSH 协议的**免费开源实现**。OpenSSH 套件由以下工具集组成：
+
+远程操作工具：
+
+* `ssh`（替代 `telnet` 和 `rlogin`）
+* `scp`（替代 `rcp`）
+* `sftp`（替代 `ftp`）
+
+公私钥管理工具：
 
 * `ssh-add` Tool which adds private keys to the authentication agent.
-* `ssh-agent` An authentication agent that can store private keys.
 * `ssh-keygen` Key generation tool.
 * `ssh-keysign` Helper program for host-based authentication.
 * `ssh-keyscan` Utility for gathering public host keys from a number of hosts.
 
-## 鉴权方式
+客户端工具：
 
-不同于 `telnet` 只支持 Password 密码鉴权，SSH 同时支持以下几种鉴权方式（Authentication）：
+* `ssh-agent` An authentication agent that can store private keys.
 
-* Password（密码）
-* **Public Key**（公钥）
-* Keyboard Interactive（键盘交互）
-* GSSAPI 
+服务端工具：
 
-目前 SSH 最常用的鉴权方式有 Password 和 Public key 。
+* `sshd` 一个运行于服务端的独立守护进程（standalone daemon）
+* `sftp-server` SFTP 服务器
 
-###  Public Key
+## 常用命令
 
-Public Key 非对称（asymmetric）鉴权认证使用一对相关联的 Key Pair（一个公钥 Public Key，一个私钥 Private Key）来代替传统的密码（Password）。顾名思义，Public Key 是用来公开的，可以将其放到 SSH 服务器自己的帐号中，而 Private Key 只能由自己保管，用来证明自己身份。
+当管理的服务器较多时，ssh 远程需要频繁的输入用户名、密码、服务器 IP，操作非常繁琐，下面介绍一些命令结合配置以简化操作。
 
-使用 Public Key 加密过的数据只有用与之相对应的 Private Key 才能解密。这样在鉴权的过程中，Public Key 拥有者便可以通过 Public Key 加密一些东西发送给对应的 Private Key 拥有者，如果在通信的双方都拥有对方的 Public Key（自己的 Private Key 只由自己保管），那么就可以通过这对 Key Pair 来安全地交换信息，从而实现相互鉴权。
+### ssh
 
-## 相关文件
+`ssh` 命令用法：
 
-SSH 相关文件和配置：
+```bash
+$ ssh [-p port] [user@]hostname [command]
+```
 
-| 文件                     | 描述                                       |
-| ---------------------- | ---------------------------------------- |
-| ~/.ssh/id_rsa.pub      | 公钥（Public Key）                           |
-| ~/.ssh/id_rsa          | 私钥（Private Key）                          |
-| ~/.ssh/known_hosts     | 位于客户端的公钥列表文件，首次与目标主机建立 SSH 连接时，需要添加对方的公钥到这个文件以便后续通信 |
-| ~/.ssh/authorized_keys | 位于服务端的公钥列表文件，列出了所有被允许登录进来的可信公钥信息（Lists the public keys that are permitted for logging in） |
-| ~/.ssh/config          | SSH 客户端配置文件，可以通过 `man ssh_config` 命令查看帮助。 |
+有时候输入 `ssh` 的参数繁琐，一旦服务器较多，要一个个记住并且敲入时非常低效。因此 `ssh` 提供了配置文件的方式简化命令行选项。`ssh` 依序从下列来源中获取配置，最先获取的值将优先使用：
 
-# SSH 技巧
+1. 命令行选项（command-line options）
+2. 用户配置文件 `~/.ssh/config`
+3. 系统配置文件 `/etc/ssh/ssh_config`
 
-当管理的服务器较多时，ssh 远程需要频繁的输入用户名、密码、服务器 IP，操作非常繁琐，下面介绍两个技巧简化操作。
+常用配置项如下：
 
-## 免密登录
+```bash
+Host    别名
+    HostName        主机名
+    Port            端口
+    User            用户名
+    IdentityFile    密钥文件的路径
+```
 
-在使用 `ssh` 进行远程登录时，由于默认使用的是 Password 鉴权方式，因此每次登录都需要输入密码，操作麻烦。下面介绍 Public Key  鉴权方式进行免密登录。
+通过配置，`ssh` 远程命令简化如下：
+
+```bash
+$ ssh 别名
+```
+
+例如：
+
+```bash
+$ ssh pc2 /sbin/ifconfig
+```
+
+`pc2` 是从 `~/.ssh/config` 中获取的 hostname 别名。
+
+### ssh-keygen
+
+在使用 `ssh` 进行远程登录时，由于默认使用的是 Password 鉴权方式，因此每次登录都需要输入密码，操作麻烦。下面介绍使用 Public Key  鉴权方式实现**免密登录**。
 
 一、创建一对公私钥：
 
@@ -110,80 +148,11 @@ $ chmod 600 ~/.ssh/*
 
 之后再使用 `ssh` 登录时，客户端的 `ssh-agent` 会发送私钥去和服务端上的公钥做匹配，如果匹配成功就可以免密登录了。
 
-##  别名设置
+### ssh-add
 
-ssh 远程时，通常命令如下：
-
-```bash
-$ ssh [-p port] [user@]hostname [command]
-```
-
-参数繁琐，一旦服务器较多，要一个个记住并且敲入时非常低效。
-
-ssh 提供了配置文件的方式简化命令行选项。ssh 依序从下列来源中获取配置，最先获取的值将优先使用：
-
-1. 命令行选项（command-line options）
-2. 用户的配置文件：`~/.ssh/config`
-3. 系统的配置文件：`/etc/ssh/ssh_config`
-
-
-常用配置项如下：
+`ssh-add` 命令常见用法：
 
 ```bash
-Host    别名
-    HostName        主机名
-    Port            端口
-    User            用户名
-    IdentityFile    密钥文件的路径
-```
-
-通过配置，ssh 远程命令简化如下：
-
-```bash
-$ ssh 别名
-```
-
-# 常用命令
-
-## ssh
-
-命令用法：
-
-```bash
-$ ssh [-p port] [user@]hostname [command]
-```
-
-`ssh` 命令执行时，会从下列来源中按序获取配置参数：
-
-1. 命令行参数
-2. 用户配置文件 `~/.ssh/config`
-3. 系统配置文件 `/etc/ssh/ssh_config`
-
-最先获取到的参数值将被优先使用。
-
-
-
-例如：
-
-```bash
-$ ssh pc2 /sbin/ifconfig
-```
-
-`pc2` 是从 `~/.ssh/config` 中获取的 hostname 别名。
-
-## ssh-add
-
-命令常见用法：
-
-```bash
-$ ssh-add -D
-All identities removed.
-
-$ ssh-add -l
-The agent has no identities.
-
-$ ssh-add -h
-ssh-add: unknown option -- h
 usage: ssh-add [options] [file ...]
 Options:
   -l          List fingerprints of all identities.
@@ -200,11 +169,21 @@ Options:
   -e pkcs11   Remove keys provided by PKCS#11 provider.
 ```
 
+例如：
+
+```bash
+$ ssh-add -D
+All identities removed.
+
+$ ssh-add -l
+The agent has no identities.
+```
+
 参考：http://linux.101hacks.com/unix/ssh-add/
 
-## scp
+### scp
 
-命令常用参数：
+`scp` 命令常用参数：
 
 ```bash
 -r 递归复制（用以传输文件夹）
@@ -212,9 +191,7 @@ Options:
 -C 传输时进行数据压缩
 ```
 
-### 批量 scp
-
-利用 bash 的 `for` 循环实现批量 `scp` 目录：
+可以结合 bash 的 `for` 循环实现批量 `scp` 目录：
 
 ```bash
 #!/bin/bash
@@ -227,7 +204,20 @@ for ip in ${HOST_IP[@]}
   done
 ```
 
-## rsync
+## 相关文件
+
+SSH 相关文件和配置：
+
+| 文件                   | 描述                                                         |
+| ---------------------- | ------------------------------------------------------------ |
+| ~/.ssh/id_rsa.pub      | 公钥（Public Key）                                           |
+| ~/.ssh/id_rsa          | 私钥（Private Key）                                          |
+| ~/.ssh/known_hosts     | 位于客户端的公钥列表文件，首次与目标主机建立 SSH 连接时，需要添加对方的公钥到这个文件以便后续通信 |
+| ~/.ssh/authorized_keys | 位于服务端的公钥列表文件，列出了所有被允许登录进来的可信公钥信息（Lists the public keys that are permitted for logging in） |
+| ~/.ssh/config          | 用户配置文件，可以通过 `man ssh_config` 命令查看帮助。       |
+| /etc/ssh/ssh_config    | 系统配置文件                                                 |
+
+# rsync
 
 批量 `scp` 的缺点是会全量同步，且删除行为无法同步，可以用 `rsync` 命令优化：
 
@@ -256,7 +246,7 @@ $ rsync [option...] src... [user@]host:dest
 * `-v`, `--verbose`：详细输出信息
 * `-H`, `--hard-links`：保留硬链接（hard links）
 
-### 批量 rsync
+## 批量 rsync
 
 ```bash
 #!/bin/bash
@@ -288,3 +278,5 @@ deleting resmarket/static/site/v1/img/banner/web-banner-20170716.jpg
 《[5 Unix / Linux ssh-add Command Examples to Add SSH Key to Agent](http://linux.101hacks.com/unix/ssh-add/)》
 
 [《rsync同步的艺术》–linux命令五分钟系列之四十二](http://roclinux.cn/?p=2643)
+
+《[ssh keygen 中生成的 randomart image 是什么](https://www.jianshu.com/p/c6a7ffe01ac3)》
