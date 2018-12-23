@@ -120,7 +120,7 @@ SET TRANSACTION READ ONLY; --只读模式，有助于提升存储引擎的性能
 
 # SET 语法
 
-也可以通过 [`SET`](https://dev.mysql.com/doc/refman/5.7/en/set-variable.html) 语句直接进行 [`transaction_isolation`](https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_transaction_isolation) 和 [`transaction_read_only`](https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_transaction_read_only) 系统变量赋值，语法总结如下：
+也可以通过 [`SET`](https://dev.mysql.com/doc/refman/5.7/en/set-variable.html) 语句直接进行各种变量赋值，语法总结如下：
 
 | 语法                               | 作用域                |
 | ---------------------------------- | --------------------- |
@@ -131,7 +131,7 @@ SET TRANSACTION READ ONLY; --只读模式，有助于提升存储引擎的性能
 | SET *var_name* = *value*           | Session               |
 | SET @@*var_name* = *value*         | Next transaction only |
 
-查询语法如下：
+变量的查询语法如下，例如 [`transaction_isolation`](https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_transaction_isolation) 和 [`transaction_read_only`](https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_transaction_read_only) ：
 
 ```sql
 SELECT @@GLOBAL.transaction_isolation, @@GLOBAL.transaction_read_only;
