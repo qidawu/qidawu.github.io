@@ -72,10 +72,10 @@ File > Other Setting > Default Settings > Terminal，修改 Shell path 为：D:\
 
 | 功能                                     | 快捷键     |
 | ---------------------------------------- | ---------- |
-| Close                                    | Ctrl+W     |
+| Close                                    | Alt+W      |
 | Hide All Tool Windows                    | Ctrl+M     |
 | Redo                                     | Ctrl+Y     |
-| Delete Line                              | Ctrl+Alt+D |
+| Delete Line                              | Alt+D      |
 | Annotate                                 | Ctrl+Alt+1 |
 | Show History                             | Ctrl+Alt+2 |
 | Compare with the Same Repository Version | Ctrl+Alt+3 |
