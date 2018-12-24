@@ -52,7 +52,7 @@ tags: Java
 
 Maven 会解析各个直接依赖的 POM，将那些必要的间接依赖，以**传递性依赖**的方式引入到当前项目中，而开发者不用再考虑该直接依赖还依赖了什么，或手动引入导致多余依赖：
 
-![传递性依赖](/img/java/maven_transitive_dependencies.png)
+![传递性依赖](/img/java/maven/transitive_dependencies.png)
 
 ## 依赖调解
 
@@ -102,7 +102,7 @@ Maven 调解依赖有两个基本原则：
 
 结果如图：
 
-![依赖排除](/img/java/maven_exclusion_dependencies.png)
+![依赖排除](/img/java/maven/exclusion_dependencies.png)
 
 ## 依赖归类
 
