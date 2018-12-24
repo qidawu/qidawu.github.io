@@ -73,9 +73,9 @@ File > Other Setting > Default Settings > Terminal，修改 Shell path 为：D:\
 | 功能                                     | 快捷键     |
 | ---------------------------------------- | ---------- |
 | Close                                    | Alt+W      |
-| Hide All Tool Windows                    | Ctrl+M     |
-| Redo                                     | Ctrl+Y     |
+| Hide All Tool Windows                    | Alt+M      |
 | Delete Line                              | Alt+D      |
+| Redo                                     | Ctrl+Y     |
 | Annotate                                 | Ctrl+Alt+1 |
 | Show History                             | Ctrl+Alt+2 |
 | Compare with the Same Repository Version | Ctrl+Alt+3 |
@@ -86,14 +86,17 @@ File > Other Setting > Default Settings > Terminal，修改 Shell path 为：D:\
 
 # 插件
 
-推荐一些好用的插件：
+官方插件：
 
 - Maven Integration：官方 Maven 插件，参考：[IDEA Maven 插件](/2018/05/01/maven-build-lifecycle/)
+- JUnit：快速创建、运行、查看单元测试，在单元测试和目标之间跳转。
+
+推荐一些好用的插件：
+
 - Lombok Plugin：用于精简冗余代码，必装。
-- [Smart Tomcat](https://plugins.jetbrains.com/plugin/9492-smart-tomcat)：社区版没有提供该功能（[点我](https://stackoverflow.com/questions/22047860/tomcat-in-intellij-idea-community-edition)），可以用这个插件替代
 - [MyBatis Plugin](https://plugins.jetbrains.com/plugin/7293-mybatis-plugin)：最强大的 MyBatis 插件，不过是收费版。
 - Free MyBatis plugin：免费的 MyBatis 插件，提供了一些基本的跳转和代码生成功能。
-- JUnit：快速创建、运行、查看单元测试，在单元测试和目标之间跳转。
+- [Smart Tomcat](https://plugins.jetbrains.com/plugin/9492-smart-tomcat)：社区版没有提供该功能（[点我](https://stackoverflow.com/questions/22047860/tomcat-in-intellij-idea-community-edition)），可以用这个插件替代
 - [Ace Jump](http://kidneyball.iteye.com/blog/1814028)：使用这个插件，直接使用键盘定位到你想去的地方 。
 
 # 快捷键
