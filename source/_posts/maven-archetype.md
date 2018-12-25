@@ -49,11 +49,11 @@ archetype
 | prototype pom        | 新工程的原型 POM | `src/main/resources/archetype-resources/pom.xml`  | archetype 插件会直接复制这个 `pom.xml`，然后替换其中的占位符 `${artifactId}`、`${groupId}`、`${version}` |
 | prototype files      | 新工程的原型文件 | `src/main/resources/archetype-resources/`         | archetype 插件会直接复制这些文件                             |
 
-# 配置描述符 archetype.xml
+## 配置描述符 archetype.xml
 
 然后，配置 archetype.xml，详见：[archetype descriptor](http://maven.apache.org/archetype/archetype-models/archetype-descriptor/archetype-descriptor.html)
 
-# 配置新工程的 pom.xml
+## 配置新工程的 pom.xml
 
 使用占位符 `${artifactId}`、`${groupId}`、`${version}`，这些变量都将在 `archetype:generate` 命令运行时被初始化：
 
@@ -81,16 +81,49 @@ archetype
 </project>
 ```
 
-# 配置新工程的相关文件
+## 配置新工程的相关文件
 
 将新工程所需文件，全部拷贝到 `src/main/resources/archetype-resources/` 目录下。
 
-# 安装 archetype
+# 安装 archetype 到本地仓库
 
 创建骨架并配置完毕，首先安装到本地仓库：
 
+* 如果是使用 Maven 内置的 `maven-archetype-archetype` 构件创建的骨架工程样例，直接在该目录下执行安装命令即可。
+* 如果是使用命令 `archetype:create-from-project` 从现有的项目中创建骨架，需要先 `cd` 进入到 `target/generated-sources/archetype/` 目录，再运行 `mvn install`。
+
 ```
 mvn install
+```
+
+执行如下插件 goal：
+
+```
+maven-resources-plugin:resources  // 拷贝资源文件
+maven-resources-plugin:testResources  // 拷贝测试资源文件
+maven-archetype-plugin:jar  // 在 target 目录下构建出 archetype jar
+maven-archetype-plugin:integration-test
+maven-install-plugin:install  // 将构建出来的 jar 和 pom 安装到本地仓库
+maven-archetype-plugin:update-local-catalog  // 更新本地仓库根目录下的 archetype-catalog.xml
+```
+
+安装完毕，将构建出来的 archetype jar `artifactId-archetype-version.jar` 安装到本地仓库，同时更新本地仓库根目录下的 `archetype-catalog.xml` ，插入一段骨架配置如下：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<archetype-catalog xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-catalog/1.0.0 http://maven.apache.org/xsd/archetype-catalog-1.0.0.xsd"
+    xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-catalog/1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <archetypes>
+    <!-- 新插入的骨架 -->
+    <archetype>
+      <groupId>[your project's group id]</groupId>
+      <artifactId>[your project's artifact id]</artifactId>
+      <version>xxx</version>
+      <description>xxx</description>
+    </archetype>
+  </archetypes>
+</archetype-catalog>
 ```
 
 # 运行 archetype 插件
@@ -113,8 +146,42 @@ Maven Archetype Plugin（骨架插件）能够让用户从现有的模板（即�
 从上图可见，该插件提供了如下目标（即命令）：
 
 * [`archetype:generate`](http://maven.apache.org/archetype/maven-archetype-plugin/generate-mojo.html) creates a Maven project from an archetype: asks the user to choose an archetype from the archetype catalog, and retrieves it from the remote repository. Once retrieved, it is processed to create a working Maven project.
-* [`archetype:create-from-project`](http://maven.apache.org/archetype/maven-archetype-plugin/create-from-project-mojo.html) creates an archetype from an existing project.
+* [`archetype:create-from-project`](http://maven.apache.org/archetype/maven-archetype-plugin/create-from-project-mojo.html) creates an archetype from an existing project.（注意如果需要包含 yml 配置文件，需要加上参数 `-Darchetype.filteredExtentions=yml`）
 * [`archetype:crawl`](http://maven.apache.org/archetype/maven-archetype-plugin/crawl-mojo.html) search a repository for archetypes and updates a catalog.
+
+# 发布到远程仓库
+
+骨架生成成功，并且一切符合预期之后，可以发布到远程仓库供他人使用：
+
+```
+mvn deploy
+```
+
+# IDEA 添加骨架配置
+
+File > New Module > Maven，勾选 Create from archetype，点击 Add Archetype，配置如下：
+
+![IDEA 中添加 archetype](/img/java/maven/idea_add_archetype.png)
+
+输入创建 archetype 工程时，定义的 GroupId、ArtifactId、Version，并选择你远程仓库的地址即可，例如：http://xxx/nexus/content/repositories/snapshots。
+
+配置完毕，创建新工程时，将会执行命令：
+
+```
+-DinteractiveMode=false
+-DarchetypeGroupId=
+-DarchetypeArtifactId=
+-DarchetypeVersion=
+-DarchetypeRepository=http://xxx/nexus/content/repositories/snapshots 
+-DgroupId=
+-DartifactId= 
+-Dversion=
+org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate
+```
+
+goal `generate` 执行过程中会下载指定的 archetype jar，并根据指定参数创建新工程。
+
+注意，由于这种方式只会下载指定的 archetype jar 到本地仓库，但不会将骨架添加到本地仓库根目录下的骨架目录文件  `archetype-catalog.xml` 之中。这将会导致在 IDEA 之外以命令行方式执行 `mvn archetype:generate` 生成新工程时，由于在骨架目录文件中找不到指定 archetype 而报错，因此需要将该 archetype 添加到骨架目录文件下。解决方法是执行命令：`mvn archetype:crawl` 遍历本地仓库搜索骨架并更新目录文件。
 
 # 参考
 
