@@ -97,7 +97,7 @@ Maven 本质上是一个插件框架，它的核心并不执行任何具体的�
 
 最后来看下 IDEA Maven 插件提供的 Maven Projects tool window 功能：
 
-![IDEA Maven Projects](/img/java/idea_maven_projects.png)
+![IDEA Maven Projects](/img/java/idea/maven_projects.png)
 
 # 参考
 
