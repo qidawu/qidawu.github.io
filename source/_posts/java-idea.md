@@ -34,9 +34,11 @@ File > New > Module from Existing Sources... > 选择项目集的根目录，并
 
 ![Import Module](/img/java/idea/import_module_search_for_projects_recursively.png)
 
-# 基本配置
+# 创建 java/resource 目录
 
-鼠标放到类、方法、变量上显示完整 java doc 注释：File > Settings > Editor > General > 开启 Show quick documentation on mouse move
+Ctrl+Alt+Shift+S，打开 Project Structure > Modules：
+
+![Project Structure > Modules](/img/java/idea/project_structure_modules.png)
 
 # 全局配置
 
@@ -76,6 +78,8 @@ File > Other Setting > Default Settings > Terminal，修改 Shell path 为：D:\
 | Hide All Tool Windows                    | Alt+M      |
 | Delete Line                              | Alt+D      |
 | Redo                                     | Ctrl+Y     |
+| Rename                                   | Alt+R      |
+| Completion                               | Alt+/      |
 | Annotate                                 | Ctrl+Alt+1 |
 | Show History                             | Ctrl+Alt+2 |
 | Compare with the Same Repository Version | Ctrl+Alt+3 |
@@ -84,12 +88,45 @@ File > Other Setting > Default Settings > Terminal，修改 Shell path 为：D:\
 
 调整完当前窗口的布局之后，可以保存当前的窗口布局，以便全局生效：Window > Store Current Layout as Default
 
+## Code Template
+
+File > Other Setting > Default Settings > 搜索 File and Code Templates，打开 Includes > File Header，配置：
+
+```
+/**
+ * <p>
+ *
+ * </p>
+ *
+ * @author xxx
+ * @email xxx
+ * @since ${DATE}
+ **/
+```
+
+## Quick documentation 
+
+File > Settings > Editor > General > 开启 Show quick documentation on mouse move，可用于鼠标放到类、方法、变量上时显示完整 java doc 注释
+
+## Auto Import
+
+File > Settings > Editor > General > Auto Import，然后勾选：
+
+Add unambiguous imports on the fly：快速添加明确的导入。
+
+Optimize imports on the fly：快速优化导入，优化的意思即自动帮助删除无用的导入。
+
 # 插件
 
-官方插件：
+官方插件（内置）：
 
 - Maven Integration：官方 Maven 插件，参考：[IDEA Maven 插件](/2018/05/01/maven-build-lifecycle/)
 - JUnit：快速创建、运行、查看单元测试，在单元测试和目标之间跳转。
+
+官方插件（需安装）：
+
+- IdeaVim：Vim 程序员必装。
+- NodeJS：运行前端项目、or 构建前端项目时都是需要的。
 
 推荐一些好用的插件：
 
@@ -98,6 +135,10 @@ File > Other Setting > Default Settings > Terminal，修改 Shell path 为：D:\
 - Free MyBatis plugin：免费的 MyBatis 插件，提供了一些基本的跳转和代码生成功能。
 - [Smart Tomcat](https://plugins.jetbrains.com/plugin/9492-smart-tomcat)：社区版没有提供该功能（[点我](https://stackoverflow.com/questions/22047860/tomcat-in-intellij-idea-community-edition)），可以用这个插件替代
 - [Ace Jump](http://kidneyball.iteye.com/blog/1814028)：使用这个插件，直接使用键盘定位到你想去的地方 。
+
+如果被墙导致无法连接到 Marketplace 或插件无法下载，可以配置如下：
+
+![IDEA 无法下载插件](/img/java/idea/use_secure_connection.png)
 
 # 快捷键
 
