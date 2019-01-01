@@ -46,6 +46,12 @@ $ sudo brew install git
 
 # 如何配置？
 
+## 中文乱码显示问题
+
+1. 打开 GitBash（git-bash.exe）后，对窗口右键->Options->Text->Locale 改为 `zh_CN`，Character set 改为 `GBK` ;
+
+2. 键入exit退出关闭再打开即可。
+
 ## 配置提交作者
 
 开始使用 Git 之前，第一件重要的事情就是配置提交作者，首先做如下检查：
