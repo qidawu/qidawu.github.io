@@ -27,7 +27,13 @@ Java Launcher（即 `java`）启动 Java 虚拟机。虚拟机按以下顺序搜
 
 为了查找 User classes，Java Launcher 启动程序将引用 *User Classpath* - 一个包含了用户定义的类文件的目录、jar 包和 zip 包列表。作为 Java 虚拟机或 Java 编译器中的一个参数，可以在命令行上或通过环境变量进行设置。
 
-*User Classpath* 使用字符串格式指定，并用以下方式对列表中每个条目进行分隔：
+*User Classpath* 使用字符串格式指定，路径不要含有空格，否则转义为 `%20` 之后会报错，例如：
+
+```
+java.lang.RuntimeException: Cannot resolve classpath entry: java.lang.RuntimeException: Cannot resolve classpath entry: D:\myprogram\mybatis%20tool\mybatis-generator-gui-0.8.4\target\classes\lib\mysql-connector-java-5.1.38.jar
+```
+
+每个路径使用以下方式进行分隔：
 
 * 在类 Unix 系统中，以冒号（`:`）分隔
 * 在 Windows 系统中，以分号（`;`）分隔
