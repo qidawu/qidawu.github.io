@@ -46,6 +46,14 @@ $ sudo brew install git
 
 # 如何配置？
 
+Git 相关的配置文件有三个：
+
+1. `/etc/gitconfig` 包含了适用于系统所有用户和所有项目的值。
+2. `~/.gitconfig` 只适用于当前登录用户的配置。
+3. Git 项目中的 `.git/config` 适用于特定 Git 项目的配置。
+
+对于同一配置项，三个配置文件的优先级是 3 > 2 >1。
+
 ## 中文乱码显示问题
 
 1. 打开 GitBash（git-bash.exe）后，对窗口右键->Options->Text->Locale 改为 `zh_CN`，Character set 改为 `GBK` ;
