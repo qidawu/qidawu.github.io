@@ -9,15 +9,21 @@ tags: Java
 
 # Java Launcher 如何查找类？
 
-Java Launcher（即 `java`）启动 Java 虚拟机。虚拟机按以下顺序搜索并加载类：
+Java Launcher（即使用 `java` 命令）启动 Java 虚拟机时，虚拟机按以下顺序搜索并加载类：
+
+![Class Loader](/img/java/classloader.png)
 
 ## Bootstrap classes
 
-构成 Java 平台的基础类，位于 `jre/lib/` 目录，包括 `rt.jar` 和其它几个重要 jar 文件中的类。这些基础类包括 Java 类库（[Java Class Library (JCL)](https://en.wikipedia.org/wiki/Java_Class_Library)）的公共类，以及此库可用的私有类。几乎所有的 JCL 都存储在一个名为“`rt.jar`”的 [Java archive (jar)](https://en.wikipedia.org/wiki/JAR_(file_format)) 归档文件中，该文件随 [JRE](https://en.wikipedia.org/wiki/Java_Runtime_Environment) 和 [JDK](https://en.wikipedia.org/wiki/Java_Development_Kit) 发行版一起提供。Java 类库（`rt.jar`）位于默认的 bootstrap classpath（`jre/lib/`）下，不必出现在为应用程序声明的 [classpath](https://en.wikipedia.org/wiki/Classpath_(Java)) 中。JRE 会使用引导类加载器（bootstrap class loader）找到 JCL。
+构成 Java 平台的基础类，位于 `$JAVA_HOME/jre/lib` 目录，包括 `rt.jar` 和其它几个重要 jar 文件中的类。这些基础类包括 Java 类库（[Java Class Library (JCL)](https://en.wikipedia.org/wiki/Java_Class_Library)）的公共类，以及此库可用的私有类。
+
+几乎所有的 Java 类库（JCL） 都存储在一个名为“`rt.jar`”的 [Java archive (jar)](https://en.wikipedia.org/wiki/JAR_(file_format)) 归档文件中，该文件随 [JRE](https://en.wikipedia.org/wiki/Java_Runtime_Environment) 和 [JDK](https://en.wikipedia.org/wiki/Java_Development_Kit) 发行版一起提供。Java 类库（`rt.jar`）位于默认的 bootstrap classpath（`$JAVA_HOME/jre/lib`）下，不必出现在为应用程序声明的 [classpath](https://en.wikipedia.org/wiki/Classpath_(Java)) 中。JRE 会使用引导类加载器（bootstrap class loader）找到 JCL。
+
+Java 9 的[模块系统](https://en.wikipedia.org/wiki/Java_Module_System)目前已将这个单块的 `rt.jar` jar 包拆分并模块化。
 
 ## Extension classes
 
-扩展 Java 平台的扩展类。位于 `jre/lib/ext/` 扩展目录的每个 `.jar` 文件都被假定为扩展文件，并使用 [Java Extension Framework](https://docs.oracle.com/javase/8/docs/technotes/guides/extensions/index.html) 扩展机制加载。
+扩展 Java 平台的扩展类。位于 `$JAVA_HOME/jre/lib/ext` 扩展目录的每个 `.jar` 文件都被假定为扩展文件，并使用 [Java Extension Framework](https://docs.oracle.com/javase/8/docs/technotes/guides/extensions/index.html) 扩展机制加载。
 
 ## User classes
 
@@ -53,7 +59,7 @@ Java Launcher 启动程序将这个 *User Classpath* 字符串放到 `java.class
 
 ![CLASSPATH 例子](/img/java/User_Classpath.png)
 
-## class 文件
+## Unpacked Classes
 
 假设我们有一个名为主类：HelloWorld，存储在 *D:\myprogram* 目录下：
 
@@ -91,15 +97,21 @@ $ java -classpath D:\myprogram org.mypackage.HelloWorld
 hello world
 ```
 
-## jar 包
+## JAR files
 
 * 单个 jar 包：使用绝对路径指定具体某个 jar 包
 
 * 多个 jar 包：使用绝对路径加上通配符 `*`
 
-## 在清单文件中设置路径
+## META-INF/MANIFEST.MF
 
-如果程序已经打成 jar 包，需要使用[清单文件](https://en.wikipedia.org/wiki/Manifest_file)指定入口类及 `CLASSPATH`，并使用 `java -jar` 命令启动。
+如果程序已经打成 jar 包，需要使用[清单文件](https://en.wikipedia.org/wiki/Manifest_file)指定入口类及 `CLASSPATH`，并使用 `java -jar` 命令启动。例如 Tomcat 的 `bootstrap.jar` 引导包：
+
+```
+......
+Main-Class: org.apache.catalina.startup.Bootstrap
+Class-Path: commons-daemon.jar
+```
 
 # IDEA 如何查找类？
 
@@ -121,4 +133,8 @@ https://en.wikipedia.org/wiki/Classpath_(Java)
 
 https://en.wikipedia.org/wiki/Java_Class_Library
 
+https://docs.oracle.com/javase/8/docs/technotes/tools/windows/java.html
+
 https://docs.oracle.com/javase/8/docs/technotes/tools/findingclasses.html
+
+http://cr.openjdk.java.net/~mr/jigsaw/ea/module-summary.html
