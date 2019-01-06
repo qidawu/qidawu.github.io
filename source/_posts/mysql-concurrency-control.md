@@ -58,6 +58,8 @@ tags: MySQL
 
 # 参考
 
-《高性能 MySQL》
-
 https://en.wikipedia.org/wiki/Concurrency_control
+
+[《支付宝防并发方案之"一锁二判三更新"》](https://segmentfault.com/a/1190000011200547)
+
+《高性能 MySQL》

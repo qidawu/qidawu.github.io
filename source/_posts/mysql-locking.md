@@ -125,5 +125,3 @@ https://en.wikipedia.org/wiki/Two-phase_locking
 https://dev.mysql.com/doc/refman/5.7/en/innodb-locking.html
 
 https://dev.mysql.com/doc/refman/5.7/en/innodb-deadlocks.html
-
-[支付宝防并发方案之"一锁二判三更新"](https://segmentfault.com/a/1190000011200547)
