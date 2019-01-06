@@ -1,4 +1,5 @@
-title: "GUN/Bash 系列之快捷键总结"
+---
+title: "GUN/Bash 系列（八）快捷键总结"
 date: 2015-04-19 14:34:30
 updated: 
 tags: GNU/Linux

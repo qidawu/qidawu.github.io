@@ -1,5 +1,5 @@
 ---
-title: GNU/Bash 系列之 Shell 启动
+title: GNU/Bash 系列（六）Bash Shell 启动流程
 date: 2015-05-01 22:38:36
 updated:
 tags: GNU/Linux

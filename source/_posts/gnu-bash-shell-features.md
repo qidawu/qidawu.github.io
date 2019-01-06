@@ -1,13 +1,25 @@
 ---
-title: GUN/Bash 系列之常用语法（Shell Grammar）
+title: GUN/Bash 系列（三）Shell 特性
 date: 2015-11-13 21:41:04
 updated:
 tags: GNU/Linux
 ---
 
-# 简单命令（Simple Commands）
+# Shell 语法
 
-# 管道（Pipelines）
+## 引用（Quoting）
+
+
+
+## 注释（Comments）
+
+以 `#` 起始的词使得这个词和所有同一行上所有剩余的字符都被忽略。
+
+# Shell 命令
+
+## 简单命令（Simple Commands）
+
+## 管道（Pipelines）
 
 pipeline（管道）是一个或多个命令的序列，用字符 | 分隔。管道的命令格式如下：
 
@@ -72,7 +84,7 @@ $ find /tmp/ -name 2> /dev/null
 | `>&`   | 同上，但不推荐使用                                           |
 | `2>&1` | 将标准错误输出重定向到标准输出                               |
 
-# 序列（Lists）
+## 序列（Lists of Commands）
 
 list（序列）是一个或多个管道，用操作符 `;`、`&`、`&&`、`||` 分隔的序列, 并且可以选择用 `;`、`&`、`<newline>` 新行符结束。
 
@@ -87,14 +99,14 @@ list（序列）是一个或多个管道，用操作符 `;`、`&`、`&&`、`||` 
 * AND 和 OR 序列的返回状态是序列中最后执行的命令的返回状态。
 * 这些序列操作符中， `&&` 和 `||` 优先级相同， `;` 和 `&` 优先级相同。
 
-## 退出状态（Exit Status）
+### 退出状态（Exit Status）
 
 * 从 shell 的角度看，一个命令退出状态是 0 意味着成功退出。 非零状态值表明失败。
 * 如果没有找到命令，为执行它而创建的子进程返回 127。
 * 如果找到了命令但是文件不可执行，返回状态是 126。
 * 如果命令由于扩展或重定向错误而失败，退出状态大于零。
 
-## 使用场景
+### 使用场景
 
 在某些情况下，很多命令我想要一次输入去运行，有两种方法：
 
@@ -107,7 +119,7 @@ list（序列）是一个或多个管道，用操作符 `;`、`&`、`&&`、`||` 
 $ ./configure && make && make install
 ```
 
-# 复合命令（Compound Commands）
+## 复合命令（Compound Commands）
 
 compound command（复合命令）是如下情况之一：
 
@@ -126,6 +138,29 @@ compound command（复合命令）是如下情况之一：
 
 * `select name [ in word ] ; do list ; done`
 
-## 算术求值（Arithmetic Evaluation）
+# Shell 函数（Shell Functions）
 
-## 条件表达式（Conditional Expressions）
+# Shell 参数（Shell Parameters）
+
+## 位置参数（Positional Parameters）
+
+`$n`：`$1` 表示第一个参数，`$2` 表示第二个参数，以此类推。
+
+## 特殊参数（Special Parameters）
+
+`$0`：表示脚本文件名
+
+`$#`：表示命令行参数的个数
+
+`$?`：前一个命令或函数的返回码，`0` 为成功，非 `0` 为错误/失败
+
+`$*`：以"参数1 参数2 ... " 的形式保存所有参数
+
+`$@`：以"参数1" "参数2" ... 的形式保存所有参数
+
+`$$`：本程序的 PID（进程 ID 号）
+
+`$!`：最近执行的后台（即异步）命令的 PID
+
+# Shell 扩展（Shell Expansions）
+

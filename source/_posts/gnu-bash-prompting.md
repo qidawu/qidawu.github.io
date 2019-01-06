@@ -1,5 +1,5 @@
 ---
-title: "GUN/Bash 系列之提示符（Prompting）"
+title: "GUN/Bash 系列（六）提示符（Prompting）"
 date: 2015-12-03 23:32:53
 updated: 
 tags: GNU/Linux
@@ -71,5 +71,7 @@ export PS1="[\u@\h \w]\$ "
 [root@BGP-BJ-C-5HL ~]$
 ```
 # 参考
+
+http://www.gnu.org/software/bash/manual/bashref.html#Controlling-the-Prompt
 
 《[自定义shell终端提示符（例如颜色）](http://www.cnblogs.com/lienhua34/p/5018119.html)》
