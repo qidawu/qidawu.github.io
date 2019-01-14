@@ -68,22 +68,6 @@ File > Other Setting > Default Settings > Build, Execution, Deployment > Build T
 
 File > Other Setting > Default Settings > Terminal，修改 Shell path 为：D:\Developer\PortableGit\bin\sh.exe，可配置 Terminal 终端为 GitBash。
 
-## keymap
-
-自定义快捷键，例如我配置了：
-
-| 功能                                     | 快捷键     |
-| ---------------------------------------- | ---------- |
-| Close                                    | Alt+W      |
-| Hide All Tool Windows                    | Alt+M      |
-| Delete Line                              | Alt+D      |
-| Redo                                     | Ctrl+Y     |
-| Rename                                   | Alt+R      |
-| Completion                               | Alt+/      |
-| Annotate                                 | Ctrl+Alt+1 |
-| Show History                             | Ctrl+Alt+2 |
-| Compare with the Same Repository Version | Ctrl+Alt+3 |
-
 ## Layout
 
 调整完当前窗口的布局之后，可以保存当前的窗口布局，以便全局生效：Window > Store Current Layout as Default
@@ -142,6 +126,26 @@ Optimize imports on the fly：快速优化导入，优化的意思即自动帮�
 
 # 快捷键
 
+## 自定义 keymap
+
+自定义快捷键，例如我配置了：
+
+| 功能                                     | 快捷键     |
+| ---------------------------------------- | ---------- |
+| Close                                    | Alt+W      |
+| Hide All Tool Windows                    | Alt+M      |
+| Delete Line                              | Alt+D      |
+| Redo                                     | Ctrl+Y     |
+| Rename                                   | Alt+R      |
+| Completion                               | Alt+/      |
+| Annotate                                 | Ctrl+Alt+1 |
+| Show History                             | Ctrl+Alt+2 |
+| Compare with the Same Repository Version | Ctrl+Alt+3 |
+
+## 创建类
+
+> Alt+Insert 创造万物
+
 ## 查找/替换类
 
 > Ctrl + F 在当前代码中查找（关键字）
@@ -159,14 +163,20 @@ Optimize imports on the fly：快速优化导入，优化的意思即自动帮�
 > Ctrl+Shift+N 查找文件
 >
 > Shift+Shift 查找所有（包括类、资源、配置项、方法等等）
->
+
+
+
 > Ctrl+E 最近打开的文件
 >
 > Alt+F7 查找引用（Find Usage）
 >
+> Ctrl+Shift+Backspace 回到上次修改的地方
+>
 > Ctrl+Alt+Left/Right 返回/前进至上次浏览的位置
 >
-> Ctrl+Shift+Backspace 回到上次修改的地方
+> Ctrl+鼠标左键：打开接口（Declaration）
+>
+> Ctrl+Alt+鼠标左键：打开实现（Implementation(s)）
 
 
 
@@ -185,12 +195,6 @@ Optimize imports on the fly：快速优化导入，优化的意思即自动帮�
 > Ctrl+Shift+U 大小写转换
 >
 > Ctrl+W、Ctrl+Shift+W 这个动作的实际操作是选中更上一层的语法结构。例如，如果你在一个字符串的一个单词中，按一下Ctrl+W，会选中光标所在单词。再按一下，会选中整个字符串的内容，不包括引号。再按一下，会选中包括引号的字符串。再按一下，会选中整个表达式（如果表达式含有括号，会逐层选中）。再按一下，会选中整个语句块。再按一下，会选中整个方法。再按一下，会选中整个类。
-
-## 调试类
-
-> 调试：F7/F8/F9 分别对应 Step into，Step over，Continue。
->
-> 运行：Alt+Shift+F10 运行程序，Shift+F9 启动调试，Ctrl+F2 停止。
 
 ## VCS 类
 
@@ -234,6 +238,12 @@ Optimize imports on the fly：快速优化导入，优化的意思即自动帮�
 >
 > // Pull Members Up 将方法提升到父类
 > // Pull Members Down 将方法推迟到之类
+
+## 调试类
+
+> 调试：F7/F8/F9 分别对应 Step into，Step over，Continue。
+>
+> 运行：Alt+Shift+F10 运行程序，Shift+F9 启动调试，Ctrl+F2 停止。
 
 ## 总结
 
