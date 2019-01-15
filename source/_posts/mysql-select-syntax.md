@@ -1,5 +1,5 @@
 ---
-title: SELECT 语法总结
+title: MySQL SELECT 语法总结
 date: 2017-08-24 23:37:58
 updated:
 tags: MySQL
@@ -35,9 +35,9 @@ SELECT
 
 `SELECT` 语句可用于检索单个、多个、所有列（星号 `*` 通配符）。每个 *select_expr* 表示您想要检索的列。必须至少有一个 *select_expr*。
 
-## 检索不同的值
+## 去重
 
-修饰符 `ALL` 和 `DISTINCT` 用于指定**重复行是否应该返回**，作用于所有的列，而不仅仅是跟在其后的那一列。例如 `SELECT DISTINCT vend_id, prod_price` ，除非指定的两列完全相同，否则所有的行都会被检索出来。
+修饰符 `ALL` 和 `DISTINCT` 用于指定**重复行是否应该返回（是否去重）**，作用于所有的列，而不仅仅是跟在其后的那一列。例如 `SELECT DISTINCT vend_id, prod_price` ，除非指定的两列完全相同，否则所有的行都会被检索出来。
 
 | 修饰符        | 描述                     |
 | ---------- | ---------------------- |
@@ -123,7 +123,7 @@ simple_expr:
 `LIMIT` 子句可用于限制 `SELECT` 语句返回的结果集：
 
 ```mysql
-SELECT * FROM tbl LIMIT 5;     # Retrieve first 5 rows
+SELECT * FROM tbl LIMIT 5;     # Retrieve first 5 rows, equivalent to LIMIT 0, 5
 SELECT * FROM tbl LIMIT 5,10;  # Retrieve rows 6-15
 SELECT * FROM tbl LIMIT 5 OFFSET 10;  # Retrieve rows 11-15
 ```
@@ -179,7 +179,7 @@ FROM Products;
 *   `GROUP BY` 子句可以包含任意数目的列，因而可以对分组进行嵌套，更细致地进行数据分组。
 *   如果在 `GROUP BY` 子句中嵌套了分组，数据将在最后指定的分组上进行汇总。换句话说，在建立分组时，指定的所有列都一起计算（所以不能从个别的列取回数据）。
 *   `GROUP BY` 子句中列出的每一列都必须是检索列或有效的表达式（但不能是聚集函数）。如果在 `SELECT` 中使用表达式，则必须在 `GROUP BY` 子句中指定相同的表达式。不能使用别名。
-*   除聚集计算语句外，`SELECT` 语句中的每一列都必须在 `GROUP BY` 子句中给出。
+*   除聚集计算语句外，`SELECT` 语句中的每一列都必须在 `GROUP BY` 子句中给出。否则，如果 `SELECT ` 语句中出现了 `GROUP BY ` 中没有的列，假如该分组内的条目数大于 1，这样的列显示的内容为第一个条目的值。
 *   如果分组列中包含具有 `NULL` 值的行，则 `NULL` 将作为一个分组返回。如果列中有多行 `NULL` 值，它们将分为一组。
 
 `GROUP BY` 可以搭配使用 `HAVING` 过滤分组。`HAVING` 和 `WHERE` 的差别在于，`WHERE` 对分组前的数据进行过滤， `HAVING` 对分组后的数据进行过滤。
@@ -275,14 +275,14 @@ cust_id    num_ord
 
 注意，左、右外联结之间的唯一差别是所关联的表的顺序。换句话说，调整 `FROM` 或 `WHERE` 子句中表的顺序，左外联结可以转换为右外联结。因此，这两种外联结可以互换使用，哪个方便就用哪个。
 
-# 锁定读取
+# 加锁读
 
-`InnoDB` 支持两种类型的 [锁定读取（Locking Reads）](https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_locking_read)，为事务操作提供额外的**安全性**：
+`InnoDB` 支持两种类型的 [加锁读（Locking Reads）](https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_locking_read)，为事务操作提供额外的**安全性**：
 
 * `SELECT ... LOCK IN SHARE MODE ` 设置**共享（*S*）锁**
 *  `SELECT ... FOR UPDATE` 设置**排它（*X*）锁**
 
-详情请参考《[MySQL 事务模型总结](/2018/10/21/mysql-transaction-model/)》。
+详情请参考《[MySQL 加锁读机制总结](/2018/10/21/mysql-locking-reads/)》。
 
 # 参考
 
