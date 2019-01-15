@@ -52,7 +52,7 @@ File > Other Setting > Default Project Structure
 
 ## JDK
 
-File > Other Setting > Default Settings，Projects SDK 可控制全局版本，Language Level 可控制语言级别，方便使用其特性。配置后全部 project modules 都会生效。
+File > Other Setting > Default Settings，`Projects SDK` 可控制全局版本，`Language Level` 可控制语言级别，方便使用其特性。配置后全部 project modules 都会生效。
 
 ## Maven
 
@@ -60,13 +60,13 @@ File > Other Setting > Default Settings，Projects SDK 可控制全局版本，L
 
 File > Other Setting > Default Settings > Build, Execution, Deployment > Build Tools > Maven
 
-* 可配置 Maven home directory、User settings file (自定义 setting.xml)、Local repository 本地仓库。
+* 可配置 `Maven home directory`、`User settings file` (自定义 setting.xml)、`Local repository` 本地仓库。
 
-* 自动下载源码：Importing，勾选 Sources 和 Documentation，然后 reimport 即可。
+* 自动下载源码：Importing，找到`Automatically download` 并勾选 `Sources` 和 `Documentation`，然后 reimport 即可。
 
 ## Terminal
 
-File > Other Setting > Default Settings > Terminal，修改 Shell path 为：D:\Developer\PortableGit\bin\sh.exe，可配置 Terminal 终端为 GitBash。
+File > Other Setting > Default Settings > Terminal，修改 `Shell path` 为：D:\Developer\PortableGit\bin\sh.exe，可配置 Terminal 终端为 GitBash。
 
 ## Layout
 
@@ -88,17 +88,21 @@ File > Other Setting > Default Settings > 搜索 File and Code Templates，打�
  **/
 ```
 
-## Quick documentation 
-
-File > Settings > Editor > General > 开启 Show quick documentation on mouse move，可用于鼠标放到类、方法、变量上时显示完整 java doc 注释
-
 ## Auto Import
 
 File > Settings > Editor > General > Auto Import，然后勾选：
 
-Add unambiguous imports on the fly：快速添加明确的导入。
+`Add unambiguous imports on the fly`：快速添加明确的导入。
 
-Optimize imports on the fly：快速优化导入，优化的意思即自动帮助删除无用的导入。
+`Optimize imports on the fly`：快速优化导入，优化的意思即自动帮助删除无用的导入。
+
+## Quick documentation 
+
+File > Settings > Editor > General > 开启 `Show quick documentation on mouse move`，可用于鼠标放到类、方法、变量上时显示完整 java doc 注释
+
+## Show tabs in one row
+
+File > Settings > Editor > General > Editor Tabs，去掉勾选 `Show tabs in one row`
 
 # 插件
 
@@ -114,6 +118,7 @@ Optimize imports on the fly：快速优化导入，优化的意思即自动帮�
 
 推荐一些好用的插件：
 
+- Grep Console：Grep, tail, filter, highlight... everything you need for a console. Also can highlight the editor - nice for analyzing logs...
 - Lombok Plugin：用于精简冗余代码，必装。
 - [MyBatis Plugin](https://plugins.jetbrains.com/plugin/7293-mybatis-plugin)：最强大的 MyBatis 插件，不过是收费版。
 - Free MyBatis plugin：免费的 MyBatis 插件，提供了一些基本的跳转和代码生成功能。
