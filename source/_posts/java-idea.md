@@ -252,7 +252,7 @@ File > Settings > Editor > General > Editor Tabs，去掉勾选 `Show tabs in on
 
 ## 总结
 
-![IDEA 快捷键](/img/java/idea_keymap.png)
+![IDEA 快捷键](/img/java/idea/keymap.png)
 
 摘录 10 个最常用的快捷键：
 
