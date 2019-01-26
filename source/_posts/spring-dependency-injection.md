@@ -1,6 +1,6 @@
 ---
 title: Spring 依赖注入总结
-date: 2016-05-29 22:30:34
+date: 2017-05-29 22:30:34
 updated:
 tags: Java
 ---
@@ -45,7 +45,7 @@ tags: Java
 
 只有 Spring 通过它的配置，能够了解这些组成部分是如何装配起来的。这样的话，就可以在不改变所依赖的类的情况下，修改依赖关系。
 
-Spring 提供几种配置方式，用于 bean 的声明及装配，详见《[Spring Bean 几种配置方式总结](/2016/06/04/spring-bean-wiring/)》。
+Spring 提供几种配置方式，用于 bean 的声明及装配，详见《[Spring Bean 几种配置方式总结](/2017/06/04/spring-bean-wiring/)》。
 
 # 使用场景
 

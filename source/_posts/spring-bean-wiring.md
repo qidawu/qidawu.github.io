@@ -1,6 +1,6 @@
 ---
 title: Spring Bean 几种配置方式总结
-date: 2016-06-04 22:26:34
+date: 2017-06-04 22:26:34
 updated:
 tags: Java
 ---
@@ -138,7 +138,7 @@ public class CDPlayerConfig {
 假设你希望一个或多个 bean 只有在应用的类路径下包含特定的库时才创建。或者我们希望某个 bean 只有当另外某个特定的 bean 也声明了之后才会创建。我们还可能要求只有某个特定的环境变量设置之后，才会创建某个 bean。
 在 Spring 4 之前，很难实现这种级别的条件化配置，但是 Spring 4 引入了一个新的 `@Conditional` 注解，它可以用到带有 `@Bean`注解的方法上。如果给定的条件计算结果为 `true`，就会创建这个 bean，否则的话，这个 bean 会被忽略。
 
-详情参考另一篇博文：《[Spring Bean 条件化配置总结](/2016/06/05/spring-conditional-bean/)》
+详情参考另一篇博文：《[Spring Bean 条件化配置总结](/2017/06/05/spring-conditional-bean/)》
 
 ## @Import 与 @Enable* 注解
 
