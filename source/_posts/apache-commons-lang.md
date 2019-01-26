@@ -9,7 +9,7 @@ Apache Commons 是一个 Apache 项目，专注于可重用 Java 组件的方方
 
 Apache Commons 项目由三个部分组成：
 
-![Apache Commons](/img/java/apache/apache-commons.png)   
+![Apache Commons](/img/java/commons/apache-commons.png)   
 
 其中，Apache Commons Lang 是 Java 开发过程中很常用的一个类库，可以理解为它是对 Java Lang and Util Base  Libraries 的增强。
 
@@ -26,7 +26,7 @@ Commons Lang 安装方法：
 
 Commons Lang 总览：
 
-![Commons Lang](/img/java/apache/commons-lang/commons-lang.png)
+![Commons Lang](/img/java/commons/commons-lang/commons-lang.png)
 
 Commons Lang 提供了以下 package：
 
@@ -53,7 +53,7 @@ Commons Lang 提供了以下 package：
 
 # StringUtils
 
-![StringUtils](/img/java/apache/commons-lang/StringUtils.png)
+![StringUtils](/img/java/commons/commons-lang/StringUtils.png)
 
 ## 判空函数
 
@@ -226,7 +226,7 @@ StringUtils.substring("abcdefg", -4) = "defg"
 
 //start<0&&end<0从右开始(包括右),再向左数到end结束(包括end)
 
-![substring](/img/java/apache/commons-lang/substring.png)
+![substring](/img/java/commons/commons-lang/substring.png)
 
 ```java
 //从第二个参数字符串开始截取，排除第二个字符串
@@ -356,7 +356,7 @@ StringUtils.replaceEach("abcde", new String[]{"ab", "d"}, new String[]{"d", "t"}
 
 `replaceChars` 用于对单个字符逐一替换，其操作如下：
 
-![replaceChars](/img/java/apache/commons-lang/replaceChars.png)
+![replaceChars](/img/java/commons/commons-lang/replaceChars.png)
 
 ```java
 StringUtils.replaceChars("dabcba", "bcd", "yzx") = "xayzya"
@@ -557,11 +557,11 @@ StringUtils.difference("abcde", "abxyz") = "xyz"
 StringUtils.difference("abcde", "xyz") = "xyz"
 ```
 
-![difference](/img/java/apache/commons-lang/difference.png)
+![difference](/img/java/commons/commons-lang/difference.png)
 
 # BooleanUtils
 
-![BooleanUtils](/img/java/apache/commons-lang/BooleanUtils.png)
+![BooleanUtils](/img/java/commons/commons-lang/BooleanUtils.png)
 
 # ArrayUtils
 
