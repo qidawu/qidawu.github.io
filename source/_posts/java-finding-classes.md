@@ -25,6 +25,8 @@ Java 9 的[模块系统](https://en.wikipedia.org/wiki/Java_Module_System)目前
 
 扩展 Java 平台的扩展类。位于 `$JAVA_HOME/jre/lib/ext` 扩展目录的每个 `.jar` 文件都被假定为扩展文件，并使用 [Java Extension Framework](https://docs.oracle.com/javase/8/docs/technotes/guides/extensions/index.html) 扩展机制加载。
 
+例如，可以将 MySQL 厂商驱动程序 `mysql-connector-java` 放到该扩展目录中。
+
 ## User classes
 
 由开发人员和第三方定义的未利用 Java 扩展机制的类。可以使用命令行上的 `-classpath` 选项（首选方法）或使用 `CLASSPATH` 环境变量来标识这些类的位置 。(See **Setting the Classpath** for [Windows](https://docs.oracle.com/javase/8/docs/technotes/tools/windows/classpath.html) or [Unix](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/classpath.html).)
@@ -53,9 +55,9 @@ Java Launcher 启动程序将这个 *User Classpath* 字符串放到 `java.class
 
 类文件具有反映“类的完全限定名称（class's fully-qualified name）”的子路径名。例如，如果类 `com.mypackage.MyClass` 存储在 `/myclasses` 目录，则 `/myclasses` 必须在 *User Classpath* 中，并且类文件的完整路径必须为 `/myclasses/com/mypackage/MyClass.class`。
 
-如果类存储在名为 `myclasses.jar` 的 jar 包中，则 `myclasses.jar` 必须位于  *User Classpath*  中，并且类文件必须存储在 `myclasses.jar` 中的 `com/mypackage/MyClass.class`。
+如果类存储在名为 `myclasses.jar` 的 jar 包中，则 `myclasses.jar` 必须在  *User Classpath*  中，并且类文件必须存储 `myclasses.jar/com/mypackage/MyClass.class`。
 
-下面来看几个 `CLASSPATH` 的例子，总结如下：
+下面来看几个例子，总结如下：
 
 ![CLASSPATH 例子](/img/java/User_Classpath.png)
 
@@ -96,6 +98,11 @@ hello world
 $ java -classpath D:\myprogram org.mypackage.HelloWorld
 hello world
 ```
+
+总结，设置 *Classpath* 的两种方式：
+
+* 永久设置：使用 `CLASSPATH` 环境变量
+* 临时设置：使用 `-cp` 或 `-classpath` 命令行选项
 
 ## JAR files
 
