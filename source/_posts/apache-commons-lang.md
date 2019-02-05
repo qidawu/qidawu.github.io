@@ -701,3 +701,7 @@ ArrayUtils.toString(null, "I'm nothing!"); =  I'm nothing!
 # 参考
 
 https://commons.apache.org/
+
+https://www.tutorialspoint.com/commons_collections/index.htm
+
+https://www.tutorialspoint.com/commons_io/index.htm

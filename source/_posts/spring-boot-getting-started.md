@@ -32,14 +32,16 @@ tags: Java
 - spring-boot-parent
 - spring-boot-dependencies
   - 用于定义和统一管理 Sprint Boot 的各个依赖版本号。
-
 - spring-boot-starters
-  - Spring Boot 提供的众多起步依赖，用于降低项目依赖的复杂度。起步依赖本质上就是特殊的 Maven 依赖和 Gradle 依赖，利用了**传递依赖**解析，把常用库聚合在一起，组成了几个为特定功能而定制的依赖。参考：[using-boot-starter](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter)
+  - Spring Boot 提供的众多起步依赖，用于降低项目依赖的复杂度，清单详见：[Starters](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter)
+  - 起步依赖本质上就是特殊的 Maven 依赖和 Gradle 依赖，利用了**传递依赖**解析，把常用库聚合在一起，组成了几个为特定功能而定制的依赖。
   - 比起减少依赖数量，起步依赖还引入了一些微妙的变化。向项目中添加了某个起步依赖，实际上指定了应用程序所需的**一类功能**。
   - 起步依赖引入的库的版本兼容性都是**经过测试**的，可以放心使用。
-- spring-boot-autoconfigure
-  - 包含一系列 Spring Boot 条件化注解 `@ConditionOnXxx`、`@EnableAutoConfiguration`
-
+- spring-boot-autoconfigure，包含：
+  - 自动配置总开关`@EnableAutoConfiguration`
+  - 自动配置类 `*AutoConfiguration`
+  - 外部化配置属性类 `*Properties`
+  - 条件化注解类 `@ConditionOn*`
 - spring-boot-test、spring-boot-test-autoconfigure
 - spring-boot-actuator、spring-boot-actuator-autoconfigure
 - spring-boot-devtools

@@ -140,11 +140,13 @@ public class CDPlayerConfig {
 
 详情参考另一篇博文：《[Spring Bean 条件化配置总结](/2017/06/05/spring-conditional-bean/)》
 
-## @Import 与 @Enable* 注解
+## @Import
 
 有时候我们需要引入一些外部的 Java Config 配置，这些配置往往是在其它 package 下。此时可以通过 `@Import` 注解导入这些外部 Java Config。
 
-但这种导入声明有时不够直观，主流的做法是为其包装一层 `@Enable*` 注解，其字面意思是“开启某个功能”，非常直观。例如 Spring 框架所提供这类注解如下：
+## @Enable*
+
+`@Import` 注解导入 Java Config 的方式有时不够直观，主流的做法是为其包装一层 `@Enable*` 注解，其字面意思是“开启某个功能”，非常直观。Spring 框架中提供了大量这类注解：
 
 Spring Framework：
 
@@ -155,6 +157,8 @@ Spring Framework：
   * `@EnableAspectJAutoProxy`
   * `@EnableLoadTimeWeaving`
   * `@EnableMBeanExport`
+* spring-tx
+  * `@EnableTransactionManagement`
 * spring-webmvc
   * `@EnableWebMvc`
 * spring-webflux
@@ -162,8 +166,6 @@ Spring Framework：
 * spring-websocket
   * `@EnableWebSocket`
   * `@EnableWebSocketMessageBroker`
-* spring-tx
-  * `@EnableTransactionManagement`
 * spring-jms
   * `@EnableJms`
 

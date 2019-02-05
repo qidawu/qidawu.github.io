@@ -1,69 +1,64 @@
 ---
-title: JDBC 总结
+title: JDBC API 规范总结
 date: 2019-01-26 21:42:30
 updated:
 tags: Java
 ---
 
-# 什么是 JDBC？
+# 总览
 
-JDBC 是用于连接和执行数据库查询的 Java API。它是 JavaSE（Java 标准版）的一部分。我们可以在 Java 程序中使用 JDBC API 执行以下活动：
+首先，来总览下 JDBC API：
 
-1. 连接到数据库
-2. 执行查询并将语句更新到数据库
-3. 检索从数据库收到的结果
+![JDBC](/img/java/jdbc/jdbc-api.png)
 
-![JDBC API](/img/java/jdbc/usage-of-jdbc.png)
+# JDBC API 规范
 
-# 为什么要使用 JDBC？
+JDBC API 作为 Java SE™（Java 标准版）的一部分，由以下部分组成：
 
-在 JDBC 之前，ODBC API 是用于连接和执行命令的数据库 API 标准。但是，ODBC API 是使用 C 语言编写的驱动程序，依赖于平台。这就是为什么 Java 定义了自己的 JDBC API，它使用的 JDBC 驱动程序，是用 Java 语言编写的，具有与平台无关的特性，支持跨平台部署，性能也较好。
+* JDBC 核心 API —— `java.sql` package。
 
-# 什么是 JDBC 驱动程序？
+* JDBC 可选 API —— `javax.sql` package，是 Java EE™（Java 企业版）的重要组成部分。
 
-由于 JDBC API 只是一套接口规范，因此要使用 JDBC API 操作数据库，首先需要选择合适的驱动程序：
+其中，`java.sql` package 包含下列 API：
 
-## 驱动程序类型
+- 通过 `java.sql.DriverManager` 与数据库建立连接
 
-JDBC API 使用 JDBC 驱动程序连接数据库。有四种类型的 JDBC 驱动程序：
+  - `java.sql.DriverManager` 类 - 用于与驱动程序建立连接
+  - `java.sql.SQLPermission` 类
+  - `java.sql.Driver` 接口 - 提供用于注册和连接驱动程序的 API。
+  - `java.sql.DriverPropertyInfo` 类 - 提供 JDBC 驱动程序的属性。
 
-1. JDBC-ODBC bridge driver (~~In Java 8, the JDBC-ODBC Bridge has been removed.~~)
-2. Native-API driver (partially java driver)
-3. Network-Protocol driver (Middleware driver, fully java driver)
-4. **Database-Protocol driver (Thin driver, fully java driver)**，目前最常用的驱动类型，日常开发中使用的驱动 jar 包基本都属于这种类型，通常由数据库厂商直接提供，例如 `mysql-connector-java`。驱动程序把 JDBC 调用直接转换为数据库特定的网络协议，因此性能更好。驱动程序纯 Java 实现，支持跨平台部署。
+- 发送 SQL 语句到数据库
 
-各类型的优缺点详见：
+  - `java.sql.Connection` 接口 - 提供创建语句、管理连接及其属性的方法
+  - `java.sql.Statement` 接口 - 用于发送基本的 SQL 语句
+  - `java.sql.PreparedStatement` 接口 - 用于发送预编译语句或基本 SQL 语句（继承自`Statement`）
+  - `java.sql.CallableStatement` 接口 - 用于调用数据库存储过程（继承自`PreparedStatement`）
+  - `java.sql.Savepoint` 接口 - 在事务中提供保存点
 
-https://en.wikipedia.org/wiki/JDBC_driver
+- 检索和更新查询结果
 
-https://www.javatpoint.com/jdbc-driver
+  - `java.sql.ResultSet` 接口
 
-https://blog.csdn.net/autfish/article/details/52170053
+- 标准映射（SQL 数据类型到 Java 类或接口）
 
-## 下载对应厂商的驱动程序
+- 自定义映射（SQL user-defined type (UDT) 到 Java 类）
+- 元数据
+  - `java.sql.DatabaseMetaData` 接口 - 提供有关数据库的信息
+  - `java.sql.ResultSetMetaData` 接口 - 提供有关 `ResultSet` 对象的列信息
+  - `java.sql.ParameterMetaData` 接口 - 提供有关 `PreparedStatement` 命令的参数信息
+- 异常
 
-如果选定使用第四种驱动程序类型，接下来需要下载对应厂商的驱动程序，目前提供这些[支持列表](https://www.oracle.com/technetwork/java/index-136695.html)。
+  - `java.sql.SQLException` 类 - 被大多数方法抛出，当数据访问出现问题或出于其它原因
+  - `java.sql.SQLWarning` 类 - 抛出表示警告
+  - `java.sql.DataTruncation` 类 - 抛出表示数据可能已被截断
+  - `java.sql.BatchUpdateException` 类 - 抛出表示批量更新中的部分命令未执行成功
 
-例如最常用的 MySQL 数据库，提供了 [MySQL Connector/J](https://dev.mysql.com/downloads/connector/j/)（即 `mysql-connector-java`）。选择合适的版本，安装如下：
-
-```xml
-<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-<dependency>
-    <groupId>mysql</groupId>
-    <artifactId>mysql-connector-java</artifactId>
-    <version>x.x.x</version>
-</dependency>
-```
-
-# JDBC API 的使用步骤？
-
-![JDBC 使用步骤](/img/java/jdbc/steps-to-connect-to-the-database-in-java.jpg)
-
-# JDBC API 总结
+下面重点看下常用的接口和类。
 
 ## DriverManager 类
 
-`DriverManager` 类充当用户和驱动程序之间的接口。它跟踪可用的驱动程序并处理数据库与相应驱动程序之间的连接。`DriverManager` 类维护了一个通过调用 `DriverManager.registerDriver()` 方法来注册自己的 `Driver` 类列表。
+`java.sql.DriverManager` 类充当用户和驱动程序之间的接口。它跟踪可用的驱动程序并处理数据库与相应驱动程序之间的连接。`DriverManager` 类维护了一个通过调用 `DriverManager.registerDriver()` 方法来注册自己的 `java.sql.Driver` 类列表。
 
 常用方法：
 
@@ -74,11 +69,11 @@ static Connection getConnection(String url)  // 用于与指定的 URL 建立连
 static Connection getConnection(String url, String userName, String password)  // 用于与指定的 URL 建立连接，通过用户名和密码。
 ```
 
-从 JDBC API 4.0 开始，`DriverManager.getConnection()` 方法得到了增强，可自动从驱动程序中的 `META-INF/services/java.sql.Driver` 文件中加载 JDBC 驱动程序。 因此，使用驱动程序 jar 库时，应用程序无需调用 `Class.forName` 方法来注册或加载驱动程序。
+关于 Driver 驱动程序注册，详见《[注册驱动程序](/2019/01/23/java-jdbc-driver/)》。
 
 ## Connection 接口
 
-`Connection` 接口表示 Java 应用程序和数据库之间的会话（Session），它提供了许多事务管理方法如：
+`java.sql.Connection` 接口表示 Java 应用程序和数据库之间的会话（Session），它提供了许多事务管理方法如：
 
 ```java
 void setAutoCommit(boolean status)  // 修改当前 `Connection` 对象的事务自动提交模式。默认为 `true`。
@@ -106,7 +101,7 @@ DatabaseMetaData getMetaData()  // 用于获取数据库的元数据，例如数
 
 ## Statement 接口
 
-`Statement` 接口提供用于执行数据库查询与更新的方法。`Statement`  接口是 `ResultSet` 的工厂，即它提供工厂方法来获取 `ResultSet` 的对象。
+`java.sql.Statement` 接口提供用于执行数据库查询与更新的方法。`Statement`  接口是 `ResultSet` 的工厂，即它提供工厂方法来获取 `ResultSet` 的对象。
 
 ```java
 ResultSet executeQuery(String sql)  // 用于执行 `SELECT` 查询并返回 `ResultSet` 的对象。
@@ -128,7 +123,7 @@ int[] executeBatch()
 
 ## PreparedStatement 接口
 
-`PreparedStatement` 接口是 `Statement` 的子接口。它用于执行参数化查询（parameterized query），例如：
+`java.sql.PreparedStatement` 接口是 `java.sql.Statement` 的子接口。它用于执行参数化查询（parameterized query），例如：
 
 ```sql
 PreparedStatement stmt = connection.prepareStatement("insert into emp values(?, ?, ?)");
@@ -139,32 +134,7 @@ PreparedStatement stmt = connection.prepareStatement("insert into emp values(?, 
 * **提升性能**：应用程序的性能会更快，因为 SQL 语句只会编译一次。
 * **提升安全**
 
-创建预编译的参数化查询语句后，需要通过下列方法设置对应参数：
-
-```java
-void setBoolean(int, boolean)
-void setByte(int, byte)
-void setShort(int short)
-void setInt(int, int)
-void setLong(int, long)
-void setFloat(int, float)
-void setDouble(int, double)
-void setBigDecimal(int, BigDecimal)
-void setString(int, String)
-void setBytes(int, byte[])
-void setDate(int, Date)
-void setTime(int, Time)
-void setTimestamp(int, Timestamp)
-void setBinaryStream(int, InputStream)
-void setCharacterStream(int, Reader)
-void setRef(int, Ref)
-void setBlob(int, Blob)
-void setClob(int, Clob)
-void setArray(int, Array)
-...
-```
-
-参数设置完毕，就可以通过下列方法执行 SQL 语句：
+创建预编译的参数化查询语句后，需要通过 `setXxx` 方法设置对应参数。参数设置完毕后，就可以通过下列方法执行 SQL 语句：
 
 ```java
 ResultSet executeQuery()  // 用于执行 `SELECT` 查询并返回 `ResultSet` 的对象。
@@ -174,7 +144,9 @@ boolean execute()  // 用于执行可能返回多种结果的查询。
 
 ## ResultSet 接口
 
-`ResultSet` 对象维护了一个指向 table 行的游标。游标初始值指向第 0 行。默认情况下，`ResultSet` 对象只能向前移动，并且不可更新。可以通过在 `createStatement(int, int)` 方法中传递指定参数修改该默认行为。
+`java.sql.ResultSet` 对象维护了一个指向 table 行的游标。游标初始值指向第 0 行。默认情况下，`ResultSet` 对象只能向前移动，并且不可更新。可以通过在 `createStatement(int, int)` 方法中传递指定参数修改该默认行为。
+
+可以通过以下方法操作游标：
 
 ```java
 boolean next()  // 将游标移动到当前位置的下一行。
@@ -185,32 +157,7 @@ boolean absolute(int row)  // 将游标移动到结果集的指定行号。
 boolean relative(int row)  // 将游标移动到结果集的相对行号，它可以是正数或负数。
 ```
 
-将游标移动到指定行之后，可以通过以下方法获取当前行的指定列的数据：
-
-```java
-// 通过 int getInt(int columnIndex) 或 int getInt(String columnLabel)
-Object getObject(int)
-boolean getBoolean(int)
-byte getByte(int)
-short getShort(int)
-int getInt(int)
-long getLong(int)
-float getFloat(int)
-double getDouble(int)
-BigDecimal getBigDecimal(int)
-String getString(int)
-byte[] getBytes(int)
-Date getDate(int)
-Time getTime(int)
-Timestamp getTimestamp(int)
-InputStream getBinaryStream(int)
-Reader getCharacterStream(int)
-Ref getRef(int)
-Blob getBlob(int)
-Clob getClob(int)
-Array getArray(int)
-...
-```
+将游标移动到指定行之后，可以通过 `getXxx` 方法获取当前行的指定列的数据。
 
 此外，还可以直接获取 table 的元数据，例如列的总数，列名，列类型等：
 
@@ -220,11 +167,11 @@ ResultSetMetaData getMetaData()
 
 ## ResultSetMetaData 接口
 
-用于获取 table 的元数据，例如列的总数，列名，列类型等。
+`java.sql.ResultSetMetaData` 用于获取 table 的元数据，例如列的总数，列名，列类型等。
 
 ## DatabaseMetaData 接口
 
-用于获取数据库的元数据，例如数据库产品名称，数据库产品版本，驱动程序名称，表总数名称，总视图名称等。
+`java.sql.DatabaseMetaData` 用于获取数据库的元数据，例如数据库产品名称，数据库产品版本，驱动程序名称，表总数名称，总视图名称等。
 
 ## RowSet 接口
 
@@ -271,7 +218,20 @@ void rowChanged(RowSetEvent event);
 void rowSetChanged(RowSetEvent event);
 ```
 
-# 使用示例
+## DataSource 接口
+
+# JDBC API 示例
+
+JDBC API 的使用步骤如下：
+
+![JDBC 使用步骤](/img/java/jdbc/steps-to-connect-to-the-database-in-java.jpg)
+
+其中：
+1. 步骤一：JDBC API 从 4.0 开始利用 Java SPI 机制自动加载驱动程序，可以省略该步骤。
+2. 步骤二、三：如果使用如 Spring `JdbcTempate`、MyBatis 等框架，可以省略该步骤。
+3. 步骤五：使用 `try-with-resources` 语句，可以省略该步骤。
+
+下面来两个示例：
 
 ## 存储图片
 
@@ -291,6 +251,8 @@ try (Connection conn = DriverManager.getConnection(url)) {
 注意：这只是一个例子，生产环境中是不会将这类二进制信息存储到数据库中的，而是存储到专门的文件系统，以提升性能，并节省宝贵的数据库资源 :)
 
 ## 检索图片
+
+Using `try-with-resources` Statements to Automatically Close JDBC Resources: 
 
 ```java
 try (Connection conn = DriverManager.getConnection(url)) {
@@ -312,11 +274,7 @@ try (Connection conn = DriverManager.getConnection(url)) {
 }
 ```
 
-# 总结
-
-最后，来总结下 JDBC 的几个要点：
-
-![JDBC](/img/java/jdbc/jdbc.png)
+JDBC 4.1 (Java SE 7) introduces the ability to use a `try-with-resources` statement to automatically close `java.sql.Connection`, `java.sql.Statement`, and `java.sql.ResultSet` objects, regardless of whether a `SQLException` or any other exception has been thrown. See [The try-with-resources Statement](https://docs.oracle.com/javase/8/docs/technotes/guides/language/try-with-resources.html) for more information.
 
 # 参考
 
@@ -331,3 +289,5 @@ https://docs.oracle.com/javase/9/docs/api/java/sql/package-summary.html
 https://www.javatpoint.com/java-jdbc
 
 https://www.tutorialspoint.com/jdbc/index.htm
+
+https://www.tutorialspoint.com/dbutils/index.htm

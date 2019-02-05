@@ -14,7 +14,9 @@ START TRANSACTION
     [transaction_characteristic [, transaction_characteristic] ...]
 
 transaction_characteristic: {
-    READ WRITE | READ ONLY
+    WITH CONSISTENT SNAPSHOT
+  | READ WRITE
+  | READ ONLY
 }
 
 BEGIN
