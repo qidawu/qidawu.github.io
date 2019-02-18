@@ -149,7 +149,7 @@ File > Settings > Editor > General > Editor Tabs，去掉勾选 `Show tabs in on
 
 ## 创建类
 
-> Alt+Insert 创造万物
+> Alt + Insert 创造万物
 
 ## 查找/替换类
 
@@ -198,6 +198,8 @@ File > Settings > Editor > General > Editor Tabs，去掉勾选 `Show tabs in on
 > Ctrl+Y 删除行
 >
 > Ctrl+Shift+U 大小写转换
+>
+> Ctrl+Alt+L 格式化代码
 >
 > Ctrl+W、Ctrl+Shift+W 这个动作的实际操作是选中更上一层的语法结构。例如，如果你在一个字符串的一个单词中，按一下Ctrl+W，会选中光标所在单词。再按一下，会选中整个字符串的内容，不包括引号。再按一下，会选中包括引号的字符串。再按一下，会选中整个表达式（如果表达式含有括号，会逐层选中）。再按一下，会选中整个语句块。再按一下，会选中整个方法。再按一下，会选中整个类。
 
