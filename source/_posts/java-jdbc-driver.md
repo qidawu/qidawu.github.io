@@ -80,12 +80,12 @@ MySQL 驱动程序的更多信息，例如：
 ## 手工注册
 
 ```java
-Class.forName("com.mysql.jdbc.Driver");  // 方式一
+Class.forName("com.mysql.jdbc.Driver");  // 方式一，底层实现其实就是方式二
 DriverManager.registerDriver(new com.mysql.jdbc.Driver());  // 方式二
 System.setProperty("jdbc.drivers", "com.mysql.jdbc.Driver");  // 方式三
 ```
 
-## 自动注册
+## 源码分析（自动注册）
 
 从 JDBC API 4.0 开始，`DriverManager` 类得到了增强，利用 **Java SPI 机制**从厂商驱动程序的 `META-INF/services/java.sql.Driver` 文件中自动加载 `java.sql.Driver` 实现类。 因此应用程序无需再显式调用 `Class.forName` 或 `DriverManager.registerDriver` 方法来注册或加载驱动程序。`DriverManager` 源码分析如下：
 
