@@ -171,3 +171,5 @@ Unconditional classes:
 # 参考
 
 《[Spring in Action, 4th](https://www.manning.com/books/spring-in-action-fourth-edition)》
+
+《[SpringBoot源码分析之条件注解的底层实现](https://www.jianshu.com/p/c4df7be75d6e)》
