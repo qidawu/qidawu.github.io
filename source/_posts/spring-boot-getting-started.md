@@ -26,27 +26,41 @@ tags: Java
    1. 社区版：离线安装 [Spring Assistant](http://plugins.jetbrains.com/plugin/10229-spring-assistant) 插件（在线安装方式被墙）
    2. 收费版：直接使用 Spring Initializr 插件
 
-# 依赖管理
+# 项目组成
 
-- spring-boot
-- spring-boot-parent
-- spring-boot-dependencies
-  - 用于定义和统一管理 Sprint Boot 的各个依赖版本号。
-- spring-boot-starters
+Spring Boot 的[各个子项目](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project)组成如下：
+
+- `spring-boot-dependencies`
+  - 用于定义和统一管理 Sprint Boot 的各个依赖版本号，继承自 `spring-boot-build`。
+- `spring-boot-parent`
+  - Spring Boot 父 pom.xml（只包含这一个文件），用于构建配置。继承自 `spring-boot-dependencies`，且被其它子项目所继承。
+- `spring-boot`
+  - Spring Boot 的核心工程。
+- `spring-boot-starters`
   - Spring Boot 提供的众多起步依赖，用于降低项目依赖的复杂度，清单详见：[Starters](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter)
   - 起步依赖本质上就是特殊的 Maven 依赖和 Gradle 依赖，利用了**传递依赖**解析，把常用库聚合在一起，组成了几个为特定功能而定制的依赖。
   - 比起减少依赖数量，起步依赖还引入了一些微妙的变化。向项目中添加了某个起步依赖，实际上指定了应用程序所需的**一类功能**。
   - 起步依赖引入的库的版本兼容性都是**经过测试**的，可以放心使用。
-- spring-boot-autoconfigure，包含：
-  - 自动配置总开关`@EnableAutoConfiguration`
-  - 自动配置类 `*AutoConfiguration`
-  - 外部化配置属性类 `*Properties`
-  - 条件化注解类 `@ConditionOn*`
-- spring-boot-test、spring-boot-test-autoconfigure
-- spring-boot-actuator、spring-boot-actuator-autoconfigure
-- spring-boot-devtools
-- spring-boot-tools
-- spring-boot-cli
+- `spring-boot-autoconfigure`
+  - 实现 Spring Boot 自动配置的关键，常用的包含：
+    - 自动配置总开关`@EnableAutoConfiguration`
+    - 自动配置类 `*AutoConfiguration`
+    - 外部化配置属性类 `*Properties`
+    - 条件化注解类 `@ConditionOn*`
+- `spring-boot-test`、`spring-boot-test-autoconfigure`
+  - 提供一系列测试支持，常用的如：`@SpringBootTest`、mock、web 支持。
+- `spring-boot-actuator`、`spring-boot-actuator-autoconfigure`
+  - 包含许多额外的特性，以帮助你通过 HTTP 或 JMX 端点来监控和管理生产环境的应用程序。包括以下特性（详见[用户手册](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready)）：
+    - **Endpoints** Actuator endpoints allow you to monitor and interact with your application. Spring Boot includes a number of built-in endpoints and you can also add your own. For example the `health` endpoint provides basic application health information. Run up a basic application and look at `/actuator/health`.
+    - **Metrics** Spring Boot Actuator provides dimensional metrics by integrating with [Micrometer](https://micrometer.io/).
+    - **Audit** Spring Boot Actuator has a flexible audit framework that will publish events to an `AuditEventRepository`. Once Spring Security is in play it automatically publishes authentication events by default. This can be very useful for reporting, and also to implement a lock-out policy based on authentication failures.
+- `spring-boot-devtools`
+  - 热部署、静态资源 livereload 等等。
+- `spring-boot-tools` 为 Spring Boot 开发者提供的常用工具集。例如：
+  - `spring-boot-maven-plugin`
+  - `spring-boot-gradle-plugin`
+- `spring-boot-cli`
+  - 命令行工具。
 
 # POM 配置
 
