@@ -1,11 +1,11 @@
 ---
 title: Spring 应用上下文总结
-date: 2017-06-11 22:35:15
+date: 2017-06-01 22:35:15
 updated:
 tags: Java
 ---
 
-Spring 容器：
+`org.springframework.beans` 和 `org.springframework.context` 包为 Spring 框架 IoC 容器的提供基础。有两种形式的 Spring 容器：
 
 * Bean Factory
 
@@ -122,7 +122,58 @@ Spring 通过应用上下文（Application Context）装载 bean 的定义并将
   </web-app>
   ```
 
+# Bean Factory
+
+[org.springframework.beans.factory.BeanFactory](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/BeanFactory.html)
+
+# Factory Bean
+
+[org.springframework.beans.factory.FactoryBean](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/FactoryBean.html) 用于在 IoC 容器中创建其它 bean，该接口定义如下：
+
+```java
+T getObject()  // Return an instance (possibly shared or independent) of the object managed by this factory.
+Class<?> getObjectType()  // Return the type of object that this FactoryBean creates, or null if not known in advance.
+boolean isSingleton()  // Is the object managed by this factory a singleton? That is, will getObject() always return the same object (a reference that can be cached)?
+```
+
+为什么要使用 FactoryBean？主要用于实现框架设施（framework facilities），例如：
+
+* 当需要从 JNDI 查找对象（例如 `DataSource`）时，可以使用 `JndiObjectFactoryBean`。
+* 当使用 Spring AOP 为 bean 创建代理时，可以使用 `ProxyFactoryBean`。
+* 当需要在 IoC 容器中创建 Hibernate 的 `SessionFactory` 时，可以使用 `LocalSessionFactoryBean`。
+* 当需要在 IoC 容器中创建 MyBatis 的 `SqlSessionFactory` 时，可以使用 `SqlSessionFactoryBean`。
+
+大多数情况下，**用户并不需要自定义 FactoryBean**，因为 FactoryBean 通常是框架指定的，且无法在 Spring IoC 容器的范围之外使用。
+
 # Bean 的生命周期
+
+Spring Bean Factory 负责管理 bean 的生命周期。bean 的生命周期由回调方法组成，可以分为两类：
+
+* **Post initialization** call back methods
+* **Pre destruction** call back methods
+
+![Spring Bean Life Cycle](/img/spring/spring-bean-life-cycle.png)
+
+Spring 框架提供了以下四种控制 bean 生命周期事件的方法：
+
+* 实现 Spring 框架的回调接口：
+  * `org.springframework.beans.factory.InitializingBean#afterPropertiesSet()`
+  * `org.springframework.beans.factory.DisposableBean#destroy()`
+* 使用 JavaEE 规范 `javax.annotation` 包中提供的注解：
+  - `@PostConstruct`
+  - `@PreDestroy`
+* 实现特定行为的 `*Aware` 接口
+* 在 bean 配置文件中自定义 `init-method` 和 `destroy-method` 方法
+
+## *Aware 接口解析
+
+在日常的开发中，我们经常需要用到 Spring 容器本身的功能资源，可以通过 Spring 提供的一系列 `*Aware` 子接口来实现具体的功能：
+
+![Aware 接口](/img/spring/aware_interface.png)
+
+`*Aware` 是一个具有标识作用的超级接口，实现该接口的 bean 具有被 Spring 容器通知的能力，而被通知的方式就是通过回调，以依赖注入的方式为 bean 设置相应属性，这是一个典型的依赖注入的使用场景。
+
+参考：[org.springframework.beans.factory.Aware](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/beans/factory/Aware.html)
 
 # Bean 的作用域
 
@@ -136,3 +187,15 @@ Spring 通过应用上下文（Application Context）装载 bean 的定义并将
 # 参考
 
 《[Spring in Action, 4th](https://www.manning.com/books/spring-in-action-fourth-edition)》
+
+《[Spring BeanFactory和FactoryBean的区别](https://www.jianshu.com/p/05c909c9beb0)》
+
+[org.springframework.beans.factory.BeanFactory](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/BeanFactory.html)
+
+[org.springframework.beans.factory.FactoryBean](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/FactoryBean.html)
+
+[ThreadPoolExecutorFactoryBean](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/concurrent/ThreadPoolExecutorFactoryBean.html)
+
+[LocalSessionFactoryBean](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/orm/hibernate5/LocalSessionFactoryBean.html)
+
+[SqlSessionFactoryBean](https://github.com/mybatis/spring/blob/master/src/main/java/org/mybatis/spring/SqlSessionFactoryBean.java)
