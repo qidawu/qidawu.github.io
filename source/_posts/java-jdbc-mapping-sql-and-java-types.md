@@ -156,20 +156,6 @@ try (Connection conn = DriverManager.getConnection(url)) {
 }
 ```
 
-
-
-# SQL 标准版本
-
-- SQL-86
-- SQL-89
-- [SQL-92](https://en.wikipedia.org/wiki/SQL-92)
-- [SQL:1999](https://en.wikipedia.org/wiki/SQL:1999) (also called SQL3)
-- [SQL:2003](https://en.wikipedia.org/wiki/SQL:2003)
-- [SQL:2006](https://en.wikipedia.org/wiki/SQL:2006)
-- [SQL:2008](https://en.wikipedia.org/wiki/SQL:2008)
-- [SQL:2011](https://en.wikipedia.org/wiki/SQL:2011)
-- [SQL:2016](https://en.wikipedia.org/wiki/SQL:2016)
-
 # 参考
 
 https://docs.oracle.com/javase/6/docs/technotes/guides/jdbc/getstart/mapping.html
