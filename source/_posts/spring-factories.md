@@ -58,7 +58,7 @@ org.springframework.boot.autoconfigure.condition.OnClassCondition
 
 * `OnBeanCondition`
 
-  ......
+  判断指定的 bean 类或名称是否已存在于 `BeanFactory`。
 
 过滤结果如下：
 
