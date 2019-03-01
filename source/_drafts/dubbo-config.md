@@ -7,6 +7,8 @@ tags: Java
 
 # 配置
 
+本文主要总结 Dubbo 日常使用时的一些常用配置。
+
 ## 配置之间的关系
 
 ![配置之间的关系](/img/dubbo/dubbo-config.jpg)

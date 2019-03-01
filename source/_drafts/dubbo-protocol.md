@@ -27,7 +27,7 @@ tags: Java
 
 # REST 协议小结
 
-根据 dubbox、dubbo REST 官方文档，小结了使用上的一些注意点：
+根据 dubbox、dubbo REST 官方文档，摘录了使用上的一些注意点：
 
 ## 配置总览
 
