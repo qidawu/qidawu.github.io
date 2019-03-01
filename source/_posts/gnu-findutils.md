@@ -130,4 +130,4 @@ $ find . -inum <inode-number> -exec rm -i {} \;
 $ rm `find ./ -inum <inode-number>`
 ```
 
-![find -exec](/img/gun-linux/find.jpg)
+![find -exec](/img/gnu-linux/find.jpg)

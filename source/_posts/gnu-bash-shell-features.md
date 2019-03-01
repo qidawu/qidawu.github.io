@@ -9,7 +9,23 @@ tags: GNU/Linux
 
 ## 引用（Quoting）
 
+引用用于：
 
+* 阻止对特殊字符的处理。
+* 阻止保留字被识别。
+* 阻止参数的扩展。
+
+三种引用机制：
+
+| 引用符  | 描述                              |
+| ---- | ------------------------------- |
+| 转义字符 | 保留其后下一个字符的字面意义                  |
+| 单引号  | 保留引用中所有字符的字面意义                  |
+| 双引号  | 保留引用中所有字符的字面意义，例外的情况是 $, `, 和 \ |
+
+单引号与双引号的使用区别：
+
+![quoting](/img/gnu-linux/bash_quoting.png)
 
 ## 注释（Comments）
 
@@ -164,3 +180,35 @@ compound command（复合命令）是如下情况之一：
 
 # Shell 扩展（Shell Expansions）
 
+命令行的扩展是在拆分成词之后进行的。共有七种类型的扩展，常用的四种如下
+
+## 花括号扩展（Brace Expansion）
+
+用于偷懒，例如：
+
+```
+x{a,b,cd}y
+```
+扩展为：
+```
+xay xby xcdy
+```
+
+再例如：
+```
+mkdir /usr/local/src/bash/{old,new,dist}
+```
+扩展为：
+```
+mkdir /usr/local/src/bash/old
+mkdir /usr/local/src/bash/new
+mkdir /usr/local/src/bash/dist
+```
+
+## 参数和变量扩展（Parameter and Variable Expansion）
+
+`${parameter}`
+
+## 算术扩展（Arithmetic Expansion）
+
+## 命令替换（Command Substitution）
