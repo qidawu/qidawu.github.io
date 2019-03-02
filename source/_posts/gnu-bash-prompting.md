@@ -1,6 +1,6 @@
 ---
 title: "GUN/Bash 系列（六）提示符（Prompting）"
-date: 2015-12-03 23:32:53
+date: 2015-04-01 23:32:53
 updated: 
 tags: GNU/Linux
 ---
