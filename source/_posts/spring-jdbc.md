@@ -144,7 +144,7 @@ public DataSource dataSource() {
 }
 ```
 
-# JdbcTemplate 使用示例
+# JdbcTemplate
 
 `org.springframework.jdbc.core.JdbcOperations` 接口提供了如下方法：
 
@@ -220,6 +220,4 @@ List<TestPO> testPOList = namedParameterJdbcOperations.query(
 
 log.info("Result is {}", testPOList);  // Result is [TestPO(id=2, name=李四, city=beijing)]
 ```
-
-# TransactionTemplate 使用示例
 

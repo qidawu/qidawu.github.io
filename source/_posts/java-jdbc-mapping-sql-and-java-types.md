@@ -9,12 +9,6 @@ tags: Java
 
 由于 SQL 中的数据类型和 Java 编程语言中的数据类型并不相同，因此需要使用某种机制在使用 Java 类型的应用程序和使用 SQL 类型的数据库之间传输数据。
 
-为了在数据库和 Java 应用程序之间传输数据，JDBC API 提供了三组方法：
-
-* `ResultSet` 类提供的用于将 `SELECT` 检索结果转换为 Java 类型的方法；
-* `PreparedStatement` 类提供的用于将 Java 类型作为 SQL 语句参数发送的方法；
-* `CallableStatement`类提供的用于将 `OUT` 参数转换为 Java 类型的方法。
-
 # SQL 类型映射成 JDBC 类型
 
 不同数据库产品支持的 SQL 类型之间存在显着差异。即使不同的数据库支持具有相同语义的 SQL 类型，它们也可能为这些类型提供了不同的名称。例如，大多数主要数据库都支持 large binary 这种 SQL 类型，但是：
@@ -31,13 +25,57 @@ JDBC API 在 `java.sql.Types` 类中定义了一组通用 SQL 类型标识符，
 
 
 
-下表提供了 MySQL 数据类型与  JDBC 类型、Java 类型的映射关系：
+下表提供了 MySQL 类型与  JDBC 类型、Java 类型的映射关系：
 
 ![JDBC Types Mapped to Database-specific SQL Types](/img/java/jdbc/mysql-types.png)
 
-## 标准映射
 
-Java 程序从数据库中检索数据时，都必然会有某种形式的数据映射和数据转换。大多数情况下，JDBC 开发是知道目标数据库的 schame 的，例如表结构及其每列的数据类型。因此，JDBC 开发可以使用 `ResultSet`、`PreparedStatement`、`CallableStatement` 接口的强类型访问方法进行类型转换，如下：
+## 基本 JDBC 类型
+
+| Java 类型     | SQL 数据类型 |
+| ---------------------- | ---------------------- |
+| `byte[]` | `BINARY`、`VARBINARY`、`LONGVARBINARY` |
+| `String` | `CHAR`，`VARCHAR`、`LONGVARCHAR` |
+| `boolean` | `BIT` |
+| `byte` | `TINYINT` |
+| `short` | `SMALLINT` |
+| `int` | `INTEGER` |
+| `long` | `BIGINT` |
+| `float` | `REAL` |
+| `double` | `FLOAT`、`DOUBLE` |
+| `java.math.BigDecimal` | `NUMERIC`、`DECIMAL` |
+| `java.sql.Date`      | `DATE`              |
+| `java.sql.Time`      | `TIME`              |
+| `java.sql.Timestamp` | `TIMESTAMP`         |
+
+## 高级 JDBC 类型
+
+SQL 标准后续引入的数据类型，包括 `BLOB`， `CLOB`，`ARRAY`，`REF` 等等：
+
+| Java 类型         | SQL 数据类型 | 备注              |
+| ----------------- | ------------ | ----------------- |
+| `java.sql.Array`  | `ARRAY`      | JDBC API 1.2 引入 |
+| `java.sql.Blob`   | `BLOB`       | JDBC API 1.2 引入 |
+| `java.sql.Clob`   | `CLOB`       | JDBC API 1.2 引入 |
+| `java.sql.NClob`  | `NCLOB`      | JDBC API 1.6 引入 |
+| `java.sql.Ref`    | `REF`        | JDBC API 1.2 引入 |
+| `java.sql.RowId`  | `ROWID`      | JDBC API 1.6 引入 |
+| `java.sql.Struct` | `STRUCT`     | JDBC API 1.2 引入 |
+| `java.sql.SQLXML` | `XML`        | JDBC API 1.6 引入 |
+
+# 数据访问 API
+
+为了在数据库和 Java 应用程序之间传输数据，JDBC API 提供了三组方法：
+
+* `ResultSet` 类提供的用于将 `SELECT` 检索结果转换为 Java 类型的方法；
+* `PreparedStatement` 类提供的用于将 Java 类型作为 SQL 语句参数发送的方法；
+* `CallableStatement`类提供的用于将 `OUT` 参数转换为 Java 类型的方法。
+
+## 静态数据访问
+
+### 标准映射
+
+Java 程序从数据库中检索数据时，都必然会有某种形式的数据映射和数据转换。大多数情况下，JDBC 开发是知道目标数据库的 schema 的，例如表结构及其每列的数据类型。因此，JDBC 开发可以使用 `ResultSet`、`PreparedStatement`、`CallableStatement` 接口的强类型访问方法进行类型转换，如下：
 
 ```java
 // PreparedStatement 接口
@@ -86,7 +124,7 @@ Array getArray(int)
 ...
 ```
 
-## 自定义映射
+### 自定义映射
 
 自定义映射（SQL user-defined type (UDT) 到 Java 类）使用如下接口：
 
@@ -94,42 +132,9 @@ Array getArray(int)
 - `java.sql.SQLInput` 接口
 - `java.sql.SQLOutput` 接口
 
-# 基本 JDBC 数据类型
+## 动态数据访问
 
-| Java 类型     | SQL 数据类型 |
-| ---------------------- | ---------------------- |
-| `byte[]` | `BINARY`、`VARBINARY`、`LONGVARBINARY` |
-| `String` | `CHAR`，`VARCHAR`、`LONGVARCHAR` |
-| `boolean` | `BIT` |
-| `byte` | `TINYINT` |
-| `short` | `SMALLINT` |
-| `int` | `INTEGER` |
-| `long` | `BIGINT` |
-| `float` | `REAL` |
-| `double` | `FLOAT`、`DOUBLE` |
-| `java.math.BigDecimal` | `NUMERIC`、`DECIMAL` |
-| `java.sql.Date`      | `DATE`              |
-| `java.sql.Time`      | `TIME`              |
-| `java.sql.Timestamp` | `TIMESTAMP`         |
-
-# 高级 JDBC 数据类型
-
-SQL 标准后续引入的数据类型，包括 `BLOB`， `CLOB`，`ARRAY`，`REF` 等等：
-
-| Java 类型         | SQL 数据类型 | 备注              |
-| ----------------- | ------------ | ----------------- |
-| `java.sql.Array`  | `ARRAY`      | JDBC API 1.2 引入 |
-| `java.sql.Blob`   | `BLOB`       | JDBC API 1.2 引入 |
-| `java.sql.Clob`   | `CLOB`       | JDBC API 1.2 引入 |
-| `java.sql.NClob`  | `NCLOB`      | JDBC API 1.6 引入 |
-| `java.sql.Ref`    | `REF`        | JDBC API 1.2 引入 |
-| `java.sql.RowId`  | `ROWID`      | JDBC API 1.6 引入 |
-| `java.sql.Struct` | `STRUCT`     | JDBC API 1.2 引入 |
-| `java.sql.SQLXML` | `XML`        | JDBC API 1.6 引入 |
-
-# 动态数据访问
-
-在大多数情况下，用户都希望访问在编译期数据类型已知的结果或参数。但是某些情况下，应用程序在编译期无法获知它们访问的 database schema。因此，除了静态的数据类型访问之外，JDBC 还提供了对动态的数据类型访问的支持。
+在大多数情况下，用户都希望访问在编译期数据类型已知的结果或参数。但是某些情况下，应用程序在编译期无法获知它们访问的目标数据库的 schema。因此，除了静态的数据类型访问之外，JDBC 还提供了对动态的数据类型访问的支持。
 
 有三种方法可以方便地访问在编译期数据类型未知的值，使用所有 Java 对象的共同父类 `Object` 类型：
 
