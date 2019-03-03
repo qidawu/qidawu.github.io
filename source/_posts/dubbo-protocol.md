@@ -125,3 +125,7 @@ http://dubbo.apache.org/zh-cn/docs/user/references/protocol/rest.html
 https://github.com/dangdangdotcom/dubbox
 
 https://dangdangdotcom.github.io/dubbox/rest.html
+
+https://mvnrepository.com/artifact/com.gaosi/dubbox
+
+Dubbox fork from Dubbo，目前只发布了一个版本：2.8.4

@@ -5,11 +5,9 @@ updated:
 tags: Java
 ---
 
-# 配置
-
 本文主要总结 Dubbo 日常使用时的一些常用配置。
 
-## 配置之间的关系
+# 配置之间的关系
 
 ![配置之间的关系](/img/dubbo/dubbo-config.jpg)
 
@@ -27,11 +25,30 @@ tags: Java
 | `<dubbo:argument/>`    | `com.alibaba.dubbo.config.ArgumentConfig`    | 参数配置     | 用于指定方法参数配置                                         |
 | `<dubbo:module/>`      | `com.alibaba.dubbo.config.ModuleConfig`      | 模块配置     | 用于配置当前模块信息，可选                                   |
 
-## 配置实践
+# 配置覆盖关系
+
+配置覆盖关系：
+
+* 方法级优先，接口级次之，全局配置再次之。
+* 如果级别一样，则消费方优先，提供方次之。
+
+规则二是指，所有配置最终都将转换为 URL 表示，并由服务提供方生成，经注册中心传递给消费方。其 URL 格式如下：`protocol://username:password@host:port/path?key=value&key=value`
+
+![dubbo 配置覆盖关系](/img/dubbo/dubbo-config-override.jpg)
+
+参考：[XML 配置](http://dubbo.apache.org/zh-cn/docs/user/configuration/xml.html)。
+
+# 属性配置关系
+
+![dubbo 属性覆盖关系](/img/dubbo/dubbo-properties-override.jpg)
+
+参考：[属性配置](http://dubbo.apache.org/zh-cn/docs/user/configuration/properties.html)
+
+# 注解配置实践
 
 如果想用现代的 Java Config 替代传统的 XML 配置方式，配置如下：
 
-### 声明组件
+## 声明组件
 
 * 服务提供方使用 `@Service` 注解暴露服务
 
@@ -57,46 +74,19 @@ tags: Java
   }
   ```
 
-### 开启组件扫描
+## 开启组件扫描
 
 * 2.5.7 (Nov, 2017) 以上版本，使用 `@DubboComponentScan` 指定 dubbo 组件扫描路径
 * 老版本或 Dubbox，使用：`<dubbo:annotation package="com.alibaba.dubbo.test.service" /> `
 
-### Java Config 配置
+## Java Config 配置
 
 * 使用 `@Configuration` 注解开启 Java Config 并使用 `@Bean` 进行公共模块的 bean 配置，参考：[API配置](http://dubbo.apache.org/zh-cn/docs/user/configuration/api.html)。
 
 
-### 自动化配置
+## 自动化配置
 
 * 最后开启 `@EnableDubboConfig`
-
-## 配置覆盖关系
-
-配置覆盖关系：
-
-* 方法级优先，接口级次之，全局配置再次之。
-* 如果级别一样，则消费方优先，提供方次之。
-
-规则二是指，所有配置最终都将转换为 URL 表示，并由服务提供方生成，经注册中心传递给消费方。其 URL 格式如下：`protocol://username:password@host:port/path?key=value&key=value`
-
-![dubbo 配置覆盖关系](/img/dubbo/dubbo-config-override.jpg)
-
-参考：[XML 配置](http://dubbo.apache.org/zh-cn/docs/user/configuration/xml.html)。
-
-## 属性配置关系
-
-![dubbo 属性覆盖关系](/img/dubbo/dubbo-properties-override.jpg)
-
-参考：[属性配置](http://dubbo.apache.org/zh-cn/docs/user/configuration/properties.html)
-
-## 配置分类
-
-### 服务发现
-
-### 服务治理
-
-### 性能调优
 
 # 参考
 
@@ -108,10 +98,4 @@ https://mvnrepository.com/artifact/com.alibaba.boot/dubbo-spring-boot-starter
 
 https://mvnrepository.com/artifact/com.alibaba/dubbo
 
-https://mvnrepository.com/artifact/com.gaosi/dubbox
-
 https://github.com/apache/incubator-dubbo
-
-https://github.com/dangdangdotcom/dubbox
-
-Dubbox fork from Dubbo，目前只发布了一个版本：2.8.4
