@@ -74,13 +74,13 @@ Spring AOP 的切点（Pointcut）使用 AspectJ 的“切点表达式语言（P
 | 类加载期 | 切面在目标类加载到 JVM 时被织入。这种方式需要特殊的类加载器（Class Loader），它可以在目标类被引入应用之前增强该目标类的字节码。AspectJ 5 的[加载时织入（load-time weaving, LTW）](http://www.eclipse.org/aspectj/doc/next/devguide/ltw.html)就支持以这种方式织入切面。 |
 | 运行期   | 切面在应用运行的某个时刻被织入。一般情况下，在织入切面时，AOP 容器会为目标对象动态地创建一个代理对象。Spring AOP 就是以这种方式织入切面的。Spring AOP 构建在动态代理基础之上，因此，Spring 对 AOP 的支持局限于方法拦截。如果你的 AOP 需求超过了简单的方法调用（如构造器或属性拦截），那么你需要考虑使用 AspectJ 来实现切面。 |
 
-这里总结下 Spring AOP 和 AspectJ 两种织入方式的优缺点：
+这里总结下 Spring AOP 和 AspectJ AOP 两种织入方式的优缺点：
 
 * Spring AOP 优点：
   * 使用方式比 AspectJ 简单，无需 LTW 或 AspectJ Compiler。
 * Spring AOP 缺点：
-  * 局限于方法拦截。
-  * 同一个类中的方法调用无法应用切面。
+  * **局限于方法拦截。**
+  * **同一个类中的方法调用无法应用切面。**
   * 无法将切面应用到非 Spring 工厂创建的 bean。
   * 有一定的运行时开销。
 
@@ -111,6 +111,28 @@ Spring AOP 的切点（Pointcut）使用 AspectJ 的“切点表达式语言（P
 > 正如前面所探讨过的，通过使用各种 AOP 方案可以支持多种连接点模型。因为 Spring 基于**动态代理**，所以 Spring 只支持**方法连接点**。这与一些其他的 AOP 框架是不同的，例如 AspectJ 和 JBoss，除了方法切点，它们还提供了字段和构造器接入点。Spring 缺少对字段连接点的支持，无法让我们创建细粒度的通知，例如拦截对象字段的修改。而且它不支持构造器连接点，我们就无法在 bean 创建时应用通知。
 >
 > 但是方法拦截可以满足绝大部分的需求。如果需要方法拦截之外的连接点拦截功能，那么我们可以利用 Aspect 来补充 Spring AOP 的功能。
+
+## Spring AOP 实现方式
+
+Spring AOP 支持两种模式的动态代理，JDK Proxy 或者 cglib：
+
+![AopProxy 实现结构](/img/spring/AopProxy.png)
+
+两种模式的优势如下：
+
+- JDK Proxy `org.springframework.aop.framework.JdkDynamicAopProxy`
+
+- - 最小化依赖关系，减少依赖意味着简化开发和维护，JDK 本身的支持，可能比 cglib 更加可靠。
+  - 平滑进行 JDK 版本升级，而字节码类库通常需要进行更新以保证在新版 Java 上能够使用。
+  - 代码实现简单，主要利用 JDK 反射机制。
+
+- CGLib Proxy `org.springframework.aop.framework.CglibAopProxy`
+
+- - 有的时候调用目标可能不便实现额外接口，从某种角度看，限定调用者实现接口是有些侵入性的实践，类似 cglib 动态代理就没有这种限制。cglib 动态代理采取的是创建目标类的子类的方式，因为是子类化，我们可以达到近似使用被调用者本身的效果。
+  - 只操作我们关心的类，而不必为其他相关类增加工作量。
+  - 性能更好。
+
+![Spring AOP process](/img/spring/springaop-process.png)
 
 # 例子
 
