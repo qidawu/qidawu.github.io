@@ -14,7 +14,7 @@ Spring 事务管理方式有两种：
 
 这里重点介绍下最常用的基于 `@Transactional` 的注解方式，其提供的配置属性如下：
 
-![@Transactional](/img/spring/spring_annotation_transactional.png)
+![@Transactional](/img/spring/transaction/spring_annotation_transactional.png)
 
 其中事务的传播行为需要留意下，是 Spring 特有的概念，与数据库无关。它是为了解决业务层方法之间互相调用的事务问题而引入的。当事务方法被另一个事务方法调用时，必须指定事务应该如何传播。例如：方法可能继续在现有事务中运行，也可能开启一个新事务，并在自己的事务中运行。有以下几种方式：
 
