@@ -5,9 +5,13 @@ updated:
 tags: Java
 ---
 
-前面我们重点关注了如何使用依赖注入（DI）管理和配置我们的应用对象，从而实现应用对象之间的解耦，而 AOP 主要实现“横切关注点”与它们所影响的对象之间的解耦。
+# AOP 概念
+
+前面我们重点关注了如何使用依赖注入（DI）管理和配置我们的应用对象，从而实现应用对象之间的解耦，而 AOP 主要实现“横切关注点（cross-cutting concern）”与它们所影响的对象之间的解耦。
 
 在软件开发中，散布于应用中多处的功能被称为“横切关注点（cross-cutting concern）”。通常来讲，这些横切关注点从概念上是与应用的业务逻辑相分离的（但是往往会直接嵌入到应用的业务逻辑之中）。把这些横切关注点与业务逻辑相分离正是面向切面编程（AOP）所要解决的问题。
+
+AOP 补充了 OOP 编程，通过提供另一种思考软件结构的方法。OOP 编程中的模块单元是“类（Class）”，而 AOP 编程中的模块单元是“切面（Aspect）”。
 
 切面提供了取代继承和委托的另一种可选方案，而且在很多场景下更清晰简洁。在使用面向切面编程时，我们仍然在一个地方定义通用功能，但是可以通过**声明的方式**定义这个功能要以何种方式在何处应用，而无需修改受影响的类。横切关注点可以被模块化为特殊的类，这些类被称为切面（aspect）。这样做有两个好处：
 
@@ -20,6 +24,10 @@ AOP 的一些场景如下：
 - 事务，如 Spring Transactional
 - 安全，如 Spring Security
 - 缓存，如 Spring Cache
+
+AOP 的知识点总结：
+
+![AOP 总览](/img/spring/AOP.png)
 
 # AOP 术语
 
@@ -52,7 +60,7 @@ Spring AOP 的切面（Aspect）可以搭配下面五种通知（Advice）注解
 
 切点（Pointcut）定义了切面在**何处（where）**执行。
 
-Spring AOP 的切点（Pointcut）使用 AspectJ 的“切点表达式语言（Pointcut Expression Language）”进行定义。但要注意的是，Spring 仅支持其中一个子集：
+Spring AOP 的切点（Pointcut）使用 AspectJ 的“**切点表达式语言（Pointcut Expression Language）**”进行定义。但要注意的是，Spring 仅支持其中一个子集：
 
 ![切面指示器（Aspectj Designator）](/img/java/aop_aspectj_designator.png)
 
@@ -92,6 +100,8 @@ Spring AOP 的切点（Pointcut）使用 AspectJ 的“切点表达式语言（P
 
 # Spring 对 AOP 的支持
 
+Spring AOP 的设计理念和大多数其它 AOP 框架不同。目标并不是为了提供一个最完整的 AOP 实现，而是为了提供一个 AOP 实现与 Spring IoC 的紧密集成，以帮助解决企业级应用的常见问题。
+
 ## Spring 的 Advice 是 Java 编写的
 
 > Spring 所创建的通知都是用标准的 Java 类编写的。这样的话，我们就可以使用与普通 Java 开发一样的集成开发环境（IDE）来开发切面。而且，定义通知所应用的切点通常会使用注解或在 Spring 配置文件里采用 XML 来编写，这两种语法对于Java开发者来说都是相当熟悉的。
@@ -112,27 +122,129 @@ Spring AOP 的切点（Pointcut）使用 AspectJ 的“切点表达式语言（P
 >
 > 但是方法拦截可以满足绝大部分的需求。如果需要方法拦截之外的连接点拦截功能，那么我们可以利用 Aspect 来补充 Spring AOP 的功能。
 
-## Spring AOP 实现方式
+## Spring AOP 切面声明的两种方式
 
-Spring AOP 支持两种模式的动态代理，JDK Proxy 或者 cglib：
+Spring 2.0 提供以下两种方式，为编写自定义切面引入了一种更简单和更强大的方式：
 
-![AopProxy 实现结构](/img/spring/AopProxy.png)
+### schema-based approach
+
+[schema-based approach](https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#aop-schema)，手工声明切面方式。下面是一个完整的例子：
+
+```xml
+<!-- this is the object that will be proxied by Spring's AOP infrastructure -->
+<bean id="personService" class="x.y.service.DefaultPersonService"/>
+
+<!-- this is the actual advice itself -->
+<bean id="profiler" class="x.y.SimpleProfiler"/>
+
+<aop:config>  <!-- cglib 代理方式配置：proxy-target-class="true" -->
+    <aop:aspect ref="profiler">
+
+        <aop:pointcut id="theExecutionOfSomePersonServiceMethod"
+                      expression="execution(* x.y.service.PersonService.getPerson(String,int))
+                                  and args(name, age)"/>
+
+        <aop:around pointcut-ref="theExecutionOfSomePersonServiceMethod"
+                    method="profile"/>
+
+    </aop:aspect>
+</aop:config>
+```
+
+### @AspectJ annotation style
+
+[@AspectJ annotation style](https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#aop-ataspectj)
+
+- `@AspectJ` 注解风格作为 AspectJ 5 发行版的一部分被引入。Spring 利用了这个注解，使用了 AspectJ 提供的类库进行切点解析和匹配。然而，AOP 运行时仍然是纯 Spring AOP，并且不依赖于 AspectJ 编译器和织入器。
+- The `@AspectJ` support can be enabled with XML- or Java-style configuration. In either case, you also need to ensure that AspectJ’s `aspectjweaver.jar` library is on the classpath of your application (version 1.8 or later).
+
+配置如下：
+
+* Java Config 方式：
+
+  ```java
+  // 声明 Java Config
+  @Configuration
+  // 开启组件扫描，将 MethodCacheInterceptor 作为 bean 注册到 Spring 容器
+  @ComponentScan
+  @EnableAspectJAutoProxy
+  public class ConertConfig {}
+  ```
+
+  注解 `@EnableAspectJAutoProxy` 用于开启 AspectJ 自动代理，为使用 `@Aspect` 注解的 bean 创建一个代理。其中 `proxyTargetClass` 属性用于控制代理方式：
+
+  * true 表示开启 CGLIB 风格的子类继承代理（CGLIB-style 'subclass' proxy）
+  * 默认为 false 表示开启基于接口的 JDK 动态代理（interface-based JDK proxy）
+
+* XML 配置方式：
+
+  ```xml
+  <context:component-scan base-package="your.package" />
+  <aop:aspectj-autoproxy />  <!-- 代理方式配置：proxy-target-class="true" -->
+  ```
+
+## Spring AOP 动态代理的两种实现方式
+
+Spring AOP 支持两种模式的动态代理，JDK Proxy 或者 CGLib：
+
+![Spring AOP process](/img/spring/springaop-process.png)
 
 两种模式的优势如下：
 
-- JDK Proxy `org.springframework.aop.framework.JdkDynamicAopProxy`
+- JDK Proxy
 
-- - 最小化依赖关系，减少依赖意味着简化开发和维护，JDK 本身的支持，可能比 cglib 更加可靠。
+  - 最小化依赖关系，减少依赖意味着简化开发和维护，JDK 本身的支持，可能比 cglib 更加可靠。
   - 平滑进行 JDK 版本升级，而字节码类库通常需要进行更新以保证在新版 Java 上能够使用。
   - 代码实现简单，主要利用 JDK 反射机制。
 
-- CGLib Proxy `org.springframework.aop.framework.CglibAopProxy`
+- CGLib Proxy
 
-- - 有的时候调用目标可能不便实现额外接口，从某种角度看，限定调用者实现接口是有些侵入性的实践，类似 cglib 动态代理就没有这种限制。cglib 动态代理采取的是创建目标类的子类的方式，因为是子类化，我们可以达到近似使用被调用者本身的效果。
+  - 有的时候调用目标可能不便实现额外接口，从某种角度看，限定调用者实现接口是有些侵入性的实践，类似 cglib 动态代理就没有这种限制。cglib 动态代理采取的是创建目标类的子类的方式，因为是子类化，我们可以达到近似使用被调用者本身的效果。
   - 只操作我们关心的类，而不必为其他相关类增加工作量。
   - 性能更好。
 
-![Spring AOP process](/img/spring/springaop-process.png)
+源码解析：
+
+![AopProxy 实现结构](/img/spring/AopProxy.png)
+
+`org.springframework.aop.framework.JdkDynamicAopProxy`
+`org.springframework.aop.framework.CglibAopProxy`
+
+官方文档的一些关键摘录：
+
+### AOP Proxies
+
+Spring AOP defaults to using standard JDK dynamic proxies for AOP proxies. This enables any interface (or set of interfaces) to be proxied.
+
+Spring AOP can also use CGLIB proxies. This is necessary to proxy classes rather than interfaces. By default, CGLIB is used if a business object does not implement an interface. As it is good practice to program to interfaces rather than classes, business classes normally implement one or more business interfaces. It is possible to [force the use of CGLIB](https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#aop-proxying), in those (hopefully rare) cases where you need to advise a method that is not declared on an interface or where you need to pass a proxied object to a method as a concrete type.
+
+It is important to grasp the fact that Spring AOP is proxy-based. See [Understanding AOP Proxies](https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#aop-understanding-aop-proxies) for a thorough examination of exactly what this implementation detail actually means.
+
+### Proxying Mechanisms
+
+Spring AOP uses either JDK dynamic proxies or CGLIB to create the proxy for a given target object. (JDK dynamic proxies are preferred whenever you have a choice).
+
+If the target object to be proxied implements at least one interface, a JDK dynamic proxy is used. All of the interfaces implemented by the target type are proxied. If the target object does not implement any interfaces, a CGLIB proxy is created.
+
+If you want to force the use of CGLIB proxying (for example, to proxy every method defined for the target object, not only those implemented by its interfaces), you can do so. However, you should consider the following issues:
+
+- `final` methods cannot be advised, as they cannot be overridden.
+- As of Spring 3.2, it is no longer necessary to add CGLIB to your project classpath, as CGLIB classes are repackaged under `org.springframework` and included directly in the spring-core JAR. This means that CGLIB-based proxy support “just works”, in the same way that JDK dynamic proxies always have.
+- As of Spring 4.0, the constructor of your proxied object is NOT called twice any more, since the CGLIB proxy instance is created through Objenesis. Only if your JVM does not allow for constructor bypassing, you might see double invocations and corresponding debug log entries from Spring’s AOP support.
+
+To force the use of CGLIB proxies, set the value of the `proxy-target-class` attribute of the `<aop:config>` element to true, as follows:
+
+```xml
+<aop:config proxy-target-class="true">
+    <!-- other beans defined here... -->
+</aop:config>
+```
+
+To force CGLIB proxying when you use the @AspectJ auto-proxy support, set the `proxy-target-class` attribute of the `<aop:aspectj-autoproxy>` element to `true`, as follows:
+
+```xml
+<aop:aspectj-autoproxy proxy-target-class="true"/>
+```
 
 # 例子
 
@@ -250,32 +362,18 @@ public class MethodCacheInterceptor {
 1. 方法入参必须为基本数据类型或者字符串类型，使用其它引用类型的参数会导致缓存键构造有误；
 2. 方法返回值必须实现  `Serializable` 接口；
 
-## 开启自动代理
+## 开启动态代理
 
-最后，开启 Spring 的组件扫描、开启自动代理功能：
+最后，开启 Spring 的组件扫描、自动代理功能：
 
-* Java Config 方式：
-
-  ```java
-  // 声明 Java Config
-  @Configuration
-  // 开启组件扫描，将 MethodCacheInterceptor 作为 bean 注册到 Spring 容器
-  @ComponentScan
-  @EnableAspectJAutoProxy
-  public class ConertConfig {}
-  ```
-
-  注解 `@EnableAspectJAutoProxy` 用于开启 AspectJ 自动代理，为使用 `@Aspect` 注解的 bean 创建一个代理。其中 `proxyTargetClass` 属性用于控制代理方式：
-
-  * true 表示开启 CGLIB 风格的子类继承代理（CGLIB-style 'subclass' proxy）
-  * 默认为 false 表示开启基于接口的 JDK 动态代理（interface-based JDK proxy）
-
-* XML 配置方式：
-
-  ```xml
-  <context:component-scan base-package="your.package" />
-  <aop:aspectj-autoproxy />  <!-- 代理方式配置：proxy-target-class="true" -->
-  ```
+```java
+// 声明 Java Config
+@Configuration
+// 开启组件扫描，将 MethodCacheInterceptor 作为 bean 注册到 Spring 容器
+@ComponentScan
+@EnableAspectJAutoProxy
+public class ConertConfig {}
+```
 
 ## 投入使用
 
@@ -295,6 +393,8 @@ public List<String> listById(String id) {
 # 参考
 
 《[Spring in Action, 4th](https://www.manning.com/books/spring-in-action-fourth-edition)》
+
+https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#aop
 
 《[AspectJ Docs](https://www.eclipse.org/aspectj/docs.php)》
 
