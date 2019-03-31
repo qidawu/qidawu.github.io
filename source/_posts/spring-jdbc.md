@@ -17,7 +17,7 @@ Spring 的 JDBC 框架承担了资源管理和异常处理的工作，从而简�
 
 # 依赖安装
 
-要在 Spring 中使用 JDBC，需要依赖 `spring-jdbc`。如果使用 Spring Boot 的话，可以直接导入起步依赖：
+要在 Spring 中使用 JDBC，需要依赖 `spring-jdbc`。如果使用 Spring Boot 的话，可以直接导入起步依赖 `spring-boot-starter-jdbc`：
 
 ```xml
 <!-- Spring JDBC 起步依赖 -->

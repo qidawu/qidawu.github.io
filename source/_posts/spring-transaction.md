@@ -256,7 +256,7 @@ public class TestDbService {
     /**
      * 使用注解方式配置事务，是最简单最推荐的方式。事务的参数配置详见脑图。
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Integer save3() {
         return insert();
     }

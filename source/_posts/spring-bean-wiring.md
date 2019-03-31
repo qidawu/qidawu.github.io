@@ -151,16 +151,16 @@ public class CDPlayerConfig {
 Spring Framework：
 
 * spring-context
-  * `@EnableAsync`
-  * `@EnableScheduling`
-  * `@EnableCaching`
-  * `@EnableAspectJAutoProxy`
+  * `@EnableAsync` 开启对 `@Async` 注解的支持
+  * `@EnableScheduling` 开启对 `@Scheduled` 注解的支持
+  * `@EnableCaching` 开启对 `@Cacheable` 注解的支持
+  * `@EnableAspectJAutoProxy` 开启对 `@Aspect` 注解的支持
   * `@EnableLoadTimeWeaving`
   * `@EnableMBeanExport`
 * spring-tx
-  * `@EnableTransactionManagement`
+  * `@EnableTransactionManagement` 开启对 `@Transactional` 注解的支持
 * spring-webmvc
-  * `@EnableWebMvc`
+  * `@EnableWebMvc` 开启对 `@Controller` 注解的支持
 * spring-webflux
   * `@EnableWebFlux`
 * spring-websocket
