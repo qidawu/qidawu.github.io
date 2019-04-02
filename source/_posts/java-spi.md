@@ -31,6 +31,12 @@ Java SPI 实际上是“**基于接口的编程＋策略模式＋配置文件**�
 
 # 总结
 
+下面总结下这几个加载类：
+
+* Java `java.util.ServiceLoader`
+* Spring `org.springframework.core.io.support.SpringFactoriesLoader`
+* Dubbo `com.alibaba.dubbo.common.extension.ExtensionLoader`
+
 |          | Java SPI                         | Spring Factories                                    | Dubbo SPI                                               |
 | -------- | -------------------------------- | --------------------------------------------------- | ------------------------------------------------------- |
 | 加载类   | `ServiceLoader`                  | `SpringFactoriesLoader`                             | `ExtensionLoader`                                       |
