@@ -25,6 +25,10 @@ tags: Java
 | `<dubbo:argument/>`    | `com.alibaba.dubbo.config.ArgumentConfig`    | 参数配置     | 用于指定方法参数配置                                         |
 | `<dubbo:module/>`      | `com.alibaba.dubbo.config.ModuleConfig`      | 模块配置     | 用于配置当前模块信息，可选                                   |
 
+下面是一些 dubbo 配置的总结：
+
+![](/img/dubbo/dubbo.png)
+
 # 配置覆盖关系
 
 配置覆盖关系：
