@@ -328,9 +328,11 @@ public ThreadPoolExecutor(int corePoolSize,
 
 阻塞队列用于保存等待执行的任务。有下面几种常用队列：
 
-- `LinkedBlockingQueue`，默认用于 `Executors.newFixedThreadPool(...)` 和 `newSingleThreadExecutor(...)`
-- `SynchronousQueue`，默认用于 `Executors.newCachedThreadPool(...)`
-- `DelayedWorkQueue`，默认用于 `Executors.newScheduledThreadPool(...)`
+* `ArrayBlockingQueue`，基于数组结构的有界阻塞队列，FIFO。
+* `LinkedBlockingQueue`，基于链表结构的阻塞队列，FIFO，吞吐量大于上者。默认用于 `Executors.newFixedThreadPool(...)` 和 `newSingleThreadExecutor(...)`。
+* `SynchronousQueue`，默认用于 `Executors.newCachedThreadPool(...)`。
+* `DelayedWorkQueue`，默认用于 `Executors.newScheduledThreadPool(...)`。
+* `PriorityBlockingQueue`，一个具有优先级的无界阻塞队列。
 
 ![BlockingQueue](/img/java/concurrent/BlockingQueue.png)
 
@@ -363,7 +365,7 @@ public interface BlockingQueue<E> extends Queue<E> {
 
 ![RejectedExecutionHandler](/img/java/concurrent/RejectedExecutionHandler.png)
 
-通过 `RejectedExecutionHandler` 接口可以实现更多策略：
+通过 `RejectedExecutionHandler` 接口可以实现更多策略，例如记录日志或持久化不能处理的任务，或者发出告警。
 
 ```java
 public interface RejectedExecutionHandler {
