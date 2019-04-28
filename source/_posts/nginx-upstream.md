@@ -43,12 +43,12 @@ http {
 
 负载均衡（Load Balance），其意思就是将运算或存储负载按一定的算法分摊到多个运算或存储单元上，下面介绍 Nginx 几种常见的负载均衡方法：
 
-* weighted round-robin，加权轮询策略，默认策略。
-* `random [two [method]]`，随机选取策略。
+* 默认策略：加权轮询策略（weighted round-robin）。
+* `random`，加权随机策略。
 * `ip_hash`，基于客户端 IP 计算出哈希值，再根据服务器数量取模选取服务器（ip_hash % server_size = server_no）。
 * `hash key [consistent]`，基于指定 key 计算出哈希值，再根据服务器数量取模选取服务器。可选一致性哈希算法缓解重映射问题。
-* `least_conn`，基于最小活跃连接数。
-* `least_time`，基于最小平均响应时间和最小活跃连接数。
+* `least_conn`，基于最小活跃连接数（加权）。如果有多个服务器符合条件，则使用加权轮询策略依次响应。
+* `least_time`，基于最小平均响应时间和最小活跃连接数（加权）。如果有多个服务器符合条件，则使用加权轮询策略依次响应。
 
 ## ip hash
 
