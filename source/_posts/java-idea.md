@@ -197,6 +197,10 @@ File > Settings > Editor > General > Editor Tabs，去掉勾选 `Show tabs in on
 >
 > Ctrl+Y 删除行
 >
+> Alt+Shift+向上箭头 Move Line Up
+>
+> Alt+Shift+向下箭头 Move Line Down
+>
 > Ctrl+Shift+U 大小写转换
 >
 > Ctrl+Alt+L 格式化代码
