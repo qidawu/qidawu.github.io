@@ -3,6 +3,7 @@ title: Java 并发编程类总结
 date: 2019-02-24 15:07:11
 updated: 
 tags: Java
+typora-root-url: ..
 ---
 
 工作中常用到一些并发编程类，这里做一些总结。
@@ -104,9 +105,11 @@ Spring Framework 中并发编程相关的类主要位于 `spring-context` 下的
 
 ![org.springframework.scheduling.concurrent](/img/java/concurrent/package_spring_concurrent.png)
 
-此外，`org.springframework.scheduling.concurrent.CustomizableThreadFactory` 还：
+其中，顶层的 `org.springframework.scheduling.concurrent.CustomizableThreadFactory` 结构如下：
 
-* 实现了 `java.util.concurrent.ThreadFactory` 线程工厂接口，源码如下：
+![org.springframework.util.CustomizableThreadFactory](/img/java/concurrent/CustomizableThreadFactory.png)
+
+* `CustomizableThreadFactory` 实现了 `java.util.concurrent.ThreadFactory` 线程工厂接口，源码如下：
 
   ```java
   // Executors.defaultThreadFactory 方法提供了一个实用的简单实现，为新线程设置了上下文，详见源码
@@ -115,9 +118,53 @@ Spring Framework 中并发编程相关的类主要位于 `spring-context` 下的
   }
   ```
 
-* 继承了 `org.springframework.util.CustomizableThreadFactory` 类，用于创建新线程，并提供各种线程属性自定义配置（如线程名前缀、线程优先级等）
+* `CustomizableThreadFactory` 继承了 `org.springframework.util.CustomizableThreadCreator` 类，用于创建新线程，并提供各种线程属性自定义配置（如线程名前缀、线程优先级等）。
 
-![org.springframework.util.CustomizableThreadFactory](/img/java/concurrent/CustomizableThreadFactory.png)
+然后重点看下最常用的 `org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor` 类，提供的方法列表如下：
+
+![ThreadPoolTaskExecutor 方法列表](/img/java/concurrent/ThreadPoolTaskExecutor.png)
+
+当我们在实例化 `ThreadPoolTaskExecutor` 类的时候，其调用堆栈如下：
+
+![](/img/java/concurrent/ThreadPoolTaskExecutor_threads.png)
+
+可见，实际上是先调用了抽象父类 `ExecutorConfigurationSupport` 的 `afterPropertiesSet()` 和 `initialize()` 方法，最后再调用 `ThreadPoolTaskExecutor#initializeExecutor(...)`，该方法源码如下：
+
+```java
+    @Override
+    protected ExecutorService initializeExecutor(
+            ThreadFactory threadFactory, RejectedExecutionHandler rejectedExecutionHandler) {
+
+        BlockingQueue<Runnable> queue = createQueue(this.queueCapacity);
+
+        ThreadPoolExecutor executor;
+        if (this.taskDecorator != null) {
+            executor = new ThreadPoolExecutor(
+                    this.corePoolSize, this.maxPoolSize, this.keepAliveSeconds, TimeUnit.SECONDS,
+                    queue, threadFactory, rejectedExecutionHandler) {
+                @Override
+                public void execute(Runnable command) {
+                    super.execute(taskDecorator.decorate(command));
+                }
+            };
+        }
+        else {
+            executor = new ThreadPoolExecutor(
+                    this.corePoolSize, this.maxPoolSize, this.keepAliveSeconds, TimeUnit.SECONDS,
+                    queue, threadFactory, rejectedExecutionHandler);
+
+        }
+
+        if (this.allowCoreThreadTimeOut) {
+            executor.allowCoreThreadTimeOut(true);
+        }
+
+        this.threadPoolExecutor = executor;
+        return executor;
+    }
+```
+
+实际上就是通过构造方法实例化 `java.util.concurrent.ThreadPoolExecutor` 对象，并设置相应参数。
 
 # 两种异步任务
 
