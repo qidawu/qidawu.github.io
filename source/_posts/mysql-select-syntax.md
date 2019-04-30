@@ -282,7 +282,7 @@ cust_id    num_ord
 * `SELECT ... LOCK IN SHARE MODE ` 设置**共享（*S*）锁**
 *  `SELECT ... FOR UPDATE` 设置**排它（*X*）锁**
 
-详情请参考《[MySQL 加锁读机制总结](/2018/10/21/mysql-locking-reads/)》。
+详情请参考《[MySQL 锁机制总结](/2018/10/20/mysql-locking/)》。
 
 # 参考
 
