@@ -25,21 +25,21 @@ Spring Bean Factory 负责管理 bean 的生命周期，可以分为三个阶段
 
 * 调用该 Bean 实现的各种生命周期回调接口。
 
-## 生命周期事件
+## 初始化和销毁方法
 
-Spring 框架提供了以下几种控制 bean 生命周期事件的方法：
+Spring 框架提供了以下三种方式指定 bean 生命周期的初始化和销毁回调方法：
 
 * 实现 Spring 框架的回调接口：
-  * `org.springframework.beans.factory.Aware` 子接口实现特定行为
-  * `org.springframework.beans.factory.config.BeanPostProcessor`
   * `org.springframework.beans.factory.InitializingBean`
   * `org.springframework.beans.factory.DisposableBean`
+* 在 Spring bean 配置文件或 `@Bean` 注解中指定以下属性：
+  * `@Bean(initMethod="xxx" destroyMethod="xxx")`
+  * `<bean init-method="xxx" destroy-method="xxx" />`
 * 使用 JavaEE 规范 `javax.annotation` 包中提供的注解：
   - `@PostConstruct`
   - `@PreDestroy`
-* 在 bean 配置文件中自定义 `init-method` 和 `destroy-method` 方法
 
-## Aware 接口解析
+## Aware 接口
 
 在日常的开发中，我们经常需要用到 Spring 容器本身的功能资源，可以通过 Spring 提供的一系列 `Aware (org.springframework.beans.factory)` 子接口来实现具体的功能。`Aware` 是一个具有标识作用的超级接口，实现该接口的 bean 具有被 Spring 容器通知的能力，而被通知的方式就是通过回调，以依赖注入的方式为 bean 设置相应属性，这是一个典型的依赖注入的使用场景。`Aware` 接口的继承关系如下：
 
