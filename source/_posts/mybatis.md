@@ -5,6 +5,8 @@ updated:
 tags: Java
 ---
 
+MyBatis 在 Java 业务开发领域可以说是首选的持久化框架，本文主要总结下 MyBatis 的核心配置和源码解析。
+
 # MyBatis 产品组成
 
 MyBatis 常用的产品组成汇总如下：
