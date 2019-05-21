@@ -2,7 +2,7 @@
 title: Spring 事务管理总结
 date: 2019-02-17 22:52:17
 updated:
-tags: Java
+tags: [Java, Spring]
 ---
 
 本文梳理 Spring 事务管理的方方面面，总览如下：

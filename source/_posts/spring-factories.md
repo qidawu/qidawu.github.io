@@ -2,7 +2,7 @@
 title: Spring Boot 自动配置及 Factories 机制总结
 date: 2019-01-20 17:27:20
 updated:
-tags: Java
+tags: [Java, Spring]
 ---
 
 # 自动配置的原理

@@ -2,7 +2,7 @@
 title: Spring 应用上下文总结
 date: 2017-06-01 22:35:15
 updated:
-tags: Java
+tags: [Java, Spring]
 ---
 
 `org.springframework.beans` 和 `org.springframework.context` 包为 Spring 框架 IoC 容器的提供基础。有两种形式的 Spring 容器：
@@ -144,45 +144,6 @@ boolean isSingleton()  // Is the object managed by this factory a singleton? Tha
 * 当需要在 IoC 容器中创建 MyBatis 的 `SqlSessionFactory` 时，可以使用 `SqlSessionFactoryBean`。
 
 大多数情况下，**用户并不需要自定义 FactoryBean**，因为 FactoryBean 通常是框架指定的，且无法在 Spring IoC 容器的范围之外使用。
-
-# Bean 的生命周期
-
-Spring Bean Factory 负责管理 bean 的生命周期。bean 的生命周期由回调方法组成，可以分为两类：
-
-* **Post initialization** call back methods
-* **Pre destruction** call back methods
-
-![Spring Bean Life Cycle](/img/spring/spring-bean-life-cycle.png)
-
-Spring 框架提供了以下四种控制 bean 生命周期事件的方法：
-
-* 实现 Spring 框架的回调接口：
-  * `org.springframework.beans.factory.InitializingBean#afterPropertiesSet()`
-  * `org.springframework.beans.factory.DisposableBean#destroy()`
-* 使用 JavaEE 规范 `javax.annotation` 包中提供的注解：
-  - `@PostConstruct`
-  - `@PreDestroy`
-* 实现特定行为的 `*Aware` 接口
-* 在 bean 配置文件中自定义 `init-method` 和 `destroy-method` 方法
-
-## *Aware 接口解析
-
-在日常的开发中，我们经常需要用到 Spring 容器本身的功能资源，可以通过 Spring 提供的一系列 `*Aware` 子接口来实现具体的功能：
-
-![Aware 接口](/img/spring/aware_interface.png)
-
-`*Aware` 是一个具有标识作用的超级接口，实现该接口的 bean 具有被 Spring 容器通知的能力，而被通知的方式就是通过回调，以依赖注入的方式为 bean 设置相应属性，这是一个典型的依赖注入的使用场景。
-
-参考：[org.springframework.beans.factory.Aware](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/beans/factory/Aware.html)
-
-# Bean 的作用域
-
-使用 `@Scope` 注解定义 bean 的作用域，它可以与 `@Component` 或 `@Bean` 一起使用：
-
-* 单例(Singleton):在整个应用中，只创建bean的一个实例。
-* 原型(Prototype):每次注入或者通过Spring应用上下文获取的时候，都会创建一个新的bean实例。
-* 会话(Session):在Web应用中，为每个会话创建一个bean实例。
-* 请求(Rquest):在Web应用中，为每个请求创建一个bean实例。
 
 # 参考
 

@@ -2,7 +2,7 @@
 title: Spring MVC 常用注解
 date: 2016-06-25 23:32:08
 updated:
-tags: Java
+tags: [Java, Spring]
 ---
 
 # DispatcherServlet 介绍
