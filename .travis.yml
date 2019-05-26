@@ -1,0 +1,27 @@
+# 设置语言
+language: node_js
+# 设置相应的版本，可以指定版本 10，或者使用稳定版 stable
+node_js: stable
+# 设置只监听哪个分支
+branches:
+  only:
+    - master
+# 缓存 node_modules 目录，可以节省持续集成的时间
+cache:
+  directories:
+    - node_modules
+before_install:
+  - npm install -g hexo-cli
+install:
+  - npm install
+script:
+  - hexo clean
+  - hexo g
+after_script:
+  - cd ./public
+  - git init
+  - git config user.name "qida_wu" # 修改name
+  - git config user.email "cynthia903@qq.com" # 修改email
+  - git add .
+  - git commit -m "Travis CI Auto Builder"
+  - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:master
