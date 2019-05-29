@@ -27,7 +27,17 @@ tags: Java
 
 下面是一些 dubbo 配置的总结：
 
-![](/img/dubbo/dubbo.png)
+## 协议
+
+![](/img/dubbo/dubbo_protocol.png)
+
+## 服务提供者
+
+![](/img/dubbo/provider.png)
+
+## 服务消费者
+
+![](/img/dubbo/consumer.png)
 
 # 配置覆盖关系
 
