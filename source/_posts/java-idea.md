@@ -82,8 +82,7 @@ File > Other Setting > Default Settings > 搜索 File and Code Templates，打�
  *
  * </p>
  *
- * @author xxx
- * @email xxx
+ * @author abc@xyz.com
  * @since ${DATE}
  **/
 ```
