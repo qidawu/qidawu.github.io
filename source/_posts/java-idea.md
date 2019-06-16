@@ -134,17 +134,37 @@ File > Settings > Editor > General > Editor Tabs，去掉勾选 `Show tabs in on
 
 自定义快捷键，例如我配置了：
 
-| 功能                                     | 快捷键     |
-| ---------------------------------------- | ---------- |
-| Close                                    | Alt+W      |
-| Hide All Tool Windows                    | Alt+M      |
-| Delete Line                              | Alt+D      |
-| Redo                                     | Ctrl+Y     |
-| Rename                                   | Alt+R      |
-| Completion                               | Alt+/      |
-| Annotate                                 | Ctrl+Alt+1 |
-| Show History                             | Ctrl+Alt+2 |
-| Compare with the Same Repository Version | Ctrl+Alt+3 |
+| 功能                                     | 快捷键       |
+| ---------------------------------------- | ------------ |
+| Close                                    | `Alt+W`      |
+| Hide All Tool Windows                    | `Alt+M`      |
+| Delete Line                              | `Alt+D`      |
+| Redo                                     | `Ctrl+Y`     |
+| Rename                                   | `Alt+R`      |
+| Completion                               | `Alt+/`      |
+
+## VCS
+
+Git 自定义快捷键：
+
+| 功能                                     | 快捷键       |
+| ---------------------------------------- | ------------ |
+| Reset HEAD                               | `Ctrl+Alt+Q` |
+| Annotate（git blame）                    | `Ctrl+Alt+1` |
+| Compare with the Same Repository Version | `Ctrl+Alt+2` |
+| Show History                             | `Ctrl+Alt+3` |
+| Commit File                              | `Ctrl+Alt+4` |
+| PULL                                     | `Ctrl+Alt+5` |
+
+Git 默认的其它命令：
+
+| 功能                            | 快捷键         |
+| ------------------------------- | -------------- |
+| Add                             | `Ctrl+Alt+A`   |
+| Revert Changes 回退更改         | `Ctrl+Alt+Z`   |
+| Commit Changes 提交更改         | `Ctrl+K`       |
+| Push Commits 推送               | `Ctrl+Shift+K` |
+| Update Project（批量 git pull） | `Ctrl+T`       |
 
 ## 创建类
 
@@ -152,9 +172,9 @@ File > Settings > Editor > General > Editor Tabs，去掉勾选 `Show tabs in on
 
 ## 查找/替换类
 
-> Ctrl + F 在当前代码中查找（关键字）
+> Ctrl + F 在当前文件中查找（关键字）
 >
-> Ctrl + R 替换（关键字）
+> Ctrl + R 在当前文件中替换（关键字）
 >
 > Ctrl + Shift + F 在路径中查找（关键字）
 >
@@ -205,16 +225,6 @@ File > Settings > Editor > General > Editor Tabs，去掉勾选 `Show tabs in on
 > Ctrl+Alt+L 格式化代码
 >
 > Ctrl+W、Ctrl+Shift+W 这个动作的实际操作是选中更上一层的语法结构。例如，如果你在一个字符串的一个单词中，按一下Ctrl+W，会选中光标所在单词。再按一下，会选中整个字符串的内容，不包括引号。再按一下，会选中包括引号的字符串。再按一下，会选中整个表达式（如果表达式含有括号，会逐层选中）。再按一下，会选中整个语句块。再按一下，会选中整个方法。再按一下，会选中整个类。
-
-## VCS 类
-
-> Ctrl+T Update Project（批量 git pull）
->
-> Ctrl+K Commit 提交
->
-> Ctrl+Shift+K Push 推送
->
-> Ctrl+Alt+Z Revert 回退
 
 ## 重构类
 
