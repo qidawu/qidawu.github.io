@@ -296,11 +296,10 @@ Git 默认的其它命令：
 下载地址：
 http://www.jetbrains.com/idea/download/#section=windows
 
-激活码：
-http://idea.lanyus.com/
-
 插件：
 https://plugins.jetbrains.com/idea
+
+[常用插件推荐](<https://mp.weixin.qq.com/s?__biz=MzI4Njc5NjM1NQ==&mid=2247488006&idx=1&sn=d5c66d84724b1deebac6604749d04bf5&chksm=ebd62d2adca1a43cb136b5740621e25854537054b9b3cac7451fd21ea55c0fc247e07a49d8cd&mpshare=1&scene=23&srcid=#rd>)
 
 IDEA 重构官方文档：
 https://www.jetbrains.com/help/idea/refactoring-source-code.html
