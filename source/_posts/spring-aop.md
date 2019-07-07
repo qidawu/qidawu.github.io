@@ -2,7 +2,7 @@
 title: Spring AOP 面向切面编程总结
 date: 2019-02-10 22:48:21
 updated: 
-tags: [Java, Spring]
+tags: Spring
 ---
 
 # AOP 概念

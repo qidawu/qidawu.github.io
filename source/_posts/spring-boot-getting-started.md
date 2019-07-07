@@ -2,7 +2,7 @@
 title: Spring Boot 入门总结
 date: 2018-10-01 16:38:00
 updated:
-tags: [Java, Spring]
+tags: Spring
 ---
 
 # 搭建项目
