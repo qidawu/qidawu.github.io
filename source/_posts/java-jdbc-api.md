@@ -142,6 +142,51 @@ int executeUpdate()  // 用于执行指定的更新，如 `create`，`drop`，`i
 boolean execute()  // 用于执行可能返回多种结果的查询。
 ```
 
+`PreparedStatement` 还提供了批处理方式，减少网络请求，提升性能，API 如下：
+
+```java
+    /**
+     * Adds a set of parameters to this <code>PreparedStatement</code>
+     * object's batch of commands.
+     *
+     * @exception SQLException if a database access error occurs or
+     * this method is called on a closed <code>PreparedStatement</code>
+     * @see Statement#addBatch
+     * @since 1.2
+     */
+    void addBatch() throws SQLException;
+```
+
+例如：
+
+```java
+PreparedStatement ps = conn.prepareStatement("INSERT into employees values (?, ?, ?)");
+
+for (n = 0; n < 100; n++) {
+    ps.setString(name[n]);
+    ps.setLong(id[n]);
+    ps.setInt(salary[n]);
+    // 多次执行PreparedStatement，多次数据库请求（网络请求）
+    ps.executeUpdate();  
+}
+```
+
+使用批处理方法，一次性执行多条 SQL：
+
+```java
+PreparedStatement ps = conn.prepareStatement("INSERT into employees values (?, ?, ?)");
+  
+for (n = 0; n < 100; n++) {
+    ps.setString(name[n]);
+    ps.setLong(id[n]);
+    ps.setInt(salary[n]);
+    // 添加批次
+    ps.addBatch();
+}
+// 调用父接口 Statement#executeBatch() 执行批次
+ps.executeBatch();
+```
+
 ## ResultSet 接口
 
 `java.sql.ResultSet` 对象维护了一个指向 table 行的游标。游标初始值指向第 0 行。默认情况下，`ResultSet` 对象只能向前移动，并且不可更新。可以通过在 `createStatement(int, int)` 方法中传递指定参数修改该默认行为。
