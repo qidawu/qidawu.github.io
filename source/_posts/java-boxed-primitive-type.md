@@ -6,9 +6,7 @@ tags: Java
 typora-root-url: ..
 ---
 
-包装类型作为日常开发最常用的数据载体，使用时有一些点需要特别注意，否则容易踩坑（参考《阿里巴巴 Java 开发规范》）：
-
-![notes](/img/java/primitive-type/notes.png)
+包装类型作为日常开发最常用的数据载体，使用时有一些点需要特别注意，否则容易踩坑，本文总结下。
 
 # 值、引用比较问题
 
@@ -33,9 +31,11 @@ System.out.println(("c == d is " + (c == d)));  // c == d is true
 System.out.println(("e == f is " + (e == f)));  // e == f is false
 ```
 
-值的比较务必使用 `equals` 方法。
+值的比较务必使用 `equals` 方法。可以遵循《阿里巴巴 Java 开发规范》这条规范：
 
-# 自动拆装箱的性能问题
+![notes](/img/java/primitive-type/notes.png)
+
+# 自动装箱的性能问题
 
 Java 语言提供了八种基本类型。其中包括六种数字类型（四个整数型，两个浮点型），一种字符类型，还有一种布尔型。这些基本类型（primitive type）都有对应的包装类型（boxed primitive type），具有类的特性。基本类型和包装类型之间的转换通过装箱和拆箱方法：
 
@@ -56,7 +56,7 @@ Java 语言提供了八种基本类型。其中包括六种数字类型（四个
 
 ![Number](/img/java/primitive-type/Number.png)
 
-自 JDK 1.5 版本后，Java 引入了自动装箱（autoboxing）、拆箱（auto-unboxing）作为语法糖，使基本类型和包装类型可以直接转换，无需手工。`javac` 编译会做相应处理，例如：
+自 JDK 1.5 版本后，Java 引入了自动装箱（autoboxing）、拆箱（auto-unboxing）作为语法糖，使基本类型和包装类型可以直接转换，减少使用包装类型的繁琐性。`javac` 编译会做相应处理，例如：
 
 ```java
 public static void main(String[] args) {
@@ -74,7 +74,7 @@ public static void main(String args[]) {
 }
 ```
 
-自动拆装箱会有一定的性能损耗，看一段代码：
+但在进行大批量数据操作时，装箱操作会有一定的性能损耗，看一段代码：
 
 ```java
 // 程序一：包装类型
@@ -92,20 +92,58 @@ for (long i = 0; i < Integer.MAX_VALUE; i++) {
 System.out.println(sum);  // 耗时 1101 ms
 ```
 
-程序一运行起来比程序二慢了十倍，因为变量被反复地装箱和拆箱，导致明显的性能下降。
+程序一运行起来比程序二慢了十倍，因为变量 `sum` 的每次计算结果都被反复装箱，导致不必要的对象创建和较高的资源消耗，从而影响性能。代码反编译如下：
+
+```java
+// 程序一：包装类型
+Long sum = Long.valueOf(0L);
+for (long i = 0L; i < 2147483647L; i++) {
+    sum = Long.valueOf(sum.longValue() + i);
+}
+System.out.println(sum);
+
+// 程序二：基本类型
+long sum = 0L;
+long i;
+for (i = 0L; i < 2147483647L; i++) {
+    sum += i;
+}
+System.out.println(sum);
+```
+
+这提醒我们，在进行大批量数据操作时，要优先使用基本类型。为此 Java 8 还专门引入了 `IntStream`、`LongStream`、`DoubleStream` 作为泛型类 `Stream` 的补充，专门用于处理对应的基本类型，以及一堆配套的基本类型特化的函数式接口：
+
+![Stream](/img/java/lambda/Stream.png)
+
+![stream_methods](/img/java/lambda/stream_methods.png)
 
 那么什么时候应该使用装箱类型呢？
 
-1. 作为集合
+1. 必须使用装箱基本类型作为类型参数，因为 Java 不允许使用基本类型。例如作为泛型集合中的元素、键和值，由于不能将基本类型作为类型参数，因此必须使用装箱基本类型。又例如，不能将变量声明为 `ThreadLocal<int>` 类型，因此必须使用 `ThreadLocal<Integer>`。
+2. 在进行反射的方法调用时，必须使用装箱基本类型。
+
+# 自动拆箱的 NPE 风险
+
+要注意，当程序进行涉及装箱和拆箱基本类型的混合类型计算时，它会进行自动拆箱。当程序进行拆箱时，会有 NPE 风险：
+
+```java
+Long sum = null;
+for (long i = 0; i < Integer.MAX_VALUE; i++) {
+    sum += i;  // java.lang.NullPointerException
+}
+System.out.println(sum);
+```
+
+在日常开发中，数据库字段定义、或查询结果都可能为 `null`，因为自动拆箱，用基本类型接收会有 NPE 风险。可以遵循《阿里巴巴 Java 开发规范》这条规范：
+
+![notes2](/img/java/primitive-type/notes2.png)
 
 # 源码解析
 
-下面总结下包装类型特点：
+最后，来总结下包装类型特点：
 
-* 所有包装类型都为 `final`，底层的基本类型也都为 `final`，一旦初始化后，运行期值不可变，非常安全。
-* `Byte`、`Short`、`Integer`、`Long` 装箱方法的某个数据段使用了缓存，因此 `==` 引用比较时可能会出现预期外的结果（`true`）。
-
-详见源码：
+* 所有包装类型都为 `final`，底层被包装的基本类型也都为 `final`。因此包装类型一旦初始化后，在运行期值是不可变的，非常安全。
+* `Byte`、`Short`、`Integer`、`Long` 装箱方法的某个数据段使用了缓存，因此 `==` 引用比较时可能会出现预期外的结果（`true`），详见源码。
 
 ## java.lang.Byte
 
@@ -634,3 +672,13 @@ public final class Character implements java.io.Serializable, Comparable<Charact
 }
 ```
 
+# 参考
+
+《Effective Java 第三版》
+
+* 第 44 条：坚持使用标准的函数接口
+* 第 61 条：基本类型优先于装箱基本类型
+
+《Java 8 函数式编程》
+
+《Java 8 实战》

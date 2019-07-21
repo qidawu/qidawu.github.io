@@ -8,7 +8,7 @@ typora-root-url: ..
 
 # Lambda
 
-![lambda](/img/java/lambda.png)
+![lambda](/img/java/lambda/lambda.png)
 
 # 函数式接口
 
@@ -29,7 +29,7 @@ JDK 8 新增了 9 组共 43 个函数式接口，位于 `java.util.function` 包
 
 这些接口统计如下：
 
-| 接口                  | 函数签名                 | 范例                  | 范例               | 原始类型特化                                                 |
+| 接口                  | 函数签名                 | 范例                  | 范例               | 基本类型特化                                                 |
 | --------------------- | ------------------------ | --------------------- | ------------------ | ------------------------------------------------------------ |
 | `Predicate<T>`        | `boolean test(T t)`      | `String::isEmpty`     | 符合某个条件吗？   | `IntPredicate`<br/>`LongPredicate`<br/>`DoublePredicate`     |
 | `BiPredicate<T, U>`   | `boolean test(T t, U u)` |                       |                    |                                                              |
@@ -173,9 +173,9 @@ public final class Optional<T> {
 
 Stream 并不只是一个 API，它是一种基于函数编程的模型。
 
-# 总结
+# 参考
 
-引述自《Effective Java》：
+《Effective Java 第三版》：
 
 * 第 42 条：Lambda 优先于匿名类
 * 第 43 条：方法引用优先于 Lambda
@@ -184,3 +184,7 @@ Stream 并不只是一个 API，它是一种基于函数编程的模型。
 * 第 46 条：优先选择 Stream 中无副作用的函数（使用收集器 `Collectors` 而不是 `forEach`）
 * 第 47 条：Stream 要优先用 Collection 作为返回类型
 * 第 48 条：谨慎使用 Stream 并行
+
+《Java 8 函数式编程》
+
+《Java 8 实战》
