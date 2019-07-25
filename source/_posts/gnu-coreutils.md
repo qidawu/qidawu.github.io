@@ -59,12 +59,13 @@ GNU/CoreUtils 是一组类 Unix 操作系统所需的基础软件包。它包含
 
 ## Output of parts of files
 
-| 命令       | 描述                                       | 备注                                       |
-| -------- | ---------------------------------------- | ---------------------------------------- |
-| `head`   | Output the first part of files           | 默认输出 10 行                                |
-| `tail`   | Output the last part of files            | `-n` 输出倒数 n 行（默认输出 10 行）<br/>`-f` 不停读取输出文件的最新内容，常用于实时监视日志输出，用 `Ctrl＋C` 来终止。 |
-| `split`  | Split a file into pieces                 | 用于按行、按大小分割文件                             |
-| `csplit` | Split a file into context-determined pieces |                                          |
+| 命令     | 描述                                        | 备注                                                         |
+| -------- | ------------------------------------------- | ------------------------------------------------------------ |
+| `head`   | Output the first part of files              | 默认输出 10 行                                               |
+| `tail`   | Output the last part of files               | `-n` 输出倒数 n 行（默认输出 10 行）<br/>`-f` 不停读取输出文件的最新内容，常用于实时监视日志输出，用 `Ctrl＋C` 来终止。 |
+| `tailf`  |                                             | 等同于 `tail -f -n 10`                                       |
+| `split`  | Split a file into pieces                    | 用于按行、按大小分割文件                                     |
+| `csplit` | Split a file into context-determined pieces |                                                              |
 
 ## Operating on sorted files
 
@@ -194,6 +195,18 @@ GNU/CoreUtils 是一组类 Unix 操作系统所需的基础软件包。它包含
 | ---------- | ---------------------------------------- | ------ |
 | `basename` | Strip directory and suffix from a file name | 截取出文件名 |
 | `dirname`  | Strip last file name component           | 截取出目录名 |
+
+# zip 压缩文件查看命令
+
+| 命令    | 描述 | 备注 |
+| ------- | ---- | ---- |
+| `zcat`  |      |      |
+| `zless` |      |      |
+| `zmore` |      |      |
+| `zgrep` |      |      |
+| `zdiff` |      |      |
+
+
 
 # 参考
 
