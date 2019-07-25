@@ -17,7 +17,7 @@ Vim 效率之高的秘密，就在于它拥有多种“模式”。如果你已�
 
 Vim 共具有 6 种基本模式和 5 种派生模式，下面只介绍最常用的 4 个基本模式：
 
-## 普通模式
+## 普通模式（NORMAL MODE）
 
 Vim 启动后的默认模式。这正好和许多新用户期待的操作方式相反，因为大多数编辑器的默认模式为插入模式（就是一打开编辑器就可以开始码字）。
 
@@ -95,7 +95,7 @@ Vim 强大的编辑能力中很大部分是来自于其普通模式的命令（�
 | `n<command>`                              | 重复执行某个命令 n 次                                        |
 | `<start position><command><end position>` | 对某段起止文本执行某个命令，例如：`d`（删除）、`y`（复制）、`v`（选择）、`gU`（变大写）、`gu`（变小写）。例如：`gg=G` |
 
-## 插入模式
+## 插入模式（INSERT MODE）
 
 在这个模式中，大多数按键都会向文本缓冲中插入文本。大多数新用户希望文本编辑器在编辑过程中一直保持这个模式。
 
@@ -117,7 +117,7 @@ Vim 强大的编辑能力中很大部分是来自于其普通模式的命令（�
 | `o`  | Switch to insert mode **after current line** |
 | `O`  | Switch to insert mode **before current line** |
 
-## 可视模式
+## 可视模式（VISUAL MODE）
 
 这个模式与普通模式比较相似。但是移动命令会扩大高亮的文本区域。高亮区域可以是字符、行或者是一块文本。当执行一个非移动命令（例如复制、删除）时，命令会被执行到这块高亮的区域上。
 
@@ -135,15 +135,100 @@ Vim 强大的编辑能力中很大部分是来自于其普通模式的命令（�
 
 使用以下快捷键进入命令行模式：
 
-| 快捷键       | 说明                                       |
-| --------- | ---------------------------------------- |
-| `:`       | 执行命令： <br/> `:h` 帮助文档，例如查看 `f` 命令的帮助：`:h f` |
-| `!`       | 过滤命令                                     |
-| `/` 或 `?` | 搜索字符串                                    |
+| 快捷键     | 说明                                                         |
+| ---------- | ------------------------------------------------------------ |
+| `:`        | 执行命令： <br/> `:h` 帮助文档，例如查看 `s`文本替换命令（substitude）的帮助：`:h s` |
+| `!`        | 过滤命令                                                     |
+| `/` 或 `?` | 搜索字符串                                                   |
 
-### 全局替换
+### 替换命令（Substitute）
 
-`:%s/vivian/sky/g` 替换每一行中所有 vivian 为 sky
+```
+4.2 Substitute                                          *:substitute*
+                                                        *:s* *:su*
+:[range]s[ubstitute]/{pattern}/{string}/[flags] [count]
+                        For each line in [range] replace a match of {pattern}
+                        with {string}.
+                        For the {pattern} see |pattern|.
+                        {string} can be a literal string, or something
+                        special; see |sub-replace-special|.
+                        When [range] and [count] are omitted, replace in the
+                        current line only.
+                        When [count] is given, replace in [count] lines,
+                        starting with the last line in [range].  When [range]
+                        is omitted start in the current line.
+                        Also see |cmdline-ranges|.
+                        See |:s_flags| for [flags].
+```
+
+`[range]` 有以下一些表示方法：
+
+```
+不写range   ：  默认为光标所在的行。
+.           ：  光标所在的行。
+1           ：  第一行。
+$           ：  最后一行。
+33          ：  第33行。
+'a          ：  标记a所在的行（之前要使用ma做过标记）。
+.+1         ：  当前光标所在行的下面一行。
+$-1         ：  倒数第二行。（这里说明我们可以对某一行加减某个数值来
+                取得相对的行）。
+22,33       ：  第22～33行。
+1,$         ：  第1行 到 最后一行。
+1,.         ：  第1行 到 当前行。
+.,$         ：  当前行 到 最后一行。
+'a,'b       ：  标记a所在的行 到 标记b所在的行。
+
+%           ：  所有行（与 1,$ 等价）。
+
+?chapter?   ：  从当前位置向上搜索，找到的第一个chapter所在的行。（
+                其中chapter可以是任何字符串或者正则表达式。
+/chapter/   ：  从当前位置向下搜索，找到的第一个chapter所在的行。（
+                其中chapter可以是任何字符串或者正则表达式。
+
+注意，上面的所有用于range的表示方法都可以通过 +、- 操作来设置相对偏
+移量。
+```
+
+`[flags]` 有以下一些表示方法：
+
+```
+无      ：  只对指定范围内的第一个匹配项进行替换。
+g       ：  对指定范围内的所有匹配项进行替换。
+c       ：  在替换前请求用户确认。
+e       ：  忽略执行过程中的错误。
+
+注意：上面的所有flags都可以组合起来使用，比如 gc 表示对指定范围内的所有匹配项进行替换，并且在每一次替换之前都会请用户确认。
+```
+
+例子：
+
+```
+1.  替换当前行中的内容：    :s/from/to/    （s即substitude）
+    :s/from/to/     ：  将当前行中的第一个from，替换成to。如果当前行含有多个
+                        from，则只会替换其中的第一个。
+    :s/from/to/g    ：  将当前行中的所有from都替换成to。
+    :s/from/to/gc   ：  将当前行中的所有from都替换成to，但是每一次替换之前都
+                        会询问请求用户确认此操作。
+
+    注意：这里的from和to都可以是任何字符串，其中from还可以是正则表达式。
+
+2.  替换某一行的内容：      :33s/from/to/g
+    :.s/from/to/g   ：  在当前行进行替换操作。
+    :33s/from/to/g  ：  在第33行进行替换操作。
+    :$s/from/to/g   ：  在最后一行进行替换操作。
+
+3.  替换某些行的内容：      :10,20s/from/to/g
+    :10,20s/from/to/g   ：  对第10行到第20行的内容进行替换。
+    :1,$s/from/to/g     ：  对第一行到最后一行的内容进行替换（即全部文本）。
+    :1,.s/from/to/g     ：  对第一行到当前行的内容进行替换。
+    :.,$s/from/to/g     ：  对当前行到最后一行的内容进行替换。
+    :'a,'bs/from/to/g   ：  对标记a和b之间的行（含a和b所在的行）进行替换。
+                            其中a和b是之前用m命令所做的标记。
+
+4.  替换所有行的内容：      :%s/from/to/g
+    :%s/from/to/g   ：  对所有行的内容进行替换。
+```
 
 # 配置
 
