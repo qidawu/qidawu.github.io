@@ -191,3 +191,4 @@ GVim 的多标签切换：
 * 《[简明 Vim 练级攻略](http://coolshell.cn/articles/5426.html)》
 * 《[如何在 Vim 中得到你最喜爱的 IDE 特性](http://coolshell.cn/articles/894.html)》
 * 《[为什么 Vim 使用 HJKL 键作为方向键](http://www.oschina.net/news/28608/vim-direction-keys)》
+* 《[vim文本替换命令](https://www.cnblogs.com/wind-wang/p/5768000.html)》

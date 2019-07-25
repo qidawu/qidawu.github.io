@@ -146,6 +146,99 @@ $ java -jar target/myapplication-0.0.1-SNAPSHOT.jar
 $ java -jar target/myapplication-0.0.1-SNAPSHOT.jar -spring.profiles.active=prod
 ```
 
+# 外部配置
+
+Spring Boot 能从多种属性源获得属性，包括如下几处：
+
+1. 命令行参数
+2. `java:comp/env` 里的 JNDI 属性
+3. JVM 系统属性
+4. 操作系统环境变量
+5. 随机生成的带 `random.*` 前缀的属性（在设置其他属性时，可以引用它们，比如 `${random.long}`）
+6. 应用程序以外的 `application.properties` 或者 `appliaction.yml` 文件
+7. 打包在应用程序内的 `application.properties` 或者 `appliaction.yml` 文件
+8. 通过 `@PropertySource` 标注的属性源
+9. 默认属性
+
+这个列表按照优先级排序，也就是说，任何在高优先级属性源里设置的属性都会覆盖低优先级的相同属性。例如，命令行参数会覆盖其他属性源里的属性。
+
+`application.properties` 和 `application.yml` 文件能放在以下四个位置：
+
+1. 外置，在相对于应用程序运行目录的 `/config` 子目录里。
+2. 外置，在应用程序运行的目录里。
+3. 内置，在 `config` 包内。
+4. 内置，在 `Classpath` 根目录。
+
+同样，这个列表按照优先级排序。也就是说，`/config` 子目录里的 `application.properties` 会覆盖应用程序 `Classpath` 里的 `application.properties` 中的相同属性。
+
+此外，如果你在同一优先级位置同时有 `application.properties` 和 `application.yml`，那么 `application.yml` 里的属性会覆盖 `application.properties` 里的属性。
+
+如果需要为自己的 Bean 加上外部配置注入，可以使用注解 `@ConfigurationProperties`。
+
+## 配置嵌入式服务器
+
+Spring Boot 集成了 Tomcat、Jetty 和 Undertow，极大便利了项目部署。下面介绍一些常用配置：
+
+```properties
+server.port=8080 # Server HTTP port.
+server.context-path= # Context path
+```
+
+### Tomcat
+
+URI 编码配置：
+
+```properties
+server.tomcat.uri-encoding=UTF-8 # Character encoding to use to decode the URI.
+```
+
+代理配置：
+
+```properties
+server.tomcat.remote-ip-header= # Name of the http header from which the remote ip is extracted. For instance `X-FORWARDED-FOR`
+server.tomcat.protocol-header= # Header that holds the incoming protocol, usually named "X-Forwarded-Proto".
+server.tomcat.port-header=X-Forwarded-Port # Name of the HTTP header used to override the original port value.
+```
+
+Socket 连接限制及等待超时时间：
+
+```properties
+server.tomcat.max-connections= # Maximum number of connections that the server will accept and process at any given time.
+server.connection-timeout= # Time in milliseconds that connectors will wait for another HTTP request before closing the connection. When not set, the connector's container-specific default will be used. Use a value of -1 to indicate no (i.e. infinite) timeout.
+```
+
+业务线程池调优：
+
+```properties
+server.tomcat.max-threads=0 # Maximum amount of worker threads. Default 200.
+server.tomcat.min-spare-threads=0 # Minimum amount of worker threads.
+server.tomcat.accept-count= # Maximum queue length for incoming connection requests when all possible request processing threads are in use.
+```
+
+### Undertow
+
+```properties
+# 设置IO线程数, 它主要执行非阻塞的任务,它们会负责多个连接, 默认设置每个CPU核心一个线程
+# 不要设置过大，如果过大，启动项目会报错：打开文件数过多
+server.undertow.io-threads=16
+
+# 阻塞任务线程池, 当执行类似servlet请求阻塞IO操作, undertow会从这个线程池中取得线程
+# 它的值设置取决于系统线程执行任务的阻塞系数，默认值是IO线程数*8
+server.undertow.worker-threads=256
+
+# 以下的配置会影响buffer,这些buffer会用于服务器连接的IO操作,有点类似netty的池化内存管理
+# 每块buffer的空间大小,越小的空间被利用越充分，不要设置太大，以免影响其他应用，合适即可
+server.undertow.buffer-size=1024
+
+# 每个区分配的buffer数量 , 所以pool的大小是buffer-size * buffers-per-region
+server.undertow.buffers-per-region=1024
+
+# 是否分配的直接内存(NIO直接分配的堆外内存)
+server.undertow.direct-buffers=true
+```
+
+https://www.cnblogs.com/duanxz/p/9337022.html
+
 # 参考
 
 《Spring Boot in Action》
@@ -155,3 +248,5 @@ https://docs.spring.io/spring-boot/docs/current/
 https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter
 
 https://github.com/spring-projects/spring-boot
+
+[Spring Boot Tomcat配置](https://yq.aliyun.com/articles/619390)

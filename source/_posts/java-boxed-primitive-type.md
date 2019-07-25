@@ -111,7 +111,14 @@ for (i = 0L; i < 2147483647L; i++) {
 System.out.println(sum);
 ```
 
-这提醒我们，在进行大批量数据操作时，要优先使用基本类型。为此 Java 8 还专门引入了 `IntStream`、`LongStream`、`DoubleStream` 作为泛型类 `Stream` 的补充，专门用于处理对应的基本类型，以及一堆配套的基本类型特化的函数式接口：
+这提醒我们，在进行大批量数据操作时，要优先使用基本类型。为此 Java 8 还专门引入了：
+
+* `IntStream`、`LongStream`、`DoubleStream` 作为泛型类 `Stream` 的补充；
+* `OptionalInt`、`OptionalLong`、`OptionalDouble` 作为泛型类 `Optional` 的补充；
+
+* 以及一堆配套的基本类型特化的函数式接口。
+
+部分代码如下：
 
 ![Stream](/img/java/lambda/Stream.png)
 
