@@ -30,12 +30,12 @@ GNU/CoreUtils 是一组类 Unix 操作系统所需的基础软件包。它包含
 
 ## Changing file attributes
 
-| 命令      | 描述                          | 备注                                       |
-| ------- | --------------------------- | ---------------------------------------- |
+| 命令    | 描述                        | 备注                                                         |
+| ------- | --------------------------- | ------------------------------------------------------------ |
 | `chown` | Change file owner and group | `chown -R owner:group /there/is/a/file`<br/>`-R` 递归修改，常用于一次性更改某一目录内所有的文件、目录。目标属主必须在 `/etc/passwd`。 |
-| `chgrp` | Change group ownership      | `-R` 递归修改，目标属组必须在 `/etc/group`。          |
-| `chmod` | Change access permissions   |                                          |
-| `touch` | Change file timestamps      | 改变文件访问和修改时间，也可用于快速创建一个文件。                |
+| `chgrp` | Change group ownership      | `-R` 递归修改，目标属组必须在 `/etc/group`。                 |
+| `chmod` | Change access permissions   | `chmod [ugoa...][[+-=][rwxX]...][,...]`<br/>可用：`u`、`g`、`o`、`a`，可用权限：`r=4`、`w=2`、`x=1`<br/>例如：`chmod u+x` |
+| `touch` | Change file timestamps      | 改变文件访问和修改时间，也可用于快速创建一个文件。           |
 
 ## Disk usage
 
