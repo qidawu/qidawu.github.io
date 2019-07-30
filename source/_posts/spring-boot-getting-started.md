@@ -143,7 +143,7 @@ $ java -jar target/myapplication-0.0.1-SNAPSHOT.jar
 也可以指定运行参数，例如：
 
 ```bash
-$ java -jar target/myapplication-0.0.1-SNAPSHOT.jar -spring.profiles.active=prod
+$ java -jar -spring.profiles.active=prod target/myapplication-0.0.1-SNAPSHOT.jar
 ```
 
 # 外部配置
