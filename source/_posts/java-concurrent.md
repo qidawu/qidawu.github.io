@@ -377,11 +377,15 @@ public ThreadPoolExecutor(int corePoolSize,
 
 * `ArrayBlockingQueue`，基于数组结构的有界阻塞队列，FIFO。
 * `LinkedBlockingQueue`，基于链表结构的阻塞队列，FIFO，吞吐量大于上者。默认用于 `Executors.newFixedThreadPool(...)` 和 `newSingleThreadExecutor(...)`。
-* `SynchronousQueue`，默认用于 `Executors.newCachedThreadPool(...)`。
+* `SynchronousQueue`，无容量阻塞队列，每个插入操作都必须等待另一个线程的移除操作，反之亦然。默认用于 `Executors.newCachedThreadPool(...)`。
 * `DelayedWorkQueue`，默认用于 `Executors.newScheduledThreadPool(...)`。
 * `PriorityBlockingQueue`，一个具有优先级的无界阻塞队列。
 
-![BlockingQueue](/img/java/concurrent/BlockingQueue.png)
+![BlockingQueue](/img/java/collection/BlockingQueue_implementations.png)
+
+创建线程池时，可以通过根据队列容量入参创建相应的阻塞队列：
+
+![BlockingQueue_creating](/img/java/collection/BlockingQueue_creating.png)
 
 通过 `BlockingQueue` 接口可以实现更多排队策略：
 
