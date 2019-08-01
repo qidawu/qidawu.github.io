@@ -138,7 +138,17 @@ WHERE TO_DAYS(CURRENT_DATE) - TO_DAYS(date_col) <= 10;
 
 # 三星索引
 
+评估一个索引是否适合某个查询的“三星系统”（three-start system）：
 
+- 一星：索引将相关的列放到一起，即在一系必要的列上建立索引，不必为在 `where` 条件里面的列都建立索引。 
+- 二星：索引中的数据列顺序和查找中排列顺序一致。通常将选择性最高的列放到索引的最前列。
+- 三星：索引中的列包含了查询中需要的全部列。索引包含查询所需要的数据列，不再进行全表查表（聚簇索引、覆盖索引）。
+
+> Lahdenmaki and Leach’s book also introduces a three-star system for grading how suitable an index is for a query:
+>
+> * The index earns one star if it places relevant rows adjacent to each other, 
+> * a second star if its rows are sorted in the order the query needs,
+> * and a final star if it contains all the columns needed for the query.
 
 # 相关命令
 
