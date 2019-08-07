@@ -1,20 +1,36 @@
 ---
-title: Java 8 函数式编程
+title: Java 8 函数式编程总结
 date: 2019-05-07 15:43:19
 updated:
 tags: Java
 typora-root-url: ..
 ---
 
-# Lambda
+# Lambda 表达式
 
 ![lambda](/img/java/lambda/lambda.png)
 
+# 方法引用
+
+特点：
+
+- 通过方法的名字来指向一个方法
+- 方法引用使用一对冒号 `::`
+- 可以使语言的构造更紧凑简洁，减少冗余代码，尤其是 Lambda 表达式
+
+| 方法引用类型 | 范例                     | Lambda 表达式                                              |
+| ------------ | ------------------------ | ---------------------------------------------------------- |
+| 静态         | `Integer::parseInt`      | `str -> Integer.parseInt(str)`                             |
+| 有限制       | `Instant.now()::isAfter` | `Instant then = Instant.now();`<br/>`t -> then.isAfter(t)` |
+| 无限制       | `String::toLowerCase`    | `str -> str.toLowerCase()`                                 |
+| 类构造器     | `TreeMap<K, V>::new`     | `() -> new TreeMap<K, V>`                                  |
+| 数组构造器   | `int[]::new`             | `len -> new int[len]`                                      |
+
 # 函数式接口
 
-函数式接口是只有一个抽象方法的接口，用作 Lambda 表达式的类型。因此函数式接口可以被隐式转换为 lambda 表达式。
+函数式接口是只有一个抽象方法的接口，作为 Lambda 表达式和方法引用的[目标类型](http://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html#target-typing)。
 
-JDK 8 新增了 9 组共 43 个函数式接口，位于 `java.util.function` 包下，用来支持 Java 的函数式编程。接口如此之多的原因有二：
+JDK 8 新增了 9 组共 43 个通用型函数式接口，位于 `java.util.function` 包下，用来支持 Java 的函数式编程。接口如此之多的原因有二：
 
 * 为了支持不同的参数个数。如 `UnaryOperator<T>` 仅支持一个参数，而 `BinaryOperator<T>` 支持两个参数。这一点从接口命名及函数签名也能看出：
 
@@ -22,6 +38,7 @@ JDK 8 新增了 9 组共 43 个函数式接口，位于 `java.util.function` 包
    - `Binary` 二元
    - `Ternary` 三元
    - `Quaternary` 四元
+   - ......
 
 * 泛型不支持原始数据类型。而在面对大数据量的流式 API 运算时，为了解决包装类在自动拆装箱的性能消耗，引入了 `int`、`long`、`Double` 原始数据类型的函数式接口。
 
@@ -49,26 +66,8 @@ JDK 8 新增了 9 组共 43 个函数式接口，位于 `java.util.function` 包
 此外，函数式接口允许：
 
 * 函数式接口里允许定义默认方法，因为默认方法不是抽象方法，其有一个默认实现，所以是符合函数式接口的定义的。
-  
 * 函数式接口里允许定义静态方法，因为静态方法不能是抽象方法，是一个已经实现了的方法，所以是符合函数式接口的定义的。
-  
 * 函数式接口里允许定义 `java.lang.Object` 里的 `public` 方法。
-
-# 方法引用
-
-特点：
-
-- 通过方法的名字来指向一个方法
-- 方法引用使用一对冒号 `::`
-- 可以使语言的构造更紧凑简洁，减少冗余代码
-
-| 方法引用类型 | 范例                     | Lambda 等式                                                |
-| ------------ | ------------------------ | ---------------------------------------------------------- |
-| 静态         | `Integer::parseInt`      | `str -> Integer.parseInt(str)`                             |
-| 有限制       | `Instant.now()::isAfter` | `Instant then = Instant.now();`<br/>`t -> then.isAfter(t)` |
-| 无限制       | `String::toLowerCase`    | `str -> str.toLowerCase()`                                 |
-| 类构造器     | `TreeMap<K, V>::new`     | `() -> new TreeMap<K, V>`                                  |
-| 数组构造器   | `int[]::new`             | `len -> new int[len]`                                      |
 
 # 使用场景
 
@@ -171,9 +170,15 @@ public final class Optional<T> {
 
 ## Stream API
 
-Stream 并不只是一个 API，它是一种基于函数编程的模型。
+Stream 并不只是一个 API，它是一种基于函数式编程的模型。这里内容有点多，待补充。
 
 # 参考
+
+https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html
+
+https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html
+
+https://docs.oracle.com/javase/tutorial/collections/streams/index.html
 
 《Effective Java 第三版》：
 

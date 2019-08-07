@@ -13,17 +13,6 @@ MyBatis 常用的产品组成汇总如下：
 
 ![MyBatis Products](/img/mybatis/mybatis_products.png)
 
-Maven 依赖安装：
-
-```xml
-<!-- MyBatis -->
-<dependency>
-  <groupId>org.mybatis</groupId>
-  <artifactId>mybatis</artifactId>
-  <version>x.x.x</version>
-</dependency>
-```
-
 # MyBatis 核心总结
 
 ![MyBatis Core](/img/mybatis/mybatis_core.png)
@@ -49,6 +38,19 @@ Maven 依赖安装：
 # Spring 整合
 
 ## 依赖安装
+
+基础依赖安装：
+
+```xml
+<!-- MyBatis -->
+<dependency>
+  <groupId>org.mybatis</groupId>
+  <artifactId>mybatis</artifactId>
+  <version>x.x.x</version>
+</dependency>
+```
+
+Spring 整合依赖安装：
 
 ```xml
 <!-- MyBatis Spring -->

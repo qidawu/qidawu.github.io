@@ -9,7 +9,7 @@ typora-root-url: ..
 `java.util.Date` 存在的问题：
 
 * 正如类名所表达的，这个类无法表示“日期”（替代方案是 `LocalDate`），只能以毫秒的精度表示“时间”（替代方案是 `LocalDateTime`）。
-* 更糟糕的是它的易用性，比如：年份的起始选择是 1900 年，月份的起始从 0 开始。如果要表达 2014 年 3 月 18 日，需要创建以下 `Date` 实例：`Date date = new Date(144，2，18)；`
+* 更糟糕的是它的易用性，比如：年份的起始选择是 1900 年，月份的起始从 0 开始。如果要表达 2014 年 3 月 18 日，需要创建以下 `Date` 实例：`Date date = new Date(144，2，18)`
 * 非线程安全，且所有的日期类都是可变的，这表示在运行期其值可以任意修改，这是 Java 日期类最大的问题之一。
 
 Java 8 引入了新的 `java.time` 类库，用于加强对日期与时间的操作，本文主要总结其 API 结构、具体实现和使用方式。
@@ -34,8 +34,8 @@ Java 8 引入了新的 `java.time` 类库，用于加强对日期与时间的操
 
 | Interface          | Description                                                  |
 | ------------------ | ------------------------------------------------------------ |
-| `TemporalAccessor` | 框架级别的接口，定义了对 temporal 对象的只读访问。           |
-| `Temporal`         | 框架级别的接口，定义了对 temporal 对象的读写访问。实现类有 `LocalDate`、`OffsetDateTime`、`Instant` 等等。 |
+| `TemporalAccessor` | 框架级别的根接口，定义了对 temporal 对象的只读访问。         |
+| `Temporal`         | 框架级别的接口，定义了对 temporal 对象的读写访问。实现类有 `LocalDate`、`OffsetDateTime`、`Instant` 等等。继承自 `TemporalAccessor`。 |
 | `TemporalAmount`   | 框架级别的接口，定义了一个时间段，例如”6 小时“、”8 天“、”3 个月“。实现类有 `Duration`、`Period`。可传入 temporal 对象的 `plus` 或 `minus` 方法进行时间调整。 |
 | `TemporalUnit`     | 日期和时间的单元，`ChronoUnit` 枚举实现了该接口。可传入 temporal 对象的 `plus` 或 `minus` 方法进行时间调整。 |
 | `TemporalField`    | 日期和时间的字段。`ChronoField` 枚举实现了该接口，可传入 temporal 对象的 `get` 或 `with` 方法获取或修改枚举对应的值。 |
