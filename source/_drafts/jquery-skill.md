@@ -1,5 +1,6 @@
+---
 title: jQuery 常用技巧
-tags: JavaScript
+tags: 前端
 ---
 
 # JavaScript 基础
