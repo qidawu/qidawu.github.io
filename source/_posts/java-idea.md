@@ -3,6 +3,7 @@ title: IDEA 一点小总结
 date: 2018-07-29 12:01:58
 updated:
 tags: Java
+typora-root-url: ..
 ---
 
 年初也转投 IDEA 阵营了，相比 Eclipse 确实顺畅很多，尤其是多开项目的时候，已经有种回不去的感觉了。这里介绍一些两个 IDE 之间的区别。
@@ -26,19 +27,61 @@ tags: Java
 
 Project 作为工作空间可以自由切换、多开，从 File > Open Recent 中选择即可。
 
-# 导入项目
+# 创建 java/resource 目录
 
-File > New > Module from Existing Sources... > 选择项目集的根目录，并按如下操作：
+`Ctrl+Alt+Shift+S`，打开 Project Structure > Modules：
+
+![Project Structure > Modules](/img/java/idea/project_structure_modules.png)
+
+# 场景演示
+
+以特性开发与合版这个场景为例，看下如何利用 IDEA 完成整个流程：
+
+## 特性开发
+
+第一步，本地建一个工作目录，以特性名称命名：
+
+```bash
+$ mkdir feature-xxx
+```
+
+第二步，从远程仓库 `clone` 该特性涉及的所有模块到该工作目录：
+
+```bash
+$ cd !$
+$ git clone module1
+$ git clone moduleN
+```
+
+第三步，新建 Project。打开 IDEA，File > New > Project from Existing Sources... > 选择该工作目录，并按如下操作：
 
 ![Import Module](/img/java/idea/import_module.png)
 
 ![Import Module](/img/java/idea/import_module_search_for_projects_recursively.png)
 
-# 创建 java/resource 目录
+第四步，开始特性开发，批量从 master 分支 `checkout` 创建出特性分支 `feature-xxx`：
 
-Ctrl+Alt+Shift+S，打开 Project Structure > Modules：
+![new_branch](/img/java/idea/new_branch.png)
 
-![Project Structure > Modules](/img/java/idea/project_structure_modules.png)
+## 特性合版
+
+第一步，批量从 master 分支 `checkout` 创建出发布分支 `release-xxx`（操作同上）
+
+第二步，升级 `pom.xml` 版本号并推送，方便大家据此合版。
+
+第三步，批量 `merge` 特性分支：
+
+![merge_into_current](/img/java/idea/merge_into_current.png)
+
+第四步，解决冲突（例如 `pom.xml` 版本号冲突、代码冲突，如有）：
+
+![conflicts](/img/java/idea/conflicts.png)
+
+![version_control_local_changes](/img/java/idea/version_control_local_changes.png)
+
+第五步，合版完毕，`Ctrl+K` 批量提交并推送到远程分支 `release-xxx`：
+
+![push_commits](/img/java/idea/push_commits.png)
 
 # 全局配置
 
