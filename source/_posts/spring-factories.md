@@ -2,7 +2,7 @@
 title: Spring Boot 自动配置及 Factories 机制总结
 date: 2019-01-20 17:27:20
 updated:
-tags: Spring
+tags: [Java, Spring]
 ---
 
 Spring Boot 应用中的"自动配置"是通过 `@EnableAutoConfiguration` 注解进行开启的。`@EnableAutoConfiguration` 可以帮助 Spring Boot 应用将所有符合条件的 `@Configuration` 配置类的 bean 都加载到 Spring IoC 容器中。本文解析了实现这个效果的原理。

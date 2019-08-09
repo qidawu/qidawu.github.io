@@ -1,4 +1,5 @@
-title: Git 解决冲突
+---
+title: Git 实战系列（八）Git 解决冲突
 date: 2015-08-25 22:56:06
 updated:
 tags: Git

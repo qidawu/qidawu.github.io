@@ -1,4 +1,5 @@
-title: "Git 安装与配置"
+---
+title: "Git 实战系列（一）Git 安装与配置"
 date: 2015-08-03 11:59:01
 updated: 2015-09-12 23:59:01
 tags: Git

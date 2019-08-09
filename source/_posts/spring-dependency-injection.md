@@ -2,7 +2,7 @@
 title: Spring 依赖注入总结
 date: 2017-05-29 22:30:34
 updated:
-tags: Spring
+tags: [Java, Spring]
 ---
 
 # 什么是依赖注入？

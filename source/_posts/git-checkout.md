@@ -1,4 +1,5 @@
-title: "git checkout 命令撤销修改"
+---
+title: "Git 实战系列（四）git checkout 命令撤销修改"
 date: 2015-08-15 15:14:54
 updated:
 tags: Git

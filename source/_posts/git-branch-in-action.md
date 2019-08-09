@@ -1,5 +1,5 @@
 ---
-title: Git 分支模型实践
+title: Git 实战系列（十三）Git 分支模型实践
 date: 2016-04-05 08:48:24
 updated: 2017-04-20 18:48:24
 tags: Git

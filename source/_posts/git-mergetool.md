@@ -1,4 +1,5 @@
-title: "git mergetool 工具解决冲突"
+---
+title: "Git 实战系列（九）git mergetool 工具解决冲突"
 date: 2015-08-27 15:35:15
 updated: 2015-09-11 15:35:15
 tags: Git

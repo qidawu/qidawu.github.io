@@ -1,5 +1,5 @@
 ---
-title: "Git 分支模型总结"
+title: "Git 实战系列（十一）Git 分支模型总结"
 date: 2016-04-03 22:31:51
 updated: 2016-04-03 22:31:51
 tags: Git

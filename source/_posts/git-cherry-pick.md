@@ -1,5 +1,5 @@
 ---
-title: "git cherry-pick 命令选取合并"
+title: "Git 实战系列（七）git cherry-pick 命令选取合并"
 date: 2015-08-21 22:04:13
 updated: 
 tags: Git

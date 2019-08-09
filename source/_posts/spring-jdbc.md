@@ -1,8 +1,8 @@
 ---
-title: Spring JDBC 使用总结
+title: Java 数据持久化系列（四）Spring JDBC 使用总结
 date: 2019-01-30 22:26:25
 updated:
-tags: Spring
+tags: [Java, Spring]
 ---
 
 Spring 的 JDBC 框架承担了资源管理和异常处理的工作，从而简化了底层 JDBC API 代码，让我们只需编写从数据库读写数据所需的代码。具体特性如下：

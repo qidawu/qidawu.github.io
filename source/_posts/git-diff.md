@@ -1,5 +1,5 @@
 ---
-title: git diff 命令对比文件差异
+title: Git 实战系列（十）git diff 命令对比文件差异
 date: 2016-04-01 22:27:23
 updated:
 tags: Git

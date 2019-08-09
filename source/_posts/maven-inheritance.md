@@ -1,5 +1,5 @@
 ---
-title: Maven 继承关系与聚合关系
+title: Maven 实战系列（三）继承与聚合关系
 date: 2018-04-21 22:41:57
 updated:
 tags: Java

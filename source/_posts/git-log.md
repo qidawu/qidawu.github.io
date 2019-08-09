@@ -1,4 +1,5 @@
-title: "git log 查看提交历史"
+---
+title: "Git 实战系列（二）git log 查看提交历史"
 date: 2015-08-04 12:08:21
 updated: 2015-09-15 12:08:21
 tags: Git

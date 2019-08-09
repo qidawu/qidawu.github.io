@@ -2,7 +2,7 @@
 title: Spring Bean 条件化配置总结
 date: 2017-06-05 23:29:06
 updated:
-tags: Spring
+tags: [Java, Spring]
 ---
 
 # Spring 4.0 的条件化注解

@@ -1,5 +1,5 @@
 ---
-title: git merge 分支合并策略
+title: Git 实战系列（五）git merge 分支合并策略
 date: 2015-08-17 22:48:24
 updated:
 tags: Git

@@ -1,5 +1,5 @@
 ---
-title: Maven 基础知识
+title: Maven 实战系列（一）POM 基础知识
 date: 2018-04-18 22:34:21
 updated:
 tags: Java

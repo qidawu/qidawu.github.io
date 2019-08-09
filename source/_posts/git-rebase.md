@@ -1,5 +1,5 @@
 ---
-title: "git rebase 命令衍合分支"
+title: "Git 实战系列（六）git rebase 命令衍合分支"
 date: 2015-08-20 22:04:13
 updated: 
 tags: Git

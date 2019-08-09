@@ -1,5 +1,5 @@
 ---
-title: JDBC SQL 和 Java 数据类型映射总结
+title: Java 数据持久化系列（三）JDBC SQL 和 Java 数据类型映射总结
 date: 2019-01-28 14:25:06
 updated:
 tags: Java 

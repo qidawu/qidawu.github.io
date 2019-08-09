@@ -2,7 +2,7 @@
 title: Spring Bean 几种配置方式总结
 date: 2017-06-04 22:26:34
 updated:
-tags: Spring
+tags: [Java, Spring]
 ---
 
 Spring 提供几种配置方式，用于 bean 的声明及装配：

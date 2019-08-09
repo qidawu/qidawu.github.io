@@ -2,7 +2,7 @@
 title: Spring bean 生命周期与作用域总结
 date: 2017-06-03 22:20:33
 updated:
-tags: Spring
+tags: [Java, Spring]
 ---
 
 # Bean 的生命周期

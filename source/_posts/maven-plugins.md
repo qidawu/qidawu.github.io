@@ -1,5 +1,5 @@
 ---
-title: Maven 插件总结
+title: Maven 实战系列（五）插件总结
 date: 2018-06-09 22:23:03
 updated:
 tags: Java
