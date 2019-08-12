@@ -145,6 +145,25 @@ System.out.println(sum);
 
 ![notes2](/img/java/primitive-type/notes2.png)
 
+# 进制转换
+
+```java
+// 十进制转成二进制：11111111
+Integer.toBinaryString(255);
+// 二进制转十进制：255
+Integer.valueOf("11111111", 2);
+
+// 十进制转成八进制：10
+Integer.toOctalString(8);
+// 八进制转成十进制：8
+Integer.valueOf("10", 8);
+
+// 十进制转成十六进制：F
+Integer.toHexString(15);
+// 十六进制转成十进制：15
+Integer.valueOf("F", 16);
+```
+
 # 源码解析
 
 最后，来总结下包装类型特点：
