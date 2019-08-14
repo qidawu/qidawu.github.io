@@ -178,7 +178,7 @@ synchronizedNavigableMap
 
 有两种并发队列实现，阻塞式、非阻塞式：
 
-![Queue_implementations](/img/java/collection/Queue_implementations.png)
+![Queue_implementations](/img/java/collection/queue_impl.png)
 
 ### 阻塞队列
 

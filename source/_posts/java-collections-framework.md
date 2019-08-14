@@ -46,6 +46,14 @@ typora-root-url: ..
 
 ## 通用实现
 
+`java.util.Collection` 的通用实现如下：
+
+![collection_impl](/img/java/collection/collection_impl.png)
+
+`java.util.Map` 的通用实现如下：
+
+![map_impl](/img/java/collection/map_impl.JPG)
+
 集合接口的主要实现，命名通常形如 <*Implementation-style*><*Interface*>。通用实现类汇总如下（表头为数据结构，左列为接口）：
 
 |         | **Resizable Array**                                          | **Linked List**                                              | **Hash Table**                                               | **Hash Table + Linked List**                                 | **Balanced Tree**                                            | **Heap**                                                     |
