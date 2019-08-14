@@ -27,6 +27,26 @@ typora-root-url: ..
 
 Project 作为工作空间可以自由切换、多开，从 File > Open Recent 中选择即可。
 
+# 配置 Tomcat
+
+1、下载 Tomcat
+
+2、IDEA 新建 Tomcat（Run > Edit Configurations）
+
+![add_new_tomcat_server_config](/img/java/idea/add_new_tomcat_server_config.png)
+
+3、新建完毕，配置本地 Tomcat 安装目录：
+
+![tomcat_server_config](/img/java/idea/tomcat_server_config.png)
+
+4、配置端口号、必要的 VM options：
+
+![tomcat_server_config2](/img/java/idea/tomcat_server_config2.png)
+
+5、配置运行项目，配置上下文：
+
+![deployment](/img/java/idea/deployment.png)
+
 # 创建 java/resource 目录
 
 `Ctrl+Alt+Shift+S`，打开 Project Structure > Modules：
