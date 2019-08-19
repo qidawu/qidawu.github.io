@@ -85,6 +85,22 @@ $ git branch -a
 
 # 技巧
 
+## 跟踪分支
+
+查看本地分支和远程分支的跟踪关系：
+
+```bash
+$ git branch -vv
+```
+
+设置本地分支 `master` 跟踪远程分支 `origin/<branch>`：
+
+```bash
+$ git branch --set-upstream-to=origin/<branch> master
+```
+
+## 删除本地远程分支
+
 ```
 -r
 --remotes
