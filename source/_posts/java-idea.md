@@ -99,9 +99,7 @@ $ git clone moduleN
 
 ![version_control_local_changes](/img/java/idea/version_control_local_changes.png)
 
-第五步，合版完毕，`Ctrl+K` 批量提交并推送到远程分支 `release-xxx`：
-
-![push_commits](/img/java/idea/push_commits.png)
+第五步，合版完毕，`Ctrl+K` 批量提交并推送到远程分支 `release-xxx` 即可。
 
 # 全局配置
 
