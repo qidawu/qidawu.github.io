@@ -91,6 +91,10 @@ $ git branch -a
 
 ```bash
 $ git branch -vv
+
+* feature-modify-remit-recon f898c3c [origin/feature-modify-remit-recon: ahead 2, behind 6] chore:xxx
+  feature-recon-history      cfbf905 [origin/feature-recon-history] Merge branch master into feature-recon-history
+  master                     e1f5e67 [origin/master] chore:xxx
 ```
 
 设置本地分支 `master` 跟踪远程分支 `origin/<branch>`：
