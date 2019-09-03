@@ -24,7 +24,7 @@ tags: MySQL
 
 - 实现方式：
 
-  - 采用各种锁机制，例如数据库的共享锁，排它锁：
+  - MySQL：在同一事务中采用各种锁机制：
 
     ```sql
     -- 共享锁
@@ -32,6 +32,10 @@ tags: MySQL
     -- 排它锁
     SELECT ... FOR UPDATE;
     ```
+    
+  - Redis：`SETNX` 互斥锁（mutex key）
+  
+  - Zookeeper：创建临时/短暂（`EPHEMERAL_SEQUENTIAL`）节点
 
 # 乐观并发控制
 
@@ -43,7 +47,7 @@ tags: MySQL
 
   * MVCC 多版本并发控制。
 
-  * 采用数据版本机制实现，例如通过版本号（version）、时间戳（update_time），来做乐观锁的判断条件，例如：
+  * CAS（Compare And Set）：实现思路是在 `set` 的时候，加上初始状态的 `compare` 条件判断，只有初始状态不变时，才 `set` 成功。为了避免 ABA 问题（例如 CAS 过程中只简单进行“值”的校验，在有些情况下，“值”相同不会引入错误的业务逻辑（例如余额），但有些情况下，“值”虽然相同，却已经不是原来的数据了（例如堆栈）），CAS 不能只比对“值”，还**必须确保数据是原来的数据**，才能修改成功。实现方式是采用“数据版本”机制，例如通过版本号（version）、时间戳（update_time），来做乐观锁的判断条件，一个数据一个版本，版本变化，即使值相同，也不应该修改成功。例如：
 
     ```
     SELECT * FROM table_name WHERE condition=#condition#;
