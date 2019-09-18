@@ -10,6 +10,10 @@ typora-root-url: ..
 
 ![lambda](/img/java/lambda/lambda.png)
 
+部分新增重点 API：
+
+![api](/img/java/lambda/api.png)
+
 # 方法引用
 
 特点：
@@ -171,6 +175,8 @@ public final class Optional<T> {
 ## Stream API
 
 Stream 并不只是一个 API，它是一种基于函数式编程的模型。这里内容有点多，待补充。
+
+https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html
 
 # 参考
 
