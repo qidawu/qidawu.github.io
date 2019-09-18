@@ -422,6 +422,8 @@ LocalDateTime dateTime2 = LocalDateTime.ofInstant(instant2, ZoneId.systemDefault
 LocalDateTime dateTime3 = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();  // 1970-01-01T00:00
 ```
 
+UTC + 时区差（东正西负）= 本地时间
+
 ### ZoneOffset
 
 另一种比较通用的表达时区的方式是利用当前时区和 UTC/格林尼治的固定偏差。可以使用 `ZoneOffset` 类，它是 `ZoneId` 的一个子类，表示的是当前时间和 UTC 的偏差：
