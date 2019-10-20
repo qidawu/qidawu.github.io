@@ -25,14 +25,12 @@ tags: MySQL
 - 实现方式：
 
   - MySQL：在同一事务中采用各种锁机制：
-
     ```sql
     -- 共享锁
     SELECT ... LOCK IN SHARE MODE;
     -- 排它锁
     SELECT ... FOR UPDATE;
     ```
-    
   - Redis：`SETNX` 互斥锁（mutex key）
   
   - Zookeeper：创建临时/短暂（`EPHEMERAL_SEQUENTIAL`）节点
