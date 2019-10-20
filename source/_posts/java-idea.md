@@ -79,15 +79,15 @@ $ git clone moduleN
 
 ![Import Module](/img/java/idea/import_module_search_for_projects_recursively.png)
 
-第四步，开始特性开发，批量从 master 分支 `checkout` 创建出特性分支 `feature-xxx`：
+第四步，开始特性开发，批量从 master 分支 `checkout` 创建出特性分支 `feature-xxx`。并批量修改 `pom.xml` 的版本号：
 
 ![new_branch](/img/java/idea/new_branch.png)
 
 ## 特性合版
 
-第一步，批量从 master 分支 `checkout` 创建出发布分支 `release-xxx`（操作同上）
+第一步，项目管理员创建发布分支，根据本次发布周期涉及的所有特性，批量从 master 分支 `checkout` 创建出发布分支 `release-xxx`（操作同上）。该操作只能由项目管理员操作，因为 `release-*` 是受保护分支。
 
-第二步，升级 `pom.xml` 版本号并推送，方便大家据此合版。
+第二步，升级 `pom.xml` 版本号并推送。
 
 第三步，批量 `merge` 特性分支：
 
@@ -178,10 +178,13 @@ File > Settings > Editor > General > Editor Tabs，去掉勾选 `Show tabs in on
 
 推荐一些好用的插件：
 
+- Alibaba Java Coding Guidelines：阿里巴巴 Java 开发规范
+- Maven Helper：方便查询依赖树及排除依赖
 - Grep Console：Grep, tail, filter, highlight... everything you need for a console. Also can highlight the editor - nice for analyzing logs...
 - Lombok Plugin：用于精简冗余代码，必装。
-- [MyBatis Plugin](https://plugins.jetbrains.com/plugin/7293-mybatis-plugin)：最强大的 MyBatis 插件，不过是收费版。
+- ~~[MyBatis Plugin](https://plugins.jetbrains.com/plugin/7293-mybatis-plugin)：最强大的 MyBatis 插件，不过是收费版。~~
 - Free MyBatis plugin：免费的 MyBatis 插件，提供了一些基本的跳转和代码生成功能。
+- MyBatis Log Plugin：把 MyBatis 输出的 SQL 日志还原成完整的 SQL 语句。将日志输出的 SQL 语句中的问号 ? 替换成真正的参数值。
 - [Smart Tomcat](https://plugins.jetbrains.com/plugin/9492-smart-tomcat)：社区版没有提供该功能（[点我](https://stackoverflow.com/questions/22047860/tomcat-in-intellij-idea-community-edition)），可以用这个插件替代
 - [Ace Jump](http://kidneyball.iteye.com/blog/1814028)：使用这个插件，直接使用键盘定位到你想去的地方 。
 
