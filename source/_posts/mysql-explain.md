@@ -10,8 +10,6 @@ typora-root-url: ..
 
 `EXPLAIN` 为 `SELECT` 语句中使用的每个表返回一行信息 。它按照 MySQL 在处理语句时读取它们的顺序列出了输出中的表。MySQL 使用嵌套循环连接方法解析所有表连接（MySQL resolves all joins using a nested-loop join method）。这意味着 MySQL 从第一个表中读取一行，然后在第二个表、第三个表中找到匹配的行，以此类推。处理完所有表后，MySQL 输出所选的列，并在表列表中回溯，直到找到一个有更多匹配行的表。从该表中读取下一行，然后继续下一个表。
 
-# 输出格式
-
 `EXPLAIN` 输出列如下：
 
 | Column                                                       | JSON Name              | Meaning                                        |
@@ -29,11 +27,11 @@ typora-root-url: ..
 | [`filtered`](https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_filtered) | 按表条件过滤的行百分比 | Percentage of rows filtered by table condition |
 | [`Extra`](https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_extra) | 附加信息               | Additional information                         |
 
-## id
+# id
 
 `id` 列的编号是 `SELECT` 的序列号，有几个 `SELECT` 就有几个 `id`。`id` 值越大执行优先级越高，`id` 值相同则从上往下执行，`id` 值为 `NULL` 则最后执行。
 
-## select_type
+# select_type
 
 表示查询类型是简单查询还是复杂查询。常见 `SELECT` 类型如下：
 
@@ -47,7 +45,7 @@ typora-root-url: ..
 | `DERIVED`                                                    | Derived table                                                |
 | `MATERIALIZED`                                               | Materialized subquery                                        |
 
-## table
+# table
 
 表示输出行所引用的表名，特殊情况如下：
 
@@ -55,15 +53,15 @@ typora-root-url: ..
 - <derived*N*>：当 `FROM` 子句中有子查询时， `table` 列为 <derived*N*>，表示当前查询依赖于 id=N 的查询结果，于是先执行 id=N 的查询。
 - <subquery*N*>
 
-## type
+# type
 
 单表查询的性能对比：`const` > `ref` > `range` > `index` > `ALL`。一般来说，得保证查询达到 `range` 级别，最好达到 `ref` 级别。
 
-### system
+## system
 
 该表只有一行。是 `const` 连接类型的特例。
 
-### const
+## const
 
 该表最多只有一个匹配行，该行在查询开始时读取。因为只有一行，所以优化器的其余部分可以将这一行中列的值视为常量。`const` 表非常快，因为它们只能读取一次。
 
@@ -83,7 +81,7 @@ SELECT * FROM ref_table,other_table
   AND other_table.unique_key_column = '001';
 ```
 
-### eq_ref
+## eq_ref
 
 对于 `other_table` 中的每行，仅从 `ref_table` 中读取唯一一行。`eq_ref` 类型用于主键索引（`PRIMARY KEY` ）或 `NOT NULL` 的唯一索引（`UNIQUE KEY`），且索引被表连接所使用时。除了 `system` 和 `const` 类型之外，这是最好的连接类型。`select_type=SIMPLE` 简单查询类型不会出现这种类型。
 
@@ -98,7 +96,7 @@ SELECT * FROM ref_table,other_table
   AND ref_table.unique_key_column_part2 = 1;
 ```
 
-### ref
+## ref
 
 对于 `other_table` 中的每行，从 `ref_table` 中读取所有匹配行。`ref` 类型用于普通索引或联合索引的最左前缀列（`leftmost prefix of the key`），即无法根据键值查询到唯一一行。如果使用的索引仅匹配几行结果，则也是一种很好的连接类型。
 
@@ -117,7 +115,7 @@ SELECT * FROM ref_table,other_table
   AND ref_table.key_column_part2 = 1;
 ```
 
-### range
+## range
 
 使用索引进行范围查询时，例如：`=`, `<>`, `>`, `>=`, `<`, `<=`,  `<=>`, `IS NULL`, `BETWEEN`, `LIKE`, `IN()`。
 
@@ -135,7 +133,7 @@ SELECT * FROM tbl_name
   WHERE key_part1 = 10 AND key_part2 IN (10,20,30);
 ```
 
-### index
+## index
 
 索引扫描，类似于 `ALL` 全表扫描。以下情况发生：
 
@@ -147,17 +145,17 @@ SELECT * FROM tbl_name
   SELECT unique_key FROM tbl_name;
   ```
 
-### ALL
+## ALL
 
 全表扫描。此时必须增加索引优化查询。
 
-## possible_keys
+# possible_keys
 
 表示 MySQL 可选的索引。
 
 如果此列为 `NULL`，表示 MySQL 没有可选的索引。此时，可以检查 `WHERE` 子句是否引用了某些适合建立索引的列，建立索引以提升查询性能。
 
-## key
+# key
 
 表示 MySQL 实际选择的索引。
 
@@ -166,7 +164,7 @@ SELECT * FROM tbl_name
 
 如需强制 MySQL 使用或忽略 `possible_keys` 中列出的索引，可以在查询中使用 `FORCE INDEX`、`USE INDEX` 或 `IGNORE INDEX`。详见：[索引提示](https://dev.mysql.com/doc/refman/5.7/en/index-hints.html)。
 
-## key_len
+# key_len
 
 表示 MySQL 实际选择的索引长度。如果该索引为联合索引，可用于判断 MySQL 实际使用了联合索引中的多少个字段。如果 `key` 列为 `NULL`，`key_len` 列也为 `NULL`。
 
@@ -223,7 +221,7 @@ mysql> explain select password from student where password = 'pete';
 +----+-------------+---------+------+---------------+--------------+---------+-------+------+--------------------------+
 ```
 
-## ref
+# ref
 
 `ref` 显示与 `key` 列（实际选择的索引）比较的内容，可选值：
 
@@ -232,13 +230,13 @@ mysql> explain select password from student where password = 'pete';
 * `func`：值为某些函数的结果
 * `NULL`：范围查询（`type=range`）
 
-## rows
+# rows
 
 表示 MySQL 认为执行查询必须扫描的行数。
 
 对于 InnoDB 表，此数字是估计值，可能并不总是准确。
 
-## Extra
+# Extra
 
 这一列显示的是额外信息。如果想要查询越快越好，需特别留意 `Extra` 列是否出现 `Using filesort` 或 `Using temporary`。
 
