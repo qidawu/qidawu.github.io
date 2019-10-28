@@ -143,6 +143,10 @@ SELECT * FROM tbl_name
   SELECT primary_key FROM tbl_name;
   
   SELECT unique_key FROM tbl_name;
+  
+  SELECT COUNT(primary_key) FROM tbl_name;
+  
+  SELECT COUNT(unique_key) FROM tbl_name;
   ```
 
 ## ALL
@@ -230,6 +234,21 @@ mysql> explain select password from student where password = 'pete';
 * `func`：值为某些函数的结果
 * `NULL`：范围查询（`type=range`）
 
+例如联合索引如下，使用三个索引列查询时，执行计划如下（注意 `key_len` 和 `ref`）：
+
+```sql
+`channel_task_no` varchar(60) NOT NULL,
+`reconciliation_code` tinyint(4) unsigned NOT NULL DEFAULT '0',
+`reconciliation_status` tinyint(4) unsigned NOT NULL DEFAULT '0',
+KEY `idx_taskno_rcode_rstatus` (`channel_task_no`,`reconciliation_code`,`reconciliation_status`) USING BTREE
+
++----+-------------+-------+------+--------------------------+--------------------------+---------+-------------------+------+-----------------------+
+| id | select_type | table | type | possible_keys            | key                      | key_len | ref               | rows | Extra                 |
++----+-------------+-------+------+--------------------------+--------------------------+---------+-------------------+------+-----------------------+
+|  1 | SIMPLE      | t_xxx | ref  | idx_taskno_rcode_rstatus | idx_taskno_rcode_rstatus | 184     | const,const,const |    1 | Using index condition |
++----+-------------+-------+------+--------------------------+--------------------------+---------+-------------------+------+-----------------------+
+```
+
 # rows
 
 表示 MySQL 认为执行查询必须扫描的行数。
@@ -252,7 +271,9 @@ mysql> explain select password from student where password = 'pete';
 
 ## Using index condition
 
-查询的列不完全被索引覆盖，`WHERE` 条件中是一个前导列的范围。
+查询的列不完全被索引覆盖。
+
+例如：[索引下推优化（ICP）](https://dev.mysql.com/doc/refman/5.7/en/index-condition-pushdown-optimization.html)
 
 ## Using temporary
 

@@ -109,23 +109,52 @@ WHERE last_name = 'Wu' AND first_name = 'Qida' AND dob = '2018-01-01';
 
 ## 使用独立的列
 
-“独立的列”是指索引列不能是表达式的一部分，也不能是函数的参数。
+“独立的列”是指不在索引列上做任何操作，包括：
+
+* 计算（不能是表达式的一部分）
+* 作为函数的参数。
+* 隐式或显式的类型转换
 
 例如，下面这个查询无法使用 actor_id 列的索引：
 
 ```mysql
+-- 错误示范
 SELECT * 
 FROM people
 WHERE id + 1 = 5;
+
+-- 正确示范
+SELECT * 
+FROM people
+WHERE id = 4;
 ```
 
 凭肉眼很容易看出 `WHERE` 中的表达式其实等价于 `id = 4` ，但是 MySQL 无法自动解析这个方程式。这完全是用户行为。我们应该养成简化 `WHERE` 条件的习惯，始终将索引列单独放在比较符号的一侧。
 
-下面是另一个常见的错误：
+下面是另一个常见的错误，将索引列作为函数的参数：
 
 ```mysql
-SELECT ... 
-WHERE TO_DAYS(CURRENT_DATE) - TO_DAYS(date_col) <= 10;
+-- 错误示范
+SELECT ...
+WHERE DATE(create_time) = '2000-01-01';
+
+-- 正确示范
+SELECT ...
+WHERE create_time BETWEEN '2000-01-01 00:00:00' AND '2000-01-01 23:59:59';
+```
+
+另一个常见错误，merchant_no 为 `VARCHAR` 类型且加了索引，但由于隐式类型转换为数字类型，导致全表扫描：
+
+```sql
+-- 错误示范
+SELECT *
+FROM t_order
+WHERE merchant_no = 2016;
+
+-- 正确示范
+SELECT *
+FROM t_order
+WHERE merchant_no = '2016';
 ```
 
 # 索引选择性
@@ -164,9 +193,9 @@ Selectivity: 0.0312
 > * a second star if its rows are sorted in the order the query needs,
 > * and a final star if it contains all the columns needed for the query.
 
-- 一星：索引列满足查询所需的条件（`WHERE`）。
-- 二星：索引行排序符合查询所需的排序（`ORDER BY`）。
-- 三星：索引列满足查询所需的全部列，不再需要回表查询（即覆盖索引）。
+- 一星：索引列满足查询所需的条件。如果是多个查询条件，则利用联合索引及其最左前缀匹配特性。
+- 二星：索引行排序符合查询所需的排序，没有额外的 `ORDER BY`（避免 `filesort`）。
+- 三星：索引列满足查询所需的全部列，不再需要回表查询（即利用覆盖索引 `covering index`）。
 
 # 相关命令
 
