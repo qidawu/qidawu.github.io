@@ -3,6 +3,7 @@ title: 安全专题分享
 date: 2018-10-16 22:32:51
 updated:
 tags: [安全, 读书笔记]
+typora-root-url: ..
 ---
 
 本文总结的一些学习笔记，用于建立安全观。
@@ -19,6 +20,9 @@ tags: [安全, 读书笔记]
 * 机密性（Confidentiality）：要求保护数据内容不能泄露，常见手段是加密。
 * 完整性（Integrity）：要求保护数据内容是完整、没有被篡改的。常见手段是数字签名。
 * 可用性（Availability）：要求保护资源是“随需而得”。如拒绝服务攻击 （简称DoS，Denial of Service） 破坏的是安全的可用性。
+* 认证（Authentication）
+* 授权（Authorization）
+* 不可抵赖性（Non-repudiation）
 
 # 安全评估的四阶段
 
