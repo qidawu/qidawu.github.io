@@ -184,97 +184,6 @@ FROM Products;
 
 `GROUP BY` 可以搭配使用 `HAVING` 过滤分组。`HAVING` 和 `WHERE` 的差别在于，`WHERE` 对分组前的数据进行过滤， `HAVING` 对分组后的数据进行过滤。
 
-# 表联结
-
-## 内联结
-
-```mysql
-# 简单的等值语法创建内联结
-SELECT vend_name, prod_name, prod_price
-FROM Vendors, Products
-WHERE Vendors.vend_id = Products.vend_id;
-
-# ANSI SQL 规范首选 INNER JOIN 语法创建内联结
-SELECT vend_name, prod_name, prod_price
-FROM Vendors INNER JOIN Products
-ON Vendors.vend_id = Products.vend_id;
-```
-
-在内联结两个表时，实际要做的是将第一个表中的每一行与第二个表中的每一行配对，`WHERE` 或 `ON` 子句作为过滤条件，**只包含那些匹配联结条件的行**。
-
-由没有联结条件的表关系返回的结果为**笛卡儿积（cartesian product）**。检索出的行的数目将是第一个表中的行数乘以第二个表中的行数。因此应当总是提供联结条件。
-
-## 外联结（左、右）
-
-许多联结将一个表中的行与另一个表中的行相关联，但有时候需要**包含没有关联行**的那些行，例如：
-
-*   对每个顾客下的订单进行计数，包括那些至今尚未下订单的顾客；
-
-*   列出所有产品以及订购数量，包括没有人订购的产品；
-
-*   计算平均销售规模，包括那些至今尚未下订单的顾客。
-
-在上述例子中，联结包含了那些在相关表中没有关联行的行。这种联结称为外联结。
-
-例如，要检索出所有顾客+订单，包括那些还未下单的顾客：
-
-```mysql
-SELECT Customers.cust_id, Orders.order_num
-FROM Customers LEFT OUTER JOIN Orders
-ON Customers.cust_id = Orders.cust_id;
-
-->
-cust_id    order_num
----------- ---------
-1000000001 20005
-1000000001 20009
-1000000002 NULL
-1000000003 20006
-1000000004 20007
-1000000005 20008
-```
-
-上例如果使用内联结，将不包含 *1000000002* 顾客，因为他还未下单（即联结条件不匹配）。
-
-作为对比，下例使用内联结 `INNER JOIN` 和聚集函数 `COUNT()` 统计出所有顾客的订单数：
-
-```mysql
-SELECT Customers.cust_id, COUNT(Orders.order_num) AS num_ord
-FROM Customers INNER JOIN Orders
-ON Customers.cust_id = Orders.cust_id
-GROUP BY Customers.cust_id;
-
-->
-cust_id    num_ord
----------- --------
-1000000001 2
-1000000003 1
-1000000004 1
-1000000005 1
-```
-
-但如果使用左外联结 `LEFT OUTER JOIN` 和聚集函数 `COUNT()` 进行相同统计，将会包括那些还未下单的顾客，例如顾客 *1000000002*：
-
-```mysql
-SELECT Customers.cust_id, COUNT(Orders.order_num) AS num_ord
-FROM Customers LEFT OUTER JOIN Orders
-ON Customers.cust_id = Orders.cust_id
-GROUP BY Customers.cust_id;
-
-->
-cust_id    num_ord
----------- -------
-1000000001 2
-1000000002 0
-1000000003 1
-1000000004 1
-1000000005 1
-```
-
-由于 `COUNT(column)` 计数会忽略 `NULL` 值，因此顾客 *1000000002* 的统计结果为 0。
-
-注意，左、右外联结之间的唯一差别是所关联的表的顺序。换句话说，调整 `FROM` 或 `WHERE` 子句中表的顺序，左外联结可以转换为右外联结。因此，这两种外联结可以互换使用，哪个方便就用哪个。
-
 # 加锁读
 
 `InnoDB` 支持两种类型的 [加锁读（Locking Reads）](https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_locking_read)，为事务操作提供额外的**安全性**：
@@ -291,3 +200,4 @@ cust_id    num_ord
 https://dev.mysql.com/doc/refman/5.7/en/select.html
 
 https://dev.mysql.com/doc/refman/5.7/en/innodb-locking-reads.html
+

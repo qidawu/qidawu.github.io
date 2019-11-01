@@ -1,6 +1,6 @@
 ---
 title: MySQL 执行计划总结
-date: 2017-12-21 22:23:06
+date: 2017-10-21 22:23:06
 updated:
 tags: MySQL
 typora-root-url: ..
@@ -8,7 +8,9 @@ typora-root-url: ..
 
 `EXPLAIN` 语句提供有关 MySQL 优化器如何执行语句的信息。能够用于 `SELECT`、`DELETE`、`INSERT`、`REPLACE`、`UPDATE` 语句。
 
-`EXPLAIN` 为 `SELECT` 语句中使用的每个表返回一行信息 。它按照 MySQL 在处理语句时读取它们的顺序列出了输出中的表。MySQL 使用嵌套循环连接方法解析所有表连接（MySQL resolves all joins using a nested-loop join method）。这意味着 MySQL 从第一个表中读取一行，然后在第二个表、第三个表中找到匹配的行，以此类推。处理完所有表后，MySQL 输出所选的列，并在表列表中回溯，直到找到一个有更多匹配行的表。从该表中读取下一行，然后继续下一个表。
+`EXPLAIN` 为 `SELECT` 语句中使用到的每张表输出一行信息 。它按照 MySQL 在处理 `SELECT` 语句时的读取顺序来列出各张表。
+
+MySQL 使用嵌套循环连接算法（NLJ）来解析所有的表连接（MySQL resolves all joins using a nested-loop join method）。详见另一篇。
 
 `EXPLAIN` 输出列如下：
 
@@ -151,7 +153,14 @@ SELECT * FROM tbl_name
 
 ## ALL
 
-全表扫描。此时必须增加索引优化查询。
+[全表扫描](https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_full_table_scan)。此时必须增加索引优化查询。
+
+全表扫描发生的情况如下：
+
+* 小表，此时全表扫描比二级索引扫描再回表的速度要快；
+* `ON` 或 `WHERE` 子句没有可用的索引；
+* 查询的字段虽然使用了索引，但查询条件覆盖的范围太大以至于还不如全表扫描。优化方式详见：[Section 8.2.1.1, “WHERE Clause Optimization”](https://dev.mysql.com/doc/refman/5.7/en/where-optimization.html)
+* 使用了区分度（cardinality）低的索引，索引扫描范围太大以至于还不如全表扫描。如果是统计不准，可以用 `ANALYZE TABLE` 语句优化：[Section 13.7.2.1, “ANALYZE TABLE Syntax”](https://dev.mysql.com/doc/refman/5.7/en/analyze-table.html)
 
 # possible_keys
 
@@ -255,11 +264,25 @@ KEY `idx_taskno_rcode_rstatus` (`channel_task_no`,`reconciliation_code`,`reconci
 
 对于 InnoDB 表，此数字是估计值，可能并不总是准确。
 
+当 `prossible_keys` 存在多个可选索引时，优化器会选择一个认为最优的执行方案，以最小的代价去执行语句。其中，这个扫描行数就是影响执行代价的因素之一。扫描的行数越少，意味着访问磁盘数据的 IO 次数越少，消耗的 CPU 资源也越少。
+
+当然，扫描行数并不是唯一的判断标准，优化器还会结合是否使用临时表、是否排序等因素进行综合判断。
+
+所以在实践中，如果你发现 explain 的结果预估的 `rows` 值跟实际情况差距比较大，可以采用执行 `analyze table` 重新统计信息。
+
 # Extra
 
-这一列显示的是额外信息。如果想要查询越快越好，需特别留意 `Extra` 列是否出现 `Using filesort` 或 `Using temporary`。
+这一列显示的是额外信息。如果想要查询越快越好，需要特别留意 `Extra` 列是否出现以下情况：
 
-常见的重要值如下：
+| Extra                                   | 缓冲区        | 大小配置                                                     | 数据结构                            | 备注                                                         |
+| --------------------------------------- | ------------- | ------------------------------------------------------------ | ----------------------------------- | ------------------------------------------------------------ |
+| `Using filesort`                        | `sort_buffer` | `sort_buffer_size`                                           | 有序数组                            | 使用了“外部排序”（全字段排序或 rowid 排序）                  |
+| `Using join buffer (Block Nested Loop)` | `join_buffer` | `join_buffer_size`                                           | 无序数组                            | 使用了“基于块的嵌套循环连接”算法（Block Nested-Loop Join（BNL）） |
+| `Using temporary`                       | 临时表        | 小于 `tmp_table_size` 为内存临时表，否则为磁盘临时表（可以使用 `SQL_BIG_RESULT` 直接指定） | 二维表结构（类似于 Map，Key-Value） | 如果执行逻辑需要用到二维表特性，就会优先考虑使用临时表。例如：`DISTINCT`、`GROUP BY`、`UNION` |
+
+这三个数据结构都是用来存放 `SELECT` 语句执行过程中的中间数据，以辅助 SQL 语句的执行的。这些情况通常都能通过索引优化。
+
+各种常见的重要值如下：
 
 ## Using index
 
@@ -279,11 +302,27 @@ KEY `idx_taskno_rcode_rstatus` (`channel_task_no`,`reconciliation_code`,`reconci
 
 MySQL 需要创建一张临时表来处理查询。通常发生于查询包含 `DISTINCT`、`GROUP BY` 或 `ORDER BY` 子句等需要数据去重的场景。出现这种情况一般是要进行优化的，首先想到的是用索引进行优化。
 
+## Using join buffer
+
+
+
 ## Using filesort
 
 将用外部排序而不是索引排序，数据较少时从内存排序，否则需要在磁盘完成排序。这种情况下一般考虑使用索引进行优化。
 
-详见：[Section 8.2.1.14, “ORDER BY Optimization”](https://dev.mysql.com/doc/refman/5.7/en/order-by-optimization.html)
+如果对 `GROUP BY`语句的结果没有排序要求，要在语句后面加 `ORDER BY NULL`。
+
+如果 `GROUP BY` 结果无需排序，可以加上 `ORDER BY NULL`。
+
+参考：[Section 8.2.1.14, “ORDER BY Optimization”](https://dev.mysql.com/doc/refman/5.7/en/order-by-optimization.html)
+
+排序总结：
+
+![order_by](/img/mysql/order_by.png)
+
+四种排序情况的流程（参考《极客时间》）：
+
+![order_by_process](/img/mysql/order_by_process.png)
 
 # 参考
 

@@ -1,5 +1,5 @@
 ---
-title: MySQL 索引优化
+title: MySQL 索引优化总结
 date: 2017-11-30 18:55:53
 updated:
 tags: MySQL
@@ -72,6 +72,12 @@ FROM people
 WHERE last_name LIKE 'W%';
 ```
 
+注意 MySQL `LIKE` 的限制：
+
+> MySQL can’t perform the LIKE operation in the index. This is a limitation of the low-level storage engine API, which in MySQL 5.5 and earlier allows only simple comparisons (such as equality, inequality, and greater-than) in index operations. 
+>
+> MySQL can perform **prefix-match LIKE patterns** in the index because it can convert them to simple comparisons, but the leading wildcard in the query makes it impossible for the storage engine to evaluate the match. Thus, the MySQL server itself will have to fetch and match on the row’s values, not the index’s values.
+
 ## 匹配范围值
 
 匹配范围值（Match a range of values）：
@@ -114,6 +120,7 @@ WHERE last_name = 'Wu' AND first_name = 'Qida' AND dob = '2018-01-01';
 * 计算（不能是表达式的一部分）
 * 作为函数的参数。
 * 隐式或显式的类型转换
+* 隐式字符编码转换
 
 例如，下面这个查询无法使用 actor_id 列的索引：
 
@@ -156,6 +163,36 @@ SELECT *
 FROM t_order
 WHERE merchant_no = '2016';
 ```
+
+## 字符串索引优化
+
+### 常规方式
+
+* 直接创建完整索引
+  * 优点：可以使用覆盖索引
+  * 缺点：比较占用空间
+* 创建前缀索引
+  * 优点：节省空间
+  * 缺点：
+    * 需要计算好区分度，以定义合适的索引长度，否则会增加回表次数
+    * 无法使用覆盖索引
+
+区分度计算方法：
+
+```sql
+select 
+  count(distinct left(email,4)) / count(distinct email) as L4, 
+  count(distinct left(email,5)) / count(distinct email) as L5, 
+  count(distinct left(email,6)) / count(distinct email) as L6, 
+  count(distinct left(email,7)) / count(distinct email) as L7,
+from t1;
+```
+### 其它方式
+
+* 倒序存储，再创建前缀索引，用于绕过字符串本身前缀的区分度不够的问题。查询时使用 `reverse` 函数。
+* 创建额外的 hash 字段并创建索引，查询性能稳定（散列冲突的概率更小），有额外的存储和计算消耗，查询时使用 `crc32` 函数。
+
+这两种方式都不支持范围扫描，只支持等值查询。
 
 # 索引选择性
 
