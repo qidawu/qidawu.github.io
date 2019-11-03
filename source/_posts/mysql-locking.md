@@ -1,48 +1,31 @@
 ---
-title: MySQL 锁机制总结
+title: MySQL 加锁读机制总结
 date: 2018-10-20 22:05:04
 updated:
 tags: MySQL
+typora-root-url: ..
 ---
 
-# 锁的类型
+MySQL 支持两种读机制：
 
-MySQL `InnoDB` 存储引擎中，[锁的类型](https://dev.mysql.com/doc/refman/5.7/en/innodb-locking.html)有很多种：
+* [一致性非加锁读（Consistent Non-locking Reads (MVCC)）](https://dev.mysql.com/doc/refman/5.7/en/innodb-consistent-read.html)
+* [加锁读（Locking Reads）](https://dev.mysql.com/doc/refman/5.7/en/innodb-locking-reads.html)
 
-- Shared and Exclusive Locks（共享锁和排它锁）
-- Intention Locks（意向锁）
-- Record Locks（记录锁）
-- Gap Locks（区间锁）
-- Next-Key Locks
-- Insert Intention Locks（插入意向锁）
-- AUTO-INC Locks（自增锁）
-- Predicate Locks for Spatial Indexes（空间索引谓词锁）
+# 加锁读机制
 
-本文总结了下面几种：
+`InnoDB` 支持两种类型的 [加锁读（Locking Reads）](https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_locking_read)，为事务操作提供额外的**安全性**：
 
-![并发控制总结](/img/mysql/concurrency_control.png)
+* [共享锁（Shared Lock, S-Lock）](https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_shared_lock)，也叫读锁（Read Lock）
+  * 语法：`SELECT ... LOCK IN SHARE MODE ` or `SELECT ... FOR SHARE` in MySQL 8.0.1，在检索行上设置共享锁（s-lock）
+  * 其它事务允许读取检索行，但不允许更新或删除，更新或删除会一直阻塞等待，直到该事务结束。
+* [排它锁（Exclusive Lock, X-Lock）](https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_exclusive_lock)，也叫写锁（Write Lock）
+  * 语法：`SELECT ... FOR UPDATE` 在检索行上设置排它锁（x-lock）
+  * 其它事务不允许更新或删除
+  * 不允许加共享锁读取 `SELECT ... LOCK IN SHARE MODE`
+  * 如果事务隔离级别为 `SERIALIZABLE`，不允许读取（因为该级别的读取默认需要获得共享读锁）
+  * 上述操作将一直阻塞等待，直到该事务结束。
 
-# 锁的粒度
-
-所谓的锁策略，就是在锁的开销和数据的安全性之间寻求平衡，这种平衡当然也会影响到性能。
-
-> 一种提高共享资源并发性的方式就是让锁定对象更有**选择性**。尽量只锁定需要修改的部分数据，而不是所有资源。更理想的方式是，只对会修改的数据片进行精确的锁定。任何时候，在给定的资源上，锁定的数据量越少，则系统的并发程度越高，只要相互之间不发生冲突即可。
->
-> 问题是加锁也需要消耗资源。锁的各种操作，包括获得锁、检查锁是否已经解除、释放锁等，都会增加系统的开销。如果系统花费大量的时间来管理锁，而不是存取数据，那么系统的性能可能会因此受到影响。
-
-## 表锁
-
-表锁（Table Lock）是 MySQL 中最基本的锁策略，并且是开销最小的策略。
-
-## 行锁
-
-行锁（Row Lock）可以最大程度的支持并发处理，同时也带来了最大的锁开销。行锁只在存储引擎层实现，而不在 MySQL 服务器层。`InnoDB` 的锁粒度就是到行级别的。
-
-# 共享锁和排它锁
-
-[共享锁（Shared Lock, S-Lock）](https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_shared_lock) 和 [排它锁（Exclusive Lock, X-Lock）](https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_exclusive_lock)，也叫读锁（Read Lock）和写锁（Write Lock）。
-
-共享锁和排它锁之间存在冲突，四种情况如下：
+共享锁和排它锁之间存在冲突的四种情况总结如下：
 
 |           | T1 持有共享锁 | T1 持有排它锁 |
 | ----------------- | ------------- | ------------- |
@@ -102,38 +85,7 @@ MySQL 也支持 `LOCK TABLES` 和 `UNLOCK TABLE` 语句，这是在服务器层�
 
 经常可以发现，应用已经将表从 `MyISAM` 转换到 `InnoDB`，但还是显示地使用 `LOCK TABLE` 语句。这不但没有必要，还会严重影响性能，实际上 `InnoDB` 的行级锁工作得更好。
 
-# 死锁问题
-
-死锁是指两个或多个事务在同一资源上相互占用，并请求锁定对方占用的资源，从而导致恶性循环的现象。
-
-为了解决这种问题，数据库系统实现了各种**死锁检测**和**死锁超时**机制。越复杂的系统，比如 `InnoDB` 存储引擎，越能检测到死锁的循环依赖，并立即返回一个错误。这种解决方式很有效，否则死锁会导致出现非常慢的查询。还有一种解决方式，就是当查询的时间达到锁等待超时的设定后放弃锁请求，例如：
-
-```sql
-1205 - Lock wait timeout exceeded; try restarting transaction
-```
-
-`InnoDB` 目前处理死锁的方法是，**将持有最少行级排它锁的事务进行回滚**，这是相对比较简单的死锁回滚算法。
-
-锁的行为和顺序是和存储引擎相关的。以同样的顺序执行语句，有些存储引擎会产生死锁，有些则不会。死锁的产生有双重原因：
-
-1. 有些是因为真正的数据冲突，这种情况通常很难避免。
-2. 有些则完全是由于存储引擎的实现方式导致的。
-
-**死锁发生以后，只有部分或者完全回滚其中一个事务，才能打破死锁。**对于事务型的系统，这是无法避免的，所以应用程序在设计时必须考虑如何处理死锁。大多数情况下只需要重新执行因死锁回滚的事务即可。
-
-同时，为了避免产生死锁问题，根源在于程序设计时要注意不同事务间 SQL 语句的执行顺序，避免互相锁住对方的资源。
-
-# 加锁读机制
-
-`InnoDB` 支持两种类型的 [加锁读（Locking Reads）](https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_locking_read)，为事务操作提供额外的**安全性**：
-
-* `SELECT ... LOCK IN SHARE MODE ` or `SELECT ... FOR SHARE` in MySQL 8.0.1，在检索行上设置共享锁（s-lock）
-  * 其它事务允许读取检索行，但不允许更新或删除，一直阻塞等待，直到该事务结束。
-* `SELECT ... FOR UPDATE` 在检索行上设置排它锁（x-lock）
-  * 其它事务不允许更新或删除
-  * 不允许加共享锁读取 `SELECT ... LOCK IN SHARE MODE`
-  * 如果事务隔离级别为 `SERIALIZABLE`，不允许读取（因为该级别的读取默认需要获得共享读锁）
-  * 上述操作将一直阻塞等待，直到该事务结束。
+# 例子
 
 这里举个例子，有一张 parent 和 child 表：
 
@@ -247,7 +199,7 @@ update child set name = 'Hello' where parent_id = 2;
 
 ————分割线————
 
-可见，通过共享锁和排它锁都能解决这个问题。下例演示通过 `SELECT ... LOCK IN SHARE MODE ` 设置共享锁解决问题：
+可见，通过共享锁和排它锁都能解决这个问题。下例演示通过 `SELECT ... LOCK IN SHARE MODE ` 设置共享锁解决开头那个问题：
 
 ```sql
 --开启事务 T1
@@ -276,138 +228,13 @@ COMMIT;
 * 只有在通过以下方式之一禁用[自动提交（autocommit）](https://dev.mysql.com/doc/refman/5.7/en/innodb-autocommit-commit-rollback.html)时，才能加锁读：
   * 通过 [`START TRANSACTION`](https://dev.mysql.com/doc/refman/5.7/en/commit.html) 语句，显式开启事务；
   * 通过设置 [`autocommit`](https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_autocommit)为 `0`，显式关闭自动提交。
-* 锁定读取有可能产生**死锁**，具体取决于事务的隔离级别。
-
-# 锁与索引
-
-以一个例子作为总结：
-
-```sql
-CREATE TABLE `child` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `parent_id` bigint(20) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `idx_parent_id` (`parent_id`) USING BTREE
-) ENGINE=InnoDB;
-```
-
-1、InnoDB 行锁是通过给索引上的索引项加锁来实现的，只有通过索引条件检索数据，InnoDB 才使用行锁，否则，InnoDB 将使用表锁：
-
-```sql
---开启事务 T1
-START TRANSACTION;
-
---查看执行计划，全表扫描
-EXPLAIN SELECT * FROM child WHERE name = 'D' FOR UPDATE;
-+----+-------------+-------+------+---------------+------+---------+------+------+-------------+
-| id | select_type | table | type | possible_keys | key  | key_len | ref  | rows | Extra       |
-+----+-------------+-------+------+---------------+------+---------+------+------+-------------+
-|  1 | SIMPLE      | child | ALL  | NULL          | NULL | NULL    | NULL |    5 | Using where |
-+----+-------------+-------+------+---------------+------+---------+------+------+-------------+
-
---执行查询，加表锁
-SELECT * FROM child WHERE name = 'D' FOR UPDATE;
-+----+-----------+------+
-| id | parent_id | name |
-+----+-----------+------+
-|  4 |         3 | D    |
-+----+-----------+------+
-
---开启事务 T2
-START TRANSACTION;
-
---查看执行计划，命中索引 idx_parent_id	
-EXPLAIN SELECT * FROM child WHERE parent_id = 4 FOR UPDATE;
-+----+-------------+-------+------+---------------+---------------+---------+-------+------+-------+
-| id | select_type | table | type | possible_keys | key           | key_len | ref   | rows | Extra |
-+----+-------------+-------+------+---------------+---------------+---------+-------+------+-------+
-|  1 | SIMPLE      | child | ref  | idx_parent_id | idx_parent_id | 8       | const |    1 | NULL  |
-+----+-------------+-------+------+---------------+---------------+---------+-------+------+-------+
-
---执行查询，由于事务 T1 加了表锁，事务 T2 对 parent_id = 4 索引项的行锁被阻塞，一直等待
-SELECT * FROM child WHERE parent_id = 4 FOR UPDATE;
-```
-
-2、由于 MySQL 的行锁是针对索引加的锁，不是针对记录加的锁，所以虽然是访问不同行的记录，但是如果是使用相同的索引键，是会出现锁冲突的。应用设计的时候要注意这一点：
-
-```sql
---开启事务 T1
-START TRANSACTION;
-
---查看执行计划，命中索引 idx_parent_id
-EXPLAIN SELECT * FROM child WHERE parent_id = 2 AND name = 'A' FOR UPDATE;
-+----+-------------+-------+------+---------------+---------------+---------+-------+------+-------------+
-| id | select_type | table | type | possible_keys | key           | key_len | ref   | rows | Extra       |
-+----+-------------+-------+------+---------------+---------------+---------+-------+------+-------------+
-|  1 | SIMPLE      | child | ref  | idx_parent_id | idx_parent_id | 8       | const |    2 | Using where |
-+----+-------------+-------+------+---------------+---------------+---------+-------+------+-------------+
-
---执行查询
-SELECT * FROM child WHERE parent_id = 2 AND name = 'A' FOR UPDATE;
-+----+-----------+------+
-| id | parent_id | name |
-+----+-----------+------+
-|  1 |         2 | A    |
-+----+-----------+------+
-
---开启事务 T2
-START TRANSACTION;
-
---查看执行计划，命中索引 idx_parent_id
-EXPLAIN SELECT * FROM child WHERE parent_id = 2 AND name = 'C' FOR UPDATE;
-+----+-------------+-------+------+---------------+---------------+---------+-------+------+-------------+
-| id | select_type | table | type | possible_keys | key           | key_len | ref   | rows | Extra       |
-+----+-------------+-------+------+---------------+---------------+---------+-------+------+-------------+
-|  1 | SIMPLE      | child | ref  | idx_parent_id | idx_parent_id | 8       | const |    2 | Using where |
-+----+-------------+-------+------+---------------+---------------+---------+-------+------+-------------+
-
--- 执行查询，虽然 T1、T2 访问不同行的记录，但由于使用了相同的索引键 parent_id = 2，出现锁冲突，从而阻塞，一直等待
-SELECT * FROM child WHERE parent_id = 2 AND name = 'C' FOR UPDATE;
-```
-
-3、当表有多个索引的时候，不同的事务可以使用不同的索引锁定不同的行，另外，不论是使用主键索引、唯一索引或普通索引，InnoDB 都会使用行锁来对数据加锁。
-
-4、即便在条件中使用了索引字段，但是否使用索引来检索数据是由 MySQL 通过判断不同执行计划的代价来决定的，如果 MySQL 认为全表扫描效率更高，比如对一些很小的表，它就不会使用索引，这种情况下 InnoDB 将使用表锁，而不是行锁。因此，在分析锁冲突时，别忘了检查 SQL 的执行计划，以确认是否真正使用了索引：
-
-```sql
---开启事务 T1
-START TRANSACTION;
-
---查看执行计划，虽然使用了索引 idx_parent_id，但 MySQL 认为全表扫描效率更高，因此实际上没有使用索引
-EXPLAIN SELECT * FROM child WHERE parent_id = 2 FOR UPDATE;
-+----+-------------+-------+------+---------------+------+---------+------+------+-------------+
-| id | select_type | table | type | possible_keys | key  | key_len | ref  | rows | Extra       |
-+----+-------------+-------+------+---------------+------+---------+------+------+-------------+
-|  1 | SIMPLE      | child | ALL  | idx_parent_id | NULL | NULL    | NULL |    5 | Using where |
-+----+-------------+-------+------+---------------+------+---------+------+------+-------------+
-
---虽然使用了索引 idx_parent_id，但由于进行了全表扫描，因此实际使用表锁
-SELECT * FROM child WHERE parent_id = 2 FOR UPDATE;
-+----+-----------+------+
-| id | parent_id | name |
-+----+-----------+------+
-|  1 |         2 | A    |
-|  2 |         2 | C    |
-|  3 |         2 | C    |
-+----+-----------+------+
-
---开启事务 T2
-START TRANSACTION;
-
---执行查询，由于事务 T1 加了表锁，事务 T2 对 parent_id = 4 索引项的行锁被阻塞，一直等待
-SELECT * FROM child WHERE parent_id = 4 FOR UPDATE;
-```
+* 加锁读有可能产生**死锁**，具体取决于事务的隔离级别。
 
 # 参考
 
 《高性能 MySQL》
 
 https://en.wikipedia.org/wiki/Two-phase_locking
-
-https://dev.mysql.com/doc/refman/5.7/en/innodb-locking.html
-
-https://dev.mysql.com/doc/refman/5.7/en/innodb-deadlocks.html
 
 https://dev.mysql.com/doc/refman/5.7/en/innodb-consistent-read.html
 

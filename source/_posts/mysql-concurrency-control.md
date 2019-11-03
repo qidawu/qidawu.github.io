@@ -1,41 +1,23 @@
 ---
 title: MySQL 并发控制机制总结
-date: 2018-10-20 12:05:04
+date: 2018-10-18 12:05:04
 updated:
 tags: MySQL
+typora-root-url: ..
 ---
+
+# 并发控制
 
 计算机领域中，并发控制（Concurrency Control）是一种机制，它确保并发操作可以产生正确结果。
 
 有两种常用的并发控制机制：
 
-* 悲观并发控制（Pessimistic Concurrency Control, PCC），又称为悲观锁（Pessimistic Lock）。
 * 乐观并发控制（Optimistic Concurrency Control, OCC），又称为乐观锁（Optimistic Lock），最早是由孔祥重（H.T.Kung）教授提出的。
+* 悲观并发控制（Pessimistic Concurrency Control, PCC），又称为悲观锁（Pessimistic Lock）。
 
 这两种机制或者锁并不是 MySQL 或者数据库中独有的概念，而是并发编程的基本概念。
 
-# 悲观并发控制
-
-- 顾名思义，就是很悲观，每次去拿数据的时候都认为别人会修改，所以每次在拿数据的时候都会上锁，直到使用完毕才会解锁，这样别人想拿这个数据就会 block 住直到它拿到锁。
-
-- 适用场景：
-
-  - 悲观并发控制主要用于数据争用激烈的环境，以及发生并发冲突时使用锁保护数据的成本要低于回滚事务的成本的环境中。悲观锁大多数情况下依靠数据库的**锁机制**实现，以保证操作最大程度的独占性。但随之而来的就是数据库性能的大量开销，特别是对长事务而言，由于会阻塞其它事务导致其一直等待，降低整体吞吐量，这样的开销往往无法承受。而乐观锁机制则避免了长事务中的数据库开销。
-
-- 实现方式：
-
-  - MySQL：在同一事务中采用各种锁机制：
-    ```sql
-    -- 共享锁
-    SELECT ... LOCK IN SHARE MODE;
-    -- 排它锁
-    SELECT ... FOR UPDATE;
-    ```
-  - Redis：`SETNX` 互斥锁（mutex key）
-  
-  - Zookeeper：创建临时/短暂（`EPHEMERAL_SEQUENTIAL`）节点
-
-# 乐观并发控制
+## 乐观并发控制
 
 * 顾名思义，就是很乐观，每次去拿数据的时候都认为别人不会修改，所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数据，没有才能更新成功。
 * 适用场景：
@@ -52,6 +34,43 @@ tags: MySQL
     UPDATE table_name SET name=#name#, version=version+1 WHERE version=#version#；
     ```
 
+## 悲观并发控制
+
+- 顾名思义，就是很悲观，每次去拿数据的时候都认为别人会修改，所以每次在拿数据的时候都会上锁，直到使用完毕才会解锁，这样别人想拿这个数据就会 block 住直到它拿到锁。
+
+- 适用场景：
+
+  - 悲观并发控制主要用于数据争用激烈的环境，以及发生并发冲突时使用锁保护数据的成本要低于回滚事务的成本的环境中。悲观锁大多数情况下依靠数据库的**锁机制**实现，以保证操作最大程度的独占性。但随之而来的就是数据库性能的大量开销，特别是对长事务而言，由于会阻塞其它事务导致其一直等待，降低整体吞吐量，这样的开销往往无法承受。而乐观锁机制则避免了长事务中的数据库开销。
+
+- 实现方式：
+
+  - Redis：`SETNX` 互斥锁（mutex key）
+  
+  - Zookeeper：创建临时/短暂（`EPHEMERAL_SEQUENTIAL`）节点
+
+  - MySQL：在同一事务中采用各种锁机制：
+    ```sql
+    -- 共享锁
+    SELECT ... LOCK IN SHARE MODE;
+    -- 排它锁
+    SELECT ... FOR UPDATE;
+    ```
+
+# MySQL 的并发控制
+
+![并发控制总结](/img/mysql/concurrency_control.png)
+
+MySQL `InnoDB` 存储引擎中，悲观[锁的类型](https://dev.mysql.com/doc/refman/5.7/en/innodb-locking.html)还有很多种：
+
+- Shared and Exclusive Locks（共享锁和排它锁）
+- Intention Locks（意向锁）
+- Record Locks（记录锁）
+- Gap Locks（区间锁）
+- Next-Key Locks
+- Insert Intention Locks（插入意向锁）
+- AUTO-INC Locks（自增锁）
+- Predicate Locks for Spatial Indexes（空间索引谓词锁）
+
 # 例子
 
 这里举一个抽奖活动的例子，分别展示乐观锁和悲观锁的两种实现流程：
@@ -61,6 +80,8 @@ tags: MySQL
 # 参考
 
 https://en.wikipedia.org/wiki/Concurrency_control
+
+https://dev.mysql.com/doc/refman/5.7/en/innodb-locking.html
 
 [《支付宝防并发方案之"一锁二判三更新"》](https://segmentfault.com/a/1190000011200547)
 
