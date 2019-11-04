@@ -310,9 +310,9 @@ MySQL 需要创建一张临时表来处理查询。通常发生于查询包含 `
 
 将用外部排序而不是索引排序，数据较少时从内存排序，否则需要在磁盘完成排序。这种情况下一般考虑使用索引进行优化。
 
-如果对 `GROUP BY`语句的结果没有排序要求，要在语句后面加 `ORDER BY NULL`。
+* 将 `WHERE` 和 `ORDER BY` 子句用到的字段，添加联合索引（注意字段顺序）；
 
-如果 `GROUP BY` 结果无需排序，可以加上 `ORDER BY NULL`。
+* 如果 `GROUP BY` 结果无需排序，可以加上 `ORDER BY NULL`。
 
 参考：[Section 8.2.1.14, “ORDER BY Optimization”](https://dev.mysql.com/doc/refman/5.7/en/order-by-optimization.html)
 
