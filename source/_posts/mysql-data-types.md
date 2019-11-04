@@ -1,6 +1,6 @@
 ---
 title: MySQL 常用数据类型
-date: 2018-03-09 14:27:21
+date: 2018-02-05 22:27:21
 updated:
 tags: MySQL
 ---

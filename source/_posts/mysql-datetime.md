@@ -1,6 +1,6 @@
 ---
 title: MySQL 常用日期函数
-date: 2018-02-26 21:43:12
+date: 2018-01-26 21:43:12
 updated:
 tags: MySQL
 ---
