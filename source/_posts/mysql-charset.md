@@ -3,6 +3,7 @@ title: MySQL 字符集与排序规则总结
 date: 2018-12-22 22:29:12
 updated:
 tags: MySQL
+typora-root-url: ..
 ---
 
 查看数据库支持的字符集：`SHOW CHARACTER SET`
@@ -116,3 +117,5 @@ CREATE DATABASE `testdb` /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_unicod
 https://dev.mysql.com/doc/refman/5.7/en/charset.html
 
 https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html
+
+![charset](/img/mysql/charset.png)
