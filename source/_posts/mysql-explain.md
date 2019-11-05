@@ -304,25 +304,13 @@ MySQL 需要创建一张临时表来处理查询。通常发生于查询包含 `
 
 ## Using join buffer
 
-
+使用 BNL 算法进行表连接。这种情况下一般考虑使用索引对被驱动表的表连接字段进行优化，以使用更高效的 NLJ 算法。
 
 ## Using filesort
 
 将用外部排序而不是索引排序，数据较少时从内存排序，否则需要在磁盘完成排序。这种情况下一般考虑使用索引进行优化。
 
-* 将 `WHERE` 和 `ORDER BY` 子句用到的字段，添加联合索引（注意字段顺序）；
-
-* 如果 `GROUP BY` 结果无需排序，可以加上 `ORDER BY NULL`。
-
-参考：[Section 8.2.1.14, “ORDER BY Optimization”](https://dev.mysql.com/doc/refman/5.7/en/order-by-optimization.html)
-
-排序总结：
-
-![order_by](/img/mysql/order_by.png)
-
-四种排序情况的流程（参考《极客时间》）：
-
-![order_by_process](/img/mysql/order_by_process.png)
+优化参考：[Section 8.2.1.14, “ORDER BY Optimization”](https://dev.mysql.com/doc/refman/5.7/en/order-by-optimization.html)
 
 # 参考
 
