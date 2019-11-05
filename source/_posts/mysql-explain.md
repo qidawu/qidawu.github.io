@@ -184,6 +184,7 @@ SELECT * FROM tbl_name
 `key_len` 计算规则如下：
 
 * 使用 `NULL` 需要额外增加 1 Byte 记录是否为 `NULL`。并且进行比较和计算时要对 `NULL` 值做特别的处理，因此尽可能把所有列定义为 `NOT NULL`。
+
 * 各个类型：
   * 整数类型
     - `TINYINT` 1 Byte
@@ -198,14 +199,26 @@ SELECT * FROM tbl_name
   * 字符串类型
     - `char(n)`：如果字符集为 `utf8`，则长度为 3n Bytes
     - `varchar(n)`：如果字符集为 `utf8`，则长度为 3n + 2 Bytes。额外 2 Bytes 用于存储长度。
+  
 * 各个字符集：
   * `latin1` 编码一个字符 1 Byte
   * `gbk` 编码一个字符 2 Bytes
   * `utf8` 编码一个字符 3 Bytes
   * `utf8mb4` 编码一个字符 4 Bytes
+  
 * 创建索引的时候可以指定索引的长度，例如：`alter table test add index idx_username (username(30));`。长度 30 指的是字符的个数。
 
-* 索引最大长度为 768 Bytes，也就是说字符集为 `utf8` 的情况下，`n` 最大只能为 (768 - 2 (存储长度) - 1 (是否为 `NULL`)) / 3 = 765 / 3 = 255 个字符。因此当字符串过长时，MySQL 最多会将开头 255 个字符串截取出来作为索引。一个例子：
+* `InnoDB` 索引最大长度为 767 Bytes，引自[官方文档](https://dev.mysql.com/doc/refman/5.7/en/create-table.html)：
+
+  > *key_part*:
+  > *col_name* [(*length*)] [ASC | DESC]
+  >
+  > *index_type*:
+  > USING {BTREE | HASH}
+  >
+  > > Prefixes, defined by the *length* attribute, can be up to 767 bytes long for `InnoDB` tables or 3072 bytes if the [`innodb_large_prefix`](https://dev.mysql.com/doc/refman/5.7/en/innodb-parameters.html#sysvar_innodb_large_prefix) option is enabled. For `MyISAM` tables, the prefix length limit is 1000 bytes.
+
+举个例子，在字符集为 `utf8` 的情况下，`n` 最大只能为 `(767 - 2 (存储长度)) / 3 = 765 / 3 = 255 个字符`。因此当字符串过长时，MySQL 最多会将开头 255 个字符串截取出来作为索引。一个例子：
 
 ```sql
 CREATE TABLE `student` (
@@ -217,7 +230,7 @@ CREATE TABLE `student` (
   KEY `idx_password` (`password`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- key_len: 255 * 3 + 2 + 1 = 768 Bytes
+-- key_len: 255 * 3 + 2 + 1 = 768 Bytes (额外增加 1 Byte 记录是否为 NULL)
 mysql> explain select username from student where username = 'pete';
 +----+-------------+---------+------+---------------+--------------+---------+-------+------+-------------+
 | id | select_type | table   | type | possible_keys | key          | key_len | ref   | rows | Extra       |
@@ -232,6 +245,12 @@ mysql> explain select password from student where password = 'pete';
 +----+-------------+---------+------+---------------+--------------+---------+-------+------+--------------------------+
 |  1 | SIMPLE      | student | ref  | idx_password  | idx_password | 6       | const |    1 | Using where; Using index |
 +----+-------------+---------+------+---------------+--------------+---------+-------+------+--------------------------+
+```
+
+如果使用过长的索引，例如修改了字符串编码类型、增加联合索引列，则报错如下：
+
+```
+[Err] 1071 - Specified key was too long; max key length is 767 bytes
 ```
 
 # ref

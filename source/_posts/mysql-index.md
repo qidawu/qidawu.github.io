@@ -308,6 +308,10 @@ CREATE TABLE `table_name` (
 
 《高性能 MySQL》
 
-《[SHOW COLUMNS Syntax](https://dev.mysql.com/doc/refman/5.7/en/show-columns.html)》
+https://dev.mysql.com/doc/refman/5.7/en/innodb-indexes.html
+
+https://dev.mysql.com/doc/refman/5.7/en/optimization-indexes.html
+
+https://dev.mysql.com/doc/refman/5.7/en/show-columns.html
 
 《[MySQL索引背后的数据结构及算法原理](http://blog.codinglabs.org/articles/theory-of-mysql-index.html)》
