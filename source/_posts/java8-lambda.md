@@ -1,5 +1,5 @@
 ---
-title: Java 8 函数式编程总结
+title: Java 8 API 系列（一）函数式编程总结
 date: 2019-05-07 15:43:19
 updated:
 tags: Java
