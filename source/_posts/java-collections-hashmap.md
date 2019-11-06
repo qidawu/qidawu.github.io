@@ -1,9 +1,9 @@
 ---
-title: Java 集合框架系列（五）通用实现之 HashMap
-date: 2019-08-16 14:29:30
+title: Java 集合框架系列（六）HashMap 散列表
+date: 2019-08-16 22:29:30
 updated:
 tags: Java
-typora-root-url: ../../source
+typora-root-url: ..
 ---
 
 散列表是一种通过散列函数可以快速定位数据的数据结构。散列表利用了数组支持按照下标随机访问数据的时候，时间复杂度为 O(1) 的特性，**所以散列表其实就是数组的一种扩展，由数组演化而来**。可以说，如果没有数组，就没有散列表。
@@ -102,7 +102,7 @@ typora-root-url: ../../source
 ```java
     /**
      * The default initial capacity - MUST be a power of two.
-     * 数组默认初始容量，必须是 2 的 n 次幂
+     * 数组默认初始容量为 16，必须是 2 的 n 次幂
      */
     static final int DEFAULT_INITIAL_CAPACITY = 1 << 4; // aka 16
 
@@ -157,9 +157,9 @@ typora-root-url: ../../source
 
 关键的几个字段：
 
-* `table` 散列表的底层数据结构为数组。此外，Java 通过链表法解决散列冲突的问题，因此数组类型为 `Node<K,V>[]` 节点数组。
+* `table` 散列表的底层数据结构为数组，其容量用 `capacity` 表示。此外，Java 通过链表法解决散列冲突的问题，因此数组类型为 `Node<K,V>[]` 节点数组。
 * `loadFactor` 散列表的装载因子。当散列表中空闲位置不多的时候，散列冲突的概率就会大大提高。为了尽可能保证散列表的操作效率，一般情况下，会尽可能保证散列表中有一定比例的空闲槽位。我们用装载因子(load factor)来表示空位的多少。装载因子越大，表示空闲槽位越少，冲突越多，散列表的性能会下降。计算公式：`装载因子 = 键值对数量 size / 数组容量 capacity`。
-* `threshold` 散列表的扩容阈值，计算公式：`扩容阈值 = 数组容量 capacity * 装载因子 load factor`。
+* `threshold` 散列表的扩容阈值，计算公式：`threshold = capacity * load factor`，即默认配置下的扩容阈值为：`12=16*0.75`。
 * `size` 散列表实际存储的键值对数量，如果 `size > threshold` 则进行双倍扩容并重新散列。
 * `modCount` 修改次数
 
@@ -620,7 +620,7 @@ int index = hash(key) & (capacity - 1)
     }
 ```
 
-# 常用共有方法
+# 常用方法
 
 ## 设值
 
