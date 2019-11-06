@@ -81,12 +81,12 @@ tags: MySQL
 
 每种关系型数据库都提供了各自特色的隔离级别实现，虽然在通常的隔离级别定义中是以锁为实现单元，但实际的实现千差万别。以最常见的 MySQL `InnoDB` 存储引擎为例，它是基于 [MVCC](https://dev.mysql.com/doc/refman/8.0/en/innodb-multi-versioning.html)（Multi-Versioning Concurrency Control）和锁的复合实现，按照隔离程度从低到高，MySQL `InnoDB` 存储引擎的事务隔离级别及其解决问题如下：
 
-| 隔离级别                          | 脏读<br/>（Dirty reads） | 不可重复读<br/>（Non-repeatable reads） | 幻读<br/>（Phantom reads）                       | SELECT 默认模式                                              |
-| --------------------------------- | ------------------------ | --------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------ |
-| 读未提交<br/>（READ UNCOMMITTED） | √                        | √                                       | √                                                |                                                              |
-| 读已提交<br/>（READ COMMITTED）   | ×                        | √                                       | √                                                | 一致性非加锁读，总是使用最新快照<br/>（Consistent Non-locking Reads (MVCC)） |
-| 可重复读<br/>（REPEATABLE READ）  | ×                        | ×                                       | ×（`InnoDB` 特有）<br/>gap lock 或 next-key lock | 一致性非加锁读，总是使用首次快照<br/>（Consistent Non-locking Reads (MVCC)） |
-| 串行化<br/>（SERIALIZABLE）       | ×                        | ×                                       | ×<br/>gap lock 或 next-key lock                  | 加共享锁读<br/>（S-Locking reads）                           |
+| 隔离级别                            | 脏读<br/>（Dirty reads） | 不可重复读<br/>（Non-repeatable reads） | 幻读<br/>（Phantom reads）                       | SELECT 默认模式                                              |
+| ----------------------------------- | ------------------------ | --------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------ |
+| 读未提交<br/>（`READ UNCOMMITTED`） | √                        | √                                       | √                                                |                                                              |
+| 读已提交<br/>（`READ COMMITTED`）   | ×                        | √                                       | √                                                | 一致性非加锁读，总是使用最新快照<br/>（Consistent Non-locking Reads (MVCC)） |
+| 可重复读<br/>（`REPEATABLE READ`）  | ×                        | ×                                       | ×（`InnoDB` 特有）<br/>gap lock 或 next-key lock | 一致性非加锁读，同一事务内总是使用首次快照<br/>（Consistent Non-locking Reads (MVCC)） |
+| 串行化<br/>（`SERIALIZABLE`）       | ×                        | ×                                       | ×<br/>gap lock 或 next-key lock                  | 加共享锁读<br/>（S-Locking reads）                           |
 
 ## 读未提交（READ UNCOMMITTED）
 
