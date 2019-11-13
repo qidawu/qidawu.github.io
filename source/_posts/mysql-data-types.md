@@ -11,16 +11,62 @@ MySQL 支持的数据类型非常多，选择正确的数据类型对于获得�
 
 ## 更小的通常更好
 
-更小的数据类型通常更快，因为他们占用更少的磁盘、内存和 CPU 缓存，并且处理时需要的 CPU 周期也更少。
+更小的数据类型通常更快，因为占用更少的磁盘、内存和 CPU 缓存，并且处理时需要的 CPU 周期也更少。
 
 ## 简单就好
 
-简单数据类型的操作通常需要更少的 CPU 周期。例如，整型比字符操作代价更低，因为字符集和校对规则（排序规则）使得字符比整型更复杂。
+简单数据类型的操作通常需要更少的 CPU 周期、索引性能更好。例如，整型比字符操作代价更低，因为字符集和校对规则（排序规则）使得字符比整型更复杂。
 
-有两个例子：
+有几个例子：
 
-* 使用 MySQL 内建的日期与时间类型，而不是字符串来存储日期和时间，以便排序和格式转换。
-* 使用整型存储 IP 地址。
+* 使用日期与时间类型，而不是字符串来存储日期和时间，以便排序和格式转换。
+
+* 使用整型，而不是字符串来存储 IP 地址。MySQL 提供了两个函数来处理 IP 地址：
+
+  ```sql
+  -- 使用 INT unsigned 类型存储（存储范围：0 ~ 2^32-1）
+  SELECT inet_aton('0.0.0.0');  --结果：0
+  SELECT inet_aton('192.168.1.1');  --结果：3232235777
+  SELECT inet_aton('255.255.255.255');  --结果：4294967295
+  
+  SELECT inet_ntoa('3232235777');  --结果：192.168.1.1
+  ```
+
+* 使用定长二进制类型（如 `binary`），而不是字符串来存储散列值：
+
+  * `MD5` 128 bit / 4 = 32 length
+  * `SHA-1` 160 bit / 4 = 40 length
+  * `SHA-224` 224 bit / 4 = 56 length
+  * `SHA-256` 256 bit / 4 = 64 length
+  * `SHA-384` 384 bit / 4 = 96 length
+  * `SHA-512` 512 bit / 4 = 128 length
+
+  ```sql
+  -- 示例表
+  CREATE TABLE `t_hash` (
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键 ID',
+    `hash` varbinary(40) NOT NULL COMMENT '散列值',
+    PRIMARY KEY (`id`),
+    KEY `idx_hash` (`hash`) USING BTREE
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  
+  -- 测试数据
+  INSERT INTO t_hash(hash) values(md5('0.0.0.0'));
+  INSERT INTO t_hash(hash) values(sha1('0.0.0.0'));
+  INSERT INTO t_hash(hash) values('你好吗');
+  
+  -- 测试结果
+  -- length() 函数返回值的单位为字节。
+  -- 由于二进制类型无字符集，因此中文乱码
+  select hash, length(hash), char_length(hash) from t_hash order by id;
+  +------------------------------------------+--------------+-------------------+
+  | hash                                     | length(hash) | char_length(hash) |
+  +------------------------------------------+--------------+-------------------+
+  | f1f17934834ae2613699701054ef9684         |           32 |                32 |
+  | e562f69ec36e625116376f376d991e41613e9bf3 |           40 |                40 |
+  | 浣犲ソ鍚?                                 |            9 |                 9 |
+  +------------------------------------------+--------------+-------------------+
+  ```
 
 ## 避免使用 NULL
 
