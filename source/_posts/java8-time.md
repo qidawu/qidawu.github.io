@@ -363,6 +363,8 @@ long days2 = period.get(ChronoUnit.DAYS);
 String format = date.format(DateTimeFormatter.ISO_DATE);    // 2007-12-03
 String format2 = date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));    // 03/12/2007
 String format3 = date.format(DateTimeFormatter.ofPattern("yyyy MMMM d", Locale.CHINA));    // 2007 十二月 3
+
+LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));  // 20071114160942
 ```
 
 如果还需要更加细粒度的控制，`DateTimeFormatterBuilder` 类还提供了更复杂的格式器构建，你可以选择恰当的方法，一步一步地构造自己的格式器。另外，它还提供了非常强大的解析功能，比如区分大小写的解析、柔性解析（允许解析器使用启发式的机制去解析输入，不精确地匹配指定的模式）、填充，以及在格式器中指定可选节。
