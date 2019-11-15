@@ -17,20 +17,6 @@ MyBatis 常用的产品组成汇总如下：
 
 ![MyBatis Core](/img/mybatis/mybatis_core.png)
 
-## 高级结果映射
-
-```XML
-<!-- 一对多嵌套查询 -->
-<resultMap id="ExtendResultMap" extends="BaseResultMap" type="...XxxQO">
-    <collection property="extendList" columnPrefix="sub_task_" resultMap="...XxxMapper.BaseResultMap" ofType="...XxxPO" />
-</resultMap>
-
-<!-- 一对多嵌套结果映射。注意表连接查询字段务必使用 AS 别名，避免手工映射时 column 取错列 -->
-<resultMap id="ExtendResultMap" extends="BaseResultMap" type="...XxxQO">
-    <collection property="extendList" column="task_no" select="...XxxMapper.getByTaskNo" ofType="...XxxPO" />
-</resultMap>
-```
-
 # MyBatis 核心架构
 
 ![](/img/mybatis/mybatis_core_architecture.png)
