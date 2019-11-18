@@ -3,6 +3,7 @@ title: Java 数据持久化系列（六）MyBatis 框架解析
 date: 2019-03-24 18:43:34
 updated:
 tags: Java
+typora-root-url: ..
 ---
 
 MyBatis 在 Java 业务开发领域可以说是首选的持久化框架，本文主要总结下 MyBatis 的核心配置和源码解析。
@@ -20,6 +21,36 @@ MyBatis 常用的产品组成汇总如下：
 # MyBatis 核心架构
 
 ![](/img/mybatis/mybatis_core_architecture.png)
+
+![](/img/mybatis/mybatis_core_architecture_2.png)
+
+MyBatis 语句执行时的层次结构：
+
+![](/img/mybatis/mybatis_core_architecture_3.jpg)
+
+涉及的主要 API 如下：
+
+![mybatis-api](/img/mybatis/mybatis-api.png)
+
+## Executor
+
+![mybatis_api_Executor](/img/mybatis/mybatis_api_Executor.png)
+
+## StatementHandler
+
+![mybatis_api_StatementHandler](/img/mybatis/mybatis_api_StatementHandler.png)
+
+## ParameterHandler
+
+![mybatis_api_ParameterHandler](/img/mybatis/mybatis_api_ParameterHandler.png)
+
+## ResultSetHandler
+
+![mybatis_api_ResultSetHandler](/img/mybatis/mybatis_api_ResultSetHandler.png)
+
+## TypeHandler
+
+![mybatis_api_TypeHandler](/img/mybatis/mybatis_api_TypeHandler.png)
 
 # Spring 整合
 
@@ -54,7 +85,7 @@ Spring 整合依赖安装：
 </dependency>
 ```
 
-## Bean 配置
+## Spring Bean 配置
 
 MyBatis-Spring 中，`SqlSessionFactoryBean` 用于创建 `SqlSessionFactory`。可通过 Spring 的 XML 配置文件或 Java Config 配置该工厂 bean：
 
@@ -81,20 +112,31 @@ import javax.sql.DataSource;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
 
-@Bean
-public SqlSessionFactoryBean sqlSessionFactory(DataSource dataSource) {
-    SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
-    factoryBean.setDataSource(dataSource);
-    factoryBean.setConfigLocation(configLocation);
-    factoryBean.setMapperLocations(resource);
-    return factoryBean;
-}
+@MapperScan(basePackages = {"..."})
+public class MyBatisConfig {
 
-@Bean
-public MapperScannerConfigurer mapperScannerConfigurer() {
-    MapperScannerConfigurer mapperScannerConfigurer = new MapperScannerConfigurer();
-    mapperScannerConfigurer.setBasePackage(basePackage);
-    return mapperScannerConfigurer;
+    /**
+     * 用于创建 SqlSessionFactory，以便获取 SqlSession
+     **/
+    @Bean
+    public SqlSessionFactoryBean sqlSessionFactory(DataSource dataSource) {
+        SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
+        factoryBean.setDataSource(dataSource);
+        factoryBean.setConfigLocation(configLocation);
+        factoryBean.setMapperLocations(resource);
+        return factoryBean;
+    }
+
+    /**
+     * @MapperScan 或 MapperScannerConfigurer 二选一配置
+     **/
+    @Bean
+    public MapperScannerConfigurer mapperScannerConfigurer() {
+        MapperScannerConfigurer mapperScannerConfigurer = new MapperScannerConfigurer();
+        mapperScannerConfigurer.setBasePackage(basePackage);
+        return mapperScannerConfigurer;
+    }
+    
 }
 ```
 
@@ -109,6 +151,16 @@ public MapperScannerConfigurer mapperScannerConfigurer() {
 ```
 
 http://www.mybatis.org/spring-boot-starter/mybatis-spring-boot-autoconfigure/
+
+# 使用方式
+
+## 基于 Statement ID 的传统方式
+
+![mybatis_statement_id](/img/mybatis/mybatis_statement_id.jpg)
+
+## 基于 Mapper 接口的推荐方式
+
+![mybatis_mapper](/img/mybatis/mybatis_mapper.jpg)
 
 # 参考
 
