@@ -126,37 +126,8 @@ Spring 通过应用上下文（Application Context）装载 bean 的定义并将
 
 [org.springframework.beans.factory.BeanFactory](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/BeanFactory.html)
 
-# Factory Bean
-
-[org.springframework.beans.factory.FactoryBean](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/FactoryBean.html) 用于在 IoC 容器中创建其它 bean，该接口定义如下：
-
-```java
-T getObject()  // Return an instance (possibly shared or independent) of the object managed by this factory.
-Class<?> getObjectType()  // Return the type of object that this FactoryBean creates, or null if not known in advance.
-boolean isSingleton()  // Is the object managed by this factory a singleton? That is, will getObject() always return the same object (a reference that can be cached)?
-```
-
-为什么要使用 FactoryBean？主要用于实现框架设施（framework facilities），例如：
-
-* 当需要从 JNDI 查找对象（例如 `DataSource`）时，可以使用 `JndiObjectFactoryBean`。
-* 当使用 Spring AOP 为 bean 创建代理时，可以使用 `ProxyFactoryBean`。
-* 当需要在 IoC 容器中创建 Hibernate 的 `SessionFactory` 时，可以使用 `LocalSessionFactoryBean`。
-* 当需要在 IoC 容器中创建 MyBatis 的 `SqlSessionFactory` 时，可以使用 `SqlSessionFactoryBean`。
-
-大多数情况下，**用户并不需要自定义 FactoryBean**，因为 FactoryBean 通常是框架指定的，且无法在 Spring IoC 容器的范围之外使用。
-
 # 参考
 
 《[Spring in Action, 4th](https://www.manning.com/books/spring-in-action-fourth-edition)》
 
-《[Spring BeanFactory和FactoryBean的区别](https://www.jianshu.com/p/05c909c9beb0)》
-
 [org.springframework.beans.factory.BeanFactory](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/BeanFactory.html)
-
-[org.springframework.beans.factory.FactoryBean](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/FactoryBean.html)
-
-[ThreadPoolExecutorFactoryBean](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/concurrent/ThreadPoolExecutorFactoryBean.html)
-
-[LocalSessionFactoryBean](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/orm/hibernate5/LocalSessionFactoryBean.html)
-
-[SqlSessionFactoryBean](https://github.com/mybatis/spring/blob/master/src/main/java/org/mybatis/spring/SqlSessionFactoryBean.java)
