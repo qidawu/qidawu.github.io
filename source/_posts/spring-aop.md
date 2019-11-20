@@ -1,6 +1,6 @@
 ---
 title: Spring AOP 面向切面编程总结
-date: 2019-02-10 22:48:21
+date: 2017-11-10 22:48:21
 updated: 
 tags: [Java, Spring]
 ---
@@ -150,12 +150,84 @@ Spring AOP 支持两种模式的动态代理，JDK Proxy 或者 CGLib：
   - 只操作我们关心的类，而不必为其它相关类增加工作量。
   - 性能更好。
 
-源码解析：
+核心源码解析：
 
 ![AopProxy 实现结构](/img/spring/AopProxy.png)
 
-`org.springframework.aop.framework.JdkDynamicAopProxy`
+`org.springframework.aop.framework.DefaultAopProxyFactory` 工厂类负责判断创建哪个 `AopProxy` 实现：
+
+```java
+public class DefaultAopProxyFactory implements AopProxyFactory, Serializable {
+
+    @Override
+    public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException {
+        if (config.isOptimize() || config.isProxyTargetClass() || hasNoUserSuppliedProxyInterfaces(config)) {
+            Class<?> targetClass = config.getTargetClass();
+            if (targetClass == null) {
+                throw new AopConfigException("TargetSource cannot determine target class: " +
+                        "Either an interface or a target is required for proxy creation.");
+            }
+            if (targetClass.isInterface() || Proxy.isProxyClass(targetClass)) {
+                return new JdkDynamicAopProxy(config);
+            }
+            return new ObjenesisCglibAopProxy(config);
+        }
+        else {
+            return new JdkDynamicAopProxy(config);
+        }
+    }
+    
+    /**
+     * Determine whether the supplied {@link AdvisedSupport} has only the
+     * {@link org.springframework.aop.SpringProxy} interface specified
+     * (or no proxy interfaces specified at all).
+     */
+    private boolean hasNoUserSuppliedProxyInterfaces(AdvisedSupport config) {
+        Class<?>[] ifcs = config.getProxiedInterfaces();
+        return (ifcs.length == 0 || (ifcs.length == 1 && SpringProxy.class.isAssignableFrom(ifcs[0])));
+    }
+    
+}
+```
+
 `org.springframework.aop.framework.CglibAopProxy`
+
+`org.springframework.aop.framework.JdkDynamicAopProxy`，两个关键方法：
+
+```java
+final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializable {
+    /**
+     * 创建基于接口的 JDK 动态代理
+     **/
+    @Override
+    public Object getProxy(ClassLoader classLoader) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Creating JDK dynamic proxy: target source is " + this.advised.getTargetSource());
+        }
+        Class<?>[] proxiedInterfaces = AopProxyUtils.completeProxiedInterfaces(this.advised, true);
+        findDefinedEqualsAndHashCodeMethods(proxiedInterfaces);
+        return Proxy.newProxyInstance(classLoader, proxiedInterfaces, this);
+    }
+    
+    /**
+     * Implementation of {@code InvocationHandler.invoke}.
+     */
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        ...
+        // Get the interception chain for this method.
+        List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
+        
+        ...
+        // We need to create a method invocation...
+        invocation = new ReflectiveMethodInvocation(proxy, target, method, args, targetClass, chain);
+        // Proceed to the joinpoint through the interceptor chain.
+        retVal = invocation.proceed();
+        
+        ...
+    }
+}
+```
 
 官方文档的一些关键摘录：
 
@@ -206,18 +278,13 @@ Spring 2.0 之后提供了以下两种方式，为编写自定义切面引入了
 <bean id="personService" class="x.y.service.DefaultPersonService"/>
 
 <!-- this is the actual advice itself -->
-<bean id="profiler" class="x.y.SimpleProfiler"/>
+<bean id="myAspect" class="x.y.MyAspect"/>
 
-<aop:config>  <!-- cglib 代理方式配置：proxy-target-class="true" -->
-    <aop:aspect ref="profiler">
-
-        <aop:pointcut id="theExecutionOfSomePersonServiceMethod"
-                      expression="execution(* x.y.service.PersonService.getPerson(String,int))
-                                  and args(name, age)"/>
-
-        <aop:around pointcut-ref="theExecutionOfSomePersonServiceMethod"
-                    method="profile"/>
-
+<!-- cglib 代理方式配置：proxy-target-class="true" -->
+<aop:config>
+    <aop:aspect ref="myAspect">
+        <aop:pointcut id="theExecutionOfSomePersonServiceMethod" expression="execution(* x.y.service.PersonService.getPerson(String,int)) and args(name, age)"/>
+        <aop:around pointcut-ref="theExecutionOfSomePersonServiceMethod" method="process"/>
     </aop:aspect>
 </aop:config>
 ```
