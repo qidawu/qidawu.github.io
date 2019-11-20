@@ -8,17 +8,22 @@ typora-root-url: ..
 
 ![spring-bean](/img/spring/spring-bean.png)
 
-Spring 提供几种配置方式，用于 bean 的声明及装配：
+Spring 组件引入的两种推荐方式：
 
-* 基于 XML 的显式配置
-* 基于 Java 的显式配置（简称 JavaConfig）
-* 自动化配置，即隐式的 bean 发现机制和自动装配
+* 非 Spring Boot 项目，显示引入  Java Config：`@Enable*` + `@Import`
+* Spring Boot 项目，隐式引入  Java Config：`@EnableAutoConfiguration` + `META-INF/spring.factories`
+
+Spring bean 的声明及装配的几种配置方式：
+
+* ~~基于 XML Config 的显式配置，不推荐~~
+* 基于 Java Config 的显式配置，推荐用于声明第三方编写的组件
+* 自动化配置，即组件扫描（隐式的 bean 发现机制） + 自动装配，推荐用于自己编写的组件
 
 用户可以选择其中一种方式使用，也可以混搭使用。使用时的最佳实践如下：
 
 * 建议尽可能地使用自动化配置的机制。显式配置越少越好，以避免显式配置所带来的维护成本。
-* 当你必须要显式配置 bean 的时候（比如，有些源码不是由你来维护的，而当你需要为这些代码配置 bean 的时候），推荐使用类型安全并且比 XML 更加强大的 JavaConfig。
-* 最后，只有当你想要使用便利的 XML 命名空间，并且在 JavaConfig 中没有同样的实现时，才应该使用 XML。
+* 当你必须要显式配置 bean 的时候（比如，有些源码不是由你来维护的，而当你需要为这些代码配置 bean 的时候），推荐使用类型安全并且比 XML Config 更加强大的 Java Config。
+* 最后，只有当你想要使用便利的 XML 命名空间，并且在 JavaConfig 中没有同样的实现时，才应该使用 XML Config。
 
 这里提供一个例子，其接口和实现类如下：
 
