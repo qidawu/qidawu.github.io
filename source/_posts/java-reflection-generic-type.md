@@ -1,0 +1,320 @@
+---
+title: Java 反射篇（三）泛型 API 总结
+date: 2018-11-21 22:53:54
+updated:
+tags: Java
+typora-root-url: ..
+---
+
+# 泛型 API
+
+JDK 1.5 引入了泛型特性，一同引入的还有 Java `Type` 类型体系。其中 `Type` 接口作为核心，是 Java 编程语言中所有类型的通用超级接口（common superinterface），这些类型包括：
+
+* 原始类型（raw types）
+* 参数化类型（parameterized types）
+* 数组类型（array types）
+* 类型变量（type variables）
+* 八大原始类型（primitive types）
+
+调整后新引入的五个接口如下：
+
+```
+java.lang.reflect.Type
+  java.lang.reflect.ParameterizedType
+  java.lang.reflect.TypeVariable
+  java.lang.reflect.WildcardType
+  java.lang.reflect.GenericArrayType
+```
+
+![Type](/img/java/reflection/Type.png)
+
+它们的核心方法如下：
+
+![Type_methods](/img/java/reflection/Type_methods.png)
+
+同时新增的接口还有 `GenericDeclaration`。从源码中看，只有三个类实现了该接口（见下图）。因此我们只能在**类型**（例如 `class`，`interface`）、**方法**（`Method`）和**构造方法**（`Constructor`）这三个地方声明泛型参数（type variables），而其它地方只能使用：
+
+```
+java.lang.reflect.Method
+java.lang.reflect.Constructor
+java.lang.Class
+```
+
+![GenericDeclaration](/img/java/reflection/GenericDeclaration.png)
+
+`GenericDeclaration` 接口只定义了一个方法，用于获取 `TypeVariable`：
+
+![GenericDeclaration_method](/img/java/reflection/GenericDeclaration_method.png)
+
+类、字段、方法、构造方法也相应增加了一组方法用于获取 `Type`、`TypeVariable`：
+
+* `Class`
+
+  ```java
+  // 获取普通 Class
+  Class<? super T> getSuperclass()
+  Class<?>[] getInterfaces()
+  
+  // 获取 Type
+  Type getGenericSuperclass()
+  Type[] getGenericInterfaces()
+  
+  // 获取 TypeVariable
+  TypeVariable<?>[] getTypeParameters()
+  ```
+
+* `Field`
+
+  ```java
+  // 获取普通 Class
+  Class<?> getType()
+  
+  // 获取 Type
+  Type getGenericType()
+  ```
+
+* `Method`
+
+  ```java
+  // 获取普通 Class
+  Class<?> getReturnType()
+  Class<?>[] getParameterTypes()
+  Class<?>[] getExceptionTypes()
+  
+  // 获取 Type
+  Type getGenericReturnType()
+  Type[] getGenericParameterTypes()
+  Type[] getGenericExceptionTypes()
+  
+  // 获取 TypeVariable
+  TypeVariable<?>[] getTypeParameters()
+  ```
+
+* `Constructor`
+
+  ```java
+  // 获取普通 Class
+  Class<?>[] getParameterTypes()
+  Class<?>[] getExceptionTypes()
+  
+  // 获取 Type
+  Type[] getGenericParameterTypes()
+  Type[] getGenericExceptionTypes()
+  
+  // 获取 TypeVariable
+  TypeVariable<?>[] getTypeParameters()
+  ```
+
+# 例子
+
+下面是几个获取 `Type` 的例子，先创建三个类：`BaseMapper`、`PersonMapper`、`Person`
+
+```java
+public interface BaseMapper<T extends Serializable & Comparable<T>, K extends Serializable> {
+
+    T getById(K id);
+
+}
+
+public class PersonMapper implements BaseMapper<Person, Long>, Serializable {
+    @Override
+    public Person getById(Long id) {
+        return null;
+    }
+
+    public void log(List<?> list) {
+
+    }
+
+    public <T extends Number> void test(List<T> list1, List<? extends Comparable<T>> list2, T[] array, T item) {
+    }
+}
+
+public class Person implements Serializable, Comparable<Person> {
+    private String personName;
+
+    @Override
+    public int compareTo(Person o) {
+        return this.personName.compareTo(o.getPersonName());
+    }
+```
+
+## 例子一
+
+```java
+    @Test
+    public void test1() {
+        Method method = PersonMapper.class.getMethod("test", List.class, List.class, Number[].class, Number.class);
+
+        Type[] genericParameterTypes = method.getGenericParameterTypes();
+        Type genericReturnType = method.getGenericReturnType();
+        Type[] genericExceptionTypes = method.getGenericExceptionTypes();
+    }
+```
+
+三个 `Type` 变量的内容如下：
+
+![generic_type_examples](/img/java/reflection/generic_type_example.png)
+
+## 例子二
+
+接下来可以细化看下 `ParameterizedType` 的使用：
+
+```java
+    @Test
+    public void test2() {
+        Type genericInterface = PersonMapper.class.getGenericInterfaces()[0];
+
+        // com.github.reflection.BaseMapper<com.github.reflection.Person, java.lang.Long>
+        assertTrue(genericInterface instanceof ParameterizedType);
+        ParameterizedType parameterizedType = (ParameterizedType) genericInterface;
+        assertEquals(BaseMapper.class, parameterizedType.getRawType());
+
+        // class
+        Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+        assertEquals("There are two actual type arguments", 2, actualTypeArguments.length);
+        // class com.github.reflection.Person
+        assertClass("One is Person", actualTypeArguments[0], Person.class);
+        // class java.lang.Long
+        assertClass("Another is Long", actualTypeArguments[1], Long.class);
+    }
+
+    private void assertClass(Type type, Class expectedClass) {
+        assertTrue(type instanceof Class);
+        Class clazz = (Class) type;
+        assertEquals(expectedClass, clazz);
+    }
+```
+
+`Type` 类型变量 `genericInterface` 的内容如下，实际类型是 `ParameterizedType`：
+
+![ParameterizedType_example](/img/java/reflection/ParameterizedType_example.png)
+
+## 例子三
+
+`WildcardType` 的使用：
+
+```java
+    @Test
+    public void test3() {
+        Method method = PersonMapper.class.getMethod("log", List.class);
+
+        // java.util.List<?>
+        Type genericParameterType = method.getGenericParameterTypes()[0];
+        assertTrue("The first parameter type of log method is instance of ParameterizedType", 
+                   genericParameterType instanceof ParameterizedType);
+        ParameterizedType parameterType = (ParameterizedType) genericParameterType;
+
+        // WildcardType
+        Type type = parameterType.getActualTypeArguments()[0];
+        assertTrue("The actual type argument of ParameterizedType is instance of WildcardType", 
+                   type instanceof WildcardType);
+        WildcardType wildcardType = (WildcardType) type;
+        assertEquals("No lower bounds exist", 0, wildcardType.getLowerBounds().length);
+        assertEquals("Only one upper bound exist", 1, wildcardType.getUpperBounds().length);
+        // 通配符默认上限类型为 Object
+        assertEquals("The upper bound is Object", Object.class, wildcardType.getUpperBounds()[0]);
+    }
+```
+
+`Type` 类型变量 `genericParameterType` 的内容如下，实际类型是 `ParameterizedType`，其 `?` 通配符是 `WildcardType`：
+
+![WildcardType_example](/img/java/reflection/WildcardType_example.png)
+
+## 例子四
+
+`TypeVariable` 的使用：
+
+```java
+    @Test
+    public void test4() {
+        Method method = BaseMapper.class.getMethod("getById", Serializable.class);
+
+        // TypeVariable
+        Type genericReturnType = method.getGenericReturnType();
+        assertTrue("Return type of method is instance of TypeVariable", genericReturnType instanceof TypeVariable);
+        TypeVariable typeVariable = (TypeVariable) genericReturnType;
+        assertEquals("First upper bound is Serializable", Serializable.class, typeVariable.getBounds()[0]);
+        ParameterizedType parameterizedType = (ParameterizedType) typeVariable.getBounds()[1];
+        assertEquals("Second upper bound is Comparable", Comparable.class, parameterizedType.getRawType());
+    }
+```
+
+`Type` 类型变量 `genericReturnType` 的内容如下，实际类型是 `TypeVariable`，
+
+![TypeVariable_example](/img/java/reflection/TypeVariable_example.png)
+
+## 例子五
+
+定义一个泛型工具类，用于获取 `T.class`：
+
+```java
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+ 
+public class GenericsUtils {
+    /**
+     * 通过反射获得定义 Class 时声明的父类的泛型参数的类型
+     * @param clazz 
+     * @return 返回第一个类型
+     */
+    public static Class getSuperClassGenricType(Class clazz) {
+        return getSuperClassGenricType(clazz, 0);
+    }
+ 
+    /**
+     * 通过反射获得定义 Class 时声明的父类的泛型参数的类型
+     * @param clazz
+     * @param 返回某个下标的类型
+     */
+    public static Class getSuperClassGenricType(Class clazz, int index)
+            throws IndexOutOfBoundsException {
+        Type genType = clazz.getGenericSuperclass();
+        if (!(genType instanceof ParameterizedType)) {
+            return Object.class;
+        }
+        Type[] params = ((ParameterizedType) genType).getActualTypeArguments();
+        if (index >= params.length || index < 0) {
+            return Object.class;
+        }
+        if (!(params[index] instanceof Class)) {
+            return Object.class;
+        }
+        return (Class) params[index];
+    }
+}
+```
+
+# 泛型术语
+
+泛型涉及的术语比较多，其与反射接口的对应关系如下：
+
+| 术语                    | 中文含义                 | 举例                               | 反射接口                         |
+| ----------------------- | ------------------------ | ---------------------------------- | -------------------------------- |
+| Generic type            | 泛型                     | `List<E>`                          | `ParameterizedType`              |
+| Parameterized type      | 参数化类型               | `List<String>`                     | `ParameterizedType`              |
+| Raw type                | 原始类型                 | `List`                             | `ParameterizedType.getRawType()` |
+| Unbounded wildcard type | 无限制通配符类型         | `List<?>`                          | `ParameterizedType`              |
+| Bounded wildcard type   | 有限制通配符类型（上限） | `List<? extends Number>`           | `ParameterizedType`              |
+| Bounded wildcard type   | 有限制通配符类型（下限） | `List<? super Number>`             | `ParameterizedType`              |
+| wildcard type           | 通配符类型               | `?`                                | `WildcardType`                   |
+| Formal type parameter   | 形式类型参数             | `E`                                | `TypeVarialbe`                   |
+| Actual type parameter   | 实际类型参数             | `String`                           | `Class`                          |
+| Bounded type parameter  | 有限制类型参数           | `<E extends Number>`               |                                  |
+| Recursive type bound    | 递归类型限制             | `<T extends Comparable<T>>`        |                                  |
+| Generic method          | 泛型方法                 | `static <E> List<E> asList(E[] a)` |                                  |
+| Type token              | 类型令牌                 | `String.class`                     |                                  |
+
+# 参考
+
+https://www.jianshu.com/p/faed45dbfa0c
+
+https://blog.csdn.net/ShuSheng0007/article/details/89520530
+
+API：
+
+- https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Type.html
+- https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/ParameterizedType.html
+- https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/TypeVariable.html
+- https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/WildcardType.html
+- https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/GenericArrayType.html
