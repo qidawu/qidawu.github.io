@@ -3,13 +3,24 @@ title: Spring 应用上下文总结
 date: 2017-06-01 22:35:15
 updated:
 tags: [Java, Spring]
+typora-root-url: ..
 ---
 
 `org.springframework.beans` 和 `org.springframework.context` 包为 Spring 框架 IoC 容器的提供基础。有两种形式的 Spring 容器：
 
 * Bean Factory
-
 * Application Context
+  * spring-context 核心模块
+    * `FileSystemXmlapplicationcontext`
+    * `ClassPathXmlApplicationContext`
+    * `AnnotationConfigApplicationContext`
+  * spring-web 模块
+    * `XmlWebApplicationContext`
+    * `AnnotationConfigWebApplicationContext`
+
+继承结构如下：
+
+![BeanFactory](/img/spring/BeanFactory.png)
 
 # Application Context
 

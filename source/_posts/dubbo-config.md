@@ -1,6 +1,6 @@
 ---
 title: Dubbo 配置小结
-date: 2018-11-10 20:14:05
+date: 2017-11-15 20:14:05
 updated:
 tags: Java
 ---

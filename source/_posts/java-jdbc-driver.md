@@ -74,7 +74,7 @@ MySQL 驱动程序的更多信息，例如：
 
 详见：https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-overview.html
 
-# 注册驱动程序
+# 注册驱动程序源码分析
 
 有几种方式可以注册驱动程序，如下：
 
@@ -86,7 +86,7 @@ DriverManager.registerDriver(new com.mysql.jdbc.Driver());  // 方式二
 System.setProperty("jdbc.drivers", "com.mysql.jdbc.Driver");  // 方式三
 ```
 
-## 源码分析（自动注册）
+## 自动注册
 
 从 JDBC API 4.0 开始，`DriverManager` 类得到了增强，利用 **Java SPI 机制**从厂商驱动程序的 `META-INF/services/java.sql.Driver` 文件中自动加载 `java.sql.Driver` 实现类。 因此应用程序无需再显式调用 `Class.forName` 或 `DriverManager.registerDriver` 方法来注册或加载驱动程序。`DriverManager` 源码分析如下：
 
