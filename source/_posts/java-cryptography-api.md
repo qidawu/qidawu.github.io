@@ -1,8 +1,8 @@
 ---
-title: 加密算法总结
+title: Java 加密篇之算法总结
 date: 2019-06-01 22:36:24
 updated:
-tags: 安全
+tags: [Java, 安全]
 typora-root-url: ..
 ---
 
@@ -20,13 +20,17 @@ typora-root-url: ..
 
 ![symmetric_encryption](/img/security/symmetric_encryption.png)
 
-# 非对称对称加密
+# RSA
+
+## 非对称加密
 
 公钥加密，私钥解密
 
 ![asymmetric_encryption](/img/security/asymmetric_encryption.png)
 
-# 签名验签
+
+
+## 签名验签
 
 私钥签名，公钥验签
 

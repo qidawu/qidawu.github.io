@@ -41,8 +41,12 @@ Class<String> aClass = String.class;
 // 方法二：通过实例变量提供的 getClass() 方法获取
 Class<? extends String> aClass2 = "Hello".getClass();
 
-// 方法三：通过 class 的完整类名获取
+// 方法三：通过 class 的完整类名获取，底层调用的是应用类加载器 Application ClassLoader (sun.misc.Launcher$AppClassLoader)
 Class<?> aClass3 = Class.forName("java.lang.String");
+
+// 方法四：通过自定义 ClassLoader 获取
+URLClassLoader classLoader = new URLClassLoader(new URL[] {new URL("file:/c:/")});
+Class<?> aClass4 = classLoader.loadClass("java.lang.String");
 
 // 获取父类
 Class<? super String> superclass = String.class.getSuperclass();  // class java.lang.Object

@@ -1,8 +1,9 @@
 ---
-title: JVM 常用监控工具
-tags: Java
+title: Java 调优篇（三）JVM 常用监控工具
 date: 2017-02-16 20:10:12
 updated:
+tags: Java
+typora-root-url: ..
 ---
 
 命令行工具：

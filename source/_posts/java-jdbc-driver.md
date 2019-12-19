@@ -168,7 +168,7 @@ public class DriverManager {
 }
 ```
 
-从上面源码中可见，当类加载器载入 `DriverManager` 类时，会执行其 `static {}` 静态代码块，从而执行 `loadInitialDrivers()` 方法。该方法实现中调用了 `ServiceLoader.load(Driver.class)`，会加载 classpath 下所有 jar 包内的 `META-INF/services` 目录，找到 `java.sql.Driver` 文件，加载其中的类定义。以 `mysql-connector-java` 8.x 为例，该类定义就是 `com.mysql.cj.jdbc.Driver`，此时由于该 `Driver` 类内含静态代码块，会用 `new` 关键字创建自身实例并反向注册到 `DriverManager`，从而达到自动注册驱动程序的效果：
+从上面源码中可见，当类加载器载入 `DriverManager` 类时，会执行其静态代码块，从而执行 `loadInitialDrivers()` 方法。该方法实现中通过 Java SPI `ServiceLoader` 查找 classpath 下所有 jar 包内的 `META-INF/services` 目录，找到 `java.sql.Driver` 文件，加载其中定义的实现类并通过反射创建实例。以 `mysql-connector-java` 8.x 为例，该类定义就是 `com.mysql.cj.jdbc.Driver`，此时由于该 `Driver` 类内含静态代码块，会用 `new` 关键字创建自身实例并反向注册到 `DriverManager`，从而达到自动注册驱动程序的效果：
 
 ```java
 public class Driver extends NonRegisteringDriver implements java.sql.Driver {

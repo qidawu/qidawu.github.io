@@ -1,8 +1,9 @@
 ---
-title: JVM 垃圾收集总结
+title: Java 调优篇（二）JVM 垃圾收集总结
 date: 2017-02-05 23:22:23
 updated:
 tags: Java
+typora-root-url: ..
 ---
 
 # 判断对象是否可回收

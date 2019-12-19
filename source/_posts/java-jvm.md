@@ -1,8 +1,9 @@
 ---
-title: JVM 内存分区总结
+title: Java 调优篇（一）JVM 内存分区总结
 date: 2017-01-29 11:20:46
 updated:
 tags: Java
+typora-root-url: ..
 ---
 
 最近为了做春节大型活动，研究了下性能压测和 JVM 调优，先来看一张 JVM 监控图。
