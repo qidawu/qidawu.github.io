@@ -6,6 +6,10 @@ tags: Java
 typora-root-url: ..
 ---
 
+什么是反射？
+
+> 反射机制是 Java 语言提供的一种基础功能，赋予程序在**运行时自省**（introspect，官方用语）的能力。通过反射我们可以直接操作类或者对象，比如获取某个对象的类定义，获取类声明的属性和方法，调用方法或者构造对象，甚至可以运行时修改类定义。
+
 主要类：
 
 ```java
@@ -215,6 +219,10 @@ boolean isDouble = n instanceof Double; // false
 boolean isInteger = n instanceof Integer; // true
 boolean isNumber = n instanceof Number; // true
 boolean isSerializable = n instanceof java.io.Serializable; // true
+
+// 如果 instanceof 为 true，可以使用以下方法做强制类型转换
+Number num1 = (Number) n;
+Number num2 = Number.class.cast(n);
 
 // 如果是两个 Class 实例，要判断一个向上转型是否成立，可以调用 isAssignableFrom()
 Integer.class.isAssignableFrom(Integer.class); // true，因为Integer可以赋值给Integer
