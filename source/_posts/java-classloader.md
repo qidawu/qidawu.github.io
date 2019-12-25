@@ -8,6 +8,10 @@ typora-root-url: ..
 
 # 类的加载过程
 
+单个 .java 源文件的从加载到创建对象的过程如下：
+
+![classloaoder_process](/img/java/classloader/classloaoder_process.jpg)
+
 多个 .java 源文件经过 `javac` 编译后生成 .class 类文件（内含字节码），然后通过 `jar` 命令或其它构建工具（如 Maven、Gradle）打包生成可运行的 jar 包。最终通过 `java -jar` 命令运行 jar 包，执行其中清单文件（`META-INF/MANIFEST.MF`）中通过 `Main-Class` 指定的入口类的 `main` 方法以启动程序，并按照其 `Class-Path` 设置类路径。
 
 从这里开始，就需要使用到类加载器将入口类（`Main-Class`）加载到 JVM。入口类在使用过程中如果使用到其它类，会根据类路径查找类文件并逐一加载。因此， jar 包中的类、及类路径中指定的类并不是一次性全部加载到 JVM 内存，而是使用到时才加载。
@@ -443,3 +447,5 @@ https://www.cnblogs.com/doit8791/p/5820037.html
 《[理解java对象初始化顺序](https://www.cnblogs.com/Kidezyq/p/11769839.html)》先父后子，先静后动
 
 《[原来热加载如此简单，手动写一个 Java 热加载吧](https://mp.weixin.qq.com/s/iGKprJEqCZpIO77sAMYRCQ)》
+
+https://zhuanlan.zhihu.com/p/54693308
