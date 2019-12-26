@@ -14,7 +14,41 @@ typora-root-url: ..
 
 多个 .java 源文件经过 `javac` 编译后生成 .class 类文件（内含字节码），然后通过 `jar` 命令或其它构建工具（如 Maven、Gradle）打包生成可运行的 jar 包。最终通过 `java -jar` 命令运行 jar 包，执行其中清单文件（`META-INF/MANIFEST.MF`）中通过 `Main-Class` 指定的入口类的 `main` 方法以启动程序，并按照其 `Class-Path` 设置类路径。
 
-从这里开始，就需要使用到类加载器将入口类（`Main-Class`）加载到 JVM。入口类在使用过程中如果使用到其它类，会根据类路径查找类文件并逐一加载。因此， jar 包中的类、及类路径中指定的类并不是一次性全部加载到 JVM 内存，而是使用到时才加载。
+从这里开始，就需要使用到类加载器将入口类（`Main-Class`）加载到 JVM。入口类在使用过程中如果使用到其它类，会根据类路径查找类文件并逐一加载。因此， jar 包中的类、及类路径中指定的类并不是一次性全部加载到 JVM 内存，而是使用到时才**动态加载**。可以指定启动参数 `-verbose:class` 输出类加载日志进行验证：
+
+```java
+public interface Flyable {
+    void fly(String param);
+}
+
+public class Bird implements Flyable {
+    @Override
+    public void fly(String param) {}
+}
+
+public class Test {
+    public static void main(String[] args) {
+        System.out.println("===============");
+        Bird bird = new Bird();
+    }
+}
+```
+
+类加载日志输出如下：
+
+```
+[Opened D:\tool\jdk1.8.0_131\jre\lib\rt.jar]
+[Loaded java.lang.Object from D:\tool\jdk1.8.0_131\jre\lib\rt.jar]
+[Loaded java.io.Serializable from D:\tool\jdk1.8.0_131\jre\lib\rt.jar]
+[Loaded java.lang.Comparable from D:\tool\jdk1.8.0_131\jre\lib\rt.jar]
+[Loaded java.lang.CharSequence from D:\tool\jdk1.8.0_131\jre\lib\rt.jar]
+[Loaded java.lang.String from D:\tool\jdk1.8.0_131\jre\lib\rt.jar]
+...
+[Loaded Test from file:/D:/workspaces/project-test/target/classes/]
+===============
+[Loaded com.github.proxy.Flyable from file:/D:/workspaces/project-test/target/classes/]
+[Loaded com.github.proxy.Bird from file:/D:/workspaces/project-test/target/classes/]
+```
 
 # 类的生命周期
 
@@ -143,7 +177,7 @@ String name = instance.getClass().getClassLoader().getClass().getName();
 
 这整个加载过程被称为“双亲委派模型 (Delegation Model)”（流程见下图）。这种设计的好处体现在：
 
-* 沙箱安全机制：例如自己写的 `java.lang.String` 类不会被加载，**防止核心 API 库被随意篡改。**
+* 沙箱安全机制：例如自己写的 `java.lang.String` 类不会被加载，否则在 `defineClass` 方法这一步会报错，**防止核心 API 库被随意篡改。**
 * 避免类的重复加载：当父加载器已经加载了该类时，就没有必要再加载一次，**保证被加载类的唯一性。**
 
 ![classloader_hierarchy](/img/java/classloader/classloader_hierarchy.png)
@@ -214,6 +248,52 @@ Object instance = clazz.newInstance();
 
 ```java
 defineClass(String name, byte[] b, int off, int len)
+```
+
+如果自定义类加载器打破了双亲委派模型，然后还去加载核心 API 库，例如 `java.lang.String`，会报错如下：
+
+```
+java.lang.SecurityException: Prohibited package name: java.lang
+    at java.lang.ClassLoader.preDefineClass(ClassLoader.java:659)
+    at java.lang.ClassLoader.defineClass(ClassLoader.java:758)
+    at java.lang.ClassLoader.defineClass(ClassLoader.java:642)
+    at com.github.MyClassLoader.findClass(...)
+    at com.github.MyClassLoader.loadClass(...)
+    at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+    ...
+```
+
+`preDefineClass` 方法校验的源码如下，关键判断 `name.startsWith("java.")` 抛出异常：
+
+```java
+    /* Determine protection domain, and check that:
+        - not define java.* class,
+        - signer of this class matches signers for the rest of the classes in
+          package.
+    */
+    private ProtectionDomain preDefineClass(String name,
+                                            ProtectionDomain pd)
+    {
+        if (!checkName(name))
+            throw new NoClassDefFoundError("IllegalName: " + name);
+
+        // Note:  Checking logic in java.lang.invoke.MemberName.checkForTypeAlias
+        // relies on the fact that spoofing is impossible if a class has a name
+        // of the form "java.*"
+        // 关键判断
+        if ((name != null) && name.startsWith("java.")) {
+            throw new SecurityException
+                ("Prohibited package name: " +
+                 name.substring(0, name.lastIndexOf('.')));
+        }
+        if (pd == null) {
+            pd = defaultDomain;
+        }
+
+        if (name != null) checkCerts(name, pd.getCodeSource());
+
+        return pd;
+    }
 ```
 
 ### resolveClass

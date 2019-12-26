@@ -18,14 +18,14 @@ SPI 全称 Service Provider Interface，Java 1.6 引入，是 Java 在语言层�
 
 以 JDBC 为例，**标准服务接口**为 `com.mysql.jdbc.Driver`。
 
-MySQL 作为**服务提供方**，以 mysql-connector-java 5.1.44 为例，按规范要求其 META-INF/services/java.sql.Driver 配置文件中声明了两个**实现类**，如下：
+MySQL 作为**服务提供方**，以 mysql-connector-java 5.1.44 为例，按规范要求其 `META-INF/services/java.sql.Driver` 配置文件中声明了两个**实现类**，如下：
 
 ```
 com.mysql.jdbc.Driver
 com.mysql.fabric.jdbc.FabricMySQLDriver
 ```
 
-当 `DriverManager` 加载 JDBC Driver 驱动程序时，其源码使用的 SPI 代码如下：
+当类加载器载入 `java.sql.DriverManager` 类时，会执行其静态代码块，从而执行其中的 SPI 代码加载 JDBC Driver 实现，源码如下，详见：[《Java 数据持久化系列（一）JDBC Driver 驱动程序总结》](/2019/01/23/java-jdbc-driver/)
 
 ```java
 ServiceLoader<Driver> loadedDrivers = ServiceLoader.load(Driver.class);
