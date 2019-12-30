@@ -28,25 +28,62 @@ tags: [Java, Spring]
 
 # 项目组成
 
-Spring Boot 的[各个子项目](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project)组成如下：
+Spring Boot 的[各个子项目](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project)组成及结构如下：
+
+```
+spring-boot-dependencies (Parent pom)
+  spring-boot-parent (Parent pom)
+    spring-boot
+    spring-boot-autoconfigure
+    spring-boot-starters (Parent module)
+      spring-boot-starter (Core starter, including auto-configuration support, logging and YAML)
+      spring-boot-starter-parent (Parent pom providing dependency and plugin management for applications
+		built with Maven)
+      spring-boot-starter-web
+      ...
+    spring-boot-test
+    spring-boot-test-autoconfigure
+    spring-boot-actuator
+    spring-boot-actuator-autoconfigure
+    spring-boot-devtools
+    spring-boot-cli
+    spring-boot-docs
+    spring-boot-tools (Parent module)
+      spring-boot-autoconfigure-processor
+      spring-boot-configuration-processor
+      spring-boot-maven-plugin
+      spring-boot-gradle-plugin
+      ...
+```
+
+## 项目管理
 
 - `spring-boot-dependencies`
-  - 用于定义和统一管理 Sprint Boot 的各个依赖版本号，继承自 `spring-boot-build`。
+  - 用于定义和统一管理 Sprint Boot 的各个依赖版本号，继承自 `spring-boot-build`。可通过 `dependencyManagement` 引入该依赖可以解决**单继承问题**。
 - `spring-boot-parent`
-  - Spring Boot 父 pom.xml（只包含这一个文件），用于构建配置。继承自 `spring-boot-dependencies`，且被其它子项目所继承。
-- `spring-boot`
-  - Spring Boot 的核心工程。
-- `spring-boot-starters`
-  - Spring Boot 提供的众多起步依赖，用于降低项目依赖的复杂度，清单详见：[Starters](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter)
+  - Spring Boot 各个依赖的父 POM，用于构建配置。继承自 `spring-boot-dependencies`。
+
+## 核心依赖
+
+- `spring-boot` Spring Boot 的核心工程。
+- `spring-boot-autoconfigure` 实现 Spring Boot 自动配置的关键，常用的包含：
+  - 自动配置总开关 `@EnableAutoConfiguration`
+  - 各种自动配置类 `*AutoConfiguration`
+  - 各种外部化配置属性类 `*Properties`
+  - 各种条件化注解类 `@ConditionOn*`
+- `spring-boot-starters` 起步依赖的父 POM
+  - Spring Boot 提供的众多起步依赖，用于降低项目依赖的复杂度，清单详见：[Starters](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter)，例如：
+    - `spring-boot-starter` 核心起步依赖，包括自动配置支持、日志、YAML 依赖
+    - `spring-boot-starter-parent` 业务项目的**父 POM**，继承自 `spring-boot-dependencies`
+    - `spring-boot-starter-web` WEB 开发相关起步依赖
+    - `spring-boot-starter-test` 测试相关起步依赖
+    - ...
   - 起步依赖本质上就是特殊的 Maven 依赖和 Gradle 依赖，利用了**传递依赖**解析，把常用库聚合在一起，组成了几个为特定功能而定制的依赖。
   - 比起减少依赖数量，起步依赖还引入了一些微妙的变化。向项目中添加了某个起步依赖，实际上指定了应用程序所需的**一类功能**。
   - 起步依赖引入的库的版本兼容性都是**经过测试**的，可以放心使用。
-- `spring-boot-autoconfigure`
-  - 实现 Spring Boot 自动配置的关键，常用的包含：
-    - 自动配置总开关`@EnableAutoConfiguration`
-    - 自动配置类 `*AutoConfiguration`
-    - 外部化配置属性类 `*Properties`
-    - 条件化注解类 `@ConditionOn*`
+
+## 工具或插件
+
 - `spring-boot-test`、`spring-boot-test-autoconfigure`
   - 提供一系列测试支持，常用的如：`@SpringBootTest`、mock、web 支持。
 - `spring-boot-actuator`、`spring-boot-actuator-autoconfigure`
@@ -56,9 +93,9 @@ Spring Boot 的[各个子项目](https://github.com/spring-projects/spring-boot/
     - **Audit** Spring Boot Actuator has a flexible audit framework that will publish events to an `AuditEventRepository`. Once Spring Security is in play it automatically publishes authentication events by default. This can be very useful for reporting, and also to implement a lock-out policy based on authentication failures.
 - `spring-boot-devtools`
   - 热部署、静态资源 livereload 等等。
-- `spring-boot-tools` 为 Spring Boot 开发者提供的常用工具集。例如：
-  - `spring-boot-maven-plugin`
-  - `spring-boot-gradle-plugin`
+- `spring-boot-tools` 工具集的父 POM。为 Spring Boot 开发者提供的常用工具集。例如：
+  - `spring-boot-maven-plugin` 插件
+  - `spring-boot-gradle-plugin` 插件
 - `spring-boot-cli`
   - 命令行工具。
 
@@ -113,6 +150,8 @@ Maven 用户可以继承 `spring-boot-starter-parent` POM 项目以获得合理�
     </dependencies>
 </dependencyManagement>
 ```
+
+这种组合方式能解决 Maven 单继承问题。
 
 # Maven 插件
 
