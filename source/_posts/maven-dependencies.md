@@ -3,7 +3,7 @@ title: Maven 实战系列（二）依赖关系总结
 date: 2018-04-20 20:41:43
 updated:
 tags: Java
-
+typora-root-url: ..
 ---
 
 # 依赖关系
@@ -19,13 +19,13 @@ tags: Java
     …
     <dependencies>
         <dependency>
-            <groupId>…</groupId>    <!-- 依赖的构件属组 -->
+            <groupId>…</groupId>        <!-- 依赖的构件属组 -->
             <artifactId>…</artifactId>  <!-- 依赖的构件ID -->
-            <version>…</version>    <!-- 依赖的构件版本 -->
-            <type>…</type>          <!-- 依赖类型，默认值为 jar -->
-            <scope>…</scope>        <!-- 依赖范围 -->
-            <optional>…</optional>  <!-- 可选依赖 -->
-            <exclusions>            <!-- 排除(传递性)依赖 -->
+            <version>…</version>        <!-- 依赖的构件版本 -->
+            <type>…</type>              <!-- 依赖类型，默认值为 jar -->
+            <scope>…</scope>            <!-- 依赖范围 -->
+            <optional>…</optional>      <!-- 可选依赖 -->
+            <exclusions>                <!-- 排除(传递性)依赖 -->
                 <exclusion>…</exclusion>
                 …
             </exclusions>
@@ -35,18 +35,6 @@ tags: Java
     …
 </project>
 ```
-
-## 依赖范围
-
-依赖范围 `scope` 用于控制依赖与这三种 classpath（编译、测试、运行）的关系，即是否有效：
-
-| 依赖范围（Scope） | 编译classpath | 测试classpath | 运行classpath | 例子                                       |
-| ----------- | ----------- | ----------- | ----------- | ---------------------------------------- |
-| compile     | √           | √           | √           | spring-core                              |
-| test        | ×           | √           | ×           | spring-test、junit、mockito                |
-| provided    | √           | √           | ×           | servlet-api（运行时，由于容器如tomcat已经提供，无须重复引入）  |
-| runtime     | ×           | √           | √           | JDBC 驱动实现（编译时，只需 JDK 提供的 JDBC 接口；运行时，才需要接口的具体实现） |
-| system      | √           | √           | ×           | 本地的，Maven 仓库之外的类库文件                      |
 
 ## 依赖传递
 
@@ -63,11 +51,24 @@ Maven 调解依赖有两个基本原则：
 2. 第二原则：**第一声明者优先**。
    在依赖路径长度相等的前提下，在 POM 中，依赖声明的顺序决定了谁会先被解析使用。
 
-## 可选依赖
+## 依赖范围 scope
+
+依赖范围 `scope` 用于控制依赖与这三种 classpath（编译、测试、运行）的关系，即是否有效：
+
+| 依赖范围（Scope） | 编译classpath | 测试classpath | 运行classpath | 例子                                                         |
+| ----------------- | ------------- | ------------- | ------------- | ------------------------------------------------------------ |
+| `compile`         | √             | √             | √             | spring-core                                                  |
+| `test`            | ×             | √             | ×             | spring-test、junit、mockito                                  |
+| `provided`        | √             | √             | ×             | servlet-api（运行时，由于容器如tomcat已经提供，无须重复引入） |
+| `runtime`         | ×             | √             | √             | JDBC 驱动实现（编译时，只需 JDK 提供的 JDBC 接口；运行时，才需要接口的具体实现） |
+| `system`          | √             | √             | ×             | 本地的，Maven 仓库之外的类库文件                             |
+| `import`          | /             | /             | /             | Maven 2.0.9 版本后出的属性，`import` 只能在 `dependencyManagement` 的中使用，能解决 Maven 单继承问题，`import` 依赖关系实际上并不参与限制依赖关系的传递性。 |
+
+## 可选依赖 optional
 
 可选依赖 `optional` 为 `true` 时，该依赖不会被传递进来。
 
-## 依赖排除
+## 依赖排除 exclusions
 
 当传递性依赖的结果不是自己预期的构件版本，可以排除依赖重新自定义。下例展示了使用 `<exclusions>` 排除 A 的传递性依赖 C，并显式声明依赖 C(1.10)：
 

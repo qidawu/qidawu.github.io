@@ -18,13 +18,56 @@ Maven 本质上是一个插件框架，它的核心并不执行任何具体的�
 
 # 核心插件
 
+## maven-clean-plugin
+
+## maven-resources-plugin
+## maven-compiler-plugin
+## maven-surefire-plugin
+## maven-install-plugin
+## maven-deploy-plugin
+
 # 打包工具
+
+## maven-jar-plugin
+
+## maven-war-plugin
 
 # 其它工具
 
 ## maven-archetype-plugin
 
 用于生成骨架，详见：[Maven 骨架快速搭建项目](/2018/12/08/maven-archetype/)。
+
+## maven-assembly-plugin
+
+用于将项目输出及其依赖项、模块、站点文档和其它文件聚合构建成一个可执行的分发包。
+
+项目简单配置如下：
+
+```xml
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.github.testproject.Main</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>
+                            jar-with-dependencies
+                        </descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+```
+
+执行 Goal `assembly:single`，将在 target 目录中生成一个 `artifactId-version-jar-with-dependencies.jar` 文件，内含所需的所有依赖，执行 `java -jar` 即可运行。
 
 ## maven-dependency-plugin
 
