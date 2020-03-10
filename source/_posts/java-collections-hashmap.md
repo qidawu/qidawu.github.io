@@ -8,7 +8,9 @@ typora-root-url: ..
 
 散列表是一种通过散列函数可以快速定位数据的数据结构。散列表利用了数组支持按照下标随机访问数据的时候，时间复杂度为 O(1) 的特性，**所以散列表其实就是数组的一种扩展，由数组演化而来**。可以说，如果没有数组，就没有散列表。
 
-![hashtable_examples](/img/java/collection/hashtable_examples.png)
+散列表的要点总结如下：
+
+![keynote_of_hash_table](/img/java/collection/keynote_of_hash_table.png)
 
 # 内部类
 
@@ -66,6 +68,10 @@ typora-root-url: ..
         public final String toString() { return key + "=" + value; }
     }
 ```
+
+单链表节点的散列表结构如下，下图体现了单链表节点 `key` 和 `next` 属性：
+
+![hashtable_examples](/img/java/collection/hashtable_examples.png)
 
 ## 红黑树节点实现
 
@@ -155,14 +161,6 @@ typora-root-url: ..
 
 ## 字段
 
-关键的几个字段：
-
-* `table` 散列表的底层数据结构为数组，其容量用 `capacity` 表示。此外，Java 通过链表法解决散列冲突的问题，因此数组类型为 `Node<K,V>[]` 节点数组。
-* `loadFactor` 散列表的装载因子。当散列表中空闲位置不多的时候，散列冲突的概率就会大大提高。为了尽可能保证散列表的操作效率，一般情况下，会尽可能保证散列表中有一定比例的空闲槽位。我们用装载因子(load factor)来表示空位的多少。装载因子越大，表示空闲槽位越少，冲突越多，散列表的性能会下降。计算公式：`装载因子 = 键值对数量 size / 数组容量 capacity`。
-* `threshold` 散列表的扩容阈值，计算公式：`threshold = capacity * load factor`，即默认配置下的扩容阈值为：`12=16*0.75`。
-* `size` 散列表实际存储的键值对数量，如果 `size > threshold` 则进行双倍扩容并重新散列。
-* `modCount` 修改次数
-
 ```java
     /**
      * The table, initialized on first use, and resized as
@@ -212,6 +210,16 @@ typora-root-url: ..
      */
     final float loadFactor;
 ```
+
+关键的几个字段：
+
+* `table` 散列表的底层数据结构为数组，其容量用 `capacity` 表示。此外，Java 通过链表法解决散列冲突的问题，因此数组类型为 `Node<K,V>[]` 节点数组。
+* `loadFactor` 散列表的装载因子。当散列表中空闲位置不多的时候，散列冲突的概率就会大大提高。为了尽可能保证散列表的操作效率，一般情况下，会尽可能保证散列表中有一定比例的空闲槽位。我们用装载因子来表示散列表满的程度，默认值是 `0.75f`，也就是说默认情况下，当散列表中元素个数达到了容量的 3/4 时就会进行扩容。
+* `threshold` 散列表的扩容阈值，计算公式：`threshold = capacity * load factor`，即默认配置下的扩容阈值为：`12=16*0.75`。
+* `size` 散列表实际存储的键值对数量，如果 `size > threshold` 则对 hash `table` 进行双倍扩容（resize）,并对原数组每个元素进行重新散列（rehash）。
+* `modCount` 修改次数。
+
+![fields_of_hash_table](/img/java/collection/fields_of_hash_table.png)
 
 # 构造方法
 
@@ -346,7 +354,7 @@ typora-root-url: ..
 
 # 关键私有方法
 
-## 散列函数
+## hash
 
 整个散列函数的整体过程如下：
 
@@ -384,7 +392,7 @@ int hash(Object key) {
     }
 ```
 
-该函数也叫扰动函数：先获取 32 位长度的 hashCode，再进行高 16 位与低 16 位异或，在低位加入高位特征，目的是减少碰撞的概率。
+该函数也叫扰动函数：先获取 32 位长度的 hashCode，再进行高 16 位与低 16 位异或，在低位加入高位特征，目的是减少碰撞冲突的概率。
 
 其中，`hashCode` 需要遵循以下规则：
 
@@ -417,7 +425,26 @@ int index = hash(key) & (capacity - 1)
 >
 > 综上，可以看出，hashcode的随机性，加上移位异或算法，得到一个非常随机的hash值，再通过「除留余数法」，得到index
 
-## 设值（putVal）
+## resize
+
+用于初始化或扩容散列表。
+
+```java
+    /**
+     * Initializes or doubles table size.  If null, allocates in
+     * accord with initial capacity target held in field threshold.
+     * Otherwise, because we are using power-of-two expansion, the
+     * elements from each bin must either stay at same index, or move
+     * with a power of two offset in the new table.
+     *
+     * @return the table
+     */
+    final Node<K,V>[] resize() {
+        ...
+    }
+```
+
+## putVal
 
 一些关键代码分析：
 
@@ -530,7 +557,7 @@ int index = hash(key) & (capacity - 1)
     }
 ```
 
-## 查找节点（getNode）
+## getNode
 
 关键的 `getNode` 查找节点方法：
 
@@ -566,7 +593,7 @@ int index = hash(key) & (capacity - 1)
     }
 ```
 
-## 删除节点（removeNode）
+## removeNode
 
 关键的 `removeNode` 删除节点方法：
 
@@ -800,3 +827,19 @@ map.forEach((key, value) -> {});
 ```
 
 ![map_entryset](/img/java/collection/map_entryset.png)
+
+# 参考
+
+https://docs.oracle.com/javase/8/docs/api/index.html
+
+《[散列函数设计：除留余数法](http://www.nowamagic.net/academy/detail/3008040)》
+
+《[讨论 - 为什么hash函数的除留余数法要选一个**素数**？](https://exp.newsmth.net/topic/6d669fb1a27ff48272c158e84b69c93f)》造成散列冲突的概率更小
+
+《[Java中hash算法细述](https://blog.csdn.net/majinggogogo/article/details/80260400)》
+
+《[HashMap的负载因子不设置成1？](https://mp.weixin.qq.com/s/kbLASf0lcF4PDJ3qBsFyUg)》
+
+《[HashMap的loadFactor为什么是0.75？](https://www.jianshu.com/p/64f6de3ffcc1)》
+
+《[自问自答 - HashMap的底层原理探索](https://www.jianshu.com/p/2db05dbcba2d)》
