@@ -130,7 +130,48 @@ static class UnmodifiableCollection<E> implements Collection<E>, Serializable {
 
 在 *unmodifiable* 的基础上，加之保证 `Collection` 实现类的底层数据为 `final` 的集合称为 ***immutable*** 不可变集合。反之则称为 ***mutable*** 可变集合。
 
-Java 9 之前，要实现不可变集合只能通过第三方库，例如 Guava：
+Java 9 为 `List`、`Set` 和 `Map` 接口提供了新的静态工厂方法，可以创建这些集合的不可变实例，如下：
+
+```java
+List<String> list = List.of("apple", "orange", "banana");
+Set<String> set = Set.of("aggie", "alley", "steely");
+Map<String, String> map = Map.of("A", "Apple", "B", "Boy", "C", "Cat");
+```
+
+而 Java 9 之前，要实现不可变集合只能通过第三方库，例如 Guava：
+
+```
+ImmutableAsList
+ImmutableBiMap
+ImmutableClassToInstanceMap
+ImmutableCollection
+ImmutableEntry
+ImmutableEnumMap
+ImmutableEnumSet
+ImmutableList
+ImmutableListMultimap
+ImmutableMap
+ImmutableMapEntry
+ImmutableMapEntrySet
+ImmutableMapKeySet
+ImmutableMapValues
+ImmutableMultimap
+ImmutableMultiset
+ImmutableRangeMap
+ImmutableRangeSet
+ImmutableSet
+ImmutableSetMultimap
+ImmutableSortedAsList
+ImmutableSortedMap
+ImmutableSortedMapFauxverideShim
+ImmutableSortedMultiset
+ImmutableSortedMultisetFauxverideShim
+ImmutableSortedSet
+ImmutableSortedSetFauxverideShim
+ImmutableTable
+```
+
+使用如下：
 
 ```java
 List<String> list = ImmutableList.of("apple", "orange", "banana");
@@ -140,13 +181,14 @@ Map<String, String> map = ImmutableMap.of("A", "Apple", "B", "Boy", "C", "Cat");
 log.info("list={}, set={}, map={}", fruits, marbles, map);  // list=[apple, orange, banana], set=[aggie, alley, steely], map={A=Apple, B=Boy, C=Cat}
 ```
 
-Java 9 为 `List`、`Set` 和 `Map` 接口提供了新的静态工厂方法，可以创建这些集合的不可变实例，如下：
+除此之外，Apache Commons Lang 也提供了两个好用的类 `Pair` 和 `Triple`，可用于存放指定个数的临时数据：
 
 ```java
-List<String> list = List.of("apple", "orange", "banana");
-Set<String> set = Set.of("aggie", "alley", "steely");
-Map<String, String> map = Map.of("A", "Apple", "B", "Boy", "C", "Cat");
+Triple.of("left", "middle", "right")
+Pair.of("left", "right")
 ```
+
+![methods_of_Pair_and_Triple](/img/java/collection/methods_of_Pair_and_Triple.png)
 
 # 随机/顺序访问
 
@@ -198,7 +240,7 @@ Map<String, String> map = Map.of("A", "Apple", "B", "Boy", "C", "Cat");
 
 ## 类型限制
 
-泛型机制虽然为集合提供了编译期类型检查，但仍然可以绕过此机制（通过反射也能绕过编译期类型检查）：
+泛型机制虽然为集合提供了编译期类型检查，但仍然可以在运行期绕过此机制（通过反射也能绕过编译期类型检查）：
 
 ```java
 public void test4() {
@@ -265,7 +307,7 @@ static class CheckedCollection<E> implements Collection<E>, Serializable {
 }
 ```
 
-以 `add` 方法为例，每次添加元素时，都会调用 `typeCheck` 私有方法进行类型检查，如果尝试添加错误类型的元素，则会抛出 `ClassCastException`，防止后续出错（fail fast）：
+以 `add` 方法为例，每次添加元素时，都会调用 `typeCheck` 私有方法进行类型检查，如果尝试添加错误类型的元素，则会抛出 `ClassCastException`，通过 fail fast 防止后续出错：
 
 ```java
 public void test() {
@@ -287,7 +329,7 @@ private void add(List list) {
 方法一：转两次
 
 ```java
-List<String> list = new ArrayList<>(Arrays.asList("a", "b", "c"))
+List<String> list = new ArrayList<>(Arrays.asList("a", "b", "c"))  // from varargs
 ```
 
 方法二：Java 8 
