@@ -215,7 +215,7 @@ public class Test {
 
 # AnnotatedType
 
-JDK 8 引入了 `AnnotatedType`：
+JDK 8 引入了 `java.lang.reflect.AnnotatedType`：
 
 ![AnnotatedType](/img/java/reflection/AnnotatedType.png)
 

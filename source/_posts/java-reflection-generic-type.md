@@ -146,8 +146,16 @@ public class Person implements Serializable, Comparable<Person> {
     public void test1() {
         Method method = PersonMapper.class.getMethod("test", List.class, List.class, Number[].class, Number.class);
 
+        // [0] ParameterizedType
+        // [1] ParameterizedType
+        // [2] GenericArrayType
+        // [3] TypeVariable
         Type[] genericParameterTypes = method.getGenericParameterTypes();
+        
+        // Class
         Type genericReturnType = method.getGenericReturnType();
+        
+        // Class[0]
         Type[] genericExceptionTypes = method.getGenericExceptionTypes();
     }
 ```
@@ -163,9 +171,8 @@ public class Person implements Serializable, Comparable<Person> {
 ```java
     @Test
     public void test2() {
-        Type genericInterface = PersonMapper.class.getGenericInterfaces()[0];
-
         // com.github.reflection.BaseMapper<com.github.reflection.Person, java.lang.Long>
+        Type genericInterface = PersonMapper.class.getGenericInterfaces()[0];
         assertTrue(genericInterface instanceof ParameterizedType);
         ParameterizedType parameterizedType = (ParameterizedType) genericInterface;
         assertEquals(BaseMapper.class, parameterizedType.getRawType());
@@ -197,9 +204,8 @@ public class Person implements Serializable, Comparable<Person> {
 ```java
     @Test
     public void test3() {
-        Method method = PersonMapper.class.getMethod("log", List.class);
-
         // java.util.List<?>
+        Method method = PersonMapper.class.getMethod("log", List.class);
         Type genericParameterType = method.getGenericParameterTypes()[0];
         assertTrue("The first parameter type of log method is instance of ParameterizedType", 
                    genericParameterType instanceof ParameterizedType);
