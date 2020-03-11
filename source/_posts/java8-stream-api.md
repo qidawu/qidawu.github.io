@@ -89,6 +89,49 @@ Stream<Integer> stream7 = Stream.concat(Stream.of(1, 2), Stream.of(3, 4, 5));
 
 一个流有且只能有一个终结操作，当这个操作执行后，流就被关闭，无法再被操作了。
 
+# 示例
+
+## 分组统计
+
+测试数据如下，需要按 key 分组统计总个数、总和、平均数、最大值、最小值：
+
+```java
+List<Pair<String, Integer>> peoples = Arrays.asList(Pair.of("Lucy", 10),
+                                                    Pair.of("Lucy", 30),
+                                                    Pair.of("Peter", 18));
+```
+
+方式一，各项单独统计：
+
+```java
+// {Lucy=2, Peter=1}
+Map<String, Long> counting = peoples.stream()
+    .collect(Collectors.groupingBy(Pair::getKey, Collectors.counting()));
+// {Lucy=40, Peter=18}
+Map<String, Integer> summing = peoples.stream()
+    .collect(Collectors.groupingBy(Pair::getKey, Collectors.summingInt(Pair::getValue)));
+// {Lucy=20.0, Peter=18.0}
+Map<String, Double> averaging = peoples.stream()
+    .collect(Collectors.groupingBy(Pair::getKey, Collectors.averagingDouble(Pair::getValue)));
+// {Lucy=Optional[(Lucy,30)], Peter=Optional[(Peter,18)]}
+Map<String, Optional<Pair<String, Integer>>> max = peoples.stream()
+    .collect(Collectors.groupingBy(Pair::getKey, Collectors.maxBy(Comparator.comparing(Pair::getValue))));
+// {Lucy=Optional[(Lucy,10)], Peter=Optional[(Peter,18)]}
+Map<String, Optional<Pair<String, Integer>>> min = peoples.stream()
+    .collect(Collectors.groupingBy(Pair::getKey, Collectors.minBy(Comparator.comparing(Pair::getValue))));
+```
+
+方式二，汇总统计：
+
+```java
+// {
+//   Lucy=IntSummaryStatistics{count=2, sum=40, min=10, average=20.000000, max=30}, 
+//   Peter=IntSummaryStatistics{count=1, sum=18, min=18, average=18.000000, max=18}
+// }
+Map<String, IntSummaryStatistics> summary = peoples.stream()
+    .collect(Collectors.groupingBy(Pair::getKey, Collectors.summarizingInt(Pair::getValue)));
+```
+
 # 参考
 
 https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html
