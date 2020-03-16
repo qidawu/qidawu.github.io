@@ -1,6 +1,6 @@
 ---
 title: Java 虚拟机系列（二）垃圾回收总结
-date: 2017-02-05 23:22:23
+date: 2018-09-05 23:22:23
 updated:
 tags: Java
 typora-root-url: ..

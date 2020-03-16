@@ -1,5 +1,5 @@
 ---
-title: Java 包装类型总结
+title: Java 常用类型系列（一）包装类型总结
 date: 2019-04-01 21:28:04
 updated:
 tags: Java
@@ -39,16 +39,16 @@ System.out.println(("e == f is " + (e == f)));  // e == f is false
 
 Java 语言提供了八种基本类型。其中包括六种数字类型（四个整数型，两个浮点型），一种字符类型，还有一种布尔型。这些基本类型（primitive type）都有对应的包装类型（boxed primitive type），具有类的特性。基本类型和包装类型之间的转换通过装箱和拆箱方法：
 
-| 基本数据类型 | 存储空间 | 对应的包装类 | 拆箱方法         | 装箱方法           |
-| ------------ | -------- | ------------ | ---------------- | ------------------ |
-| `byte`       | 8 bit    | `Byte`       | `byteValue()`    | `valueOf(byte)`    |
-| `short`      | 16 bit   | `Short`      | `shortValue()`   | `valueOf(short)`   |
-| `int`        | 32 bit   | `Integer`    | `intValue()`     | `valueOf(int)`     |
-| `long`       | 64 bit   | `Long`       | `longValue()`    | `valueOf(long)`    |
-| `float`      | 32 bit   | `Float`      | `floatValue()`   | `valueOf(float)`   |
-| `double`     | 64 bit   | `Double`     | `doubleValue()`  | `valueOf(double)`  |
-| `boolean`    | 1 bit    | `Boolean`    | `booleanValue()` | `valueOf(boolean)` |
-| `char`       | 16 bit   | `Character`  | `charValue()`    | `valueOf(char)`    |
+| 基本数据类型 | 存储空间 | 对应的包装类 | 拆箱方法         | 装箱方法           | 缓存范围                |
+| ------------ | -------- | ------------ | ---------------- | ------------------ | ----------------------- |
+| `byte`       | 8 bit    | `Byte`       | `byteValue()`    | `valueOf(byte)`    | -128~127                |
+| `short`      | 16 bit   | `Short`      | `shortValue()`   | `valueOf(short)`   | -128~127                |
+| `int`        | 32 bit   | `Integer`    | `intValue()`     | `valueOf(int)`     | -128~127                |
+| `long`       | 64 bit   | `Long`       | `longValue()`    | `valueOf(long)`    | -128~127                |
+| `float`      | 32 bit   | `Float`      | `floatValue()`   | `valueOf(float)`   |                         |
+| `double`     | 64 bit   | `Double`     | `doubleValue()`  | `valueOf(double)`  |                         |
+| `boolean`    | 1 bit    | `Boolean`    | `booleanValue()` | `valueOf(boolean)` | true & false            |
+| `char`       | 16 bit   | `Character`  | `charValue()`    | `valueOf(char)`    | \u005Cu0000~\u005Cu007F |
 
 其中数字类型的拆箱方法由共同的父类 `java.lang.Number` 定义：
 
@@ -710,3 +710,5 @@ public final class Character implements java.io.Serializable, Comparable<Charact
 《Java 8 实战》
 
 https://docs.oracle.com/javase/tutorial/java/data/autoboxing.html
+
+[一文读懂什么是Java中的自动拆装箱](https://mp.weixin.qq.com/s?__biz=MzI3NzE0NjcwMg==&mid=2650121987&idx=1&sn=70bba3f7f42a269eeada9cecb34c10a5&chksm=f36bba22c41c3334b92f184e402f2f77e2d5e0a2e0a21ec5a8229773afcab4f026a0b6f47fc4&scene=21)

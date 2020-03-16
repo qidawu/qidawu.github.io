@@ -571,6 +571,7 @@ add(boolean[] array,boolean element)
 add(T[] array,int index,T element)
 addAll(boolean[] array1,boolean… array2)
 
+```java
 //添加元素到数组中        
 ArrayUtils.add([true, false], true) = [true, false, true]    
 
@@ -579,31 +580,37 @@ ArrayUtils.add(["a"], 1, null)     = ["a", null]
 ArrayUtils.add(["a"], 1, "b")      = ["a", "b"]
 ArrayUtils.add(["a", "b"], 3, "c") = ["a", "b", "c"]
 ArrayUtils.add(["a", "b"], ["c", "d"]) = ["a", "b", "c","d"]
+```
 
 ## 克隆方法
 
-clone(boolean[] array)等等
-
+```java
 ArrayUtils.clone(new int[] { 3, 2, 4 }); = {3,2,4}
+```
 
 ## 包含方法
 
 contains(boolean[] array,boolean valueToFind)
 
+```java
 // 查询某个Object是否在数组中
 ArrayUtils.contains(new int[] { 3, 1, 2 }, 1); =  true
+```
 
 ## 获取长度方法
 
 getLength(Object array)
 
+```java
 ArrayUtils.getLength(["a", "b", "c"]) = 3
+```
 
 ## 获取索引方法
 
 indexOf(boolean[] array,boolean valueToFind)
 indexOf(boolean[] array,boolean valueToFind,int startIndex)
 
+```java
 //查询某个Object在数组中的位置,可以指定起始搜索位置,找不到返回-1
 //从正序开始搜索,搜到就返回当前的index否则返回-1
 ArrayUtils.indexOf(new int[] { 1, 3, 6 }, 6); =  2
@@ -614,30 +621,37 @@ ArrayUtils.lastIndexOf(new int[] { 1, 3, 6 }, 6); =  2
 
 //从逆序索引为2开始搜索,,搜到就返回当前的index,否则返回-1
 ArrayUtils.lastIndexOf(new Object[]{"33","yy","uu"}, "33",2 ) = 0
+```
 
 ## 判空方法
 
 isEmpty(boolean[] array)等等
 isNotEmpty(T[] array)
 
+```java
 //判断数组是否为空(null和length=0的时候都为空)
 ArrayUtils.isEmpty(new int[0]); =  true
 ArrayUtils.isEmpty(new Object[] { null }); = false
+```
 
 ## 长度相等判断方法
 
 isSameLength(boolean[] array1,boolean[] array2)
 
+```java
 //判断两个数组的长度是否相等
-ArrayUtils.isSameLength(new Integer[] { 1, 3, 5 }, new Long[] { "1", "3", "5"}); = true      
+ArrayUtils.isSameLength(new Integer[] { 1, 3, 5 }, new Long[] { "1", "3", "5"}); = true
+```
 
 ## 空数组转换
 
 nullToEmpty(Object[] array)等等
 
+```java
 //讲null转化为相应数组
 int [] arr1 = null;
 int [] arr2 = ArrayUtils.nullToEmpty(arr1);
+```
 
 ## 删除元素方法
 
@@ -646,6 +660,7 @@ removeElement(boolean[] array,boolean element)
 removeAll(T[] array,int… indices)
 removeElements(T[] array,T… values)
 
+```java
 //删除指定下标的元素        
 ArrayUtils.remove([true, false], 1)       = [true]
 ArrayUtils.remove([true, true, false], 1) = [true, false]
@@ -662,12 +677,14 @@ ArrayUtils.removeAll(["a", "b", "c"], 1, 2) = ["a"]
 ArrayUtils.removeElements(["a", "b"], "a", "c")      = ["b"]
 ArrayUtils.removeElements(["a", "b", "a"], "a")      = ["b", "a"]
 ArrayUtils.removeElements(["a", "b", "a"], "a", "a") = ["b"]
+```
 
 ## 反转方法
 
 reverse(boolean[] array)等等
 reverse(boolean[] array,int startIndexInclusive,int endIndexExclusive)
 
+```java
 //反转数组
 int[] array =new int[] { 1, 2, 5 };
 ArrayUtils.reverse(array);// {5,2,1}
@@ -676,27 +693,31 @@ ArrayUtils.reverse(array);// {5,2,1}
 int[] array =new int[] {1, 2, 5 ,3,4,5,6,7,8};
 ArrayUtils.reverse(array,2,5);
 System.out.println(ArrayUtils.toString(array)); = {1,2,4,3,5,5,6,7,8}
+```
 
 ## 截取数组
 
 subarray(boolean[] array,int startIndexInclusive,int endIndexExclusive)
 
-//截取数组
-ArrayUtils.subarray(newint[] { 3, 4, 1, 5, 6 }, 2, 4); =  {1,5}
+```java
 //起始index为2(即第三个数据)结束index为4的数组
+ArrayUtils.subarray(newint[] { 3, 4, 1, 5, 6 }, 2, 4); =  {1,5}
+//如果endIndex大于数组的长度,则取beginIndex之后的所有数据
 ArrayUtils.subarray(newint[] { 3, 4, 1, 5, 6 }, 2, 10); =  {1,5,6}
-//如果endIndex大于数组的长度,则取beginIndex之后的所有数据  
+```
 
 ## 打印数组方法
 
 toString(Object array)
 toString(Object array,String stringIfNull)
 
+```java
 //打印数组
 ArrayUtils.toString(newint[] { 1, 4, 2, 3 }); =  {1,4,2,3}
 ArrayUtils.toString(new Integer[] { 1, 4, 2, 3 }); =  {1,4,2,3}
 //如果为空，返回默认信息
 ArrayUtils.toString(null, "I'm nothing!"); =  I'm nothing!
+```
 
 # 参考
 
