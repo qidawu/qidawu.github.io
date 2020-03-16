@@ -1,6 +1,6 @@
 ---
 title: Spring Boot 入门总结
-date: 2018-10-01 16:38:00
+date: 2017-08-01 16:38:00
 updated:
 tags: [Java, Spring]
 ---
@@ -289,3 +289,4 @@ https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot
 https://github.com/spring-projects/spring-boot
 
 [Spring Boot Tomcat配置](https://yq.aliyun.com/articles/619390)
+
