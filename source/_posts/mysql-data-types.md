@@ -3,6 +3,7 @@ title: MySQL 常用数据类型
 date: 2018-02-05 22:27:21
 updated:
 tags: MySQL
+typora-root-url: ..
 ---
 
 # 原则
@@ -192,7 +193,7 @@ MySQL 不能将 `BLOB` 和 `TEXT` 列全部长度的字符串进行索引，也�
 
 ## 日期与时间类型
 
-* MySQL 有多种表示日期的数据类型，比如，当只记录年信息的时候，可以使用 YEAR 类型，而没有必要使用 DATE 类型。
+* MySQL 有多种表示日期的数据类型，比如，当只记录年信息的时候，可以使用 `YEAR` 类型，而没有必要使用 `DATE` 类型。
 * 每一个类型都有合法的取值范围，当指定确实不合法的值时系统将 "零" 值插入到数据库中。
 
 | 类型        | 字节长度 | 默认值（0 值）      | 取值范围                                          | 备注                                                         |
@@ -200,10 +201,18 @@ MySQL 不能将 `BLOB` 和 `TEXT` 列全部长度的字符串进行索引，也�
 | `YEAR`      | 1 byte   | 0000                | 1901 ~ 2155                                       |                                                              |
 | `TIME`      | 3 bytes  | 00:00:00            | -838:59:59 ~ 838:59:59                            |                                                              |
 | `DATE`      | 3 bytes  | 0000-00-00          | 1000-01-01 ~ 9999-12-31                           |                                                              |
-| `DATETIME`  | 8bytes   | 0000-00-00 00:00:00 | 1000-01-01 00:00:00 ~ 9999-12-31 23:59:59         | `DATETIME` 把日期和时间封装到格式为 `YYYYMMDDHHMMSS` 的整数中，与时区无关。默认情况下，MySQL 以一种可排序的、无歧义的格式显示 `DATETIME` 值，例如“2018-01-16 22:37:08”。这是 ANSI 标准定义的日期和时间显示方法。 |
+| `DATETIME`  | 5 bytes  | 0000-00-00 00:00:00 | 1000-01-01 00:00:00 ~ 9999-12-31 23:59:59         | `DATETIME` 把日期和时间封装到格式为 `YYYYMMDDHHMMSS` 的整数中，与时区无关。默认情况下，MySQL 以一种可排序的、无歧义的格式显示 `DATETIME` 值，例如“2018-01-16 22:37:08”。这是 ANSI 标准定义的日期和时间显示方法。 |
 | `TIMESTAMP` | 4 bytes  | 0000-00-00 00:00:00 | 1970-01-01 00:00:01 UTC ~ 2038-01-19 03:14:07 UTC | `TIMESTAMP` 显示的值依赖于时区。                             |
 
-日期与时间类型的更多操作请参考：《[MySQL 常用日期操作](/2018/02/26/mysql-datetime/)》
+需要注意的是，MySQL 升级到 5.6 之后对日期与时间类型做过调整，可以精确到微秒并指定其精度（最多 6 位），参考 [Changes in MySQL 5.6](https://dev.mysql.com/doc/refman/5.6/en/upgrading-from-previous-series.html)：
+
+![incompatible_change_of_date_and_time_type](/img/mysql/datatype/incompatible_change_of_date_and_time_type.png)
+
+参考 [Date and Time Type Storage Requirements](https://dev.mysql.com/doc/refman/5.6/en/storage-requirements.html#data-types-storage-reqs-date-time) 下表列明了日期与时间类型在 MySQL 5.6.4 前后的变化：
+
+![date_and_time_type_storage_requirements](/img/mysql/datatype/date_and_time_type_storage_requirements.png)
+
+有关于时间值的内部表示的详细信息，参考 [MySQL Internals: Important Algorithms and Structures - Date and Time Data Type Representation](https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html)
 
 # 默认值
 
@@ -229,3 +238,5 @@ https://dev.mysql.com/doc/refman/5.7/en/data-types.html
 https://dev.mysql.com/doc/refman/5.7/en/column-count-limit.html
 
 《[MySQL数据类型：UNSIGNED注意事项](https://www.cnblogs.com/blankqdb/archive/2012/11/03/blank_qdb.html)》
+
+《[MySQL 5.6时间数据类型功能获得改进](http://tech.it168.com/a2013/1013/1544/000001544067.shtml)》

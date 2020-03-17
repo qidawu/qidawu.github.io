@@ -193,6 +193,39 @@ FROM Products;
 
 详情请参考《[MySQL 锁机制总结](/2018/10/20/mysql-locking/)》。
 
+# UNION 子句
+
+语法：
+
+```SQL
+SELECT ...
+UNION [ALL | DISTINCT] SELECT ...
+[UNION [ALL | DISTINCT] SELECT ...]
+```
+
+`UNION` 将来自多个 `SELECT` 语句的结果合并为一个结果集，结果集列名取自第一条 `SELECT` 语句的列名。
+
+`UNION` 或 `UNION DISTINCT` 去重，而 `UNION ALL` 则不去重。
+
+要为单独的一条 `SELECT` 语句应用 `ORDER BY` 或 `LIMIT` 子句，需要将子句放在包含 `SELECT` 的括号内，例如：
+
+```SQL
+(SELECT a FROM t1 WHERE a=10 AND B=1 ORDER BY a LIMIT 10)
+UNION
+(SELECT a FROM t2 WHERE a=11 AND B=2 ORDER BY a LIMIT 10);
+```
+
+反之，如要应用到整个 `UNION` 结果集，则在单个 `SELECT` 语句后面加上括号，并在最后一个语句后面加上子句，例如：
+
+```SQL
+(SELECT a FROM t1 WHERE a=10 AND B=1)
+UNION
+(SELECT a FROM t2 WHERE a=11 AND B=2)
+ORDER BY a LIMIT 10;
+```
+
+
+
 # 参考
 
 《MySQL 必知必会》
