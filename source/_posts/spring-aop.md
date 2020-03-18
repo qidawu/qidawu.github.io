@@ -3,6 +3,7 @@ title: Spring AOP 面向切面编程总结
 date: 2017-07-10 22:48:21
 updated: 
 tags: [Java, Spring]
+typora-root-url: ..
 ---
 
 # AOP 概念
@@ -27,13 +28,13 @@ AOP 的一些场景如下：
 
 AOP 的知识点总结：
 
-![AOP 总览](/img/spring/AOP.png)
+![AOP 总览](/img/spring/aop/AOP.png)
 
 # AOP 术语
 
 与大多数技术一样，AOP 已经形成了自己的术语。下图展示了这些概念是如何关联在一起的：
 
-![An aspect's functionality (advice) is woven into a program's execution at one or more join points.](/img/java/aop_terminology.png)
+![An aspect's functionality (advice) is woven into a program's execution at one or more join points.](/img/spring/aop/aop_terminology.png)
 
 ## 切面（Aspect）
 
@@ -62,11 +63,11 @@ Spring AOP 的切面（Aspect）可以搭配下面五种通知（Advice）注解
 
 Spring AOP 的切点（Pointcut）使用 AspectJ 的“**切点表达式语言（Pointcut Expression Language）**”进行定义。但要注意的是，Spring 仅支持其中一个子集：
 
-![切面指示器（Aspectj Designator）](/img/java/aop_aspectj_designator.png)
+![切面指示器（Aspectj Designator）](/img/spring/aop/aop_aspectj_designator.png)
 
 切点表达式的语法如下：
 
-![切点表达式（Pointcut Expression）](/img/java/aop_pointcut_expression.png)
+![切点表达式（Pointcut Expression）](/img/spring/aop/aop_pointcut_expression.png)
 
 ## 连接点（Join point）
 
@@ -92,7 +93,7 @@ Spring AOP 的切点（Pointcut）使用 AspectJ 的“**切点表达式语言�
 
   > 通过在代理类中包裹切面，Spring 在运行期把切面织入到 Spring 管理的 bean 中。如下图所示，代理类封装了目标类，并拦截被通知方法的调用，再把调用转发给真正的目标 bean。当代理拦截到方法调用时，在调用目标 bean 方法之前，会执行切面逻辑。
 
-  ![Spring 的切面由包裹了目标对象的代理类实现。代理类处理方法的调用，执行额外的切面逻辑，并调用目标方法](/img/spring/spring_aop_proxy.png)
+  ![Spring 的切面由包裹了目标对象的代理类实现。代理类处理方法的调用，执行额外的切面逻辑，并调用目标方法](/img/java/proxy/proxy.png)
 
   > 直到应用需要被代理的 bean 时，Spring 才创建代理对象。如果使用的是 `ApplicationContext` 的话，在 `ApplicationContext` 从 `BeanFactory` 中**加载所有 bean 的时候**，Spring 才会创建被代理的对象。因为 Spring 运行时才创建代理对象，所以我们不需要特殊的编译器来织入 Spring AOP 的切面。
 
@@ -134,14 +135,14 @@ Spring AOP 的设计理念和大多数其它 AOP 框架不同。目标并不是�
 
 Spring AOP 支持两种模式的动态代理，JDK Proxy 或者 CGLib：
 
-![Spring AOP process](/img/spring/springaop-process.png)
+![Spring AOP process](/img/spring/aop/springaop-process.png)
 
 两种模式的优势如下：
 
 - JDK Proxy
 
   - 最小化依赖关系，减少依赖意味着简化开发和维护，JDK 本身的支持，可能比 CGLib 更加可靠。
-  - 平滑进行 JDK 版本升级，而字节码类库通常需要进行更新以保证在新版 Java 上能够使用。
+  - 平滑进行 JDK 版本升级，而第三方字节码类库通常需要进行更新以保证在新版 Java 上能够使用。
   - 代码实现简单，主要利用 JDK 反射机制。
 
 - CGLib Proxy
@@ -152,7 +153,7 @@ Spring AOP 支持两种模式的动态代理，JDK Proxy 或者 CGLib：
 
 核心源码解析：
 
-![AopProxy 实现结构](/img/spring/AopProxy.png)
+![AopProxy 实现结构](/img/spring/aop/AopProxy.png)
 
 `org.springframework.aop.framework.DefaultAopProxyFactory` 工厂类负责判断创建哪个 `AopProxy` 实现：
 

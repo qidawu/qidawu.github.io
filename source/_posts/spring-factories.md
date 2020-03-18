@@ -19,7 +19,9 @@ Spring Boot 应用的自动配置流程如下：
 
 > SpringFactoriesLoader loads and instantiates factories of a given type from "META-INF/spring.factories" files which may be present in multiple JAR files in the classpath. The spring.factories file must be in Properties format, where the key is the fully qualified name of the interface or abstract class, and the value is a comma-separated list of implementation class names. 
 
-按流程先加载 key 为 `org.springframework.boot.autoconfigure.EnableAutoConfiguration` 部分，classpath 下找到了 `spring-boot-autoconfigure.jar/META-INF/spring.factories` 配置文件：
+该类会通过类加载器从 classpath 中搜索所有 `META-INF/spring.factories` 配置文件，然后获取 key 为 `org.springframework.boot.autoconfigure.EnableAutoConfiguration` 部分。
+
+例如 `spring-boot-autoconfigure.jar/META-INF/spring.factories`：
 
 ```
 # Auto Configure

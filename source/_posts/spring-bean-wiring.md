@@ -100,7 +100,7 @@ public class CDPlayerTest {
 * 使用 `@Primary` 注解将可选 bean 中的某一个设为首选的 bean。`@Primary` 能够与 `@Component` 组合用在组件扫描的 bean 上，也可以与 `@Bean` 组合用在 Java 配置的 bean 声明中。 
 * 使用限定符注解 `@Qualifier` 来帮助 Spring 将可选的 bean 的范围缩小到只有一个 bean。
 
-# 基于 Java 的显式配置
+# 基于 Java Config 的显式配置
 
 尽管在很多场景下通过组件扫描和自动装配实现 Spring 的自动化配置是更为推荐的方式，但有时候自动化配置的方案行不通，因此需要显式配置 Spring。比如说，你想要将第三方库中的组件装配到你的应用中，在这种情况下，是没有办法在它的类上添加 `@Component` 和 `@Autowired` 注解的，因此就不能使用自动化装配的方案了。
 
@@ -140,13 +140,6 @@ public class CDPlayerConfig {
 ```
 
 注意，这个 Java Config 需要放在 `@ComponentScan` 能够扫描到的路径之下，否则配置中所声明的 bean 将无法被 Spring 容器所注册。
-
-## 条件化的 bean
-
-假设你希望一个或多个 bean 只有在应用的类路径下包含特定的库时才创建。或者我们希望某个 bean 只有当另外某个特定的 bean 也声明了之后才会创建。我们还可能要求只有某个特定的环境变量设置之后，才会创建某个 bean。
-在 Spring 4 之前，很难实现这种级别的条件化配置，但是 Spring 4 引入了一个新的 `@Conditional` 注解，它可以用到带有 `@Bean`注解的方法上。如果给定的条件计算结果为 `true`，就会创建这个 bean，否则的话，这个 bean 会被忽略。
-
-详情参考另一篇博文：《[Spring Bean 条件化配置总结](/2017/06/05/spring-conditional-bean/)》
 
 ## @Import
 
@@ -192,6 +185,13 @@ Spring Framework：
 2. 依据条件选择配置类
 3. 动态注册 Bean
 
+## 条件化的 bean
+
+假设你希望一个或多个 bean 只有在应用的类路径下包含特定的库时才创建。或者我们希望某个 bean 只有当另外某个特定的 bean 也声明了之后才会创建。我们还可能要求只有某个特定的环境变量设置之后，才会创建某个 bean。
+在 Spring 4 之前，很难实现这种级别的条件化配置，但是 Spring 4 引入了一个新的 `@Conditional` 注解，它可以用到带有 `@Bean`注解的方法上。如果给定的条件计算结果为 `true`，就会创建这个 bean，否则的话，这个 bean 会被忽略。
+
+详情参考另一篇博文：《[Spring Bean 条件化配置总结](/2017/09/05/spring-conditional-bean/)》
+
 # 基于 XML 的显式配置
 
 XML 配置的缺点是比较复杂，且无法从编译期的类型检查中受益。除非是老项目维护，否则在新项目中已不再建议使用，此处不作过多介绍。
@@ -212,79 +212,6 @@ XML 配置的缺点是比较复杂，且无法从编译期的类型检查中受�
 public class GlobalConfig() {}
 ```
 
-# Factory Bean
-
-[org.springframework.beans.factory.FactoryBean](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/FactoryBean.html) 用于在 IoC 容器中创建其它 bean，该接口定义如下：
-
-```java
-T getObject()  // Return an instance (possibly shared or independent) of the object managed by this factory.
-Class<?> getObjectType()  // Return the type of object that this FactoryBean creates, or null if not known in advance.
-boolean isSingleton()  // Is the object managed by this factory a singleton? That is, will getObject() always return the same object (a reference that can be cached)?
-```
-
-有哪些 `FactoryBean`？例如：
-
-* 当需要从 JNDI 查找对象（例如 `DataSource`）时，可以使用 `JndiObjectFactoryBean`。
-* 当使用 Spring AOP 为 bean 创建代理时，可以使用 `ProxyFactoryBean`。
-* 当需要在 IoC 容器中创建 Hibernate 的 `SessionFactory` 时，可以使用 `LocalSessionFactoryBean`。
-* 当需要在 IoC 容器中创建 MyBatis 的 `SqlSessionFactory` 时，可以使用 `SqlSessionFactoryBean`。
-
-如果要为某个接口生成 JDK 动态代理，且将该代理对象放入 Spring IoC 容器，以便后续依赖注入使用，可以自定义实现 `FactoryBean`：
-
-```java
-/**
- * Xxx 接口
- */
-public interface HttpApiService {
-    HttpRespDTO<XxxRespDTO> api1(XxxReqDTO reqDTO);	
-}
-
-/**
- * Xxx 接口工厂，用于创建代理实现
- */
-@Configuration
-public class HttpApiServiceFactoryBean implements FactoryBean<HttpApiService> {
-
-    private static final Class<?> API_INTERFACE = HttpApiService.class;
-
-    @Override
-    public HttpApiService getObject() {
-        return (HttpApiService) ProxyFactory.newProxyInstance(API_INTERFACE, new HttpApiServiceProxy());
-    }
-
-    @Override
-    public Class<?> getObjectType() {
-        return API_INTERFACE;
-    }
-
-    @Override
-    public boolean isSingleton() {
-        return true;
-    }
-}
-
-/**
- * Xxx 接口动态代理实现
- */
-public class HttpApiServiceProxy implements InvocationHandler {
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        ......
-    }
-}
-```
-
-参考：
-
-《[Spring BeanFactory和FactoryBean的区别](https://www.jianshu.com/p/05c909c9beb0)》
-
-[org.springframework.beans.factory.FactoryBean](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/FactoryBean.html)
-
-[ThreadPoolExecutorFactoryBean](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/concurrent/ThreadPoolExecutorFactoryBean.html)
-
-[LocalSessionFactoryBean](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/orm/hibernate5/LocalSessionFactoryBean.html)
-
-[SqlSessionFactoryBean](https://github.com/mybatis/spring/blob/master/src/main/java/org/mybatis/spring/SqlSessionFactoryBean.java)
-
 # 参考
 
 《[Spring in Action, 4th](https://www.manning.com/books/spring-in-action-fourth-edition)》
@@ -298,7 +225,3 @@ public class HttpApiServiceProxy implements InvocationHandler {
 《[Spring4.x高级话题(六):@Enable*注解的工作原理](http://blog.longjiazuo.com/archives/1366)》
 
 《[How those Spring @Enable* Annotations work](http://blog.fawnanddoug.com/2012/08/how-those-spring-enable-annotations-work.html)》
-
-```
-
-```

@@ -1,11 +1,11 @@
 ---
-title: Spring Bean 条件化配置总结
-date: 2017-06-05 23:29:06
+title: Spring Boot 条件化注解总结
+date: 2017-09-05 23:29:06
 updated:
 tags: [Java, Spring]
 ---
 
-# Spring 4.0 的条件化注解
+# Spring 4.0 引入的条件化注解
 
 > 假设你希望一个或多个 bean 只有在应用的类路径下包含特定的库时才创建。或者我们希望某个 bean 只有当另外某个特定的 bean 也声明了之后才会创建。我们还可能要求只有某个特定的环境变量设置之后，才会创建某个 bean。
 > 在 Spring 4 之前，很难实现这种级别的条件化配置，但是 Spring 4 引入了一个新的 `@Conditional` 注解，它可以用到带有 `@Bean` 注解的方法上。如果给定的条件计算结果为 `true`，就会创建这个 bean，否则的话，这个 bean 会被忽略。
