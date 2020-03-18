@@ -89,7 +89,7 @@ Stream<Integer> stream7 = Stream.concat(Stream.of(1, 2), Stream.of(3, 4, 5));
 
 一个流有且只能有一个终结操作，当这个操作执行后，流就被关闭，无法再被操作了。
 
-# 示例
+# 例子
 
 ## 分组统计
 
@@ -131,6 +131,61 @@ Map<String, Optional<Pair<String, Integer>>> min = peoples.stream()
 Map<String, IntSummaryStatistics> summary = peoples.stream()
     .collect(Collectors.groupingBy(Pair::getKey, Collectors.summarizingInt(Pair::getValue)));
 ```
+
+## 获取列表索引
+
+`forEach` 方法入参缺少列表索引，无法实现某些场景下的特殊需求：
+
+```Java
+elements.forEach(element -> downloadFile(element));
+```
+
+解决方案一，通过 `IntStream` 获取索引 index：
+
+```Java
+IntStream.range(0, elements.size())
+        .forEach(index -> downloadFile(elements.get(index), index));
+```
+
+解决方案二，自定义工具类通过 `BiConsumer` 传参，获取索引 index 和元素 element：
+
+```Java
+public class IterateUtil {
+    public static <E> void forEach(
+            Iterable<? extends E> elements, BiConsumer<Integer, ? super E> action) {
+        Objects.requireNonNull(elements);
+        Objects.requireNonNull(action);
+
+        int index = 0;
+        for (E element : elements) {
+            action.accept(index++, element);
+        }
+    }
+}
+
+// 使用方式
+IterateUtil.forEach(
+    elements, 
+    (index, element) -> downloadFile(element, index)
+);
+```
+
+## 数组转换
+
+```Java
+int[] arr = IntStream.of(1, 2, 3, 4, 5).toArray();
+```
+
+```Java
+Object[] objects = Stream.of(1, 2, 3, 4, 5).toArray();
+Integer[] integers = Stream.of(1, 2, 3, 4, 5).toArray(Integer[]::new);
+```
+
+## 异常处理
+
+《[Exceptions in Java 8 Lambda Expressions](https://www.baeldung.com/java-lambda-exceptions)》
+
+《[Stream 中异常处理的四种方式](https://www.jianshu.com/p/597a7ccfec25)》
 
 # 参考
 

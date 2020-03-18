@@ -1,5 +1,5 @@
 ---
-title: Java 8 函数式编程系列（一）基础总结
+title: Java 8 函数式编程系列（一）Lambda 表达式总结
 date: 2019-05-07 15:43:19
 updated:
 tags: Java
@@ -15,22 +15,6 @@ Lambda 表达式总结：
 Java 8 为函数式编程新增的重点 API：
 
 ![api](/img/java/lambda/api.png)
-
-# 方法引用
-
-特点：
-
-- 通过方法的名字来指向一个方法
-- 方法引用使用一对冒号 `::`
-- 可以使语言的构造更紧凑简洁，减少冗余代码，尤其是 Lambda 表达式
-
-| 方法引用类型 | 范例                     | Lambda 表达式                                              |
-| ------------ | ------------------------ | ---------------------------------------------------------- |
-| 静态         | `Integer::parseInt`      | `str -> Integer.parseInt(str)`                             |
-| 有限制       | `Instant.now()::isAfter` | `Instant then = Instant.now();`<br/>`t -> then.isAfter(t)` |
-| 无限制       | `String::toLowerCase`    | `str -> str.toLowerCase()`                                 |
-| 类构造器     | `TreeMap<K, V>::new`     | `() -> new TreeMap<K, V>`                                  |
-| 数组构造器   | `int[]::new`             | `len -> new int[len]`                                      |
 
 # 函数式接口
 
@@ -74,6 +58,196 @@ JDK 8 新增了 9 组共 43 个通用型函数式接口，位于 `java.util.func
 * 函数式接口里允许定义默认方法，因为默认方法不是抽象方法，其有一个默认实现，所以是符合函数式接口的定义的。
 * 函数式接口里允许定义静态方法，因为静态方法不能是抽象方法，是一个已经实现了的方法，所以是符合函数式接口的定义的。
 * 函数式接口里允许定义 `java.lang.Object` 里的 `public` 方法。
+
+# 方法引用
+
+方法引用通过方法的名字来指向一个方法，可以使语言的构造更紧凑简洁，进一步减少冗余代码，尤其是 Lambda 表达式。
+
+方法引用使用一对冒号 `::`。
+
+下面对比下方法引用简化 Lambda 表达式的例子：
+
+| 方法引用类型 | 方法引用范例             | Lambda 表达式                                              |
+| ------------ | ------------------------ | ---------------------------------------------------------- |
+| 静态         | `Integer::parseInt`      | `str -> Integer.parseInt(str)`                             |
+| 有限制       | `Instant.now()::isAfter` | `Instant then = Instant.now();`<br/>`t -> then.isAfter(t)` |
+| 无限制       | `String::toLowerCase`    | `str -> str.toLowerCase()`                                 |
+| 类构造器     | `TreeMap<K, V>::new`     | `() -> new TreeMap<K, V>`                                  |
+| 数组构造器   | `int[]::new`             | `len -> new int[len]`                                      |
+
+# 例子
+
+这里对比 JavaScript 和 Java 两门语言的例子，方便对比学习。
+
+## JavaScript 箭头函数
+
+在 JavaScript 语言中，**函数是一等公民**（参考[为何钟爱一等公民]([https://llh911001.gitbooks.io/mostly-adequate-guide-chinese/content/ch2.html#%E4%B8%BA%E4%BD%95%E9%92%9F%E7%88%B1%E4%B8%80%E7%AD%89%E5%85%AC%E6%B0%91](https://llh911001.gitbooks.io/mostly-adequate-guide-chinese/content/ch2.html#为何钟爱一等公民))、[知乎](https://www.zhihu.com/question/67652709)）。ES6 新特性允许使用“箭头”（`=>`）定义函数，语法简洁，使用如下：
+
+没有参数，需要空括号：
+
+```JavaScript
+var f = () => 5;
+
+// 等同于
+var f = function () { return 5 };
+
+// 5
+var result = f();
+```
+
+一个参数，无需括号：
+
+```JavaScript
+var f = v => v;
+
+// 等同于
+var f = function (v) { return v; };
+
+// 10
+var result = f(10);
+```
+
+多个参数，需要括号：
+
+```JavaScript
+var sum = (num1, num2) => num1 + num2;
+
+// 等同于
+var sum = function(num1, num2) { return num1 + num2; };
+
+// 20
+var result = sum(10, 10);
+```
+
+
+
+箭头函数的一个用处是**简化回调函数**：
+
+例子 1：
+
+```JavaScript
+// 正常函数写法
+[1, 2, 3].forEach(function (x) {
+  console.log(x);
+})
+
+// 箭头函数写法，结果 1 2 3
+[1, 2, 3].forEach(x => console.log(x));
+```
+
+例子 2：
+
+```JavaScript
+// 正常函数写法
+var result = [1, 2, 3].map(function (x) {
+  return x * x;
+});
+
+// 箭头函数写法，结果 [1, 4, 9]
+var result = [1, 2, 3].map(x => x * x);
+```
+
+例子 3：
+
+```JavaScript
+// 正常函数写法
+var result = [2, 3, 1].sort(function (a, b) {
+  return a - b;
+});
+
+// 箭头函数写法，结果 [1, 2, 3]
+var result = [2, 3, 1].sort((a, b) => a - b);
+```
+
+例子 4：
+
+```JavaScript
+// 正常函数写法
+var result = [1, 2, 3].filter(function (x) {
+  return x > 1;
+});
+
+// 箭头函数写法，结果 [2, 3]
+var result = [1, 2, 3].filter(x => x > 1);
+```
+
+## Java Lambda 表达式
+
+然而在 Java 语言中，函数并非一等公民。但可以利用 Lambda 表达式 + 函数式接口来模拟 JavaScript 类似的语法，对比如下：
+
+没有参数，需要空括号：
+
+```Java
+IntSupplier f = () -> 5;
+
+// 5
+int result = f.getAsInt();
+```
+
+一个参数，无需括号：
+
+```Java
+ToIntFunction<Integer> f = i -> i;
+
+// 10
+int result = f.applyAsInt(10);
+```
+
+多个参数，需要括号：
+
+```Java
+IntBinaryOperator sum = (num1, num2) -> num1 + num2;
+
+// 使用方法引用进一步简化语法
+// IntBinaryOperator sum = Integer::sum;
+
+// 20
+int result = sum.applyAsInt(10, 10);
+```
+
+
+
+Lambda 表达式同样可以**简化回调函数**：
+
+例子 1：
+
+```Java
+// 1 2 3
+IntStream.of(1, 2, 3).forEach(x -> System.out.println(x));
+
+// 使用方法引用进一步简化语法
+// IntStream.of(1, 2, 3).forEach(System.out::println);
+```
+
+例子 2：
+
+```Java
+// [1, 4, 9]
+int[] result = IntStream.of(1, 2, 3).map(x -> x * x).toArray();
+```
+
+例子 3：
+
+```Java
+// [1, 2, 3]
+int[] result = Stream.of(2, 3, 1)
+    .sorted((a, b) -> a - b)
+    .mapToInt(Integer::intValue)
+    .toArray();
+
+// 使用方法引用进一步简化语法
+// int[] result = Stream.of(2, 3, 1)
+//     .sorted(Comparator.naturalOrder())
+//     .mapToInt(Integer::intValue)
+//     .toArray();
+```
+
+例子 4：
+
+```Java
+// [2, 3]
+int[] result = IntStream.of(1, 2, 3).filter(x -> x > 1).toArray();
+```
 
 # 使用场景
 
