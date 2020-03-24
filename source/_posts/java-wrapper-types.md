@@ -147,6 +147,13 @@ System.out.println(sum);
 
 # 进制转换
 
+|          | 英文简写 | 字面量前缀 | 备注                                                         |
+| -------- | -------- | ---------- | ------------------------------------------------------------ |
+| 十六进制 | `HEX`    | `0X`、`0x` |                                                              |
+| 十进制   | `DEC`    | 无         |                                                              |
+| 八进制   | `OCT`    | `0`        |                                                              |
+| 二进制   | `BIN`    | `0B`、`0b` | 参考[官方文档](https://docs.oracle.com/javase/7/docs/technotes/guides/language/binary-literals.html) |
+
 ```java
 // 十进制转成二进制：11111111
 Integer.toBinaryString(255);
