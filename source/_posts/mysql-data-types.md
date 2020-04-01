@@ -1,6 +1,6 @@
 ---
 title: MySQL 常用数据类型
-date: 2018-02-05 22:27:21
+date: 2018-01-05 22:27:21
 updated:
 tags: MySQL
 typora-root-url: ..

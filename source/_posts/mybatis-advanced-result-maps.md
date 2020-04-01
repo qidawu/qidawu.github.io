@@ -1,6 +1,6 @@
 ---
 title: Java 数据持久化系列（七）MyBatis 高级结果映射
-date: 2019-03-27 22:54:24
+date: 2018-03-27 22:54:24
 updated:
 tags: Java
 typora-root-url: ..

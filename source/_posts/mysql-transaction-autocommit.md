@@ -1,6 +1,6 @@
 ---
 title: MySQL 事务自动提交机制总结
-date: 2018-10-27 23:39:16
+date: 2019-03-27 23:39:16
 updated:
 tags: MySQL
 ---

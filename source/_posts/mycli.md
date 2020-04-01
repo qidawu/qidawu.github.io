@@ -1,6 +1,6 @@
 ---
 title: MyCli：支持自动补全和语法高亮的 MySQL 客户端
-date: 2017-04-29 00:05:01
+date: 2017-03-02 00:05:01
 updated:
 tags: MySQL
 ---

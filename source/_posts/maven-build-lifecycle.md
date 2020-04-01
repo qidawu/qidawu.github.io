@@ -1,6 +1,6 @@
 ---
 title: Maven 实战系列（四）构建生命周期
-date: 2018-05-01 22:47:42
+date: 2017-05-01 22:47:42
 updated:
 tags: Java
 ---
