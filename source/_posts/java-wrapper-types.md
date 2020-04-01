@@ -39,16 +39,16 @@ System.out.println(("e == f is " + (e == f)));  // e == f is false
 
 Java 语言提供了八种基本类型。其中包括六种数字类型（四个整数型，两个浮点型），一种字符类型，还有一种布尔型。这些基本类型（primitive type）都有对应的包装类型（boxed primitive type），具有类的特性。基本类型和包装类型之间的转换通过装箱和拆箱方法：
 
-| 基本数据类型 | 存储空间 | 对应的包装类 | 拆箱方法         | 装箱方法           | 缓存范围                |
-| ------------ | -------- | ------------ | ---------------- | ------------------ | ----------------------- |
-| `byte`       | 8 bit    | `Byte`       | `byteValue()`    | `valueOf(byte)`    | -128~127                |
-| `short`      | 16 bit   | `Short`      | `shortValue()`   | `valueOf(short)`   | -128~127                |
-| `int`        | 32 bit   | `Integer`    | `intValue()`     | `valueOf(int)`     | -128~127                |
-| `long`       | 64 bit   | `Long`       | `longValue()`    | `valueOf(long)`    | -128~127                |
-| `float`      | 32 bit   | `Float`      | `floatValue()`   | `valueOf(float)`   |                         |
-| `double`     | 64 bit   | `Double`     | `doubleValue()`  | `valueOf(double)`  |                         |
-| `boolean`    | 1 bit    | `Boolean`    | `booleanValue()` | `valueOf(boolean)` | true & false            |
-| `char`       | 16 bit   | `Character`  | `charValue()`    | `valueOf(char)`    | \u005Cu0000~\u005Cu007F |
+| 基本数据类型 | 对应的包装类 | 拆箱方法         | 装箱方法           | 存储空间 | 取值范围     | 缓存范围                |
+| ------------ | ------------ | ---------------- | ------------------ | -------- | ------------ | ----------------------- |
+| `byte`       | `Byte`       | `byteValue()`    | `valueOf(byte)`    | 8 bit    | -2^7~2^7-1   | -2^7~2^7-1              |
+| `short`      | `Short`      | `shortValue()`   | `valueOf(short)`   | 16 bit   | -2^15~2^15-1 | -2^7~2^7-1              |
+| `int`        | `Integer`    | `intValue()`     | `valueOf(int)`     | 32 bit   | -2^31~2^31-1 | -2^7~2^7-1              |
+| `long`       | `Long`       | `longValue()`    | `valueOf(long)`    | 64 bit   | -2^63~2^63-1 | -2^7~2^7-1              |
+| `float`      | `Float`      | `floatValue()`   | `valueOf(float)`   | 32 bit   |              |                         |
+| `double`     | `Double`     | `doubleValue()`  | `valueOf(double)`  | 64 bit   |              |                         |
+| `boolean`    | `Boolean`    | `booleanValue()` | `valueOf(boolean)` | 1 bit    |              | true & false            |
+| `char`       | `Character`  | `charValue()`    | `valueOf(char)`    | 16 bit   |              | \u005Cu0000~\u005Cu007F |
 
 其中数字类型的拆箱方法由共同的父类 `java.lang.Number` 定义：
 

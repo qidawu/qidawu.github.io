@@ -218,8 +218,14 @@ public final class Instant
 通过静态工厂方法创建实例：
 
 ```java
+// 自 1970-01-01T00:00:00Z 之后经过的毫秒数
+// 1970-01-01T00:00:01.000Z
 Instant instant = Instant.ofEpochMilli(1000);
-Instant instant1 = Instant.ofEpochSecond(0);
+
+// // 自 1970-01-01T00:00:00Z 之后经过的秒数
+// 1970-01-01T00:00:01Z
+Instant instant1 = Instant.ofEpochSecond(1);
+
 Instant instant2 = Instant.now();
 ```
 
