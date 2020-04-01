@@ -1,13 +1,13 @@
 ---
-title: Tomcat 容器如何查找类？
-date: 2019-01-06 01:11:40
+title: Java 类加载篇（三）Tomcat 容器如何查找类？
+date: 2018-11-06 01:11:40
 updated:
 tags: Java
 ---
 
 # catalina.sh
 
-catalina.sh 中有一段 CLASSPATH 的代码：
+`catalina.sh` 脚本中有一段 `CLASSPATH` 的代码：
 
 ```bash
 # Ensure that any user defined CLASSPATH variables are not used on startup,
