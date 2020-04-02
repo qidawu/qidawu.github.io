@@ -1,6 +1,6 @@
 ---
-title: Redis 常用数据结构及其使用场景总结
-date: 2019-06-02 17:13:35
+title: Redis 实战系列（一）常用数据结构及使用场景总结
+date: 2019-06-05 17:13:35
 updated:
 tags: Redis
 typora-root-url: ..
