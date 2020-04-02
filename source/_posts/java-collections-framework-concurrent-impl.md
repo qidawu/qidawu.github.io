@@ -176,13 +176,44 @@ synchronizedNavigableMap
 
 ## 队列
 
-有两种并发队列实现，阻塞式、非阻塞式：
+`Queue` 的常用方法差别如下：
+
+|             | *Throws exception*                                           | *Returns special value*                                      |
+| ----------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| **Insert**  | [`add(e)`](https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html#add-E-) | [`offer(e)`](https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html#offer-E-) |
+| **Remove**  | [`remove()`](https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html#remove--) | [`poll()`](https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html#poll--) |
+| **Examine** | [`element()`](https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html#element--) | [`peek()`](https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html#peek--) |
+
+有两种并发队列实现，阻塞队列、并发队列（非阻塞式）：
 
 ![Queue_implementations](/img/java/collection/queue_impl.png)
 
 ### 阻塞队列
 
-阻塞队列实现：
+`BlockingQueue` 的常用方法差别如下：
+
+|             | *Throws exception*                                           | *Returns Special value*                                      | *Blocks*                                                     | *Times out*                                                  |
+| ----------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| **Insert**  | [`add(e)`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html#add-E-) | [`offer(e)`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html#offer-E-) | [`put(e)`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html#put-E-) | [`offer(e, time, unit)`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html#offer-E-long-java.util.concurrent.TimeUnit-) |
+| **Remove**  | [`remove()`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html#remove-java.lang.Object-) | [`poll()`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html#poll-long-java.util.concurrent.TimeUnit-) | [`take()`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html#take--) | [`poll(time, unit)`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html#poll-long-java.util.concurrent.TimeUnit-) |
+| **Examine** | [`element()`](https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html#element--) | [`peek()`](https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html#peek--) | *not applicable*                                             | *not applicable*                                             |
+
+阻塞队列的几种常用实现如下：
+
+有界队列（数组实现）：
+
+- `ArrayBlockingQueue`，基于数组实现的有界阻塞队列。
+
+无界队列（链表实现）：
+
+- `LinkedBlockingQueue`，基于链表实现的可选无界阻塞队列。默认用于 `Executors.newFixedThreadPool(...)` 和 `newSingleThreadExecutor(...)`。
+- `LinkedTransferQueue`
+- `PriorityBlockingQueue`，基于堆实现（底层是数组）的具有优先级的无界阻塞队列。
+- `DelayedQueue`
+
+无容量队列：
+
+- `SynchronousQueue`，无容量阻塞队列，每个插入操作都必须等待另一个线程的移除操作，反之亦然。默认用于 `Executors.newCachedThreadPool(...)`。
 
 ![BlockingQueue](/img/java/collection/BlockingQueue_implementations.png)
 

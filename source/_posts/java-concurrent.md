@@ -373,37 +373,7 @@ public ThreadPoolExecutor(int corePoolSize,
 
 ### 阻塞队列
 
-阻塞队列用于保存等待执行的任务。有下面几种常用队列：
-
-* `ArrayBlockingQueue`，基于数组结构的有界阻塞队列，FIFO。
-* `LinkedBlockingQueue`，基于链表结构的阻塞队列，FIFO，吞吐量大于上者。默认用于 `Executors.newFixedThreadPool(...)` 和 `newSingleThreadExecutor(...)`。
-* `SynchronousQueue`，无容量阻塞队列，每个插入操作都必须等待另一个线程的移除操作，反之亦然。默认用于 `Executors.newCachedThreadPool(...)`。
-* `DelayedWorkQueue`，默认用于 `Executors.newScheduledThreadPool(...)`。
-* `PriorityBlockingQueue`，一个具有优先级的无界阻塞队列。
-
-![BlockingQueue](/img/java/collection/BlockingQueue_implementations.png)
-
-创建线程池时，可以通过根据队列容量入参创建相应的阻塞队列：
-
-![BlockingQueue_creating](/img/java/collection/BlockingQueue_creating.png)
-
-通过 `BlockingQueue` 接口可以实现更多排队策略：
-
-```java
-public interface BlockingQueue<E> extends Queue<E> {
-    boolean add(E e);
-    boolean offer(E e);
-    void put(E e) throws InterruptedException;
-    boolean offer(E e, long timeout, TimeUnit unit) throws InterruptedException;
-    E take() throws InterruptedException;
-    E poll(long timeout, TimeUnit unit) throws InterruptedException;
-    int remainingCapacity();
-    boolean remove(Object o);
-    public boolean contains(Object o);
-    int drainTo(Collection<? super E> c);
-    int drainTo(Collection<? super E> c, int maxElements);
-}
-```
+阻塞队列的使用详见另一篇《Java 集合框架系列（三）并发实现总结》。
 
 ### 拒绝策略
 

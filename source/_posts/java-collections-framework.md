@@ -30,6 +30,10 @@ typora-root-url: ..
 
 ![Collection](/img/java/collection/Collection.png)
 
+五个重点接口的方法及使用要点如下：
+
+![methods_of_collection](/img/java/collection/methods_of_collection.png)
+
 ## Map
 
 其它集合接口基于 `java.util.Map`，不是真正的集合。但是，这些接口包含集合视图（*collection-view*）操作，使得它们可以作为集合进行操作。
@@ -59,8 +63,8 @@ typora-root-url: ..
 |         | **Resizable Array**                                          | **Linked List**                                              | **Hash Table**                                               | **Hash Table + Linked List**                                 | **Balanced Tree**                                            | **Heap**                                                     |
 | ------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | `List`  | [`ArrayList`](https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html) | [`LinkedList`](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html) |                                                              |                                                              |                                                              |                                                              |
-| `Queue` |                                                              |                                                              |                                                              |                                                              |                                                              | [`PriorityQueue`](https://docs.oracle.com/javase/8/docs/api/java/util/PriorityQueue.html) |
-| `Deque` | [`ArrayDeque`](https://docs.oracle.com/javase/8/docs/api/java/util/ArrayDeque.html) | [`LinkedList`](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html) |                                                              |                                                              |                                                              |                                                              |
+| `Queue` | `ArrayBlockingQueue`                                         | [`LinkedList`](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html)<br/>`LinkedBlockingQueue`<br/>`LinkedTransferQueue`<br/>`ConcurrentLinkedQueue` |                                                              |                                                              |                                                              | `PriorityBlockingQueue`<br/>[`PriorityQueue`](https://docs.oracle.com/javase/8/docs/api/java/util/PriorityQueue.html) |
+| `Deque` | [`ArrayDeque`](https://docs.oracle.com/javase/8/docs/api/java/util/ArrayDeque.html) | [`LinkedList`](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html)<br/>`LinkedBlockingDeque`<br/>`ConcurrentLinkedDeque` |                                                              |                                                              |                                                              |                                                              |
 | `Set`   |                                                              |                                                              | [`HashSet`](https://docs.oracle.com/javase/8/docs/api/java/util/HashSet.html) | [`LinkedHashSet`](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashSet.html) | [`TreeSet`](https://docs.oracle.com/javase/8/docs/api/java/util/TreeSet.html) |                                                              |
 | `Map`   |                                                              |                                                              | [`HashMap`](https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html) | [`LinkedHashMap`](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html) | [`TreeMap`](https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html) |                                                              |
 
