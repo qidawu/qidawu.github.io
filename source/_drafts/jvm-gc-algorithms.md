@@ -1,5 +1,5 @@
 ---
-title: Java 虚拟机系列（二）垃圾回收总结
+title: Java 虚拟机系列（四）垃圾回收总结
 date: 2019-09-05 23:22:23
 updated:
 tags: Java

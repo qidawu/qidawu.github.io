@@ -198,10 +198,6 @@ Full thread dump Java HotSpot(TM) 64-Bit Server VM (24.79-b02 mixed mode):
 
 该例子中导出的 `/tmp/localfile` 文件异常大，里面有大量 `java.lang.Thread.State: WAITING (parking)` 状态的线程，导致 O 区内存被占满，根据堆栈可以定位到具体的问题代码，可以初步判断是 HTTP 连接耗尽资源导致的问题。
 
-# 图形化工具
-
-## JVisualVM
-
 # 参考
 
 《[JVM性能调优监控工具jps、jstack、jmap、jhat、jstat、hprof使用详解](https://my.oschina.net/feichexia/blog/196575)》
