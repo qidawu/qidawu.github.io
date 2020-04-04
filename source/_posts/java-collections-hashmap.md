@@ -828,6 +828,72 @@ map.forEach((key, value) -> {});
 
 ![map_entryset](/img/java/collection/map_entryset.png)
 
+## Java 8 新增方法
+
+Java 8 为 `Map` 接口引入了一组新的 `default` 默认方法，如下：
+
+```Java
+java.util.Map#forEach
+java.util.Map#remove(java.lang.Object, java.lang.Object)
+java.util.Map#replace
+java.util.Map#replaceAll
+java.util.Map#getOrDefault
+java.util.Map#putIfAbsent
+java.util.Map#computeIfAbsent
+java.util.Map#computeIfPresent
+java.util.Map#compute
+java.util.Map#merge
+```
+
+我们重点看下其中几个，
+
+`putIfAbsent` 和 `computeIfAbsent`：
+
+```Java
+Map<Integer, Integer> ipStats = new HashMap<>();
+
+// previousValue is null
+Integer previousValue = ipStats.putIfAbsent(100000000, 1);
+
+// currentValue is 1
+Integer currentValue = ipStats.computeIfAbsent(200000000, key -> {
+    // key = 200000000
+    log.info("key = {}", key);
+    return 1;
+});
+```
+
+`computeIfPresent` ：
+
+```Java
+// newValue is 2
+Integer newValue = ipStats.computeIfPresent(200000000, (key, oldValue) -> {
+    // key = 200000000, oldValue = 1
+    log.info("key = {}, oldValue = {}", key, oldValue);
+    return oldValue += 1;
+});
+```
+
+使用 `compute` 实现类似 Redis 散列表的原子递增命令 `HINCRBY` key field increment 的效果：
+
+```Java
+// newValue2 is 1
+Integer newValue2 = ipStats.compute(300000000, (key, oldValue) -> {
+    if (oldValue == null) {
+        return 1;
+    } else {
+        return oldValue += 1;
+    }
+});
+```
+
+最终结果：
+
+```Java
+// result is {300000000=1, 100000000=1, 200000000=2}
+log.info("result is {}", ipStats.toString());
+```
+
 # 参考
 
 https://docs.oracle.com/javase/8/docs/api/index.html
