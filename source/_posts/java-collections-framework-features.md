@@ -171,6 +171,8 @@ ImmutableSortedSetFauxverideShim
 ImmutableTable
 ```
 
+![immutable_collections](/img/java/collection/immutable_collections.PNG)
+
 使用如下：
 
 ```java
