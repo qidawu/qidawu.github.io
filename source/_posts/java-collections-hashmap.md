@@ -356,18 +356,13 @@ typora-root-url: ..
 
 ## hash
 
-整个散列函数的整体过程如下：
+在 `HashMap` 源码中，散列函数是分三步走的：
 
-```java
-int hash(Object key) {
-    int h = key.hashCode()；
-    return (h ^ (h >>> 16)) & (capitity - 1); //capicity 表示散列表的大小
-}
-```
+第一步，获取 `hashcode`。`hashCode` 需要遵循以下规则：
 
-在 `HashMap` 源码中，是分两步走的：
+![equals_and_hashcode](/img/java/collection/equals_and_hashcode.png)
 
-第一步，hash 值的计算，源码如下：
+第二步，hash 值的计算，源码如下：
 
 ```java
     /**
@@ -394,11 +389,7 @@ int hash(Object key) {
 
 该函数也叫扰动函数：先获取 32 位长度的 hashCode，再进行高 16 位与低 16 位异或，在低位加入高位特征，目的是减少碰撞冲突的概率。
 
-其中，`hashCode` 需要遵循以下规则：
-
-![equals_and_hashcode](/img/java/collection/equals_and_hashcode.png)
-
-第二步，在更新、插入或删除的时候，计算 Key 被映射到的桶的位置：
+第三步，在更新、插入或删除的时候，计算 Key 被映射到的桶的位置：
 
 ```java
 // capacity 表示 table.length
@@ -409,21 +400,31 @@ int index = hash(key) & (capacity - 1)
 
 总结：
 
-> JDK HashMap中hash函数的设计，确实很巧妙：
+> JDK HashMap 中 hash 函数的设计，确实很巧妙：
 >
-> 首先hashcode本身是个32位整型值，在系统中，这个值对于不同的对象必须保证唯一（JAVA规范），这也是大家常说的，重写equals必须重写hashcode的重要原因。
+> 首先 hashcode 本身是个 32 位整型值，在系统中，这个值对于不同的对象必须保证唯一（JAVA 规范），这也是大家常说的，重写 equals 必须重写 hashcode 的重要原因。
 >
-> 获取对象的hashcode以后，先进行移位运算，然后再和自己做异或运算，即：hashcode ^ (hashcode >>> 16)，这一步甚是巧妙，是将高16位移到低16位，这样计算出来的整型值将“具有”高位和低位的性质。
+> 获取对象的 hashcode 以后，先进行移位运算，然后再和自己做异或运算，即：hashcode ^ (hashcode >>> 16)，这一步甚是巧妙，是将高 16 位移到低 16 位，这样计算出来的整型值将“具有”高位和低位的性质。
 >
-> 最后，用hash表当前的容量减去一，再和刚刚计算出来的整型值做位与运算。进行位与运算，很好理解，是为了计算出数组中的位置。但这里有个问题：
+> 最后，用 hash 表当前的容量减去一，再和刚刚计算出来的整型值做位与运算。进行位与运算，很好理解，是为了计算出数组中的位置。但这里有个问题：
 >
 > 为什么要用容量减去一？
 >
-> 因为 A % B = A & (B - 1)，注意这个公式只有当B为2的幂次方时才有效，所以HashMap中的数组容量要求必须是2的幂次方。
+> 因为 A % B = A & (B - 1)，注意这个公式只有当 B 为 2 的幂次方时才有效，所以 HashMap 中的数组容量要求必须是 2 的幂次方。
 >
 > 最后，(h ^ (h >>> 16)) & (capitity -1) = (h ^ (h >>> 16)) % capitity，可以看出这里本质上是使用了「除留余数法」
 >
-> 综上，可以看出，hashcode的随机性，加上移位异或算法，得到一个非常随机的hash值，再通过「除留余数法」，得到index
+> 综上，可以看出，hashcode 的随机性，加上移位异或算法，得到一个非常随机的 hash 值，再通过「除留余数法」，得到 index。
+
+整个散列函数的整体过程如下：
+
+```java
+int hash(Object key) {
+    int h = key.hashCode();
+    h = h ^ (h >>> 16);
+    return h & (capitity - 1); //capicity 表示散列表的大小
+}
+```
 
 ## resize
 
@@ -445,6 +446,10 @@ int index = hash(key) & (capacity - 1)
 ```
 
 ## putVal
+
+`putVal` 的核心流程如下：
+
+![putval_of_hashmap](/img/java/collection/putval_of_hashmap.png)
 
 一些关键代码分析：
 
@@ -468,9 +473,9 @@ int index = hash(key) & (capacity - 1)
     final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
                    boolean evict) {
         // tab 表示底层数组
+        // p 表示头结点
         // n 表示数组长度
         // i 表示数组下标
-        // p 表示头结点
         Node<K,V>[] tab; Node<K,V> p; int n, i;
         // 节点数组为空，则首次初始化
         if ((tab = table) == null || (n = tab.length) == 0)
@@ -650,6 +655,8 @@ int index = hash(key) & (capacity - 1)
 # 常用方法
 
 ## 设值
+
+主要使用到了关键的 `hash`、`putVal`、`resize` 方法：
 
 ```java
     @Override
