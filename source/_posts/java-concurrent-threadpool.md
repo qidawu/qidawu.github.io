@@ -34,49 +34,6 @@ typora-root-url: ..
 
 ![ThreadPoolExecutor](/img/java/concurrent/Executor.png)
 
-`Executor` 接口提供 `execute()` 方法用于执行异步任务：
-
-```java
-public interface Executor {
-    void execute(Runnable command);
-}
-```
-
-`ExecutorService` 接口提供了一些管理线程池和执行任务的方法：
-
-```java
-public interface ExecutorService extends Executor {
-    // 关闭线程池，队列已经存在的任务可以继续执行
-    void shutdown();
-    
-    // 关闭线程池，中断未执行的任务
-    List<Runnable> shutdownNow();
-    
-    // 判断线程池是否关闭
-    boolean isShutdown();
-    
-    // 判断线程池是否终止
-    boolean isTerminated();
-    
-    // 设置超时终止
-    boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException;
-    
-    // 提交 Callable 任务，返回 Future 结果
-    <T> Future<T> submit(Callable<T> task);
-    
-    // 提交 Runable 任务，返回 Future 结果
-    <T> Future<T> submit(Runnable task, T result);
-    
-    // 提交 Runnable 任务
-    Future<?> submit(Runnable task);
-    
-    <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException;
-    <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException;
-    <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException;
-    <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException;
-}
-```
-
 `ThreadPoolExecutor` 类的成员变量：
 
 ```java
@@ -165,6 +122,47 @@ private static final RejectedExecutionHandler defaultHandler =
 private static final RuntimePermission shutdownPerm =
     new RuntimePermission("modifyThread");
 ```
+
+## 重要属性
+
+作为一个线程池，有两个关键属性：
+
+* 线程池状态 `runState`
+* 工作线程数 `workerCnt`
+
+这两个关键属性保存在名为 `ctl` 的 `AtomicInteger` 类型属性之中，高 3 位表示 `runState`，低 29 位表示 `workerCnt`，如下：
+
+![ctl_of_thread_pool](/img/java/concurrent/ctl_of_thread_pool.png)
+
+为什么要用 3 位来表示线程池的状态呢，原因是线程池一共有 5 种状态，而 2 位只能表示出 4 种情况，所以至少需要 3 位才能表示得了 5 种状态，如下：
+
+```
+runState workerCnt                       runState workerCnt
+     000 00000000000000000000000000000   SHUTDOWN empty
+‭‭     001 00000000000000000000000000000       STOP empty
+     010 00000000000000000000000000000    TIDYING empty
+     ‭011 00000000000000000000000000000‬ TERMINATED empty
+     111 00000000000000000000000000000    RUNNING empty
+‭     111 11111111111111111111111111111    RUNNING full
+```
+
+### 线程池状态
+
+线程池状态用于标识线程池内部的一些运行情况，线程池的开启到关闭的过程就是线程池状态的一个流转的过程。
+
+线程池共有五种状态：
+
+![status_of_thread_pool](/img/java/concurrent/status_of_thread_pool.png)
+
+| 状态         | 含义                                                         |
+| :----------- | :----------------------------------------------------------- |
+| `RUNNING`    | 运行状态，该状态下线程池可以接受新的任务，也可以处理阻塞队列中的任务。<br/>执行 `shutdown` 方法可进入 `SHUTDOWN` 状态。<br/>执行 `shutdownNow` 方法可进入 `STOP` 状态。 |
+| `SHUTDOWN`   | 待关闭状态，不再接受新的任务，继续处理阻塞队列中的任务。<br/>当阻塞队列中的任务为空，并且工作线程数为 0 时，进入 `TIDYING` 状态。 |
+| `STOP`       | 停止状态，不接收新任务，也不处理阻塞队列中的任务，并且会尝试结束执行中的任务。<br/>当工作线程数为 0 时，进入 `TIDYING` 状态。 |
+| `TIDYING`    | 整理状态，此时任务都已经执行完毕，并且也没有工作线程 执行 `terminated` 方法后进入 `TERMINATED` 状态。 |
+| `TERMINATED` | 终止状态，此时线程池完全终止了，并完成了所有资源的释放。     |
+
+### 线程数
 
 ## 执行流程
 
