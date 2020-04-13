@@ -45,7 +45,7 @@ typora-root-url: ..
 private final AtomicInteger ctl = new AtomicInteger(ctlOf(RUNNING, 0));
 //COUNT_BITS=29
 private static final int COUNT_BITS = Integer.SIZE - 3;
-//理论上线程池最大线程数量CAPACITY=536870911
+//理论上线程池最大线程数量CAPACITY=(2^29)-1，即 536,870,911
 private static final int CAPACITY   = (1 << COUNT_BITS) - 1;
 
 //获取线程池状态
@@ -123,56 +123,7 @@ private static final RuntimePermission shutdownPerm =
     new RuntimePermission("modifyThread");
 ```
 
-## 重要属性
-
-作为一个线程池，有两个关键属性：
-
-* 线程池状态 `runState`
-* 工作线程数 `workerCnt`
-
-这两个关键属性保存在名为 `ctl` 的 `AtomicInteger` 类型属性之中，高 3 位表示 `runState`，低 29 位表示 `workerCnt`，如下：
-
-![ctl_of_thread_pool](/img/java/concurrent/ctl_of_thread_pool.png)
-
-为什么要用 3 位来表示线程池的状态呢，原因是线程池一共有 5 种状态，而 2 位只能表示出 4 种情况，所以至少需要 3 位才能表示得了 5 种状态，如下：
-
-```
-runState workerCnt                       runState workerCnt
-     000 00000000000000000000000000000   SHUTDOWN empty
-‭‭     001 00000000000000000000000000000       STOP empty
-     010 00000000000000000000000000000    TIDYING empty
-     ‭011 00000000000000000000000000000‬ TERMINATED empty
-     111 00000000000000000000000000000    RUNNING empty
-‭     111 11111111111111111111111111111    RUNNING full
-```
-
-### 线程池状态
-
-线程池状态用于标识线程池内部的一些运行情况，线程池的开启到关闭的过程就是线程池状态的一个流转的过程。
-
-线程池共有五种状态：
-
-![status_of_thread_pool](/img/java/concurrent/status_of_thread_pool.png)
-
-| 状态         | 含义                                                         |
-| :----------- | :----------------------------------------------------------- |
-| `RUNNING`    | 运行状态，该状态下线程池可以接受新的任务，也可以处理阻塞队列中的任务。<br/>执行 `shutdown` 方法可进入 `SHUTDOWN` 状态。<br/>执行 `shutdownNow` 方法可进入 `STOP` 状态。 |
-| `SHUTDOWN`   | 待关闭状态，不再接受新的任务，继续处理阻塞队列中的任务。<br/>当阻塞队列中的任务为空，并且工作线程数为 0 时，进入 `TIDYING` 状态。 |
-| `STOP`       | 停止状态，不接收新任务，也不处理阻塞队列中的任务，并且会尝试结束执行中的任务。<br/>当工作线程数为 0 时，进入 `TIDYING` 状态。 |
-| `TIDYING`    | 整理状态，此时任务都已经执行完毕，并且也没有工作线程 执行 `terminated` 方法后进入 `TERMINATED` 状态。 |
-| `TERMINATED` | 终止状态，此时线程池完全终止了，并完成了所有资源的释放。     |
-
-### 线程数
-
-## 执行流程
-
-整体执行流程如下：
-
-![ThreadPoolExecutor](/img/java/concurrent/threadpoolexecutor_process.png)
-
-## 构造方法
-
-`ThreadPoolExecutor` 提供了四个构造方法，以参数最多的为例，理解下各参数的用途：
+`ThreadPoolExecutor` 提供了四个构造方法，以参数最多的为例：
 
 ```java
 public ThreadPoolExecutor(int corePoolSize,
@@ -182,6 +133,7 @@ public ThreadPoolExecutor(int corePoolSize,
                           BlockingQueue<Runnable> workQueue,
                           ThreadFactory threadFactory,
                           RejectedExecutionHandler handler) {
+    // 参数校验
     if (corePoolSize < 0 || maximumPoolSize <= 0 || maximumPoolSize < corePoolSize || keepAliveTime < 0)
         throw new IllegalArgumentException();
     if (workQueue == null || threadFactory == null || handler == null)
@@ -197,11 +149,106 @@ public ThreadPoolExecutor(int corePoolSize,
 }
 ```
 
-### 线程数
+下面分别介绍源码中涉及的重要属性。
 
-- 整个线程池的基本执行过程：创建初始线程 > 线程排队 > 创建扩容线程。
-- `corePoolSize` 用于设置线程池中需保留线程数，即使该线程处于 idle 闲置状态。
-- 如果将 `maximumPoolSize` 设置为基本的无界值（如 Integer.MAX_VALUE），则允许池适应任意数量的并发任务，可能会创建大量的线程，从而导致 OOM。因此要限定 `maximumPoolSize` 的大小。
+## 重要属性
+
+作为一个线程池，有两个关键属性：
+
+* 线程池状态 `runState`
+* 工作线程数 `workerCnt`
+
+这两个关键属性保存在名为 `ctl` 的 `AtomicInteger` 类型属性之中，高 3 位表示 `runState`，低 29 位表示 `workerCnt`，如下：
+
+![ctl](/img/java/concurrent/ctl.png)
+
+为什么要用 3 位来表示线程池的状态呢，原因是线程池一共有 5 种状态，而 2 位只能表示出 4 种情况，所以至少需要 3 位才能表示得了 5 种状态，如下：
+
+```
+runState workerCnt                       runState workerCnt
+     000 00000000000000000000000000000   SHUTDOWN empty
+‭‭     001 00000000000000000000000000000       STOP empty
+     010 00000000000000000000000000000    TIDYING empty
+     ‭011 00000000000000000000000000000‬ TERMINATED empty
+     111 00000000000000000000000000000    RUNNING empty
+‭     111 11111111111111111111111111111    RUNNING full
+```
+
+通过 `ctlOf` 方法初始化 `ctl` 属性：
+
+```Java
+// 初始化ctl
+private static int ctlOf(int rs, int wc) { return rs | wc; }
+
+// 或运算符(|)规则：1|1=1
+//                 1|0=1
+//                 0|1=1
+//                 0|0=0
+// 以初始化参数 ctlOf(RUNNING, 0) 为例：
+  11100000000000000000000000000000
+| 00000000000000000000000000000000
+= 11100000000000000000000000000000
+```
+
+通过 `runStateOf` 方法获取线程池状态 `runState`：
+
+```Java
+// 获取线程池状态
+private static int runStateOf(int c)     { return c & ~CAPACITY; }
+
+// 取反运算符(~)规则：~1=0
+//                   ~0=1
+// 以 c = 111 11111111111111111111111111111（RUNNING full）为例：
+     ~11111111111111111111111111111
+=     00000000000000000000000000000
+& 111 11111111111111111111111111111
+= 111
+```
+
+通过 `workerCountOf` 方法获取工作线程数 `workerCnt`：
+
+```Java
+// 获取工作线程数
+private static int workerCountOf(int c)  { return c & CAPACITY; }
+
+// 与运算符(&)规则：1&1=1
+//                 1&0=0
+//                 0&1=0
+//                 0&0=0
+// 以 c = 111 11111111111111111111111111111（RUNNING full）为例：
+  111 11111111111111111111111111111
+&     11111111111111111111111111111
+=     11111111111111111111111111111
+```
+
+### 线程池状态
+
+线程池状态用于标识线程池内部的一些运行情况，线程池的开启到关闭的过程就是线程池状态的一个流转的过程。
+
+线程池共有五种状态：
+
+![run_state](/img/java/concurrent/run_state.png)
+
+| 状态         | `runState` | 含义                                                         |
+| :----------- | ---------- | :----------------------------------------------------------- |
+| `RUNNING`    | 111        | 运行状态，该状态下线程池可以接受新的任务，也可以处理阻塞队列中的任务。<br/>执行 `shutdown` 方法可进入 `SHUTDOWN` 状态。<br/>执行 `shutdownNow` 方法可进入 `STOP` 状态。 |
+| `SHUTDOWN`   | 000        | 待关闭状态，不再接受新的任务，继续处理阻塞队列中的任务。<br/>当阻塞队列中的任务为空，并且工作线程数为 0 时，进入 `TIDYING` 状态。 |
+| `STOP`       | 001        | 停止状态，不接收新任务，也不处理阻塞队列中的任务，并且会尝试结束执行中的任务。<br/>当工作线程数为 0 时，进入 `TIDYING` 状态。 |
+| `TIDYING`    | 010        | 整理状态，此时任务都已经执行完毕，并且也没有工作线程 执行 `terminated` 方法后进入 `TERMINATED` 状态。 |
+| `TERMINATED` | 011        | 终止状态，此时线程池完全终止了，并完成了所有资源的释放。     |
+
+### 工作线程数
+
+尽管理论上线程池最大线程数量可达 `CAPACITY` 数，但是实际上都会通过 `maximumPoolSize` 限制最大线程数。因此工作线程数 `workerCnt` 的个数可能在 0 至 `maximumPoolSize` 之间变化。
+
+当工作线程的空闲时间达到 `keepAliveTime`，该工作线程会退出，直到工作线程数 `workerCnt` 等于 `corePoolSize`。如果 `allowCoreThreadTimeout` 设置为 `true`，则所有工作线程均会退出。
+
+![worker_count](/img/java/concurrent/worker_count.png)
+
+注意：
+
+- 整个线程池的基本执行过程：创建核心线程（Core Thread） > 任务排队 > 创建临时线程（Temp Thread）。
+- 如果将 `maximumPoolSize` 设置为基本的无界值（如 Integer.MAX_VALUE），可能会创建大量的线程，从而导致 OOM。因此要限定 `maximumPoolSize` 的大小。
 - 如果将 `corePoolSize` 和 `maximumPoolSize` 设置为相同值，则创建了 Fixed 固定大小的线程池。
 
 ### 线程工厂
@@ -211,6 +258,8 @@ public ThreadPoolExecutor(int corePoolSize,
 ### 阻塞队列
 
 阻塞队列的使用详见另一篇《Java 集合框架系列（三）并发实现总结》。
+
+![work_queue](/img/java/concurrent/work_queue.png)
 
 ### 拒绝策略
 
@@ -230,6 +279,12 @@ public interface RejectedExecutionHandler {
     void rejectedExecution(Runnable r, ThreadPoolExecutor executor);
 }
 ```
+
+## 执行流程
+
+`execute` 方法的整体执行流程如下：
+
+![work_flow_of_execute_method](/img/java/concurrent/work_flow_of_execute_method.png)
 
 # 使用工厂类创建线程池
 
