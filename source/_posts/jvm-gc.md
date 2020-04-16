@@ -1,6 +1,6 @@
 ---
-title: Java 虚拟机系列（四）垃圾收集器总结
-date: 2019-09-20 23:22:23
+title: Java 虚拟机系列（三）垃圾收集器总结
+date: 2019-09-10 23:22:23
 updated:
 tags: Java
 typora-root-url: ..
