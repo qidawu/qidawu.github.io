@@ -16,16 +16,15 @@ typora-root-url: ..
 | `jmap`   | Memory Map for Java                                      | 用于实时生成虚拟机的堆内存转储快照（heap dump/hprof 文件），或查看堆内存信息。其它转储方法：<br/>`-XX:+HeapDumpOnOutOfMemoryError`<br/>`-XX:+HeapDumpOnCtrlBreak` | 在 JDK 9 中已集成到 `JHSDB`   |
 | `jhat`   | JVM Heap Dump Browser                                    | 用于分析 heap dump 文件，它会建立一个 HTTP/HTML 服务器，让用户可以在浏览器上查看分析结果。分析结果默认以包为单位进行分组显示，分析内存泄漏问题主要会使用到其中的 Heap Histogram（与 `jmap -histo` 功能一样）与 OQL 页签功能，前者可以找到内存中总容量最大的对象，后者是标准的对象查询语言，使用类似 SQL 的语法堆内存中的对象进行查询统计。 | 在 JDK 9 中已被  `JHSDB` 替代 |
 | `jstack` | Stack Trace for Java                                     | 显示虚拟机当前时刻的线程快照（thread dump/javacore 文件）。线程快照就是当前虚拟机内每一条线程正在执行的方法堆栈的集合，生成堆栈快照的目的通常是定位线程出现长时间停顿的原因，如线程间死锁、死循环、请求外部资源导致的长时间挂起等，都是导致线程长时间停顿的常见原因。 | 在 JDK 9 中已集成到 `JHSDB`   |
-|          |                                                          |                                                              |                               |
 
 可视化工具：
 
-|             | 名称                  | 作用                                                         | 备注             |
-| ----------- | --------------------- | ------------------------------------------------------------ | ---------------- |
-| `jconsole`  | Java Console          | 一款基于 JMX (Java Management Extensions) 的可视化监视、管理工具。它的主要功能是通过 JMX  的 MBean (Managed Bean) 对系统进行信息收集和参数动态调整。 | JDK 5 起免费提供 |
-| `jvisualvm` | Java VisualVM         | 无需特殊 Agent，通用性强。目前已经从 Oracle JDK 中分离出来，称为一个独立发展的开源项目：http://visualvm.github.io/ | JDK 6 起免费提供 |
-| `jmc`       | Java Mission Control  | 曾经是 BEA 公司的图形化诊断工具，随着 BEA 公司被 Oracle 收购而融合进 Oracle JDK。从 JDK 11 开始已被移除出 JDK。2018 年开源并交付给 Open JDK 组织管理。需要与 HotSpot 内部的 JFR 配合才能工作。 | JDK 7 起付费提供 |
-| `jhsdb`     | Java HotSpot Debugger | 一个基于 Serviceability Agent 的 HotSpot 进程调试器。        | JDK 9 起免费提供 |
+| 命令        | 名称                  | 基于                      | 作用                                                         | 备注             |
+| ----------- | --------------------- | ------------------------- | ------------------------------------------------------------ | ---------------- |
+| `jconsole`  | Java Console          | JMX                       | 一款基于 JMX (Java Management Extensions) 的可视化监视、管理工具。它的主要功能是通过 JMX  的 MBean (Managed Bean) 对系统进行信息收集和参数动态调整。 | JDK 5 起免费提供 |
+| `jvisualvm` | Java VisualVM         | 无需特殊 Agent            | 拥有丰富的插件扩展。目前已经从 Oracle JDK 中分离出来，成为一个独立发展的开源项目：http://visualvm.github.io/ | JDK 6 起免费提供 |
+| `jmc`       | Java Mission Control  | Java Flight Recorder, JFR | 曾经是 BEA 公司的图形化诊断工具，随着 BEA 公司被 Oracle 收购而融合进 Oracle JDK。从 JDK 11 开始已被移除出 JDK。2018 年开源并交付给 Open JDK 组织管理。需要与 HotSpot 内部的 JFR 配合才能工作。 | JDK 7 起付费提供 |
+| `jhsdb`     | Java HotSpot Debugger | Serviceability Agent      | 一个基于 Serviceability Agent 的 HotSpot 进程调试器。        | JDK 9 起免费提供 |
 
 # 命令行工具
 
