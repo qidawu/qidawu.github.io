@@ -25,7 +25,7 @@ typora-root-url: ..
 
 手绘的运行时数据区如下：
 
-![jvm](/img/java/jvm/jvm.png)
+![jvm](/img/java/jvm/runtime_data_areas.jpg)
 
 JVM 定义了在程序执行期间使用的各种运行时数据区：
 
