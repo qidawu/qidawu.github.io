@@ -66,12 +66,15 @@ JDK 中涉及到线程的包如下：
 
 `Thread` 类提供了以下几类**方法**：
 
-* 线程协作
-* 线程中断
-* 线程让步
-* 线程睡眠
-* 线程合并
+* 线程睡眠 `Thread.sleep(...)`
+* 线程中断 `Thread.interrupt()`
+* 线程让步 `Thread.yield()`
+* 线程合并 `Thread.join(...)`
 * ……
+
+`Object` 提供了一组线程协作方法：
+
+* 线程协作 `Object.wait/notify`
 
 ### ThreadLocal<T>
 
@@ -92,17 +95,69 @@ JDK 中涉及到线程的包如下：
 * 这个接口中主要的方法叫 `call()` ，可以返回结果。
 * 当你提交 `Callable` 对象到 `Executor` 执行者，你可以获取一个实现 `Future` 接口的对象，你可以用这个对象来控制和获取 `Callable` 对象的状态和结果。
 
-## java.util.concurrent.locks
+### 工具类
+
+`CountDownLatch`
+
+`CyclicBarrier`
+
+`Phaser`
+
+`CompletableFuture`
+
+
+
+`Semaphore`
+
+
+
+`Exchanger`
+
+
+
+`Executors`
+
+### 线程池
+
+参考另一篇《Java 并发编程系列（二）线程池总结》。
+
+### 并发集合
+
+详见另一个篇《Java 集合框架系列（三）并发实现总结》。
+
+### 显式锁
+
+java.util.concurrent.locks
 
 > 用于实现线程安全与通信。
 
 ![Package locks](/img/java/concurrent/package_locks.png)
 
-## java.util.concurrent.atomic
+### 原子类
 
-> 使用这些数据结构可以避免在并发程序中使用同步代码块。
+java.util.concurrent.atomic
+
+> 使用这些数据结构可以避免在并发程序中使用同步代码块（synchronized 或 Lock）。
 
 ![Package atomic](/img/java/concurrent/package_atomic.png)
+
+JDK 5 新增的原子类，底层基于魔术类 `Unsafe` 进行 CAS 无锁操作。实现类按功能分组如下：
+
+|                | Integer                     | Long                     | Boolean         | 引用类型                                                     |
+| -------------- | --------------------------- | ------------------------ | --------------- | ------------------------------------------------------------ |
+| 基本类         | `AtomicInteger`             | `AtomicLong`             | `AtomicBoolean` |                                                              |
+| 引用类型       |                             |                          |                 | `AtomicReference`<br/>`AtomicStampedReference`<br/>`AtomicMarkableReference` |
+| 数组类型       | `AtomicIntegerArray`        | `AtomicLongArray`        |                 | `AtomicReferenceArray`                                       |
+| 属性原子修改器 | `AtomicIntegerFieldUpdater` | `AtomicLongFieldUpdater` |                 | `AtomicReferenceFieldUpdater`                                |
+
+JDK 8 新增 `Striped64` 累加计数器这个并发组件，64 指的是计数 64 bit 的数，即 `Long` 和 `Double` 类型。其实现类如下：
+
+| Long              | Double              |
+| ----------------- | ------------------- |
+| `LongAdder`       | `DoubleAdder`       |
+| `LongAccumulator` | `DoubleAccumulator` |
+
+性能对比参考：http://www.manongjc.com/article/105666.html
 
 # Spring 包简介
 
