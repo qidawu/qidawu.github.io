@@ -22,6 +22,35 @@ Maven 本质上是一个插件框架，它的核心并不执行任何具体的�
 
 ## maven-resources-plugin
 ## maven-compiler-plugin
+
+指定编译版本。
+
+方式一
+
+```XML
+    <properties>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+    </properties>
+```
+
+方式二：
+
+```XML
+   <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+```
+
 ## maven-surefire-plugin
 ## maven-install-plugin
 ## maven-deploy-plugin
