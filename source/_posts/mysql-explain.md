@@ -289,6 +289,10 @@ KEY `idx_taskno_rcode_rstatus` (`channel_task_no`,`reconciliation_code`,`reconci
 
 所以在实践中，如果你发现 explain 的结果预估的 `rows` 值跟实际情况差距比较大，可以采用执行 `analyze table` 重新统计信息。
 
+> 在数据库的慢查询日志中看到一个 rows_examined 的字段，表示这个语句执行过程中扫描了多少行。这个值就是在**执行器每次调用引擎获取数据行**的时候累加的。
+>
+> 在有些场景下，执行器调用一次，在引擎内部则扫描了多行，因此引擎扫描行数跟 rows_examined 并不是完全相同的。
+
 # Extra
 
 这一列显示的是额外信息。如果想要查询越快越好，需要特别留意 `Extra` 列是否出现以下情况：
