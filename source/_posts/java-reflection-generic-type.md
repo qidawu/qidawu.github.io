@@ -20,7 +20,7 @@ JDK 1.5 引入了泛型特性，一同引入的还有 Java `Type` 类型体系�
 
 ```
 java.lang.reflect.Type
-  java.lang.reflect.ParameterizedType
+  java.lang.reflect.ParameterizedType // 最最常用
   java.lang.reflect.TypeVariable
   java.lang.reflect.WildcardType
   java.lang.reflect.GenericArrayType
@@ -105,6 +105,26 @@ java.lang.Class
   TypeVariable<?>[] getTypeParameters()
   ```
 
+# 泛型术语
+
+泛型涉及的术语比较多，其与反射接口的对应关系如下：
+
+| 术语                    | 中文含义                 | 举例                               | 反射接口                                   | 备注                                                         |
+| ----------------------- | ------------------------ | ---------------------------------- | ------------------------------------------ | ------------------------------------------------------------ |
+| Generic type            | 泛型                     | `List<E>`                          | `ParameterizedType`                        |                                                              |
+| Parameterized type      | 参数化类型               | `List<String>`                     | `ParameterizedType`                        |                                                              |
+| Raw type                | 原始类型                 | `List`                             | `ParameterizedType#getRawType`             | 该方法虽然返回  `Type` 类型，但实际类型是 `Class`，可以强转使用：`(Class<?>) type`。 |
+| Unbounded wildcard type | 无限制通配符类型         | `List<?>`                          | `ParameterizedType`                        |                                                              |
+| Bounded wildcard type   | 有限制通配符类型（上限） | `List<? extends Number>`           | `ParameterizedType`                        |                                                              |
+| Bounded wildcard type   | 有限制通配符类型（下限） | `List<? super Number>`             | `ParameterizedType`                        |                                                              |
+| wildcard type           | 通配符类型               | `?`                                | `WildcardType`                             |                                                              |
+| Formal type parameter   | 形式类型参数             | `E`                                | `TypeVarialbe`                             |                                                              |
+| Actual type parameter   | 实际类型参数             | `String`                           | `ParameterizedType#getActualTypeArguments` | 该方法虽然返回  `Type[]` 类型，但各元素实际类型是 `Class`，可以强转使用：`(Class<?>) type`。 |
+| Bounded type parameter  | 有限制类型参数           | `<E extends Number>`               |                                            |                                                              |
+| Recursive type bound    | 递归类型限制             | `<T extends Comparable<T>>`        |                                            |                                                              |
+| Generic method          | 泛型方法                 | `static <E> List<E> asList(E[] a)` |                                            |                                                              |
+| Type token              | 类型令牌                 | `String.class`                     |                                            |                                                              |
+
 # 例子
 
 下面是几个获取 `Type` 的例子，先创建三个类：`BaseMapper`、`PersonMapper`、`Person`
@@ -166,7 +186,7 @@ public class Person implements Serializable, Comparable<Person> {
 
 ## 例子二
 
-接下来可以细化看下 `ParameterizedType` 的使用：
+接下来看下 `ParameterizedType` 的使用，可以用于获取泛型的原始类型（Raw type）、实际类型参数（Actual type parameter）列表：
 
 ```java
     @Test
@@ -175,9 +195,11 @@ public class Person implements Serializable, Comparable<Person> {
         Type genericInterface = PersonMapper.class.getGenericInterfaces()[0];
         assertTrue(genericInterface instanceof ParameterizedType);
         ParameterizedType parameterizedType = (ParameterizedType) genericInterface;
+        
+        // 获取原始类型：BaseMapper.class
         assertEquals(BaseMapper.class, parameterizedType.getRawType());
 
-        // class
+        // 获取实际类型参数列表：Person.class、Long.class
         Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
         assertEquals("There are two actual type arguments", 2, actualTypeArguments.length);
         // class com.github.reflection.Person
@@ -193,7 +215,7 @@ public class Person implements Serializable, Comparable<Person> {
     }
 ```
 
-`Type` 类型变量 `genericInterface` 的内容如下，实际类型是 `ParameterizedType`：
+`genericInterface` 变量的内容如下，接口返回类型虽然为 `Type`，实际类型为 `ParameterizedType`，因此可以强转。该泛型变量的原始类型、实际类型参数列表如下，实际都为 `Class` 类型，因此可以强转 `(Class<?>) type`：
 
 ![ParameterizedType_example](/img/java/reflection/ParameterizedType_example.png)
 
@@ -290,26 +312,6 @@ public class GenericsUtils {
     }
 }
 ```
-
-# 泛型术语
-
-泛型涉及的术语比较多，其与反射接口的对应关系如下：
-
-| 术语                    | 中文含义                 | 举例                               | 反射接口                         |
-| ----------------------- | ------------------------ | ---------------------------------- | -------------------------------- |
-| Generic type            | 泛型                     | `List<E>`                          | `ParameterizedType`              |
-| Parameterized type      | 参数化类型               | `List<String>`                     | `ParameterizedType`              |
-| Raw type                | 原始类型                 | `List`                             | `ParameterizedType.getRawType()` |
-| Unbounded wildcard type | 无限制通配符类型         | `List<?>`                          | `ParameterizedType`              |
-| Bounded wildcard type   | 有限制通配符类型（上限） | `List<? extends Number>`           | `ParameterizedType`              |
-| Bounded wildcard type   | 有限制通配符类型（下限） | `List<? super Number>`             | `ParameterizedType`              |
-| wildcard type           | 通配符类型               | `?`                                | `WildcardType`                   |
-| Formal type parameter   | 形式类型参数             | `E`                                | `TypeVarialbe`                   |
-| Actual type parameter   | 实际类型参数             | `String`                           | `Class`                          |
-| Bounded type parameter  | 有限制类型参数           | `<E extends Number>`               |                                  |
-| Recursive type bound    | 递归类型限制             | `<T extends Comparable<T>>`        |                                  |
-| Generic method          | 泛型方法                 | `static <E> List<E> asList(E[] a)` |                                  |
-| Type token              | 类型令牌                 | `String.class`                     |                                  |
 
 # 参考
 

@@ -10,7 +10,7 @@ typora-root-url: ..
 
 `com.fasterxml.jackson.databind.JsonNode` 表示。。。，可以通过 `ObjectMapper#readTree` 方法解析出来，也可以通过 `JsonNode` 的子类自定义构建：
 
-![JsonNode](/img/jackson/JsonNode.png)
+![JsonNode](/img/java/jackson/JsonNode.png)
 
 构建代码如下：
 
@@ -173,3 +173,40 @@ public final class JsonUtils {
 }
 ```
 
+# 例子
+
+本例中，我们需要获取 `request` 方法的泛型返回值 `RespDTO<XxxRespDTO>` 中的实际类型参数 `XxxRespDTO` 的 `Class` 类型，用于 JSON 转换：
+
+```java
+public interface ApiService {
+
+    /**
+     * XXX 接口
+     */
+    RespDTO<XxxRespDTO> request(XxxReqDTO reqDTO);
+
+}
+```
+
+首先定义一个方法，用于获取该方法的泛型返回值，然后获取其第一个实际类型参数：
+
+```java
+private Class<?> getReturnClass(Method method) {
+    ParameterizedType returnType = (ParameterizedType) method.getGenericReturnType();
+    Type type = returnType.getActualTypeArguments()[0];
+    return (Class<?>) type;
+}
+```
+
+实际类型参数获取之后，就可以调用 `ObjectMapper` 的 `public <T> T readValue(String content,                       Class<T> valueType)` 方法：
+
+```java
+Class<?> returnClass = getReturnClass(method);
+Object obj = OBJECT_MAPPER.readValue(json, returnClass);
+```
+
+这种用法常常出现在框架之中。
+
+调试过程如下：
+
+![JsonNode](/img/java/jackson/ObjectMapper_example.png)
