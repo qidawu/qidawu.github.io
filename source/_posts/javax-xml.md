@@ -1,5 +1,5 @@
 ---
-title: Java 通过注解生成 XML 示例
+title: 通过 JAXB 注解生成 XML 示例
 date: 2017-01-10 22:09:48
 updated:
 tags: Java

@@ -6,9 +6,9 @@ tags: Java
 typora-root-url: ..
 ---
 
-# JsonNode
+# JsonNode 的使用
 
-`com.fasterxml.jackson.databind.JsonNode` 表示。。。，可以通过 `ObjectMapper#readTree` 方法解析出来，也可以通过 `JsonNode` 的子类自定义构建：
+`com.fasterxml.jackson.databind.JsonNode` 表示一个 JSON 节点，可以通过 `ObjectMapper#readTree` 方法解析出来，也可以通过 `JsonNode` 的子类 API 自定义构建：
 
 ![JsonNode](/img/java/jackson/JsonNode.png)
 
@@ -31,7 +31,7 @@ JsonNode jsonNode =
 log.info(jsonNode.toString());
 ```
 
-`JsonNode` 构建完成后，可以通过灵活的读取其值，例如：
+`JsonNode` 构建完成后，可以灵活的读取其值，例如：
 
 ```java
 // [value0, value1]
@@ -39,8 +39,7 @@ log.info(jsonNode.get("hello").findValuesAsText("key").toString());
 // value3
 log.info(jsonNode.get("test").get("key3").asText());
 ```
-
-# 工具类
+# ObjectMapper 工具类
 
 ```java
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -173,9 +172,9 @@ public final class JsonUtils {
 }
 ```
 
-# 例子
+## 使用例子
 
-本例中，我们需要获取 `request` 方法的泛型返回值 `RespDTO<XxxRespDTO>` 中的实际类型参数 `XxxRespDTO` 的 `Class` 类型，用于 JSON 转换：
+本例中，我们需要获取 `request` 方法的泛型返回值 `RespDTO<XxxRespDTO>` 中的实际类型参数 `XxxRespDTO` 的 `Class` 类型，以用于 JSON 转换：
 
 ```java
 public interface ApiService {
@@ -198,11 +197,11 @@ private Class<?> getReturnClass(Method method) {
 }
 ```
 
-实际类型参数获取之后，就可以调用 `ObjectMapper` 的 `public <T> T readValue(String content,                       Class<T> valueType)` 方法：
+实际类型参数获取之后，就可以调用 `ObjectMapper` 的 `public <T> T readValue(String content, Class<T> valueType)` 方法：
 
 ```java
 Class<?> returnClass = getReturnClass(method);
-Object obj = OBJECT_MAPPER.readValue(json, returnClass);
+Object obj = JsonUtils.fromJson(json, returnClass);  // ObjectMapper#readValue(String, Class<T>)
 ```
 
 这种用法常常出现在框架之中。
