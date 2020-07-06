@@ -34,6 +34,7 @@ SET autocommit = {0 | 1}
 
 `START TRANSACTION` 是标准的 SQL 语法，推荐使用。它支持以下 `BEGIN` 语法所不支持的修饰符：
 
+* `WITH CONSISTENT SNAPSHOT` 在事务开启同时创建快照（一致性视图），主要用于可重复读（RR）。
 * `READ WRITE` 读写模式，默认值。
 * `READ ONLY` 只读模式，有助于提升存储引擎的性能表现。
 
