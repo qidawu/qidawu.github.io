@@ -166,46 +166,82 @@ public final class JsonUtils {
      * @return List
      */
     public static <T> List<T> fromJsonToList(String text, Class<T> type) {
+        //     fromJson(java.lang.String, com.fasterxml.jackson.databind.JavaType)
         return fromJson(text, OBJECT_MAPPER.getTypeFactory().constructParametricType(ArrayList.class, type));
     }
 
 }
 ```
 
-## 使用例子
+# JavaType 的使用
 
-本例中，我们需要获取 `request` 方法的泛型返回值 `RespDTO<XxxRespDTO>` 中的实际类型参数 `XxxRespDTO` 的 `Class` 类型，以用于 JSON 转换：
+工具类的方法 `fromJsonToList`，使用了方法 `OBJECT_MAPPER.getTypeFactory().constructParametricType(...)`，其值调试如下：
+
+![](/img/java/jackson/CollectionType.png)
+
+这个值为 `JavaType` 的子类 `CollectionType`，可用于调用方法 `ObjectMapper#readValue(java.lang.String, com.fasterxml.jackson.databind.JavaType)` 进行集合类型的 JSON 转换：
+
+![JavaType](/img/java/jackson/JavaType.png)
+
+# 使用例子
+
+本例中，我们需要获取以下两个方法的泛型返回值中的实际类型参数 `XxxRespDTO` 的 `Class` 类型，以用于 JSON 转换：
 
 ```java
 public interface ApiService {
 
     /**
-     * XXX 接口
+     * 接口一
      */
-    RespDTO<XxxRespDTO> request(XxxReqDTO reqDTO);
+    RespDTO<XxxRespDTO> get(XxxReqDTO reqDTO);
 
+    /**
+     * 接口二
+     */
+    RespDTO<List<XxxRespDTO>> list(XxxReqDTO reqDTO);
 }
 ```
 
-首先定义一个方法，用于获取该方法的泛型返回值，然后获取其第一个实际类型参数：
+定义一个方法，用于转换 JSON：
 
 ```java
-private Class<?> getReturnClass(Method method) {
+private Object getObject(Method method, String json) {
+    Object result;
+    
+    // 获取该方法的泛型返回值，然后获取其第一个实际类型参数
     ParameterizedType returnType = (ParameterizedType) method.getGenericReturnType();
     Type type = returnType.getActualTypeArguments()[0];
-    return (Class<?>) type;
+    
+    // 处理接口一的情况
+    if (type instanceof Class) {
+        Class<?> clazz = (Class<?>) type;
+        result = JsonUtils.fromJson(json, clazz);  // ObjectMapper#readValue(String, Class<T>)
+    } else if (type instanceof ParameterizedType) {
+        ParameterizedType nestedReturnType = (ParameterizedType) type;
+        // 处理接口二的情况
+        if (nestedReturnType.getRawType() == List.class) {
+            Class<?> clazz = (Class<?>) nestedReturnType.getActualTypeArguments()[0];
+            result = JsonUtils.fromJsonToList(decryptedRespData, clazz);
+        } else {
+            throw new IllegalStateException("未实现的 JSON 解析！");
+        }
+    } else {
+        throw new IllegalStateException("未实现的 JSON 解析！");
+    }
+    return result;
 }
 ```
 
-实际类型参数获取之后，就可以调用 `ObjectMapper` 的 `public <T> T readValue(String content, Class<T> valueType)` 方法：
+这种用法常常出现在框架之中。下面来看下调试效果：
 
-```java
-Class<?> returnClass = getReturnClass(method);
-Object obj = JsonUtils.fromJson(json, returnClass);  // ObjectMapper#readValue(String, Class<T>)
-```
+## 接口一
 
-这种用法常常出现在框架之中。
-
-调试过程如下：
+下图展示了变量 `returnType` 为参数化类型 `ParameterizedType`，其实际类型参数 `type` 为 `Class` 类型，值为 `XxxRespDTO` ：
 
 ![JsonNode](/img/java/jackson/ObjectMapper_example.png)
+
+## 接口二
+
+下图展示了变量 `returnType` 的实际类型参数 `type` 与接口一为 `Class` 类型不同，接口二为 `ParameterizedType` 参数化类型，值为 `List<XxxRespDTO>`：
+
+![](/img/java/jackson/ObjectMapper_example_2.png)
