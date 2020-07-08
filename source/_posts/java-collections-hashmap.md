@@ -901,6 +901,22 @@ Integer newValue2 = ipStats.compute(300000000, (key, oldValue) -> {
 log.info("result is {}", ipStats.toString());
 ```
 
+## 使用 Guava 快速创建 Map
+
+创建不可变的 Map：
+
+```java
+Map<String, String> map = ImmutableMap.of("A", "Apple", "B", "Boy", "C", "Cat");
+```
+
+创建指定 `initialCapacity` 初始容量的 Map：
+
+```java
+Maps.newHashMapWithExpectedSize(10);
+```
+
+Guava 的 `Maps` 还提供了更多的 API，可以自行研究使用。
+
 # 参考
 
 https://docs.oracle.com/javase/8/docs/api/index.html

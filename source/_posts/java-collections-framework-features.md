@@ -138,7 +138,15 @@ Set<String> set = Set.of("aggie", "alley", "steely");
 Map<String, String> map = Map.of("A", "Apple", "B", "Boy", "C", "Cat");
 ```
 
-而 Java 9 之前，要实现不可变集合只能通过第三方库，例如 Guava：
+而 Java 9 之前，要实现不可变集合只能通过第三方库，例如用 Guava 实现相同效果：
+
+```java
+List<String> list = ImmutableList.of("apple", "orange", "banana");
+Set<String> set = ImmutableSet.of("aggie", "alley", "steely");
+Map<String, String> map = ImmutableMap.of("A", "Apple", "B", "Boy", "C", "Cat");
+```
+
+Guava 提供的不可变集合 API 如下：
 
 ```
 ImmutableAsList
