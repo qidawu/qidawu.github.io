@@ -12,7 +12,7 @@ typora-root-url: ..
 
 基于分代收集算法的垃圾收集器组合，总结如下图，常用于 JDK 8 及之前的版本：
 
-![generational_collection](/img/java/jvm/generational_collection.png)
+![generational_collection](/img/java/jvm/gc_combination.png)
 
 # 参考
 
