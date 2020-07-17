@@ -30,7 +30,11 @@ typora-root-url: ..
 
 ## 源码解析
 
-`ThreadPoolExecutor` 类实现了两个核心接口 `Executor` 和 `ExecutorService`，结构如下：
+`Executor` 接口的实现类如下：
+
+![subtypes_of_Executor](/img/java/concurrent/subtypes_of_Executor.png)
+
+其中，`ThreadPoolExecutor` 类实现了两个核心接口 `Executor` 和 `ExecutorService`，方法如下：
 
 ![ThreadPoolExecutor](/img/java/concurrent/Executor.png)
 
