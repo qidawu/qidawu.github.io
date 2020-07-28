@@ -117,8 +117,6 @@ File > Other Setting > Default Settings，`Projects SDK` 可控制全局版本�
 
 ## Maven
 
-
-
 File > Other Setting > Default Settings > Build, Execution, Deployment > Build Tools > Maven
 
 * 可配置 `Maven home directory`、`User settings file` (自定义 setting.xml)、`Local repository` 本地仓库。
@@ -127,7 +125,7 @@ File > Other Setting > Default Settings > Build, Execution, Deployment > Build T
 
 ## Terminal
 
-File > Other Setting > Default Settings > Terminal，修改 `Shell path` 为：D:\Developer\PortableGit\bin\sh.exe，可配置 Terminal 终端为 GitBash。
+File > Other Setting > Default Settings > Terminal，修改 `Shell path` 为：`D:\Developer\PortableGit\bin\sh.exe`，可配置 Terminal 终端为 GitBash。
 
 ## Layout
 
@@ -164,6 +162,10 @@ File > Settings > Editor > General > 开启 `Show quick documentation on mouse m
 
 File > Settings > Editor > General > Editor Tabs，去掉勾选 `Show tabs in one row`
 
+# 字体
+
+老版本可以[安装 JetBrains Mono 字体](https://www.jetbrains.com/lp/mono/#how-to-install)，v2019.3 版本后自带。
+
 # 插件
 
 官方插件（内置）：
@@ -176,17 +178,38 @@ File > Settings > Editor > General > Editor Tabs，去掉勾选 `Show tabs in on
 - IdeaVim：Vim 程序员必装。
 - NodeJS：运行前端项目、or 构建前端项目时都是需要的。
 
-推荐一些好用的插件：
+规范类：
 
 - Alibaba Java Coding Guidelines：阿里巴巴 Java 开发规范
-- Maven Helper：方便查询依赖树及排除依赖
-- Grep Console：Grep, tail, filter, highlight... everything you need for a console. Also can highlight the editor - nice for analyzing logs...
+- Git Commit Template：参考[Git 代码提交规范](http://www.ruanyifeng.com/blog/2016/01/commit_message_change_log.html)使用
+
+代码生成类：
+
 - Lombok Plugin：用于精简冗余代码，必装。
+- [Builder-Generator](https://plugins.jetbrains.com/plugin/6585-builder-generator)：如果项目可以使用 Lombok，就不必装。
+
+MyBatis：
+
 - ~~[MyBatis Plugin](https://plugins.jetbrains.com/plugin/7293-mybatis-plugin)：最强大的 MyBatis 插件，不过是收费版。~~
 - Free MyBatis plugin：免费的 MyBatis 插件，提供了一些基本的跳转和代码生成功能。
 - MyBatis Log Plugin：把 MyBatis 输出的 SQL 日志还原成完整的 SQL 语句。将日志输出的 SQL 语句中的问号 ? 替换成真正的参数值。
+
+辅助类：
+
+* Maven Helper：方便查询依赖树及排除依赖
+* Grep Console：Grep, tail, filter, highlight... everything you need for a console. Also can highlight the editor - nice for analyzing logs...
+* SequenceDiagram for IntelliJ IDEA：查看类调用时序图
+* Rainbow Brackets：彩色括号
+* HighlightBracketPair：高亮提示括号的开始结尾
+
+其它：
+
 - [Smart Tomcat](https://plugins.jetbrains.com/plugin/9492-smart-tomcat)：社区版没有提供该功能（[点我](https://stackoverflow.com/questions/22047860/tomcat-in-intellij-idea-community-edition)），可以用这个插件替代
 - [Ace Jump](http://kidneyball.iteye.com/blog/1814028)：使用这个插件，直接使用键盘定位到你想去的地方 。
+
+IdeaVim 如果与原 IDEA 快捷键冲突，可以修改如下：
+
+![IdeaVim](/img/java/idea/IdeaVim.png)
 
 如果被墙导致无法连接到 Marketplace 或插件无法下载，可以配置如下：
 
