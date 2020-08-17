@@ -181,7 +181,9 @@ File > Settings > Editor > General > Editor Tabs，去掉勾选 `Show tabs in on
 规范类：
 
 - Alibaba Java Coding Guidelines：阿里巴巴 Java 开发规范
-- Git Commit Template：参考[Git 代码提交规范](http://www.ruanyifeng.com/blog/2016/01/commit_message_change_log.html)使用
+- Git Commit Template：参考
+  - [Git 代码提交规范](http://www.ruanyifeng.com/blog/2016/01/commit_message_change_log.html)
+  - [如何规范你的Git commit？](https://mp.weixin.qq.com/s?__biz=MzIzOTU0NTQ0MA==&mid=2247498589&idx=1&sn=c0419f08bd455de9147e47387778943e)
 
 代码生成类：
 
@@ -204,6 +206,7 @@ MyBatis：
 
 其它：
 
+- [Material Theme UI](https://plugins.jetbrains.com/plugin/8006-material-theme-ui)：将默认外观改为 [Material Design](https://material.io/) 风格。
 - [Smart Tomcat](https://plugins.jetbrains.com/plugin/9492-smart-tomcat)：社区版没有提供该功能（[点我](https://stackoverflow.com/questions/22047860/tomcat-in-intellij-idea-community-edition)），可以用这个插件替代
 - [Ace Jump](http://kidneyball.iteye.com/blog/1814028)：使用这个插件，直接使用键盘定位到你想去的地方 。
 
