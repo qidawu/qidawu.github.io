@@ -42,6 +42,8 @@ https://nodejs.org/zh-cn/download/
   * 安装目录 `/usr/local/lib/node_modules/<package>`
   * 生成软链，例如：`/usr/local/bin/npm -> /usr/local/lib/node_modules/npm/bin/npm-cli.js`
 
+`npm list -g -depth=0` 验证是否安装到位。
+
 # npm 配置
 
 npm 配置主要有两份：
