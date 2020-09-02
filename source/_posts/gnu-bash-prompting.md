@@ -1,8 +1,9 @@
 ---
-title: "GUN/Bash 系列（六）提示符（Prompting）"
+title: GUN/Bash 系列（七）提示符（Prompting）
 date: 2015-04-01 23:32:53
 updated: 
 tags: GNU/Linux
+typora-root-url: ..
 ---
 
 在使用交互式 Bash 时，一个配置得当的命令提示符可以为用户带来不少便利，本文讲解如何配置命令提示符。

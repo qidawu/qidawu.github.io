@@ -1,5 +1,5 @@
 ---
-title: GUN/Bash 系列（四）Shell 内建命令
+title: GUN/Bash 系列（五）Shell 内建命令总结
 date: 2015-03-15 11:27:26
 updated:
 tags: GNU/Linux
@@ -7,7 +7,7 @@ tags: GNU/Linux
 
 GUN/Bash 提供了一些内建命令 (BUILTIN COMMANDS)，用于在命令行上方便使用：
 
-# 常用命令
+# 常用类
 
 `echo` 显示一行文本或变量
 
@@ -74,7 +74,7 @@ GUN/Bash 提供了一些内建命令 (BUILTIN COMMANDS)，用于在命令行上�
 * `-v` 在执行 script 前，先将 script 的内容输出到屏幕上
 * `-x` 将 script 执行过程逐步输出到屏幕上
 
-# 作业控制
+# 作业控制类
 
 Bash 是一个多任务的 CLI ，有以下作业控制（Job Control）相关的命令：
 

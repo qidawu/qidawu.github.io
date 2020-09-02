@@ -1,39 +1,16 @@
 ---
-title: GUN/Bash 系列（三）Shell 特性
-date: 2015-03-10 21:41:04
+title: GUN/Bash 系列（四）Shell 管道、重定向、序列、复合命令总结
+date: 2015-03-12 21:41:04
 updated:
 tags: GNU/Linux
+typora-root-url: ..
 ---
-
-# Shell 语法
-
-## 引用（Quoting）
-
-引用用于：
-
-* 阻止对特殊字符的处理。
-* 阻止保留字被识别。
-* 阻止参数的扩展。
-
-三种引用机制：
-
-| 引用符       | 描述                                                  |
-| ------------ | ----------------------------------------------------- |
-| 转义字符 `\` | 保留其后下一个字符的字面意义                          |
-| 单引号 `''`  | 保留引用中所有字符的字面意义                          |
-| 双引号 `""`  | 保留引用中所有字符的字面意义，例外的情况是 $, `, 和 \ |
-
-单引号与双引号的使用区别：
-
-![quoting](/img/gnu-linux/bash_quoting.png)
-
-## 注释（Comments）
-
-以 `#` 起始的词使得这个词和所有同一行上所有剩余的字符都被忽略。
 
 # Shell 命令
 
 ## 简单命令（Simple Commands）
+
+即单个命令。
 
 ## 管道（Pipelines）
 
@@ -140,75 +117,46 @@ $ ./configure && make && make install
 compound command（复合命令）是如下情况之一：
 
 * `(list)`
+
 * `{ list; }`
+
 * `((expression))`
+
 * `[[ expression ]]`
 
 * `if list; then list; [ elif list; then list; ] ... [ else list; ] fi`
+
 * `case word in [ [(] pattern [ | pattern ] `
 
 * `while list; do list; done`
+
 * `until list; do list; done`
+
 * `for name [ in word ] ; do list ; done`
+
+  ```bash
+  #!/bin/bash
+  
+  # 声明一个数组变量
+  order_array=(
+    10000
+    10001
+    10002
+  )
+  
+  # 循环打印与保存到文件
+  for id in ${order_array[@]}
+  do
+    echo "order is $id" | tee -a result.txt
+  done
+  ```
+
 * `for (( expr1 ; expr2 ; expr3 )) ; do list ; done`
 
 * `select name [ in word ] ; do list ; done`
 
-# Shell 函数（Shell Functions）
+# 参考
 
-# Shell 参数（Shell Parameters）
+https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Arrays
 
-## 位置参数（Positional Parameters）
-
-`$n`：`$1` 表示第一个参数，`$2` 表示第二个参数，以此类推。
-
-## 特殊参数（Special Parameters）
-
-`$0`：表示脚本文件名
-
-`$#`：表示命令行参数的个数
-
-`$?`：前一个命令或函数的返回码，`0` 为成功，非 `0` 为错误/失败
-
-`$*`：以"参数1 参数2 ... " 的形式保存所有参数
-
-`$@`：以"参数1" "参数2" ... 的形式保存所有参数
-
-`$$`：本程序的 PID（进程 ID 号）
-
-`$!`：最近执行的后台（即异步）命令的 PID
-
-# Shell 扩展（Shell Expansions）
-
-命令行的扩展是在拆分成词之后进行的。共有七种类型的扩展，常用的四种如下
-
-## 花括号扩展（Brace Expansion）
-
-用于偷懒，例如：
-
-```
-x{a,b,cd}y
-```
-扩展为：
-```
-xay xby xcdy
-```
-
-再例如：
-```
-mkdir /usr/local/src/bash/{old,new,dist}
-```
-扩展为：
-```
-mkdir /usr/local/src/bash/old
-mkdir /usr/local/src/bash/new
-mkdir /usr/local/src/bash/dist
-```
-
-## 参数和变量扩展（Parameter and Variable Expansion）
-
-`${parameter}`
-
-## 算术扩展（Arithmetic Expansion）
-
-## 命令替换（Command Substitution）
+https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Shell-Commands
