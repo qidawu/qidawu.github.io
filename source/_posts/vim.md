@@ -129,7 +129,7 @@ Vim 强大的编辑能力中很大部分是来自于其普通模式的命令（�
 | `v`        | Switch to visual character mode |
 | `V`        | Switch to visual line mode      |
 
-## 命令行模式
+## 命令行模式（COMMAND MODE）
 
 在命令行模式中可以输入命令。在命令执行完后，Vim 返回到命令行模式之前的模式，通常是普通模式。
 
@@ -141,27 +141,9 @@ Vim 强大的编辑能力中很大部分是来自于其普通模式的命令（�
 | `!`        | 过滤命令                                                     |
 | `/` 或 `?` | 搜索字符串                                                   |
 
-### 替换命令（Substitute）
+### [range] 参数
 
-```
-4.2 Substitute                                          *:substitute*
-                                                        *:s* *:su*
-:[range]s[ubstitute]/{pattern}/{string}/[flags] [count]
-                        For each line in [range] replace a match of {pattern}
-                        with {string}.
-                        For the {pattern} see |pattern|.
-                        {string} can be a literal string, or something
-                        special; see |sub-replace-special|.
-                        When [range] and [count] are omitted, replace in the
-                        current line only.
-                        When [count] is given, replace in [count] lines,
-                        starting with the last line in [range].  When [range]
-                        is omitted start in the current line.
-                        Also see |cmdline-ranges|.
-                        See |:s_flags| for [flags].
-```
-
-`[range]` 有以下一些表示方法：
+`[range]` 有以下一些表示方法，例如常用的 `%` 表示替换所有行，等价于 `1,$`：
 
 ```
 不写range   ：  默认为光标所在的行。
@@ -190,6 +172,78 @@ $-1         ：  倒数第二行。（这里说明我们可以对某一行加减
 移量。
 ```
 
+### Deleting text
+
+| 命令                                                       | 描述                                                         |
+| ---------------------------------------------------------- | ------------------------------------------------------------ |
+| `:[range]d[elete] [x]`                                     | Delete `[range]` lines (default: current line) [into register `x`]. |
+| `:[range]d[elete] [x] {count}`                             | Delete `{count}` lines, starting with `[range]`(default: current line) [into register `x`]. |
+| `:[range]j[oin][!] [flags]`                                | Join `[range]` lines.                                        |
+| `:[range]j[oin][!] {count} [flags]`                        | Join `{count}` lines, starting with `[range]` (default: current line). |
+
+例子：
+
+```bash
+# 刪除 1-10 行
+:1,10d
+```
+
+### Copying and moving text
+
+| 命令                                                       | 描述                                                         |
+| ---------------------------------------------------------- | ------------------------------------------------------------ |
+| `:[range]y[ank] [x]`                                       | Yank `[range]` lines [into register `x`].                    |
+| `:[range]y[ank] [x] {count}`                               | Yank {count} lines, starting with last line number in [range] (default: current line), [into register `x`]. |
+| `:[range]co[py] {address}`                                 | Copy the lines given by `[range]` to below the line given by `{address}`. |
+| `:[range]m[ove] {address}`                                 | Move the lines given by `[range]` to below the line given by `{address}`. |
+
+### Formatting text
+
+Shifting lines left or right: 
+
+| 命令                        | 描述                                                         |
+| --------------------------- | ------------------------------------------------------------ |
+| `:[range]<`                 | Shift `[range]` lines one `'shiftwidth'` left.  Repeat `'<'` for shifting multiple `'shiftwidth'`s. |
+| `:[range]< {count}`         | Shift `{count}` lines one `'shiftwidth'` left, starting with `[range]` (default current line). Repeat '<' for shifting multiple `'shiftwidth'`s. |
+| `:[range]> [flags]`         | Shift `{count}` `[range]` lines one `'shiftwidth'` right. Repeat `'>'` for shifting multiple `'shiftwidth'`s. |
+| `:[range]> {count} [flags]` | Shift `{count}` lines one `'shiftwidth'` right, starting with `[range]` (default current line). Repeat `'>'` for shifting multiple `'shiftwidth'`s. |
+
+Left-align, right-align lines or center lines: 
+
+| 命令                        | 描述                                                         |
+| --------------------------- | ------------------------------------------------------------ |
+| `:[range]le[ft] [indent]`   | Left-align lines in `[range]`.  Sets the indent in the lines to `[indent]` (default `0`). |
+| `:[range]ri[ght] [width]`   | Right-align lines in `[range]` at `[width]` columns<br/>(default `'textwidth'` or `80` when `'textwidth'` is `0`). |
+| `:[range]ce[nter] [width]`  | Center lines in `[range]` between `[width]` columns<br/>(default `'textwidth'` or `80` when `'textwidth'` is `0`). |
+
+### Sorting text
+
+| 命令                                                       | 描述                                                         |
+| ---------------------------------------------------------- | ------------------------------------------------------------ |
+| `:[range]sor[t][!] [b][f][i][n][o][r][u][x] [/{pattern}/]` | Sort lines in `[range]`.  When no range is given all lines are sorted.<br/>With `[!]` the order is reversed.<br/>With `[i]` case is ignored.<br/>... |
+
+### Substitute Text
+
+| 命令                                                      | 描述                                                         |
+| --------------------------------------------------------- | ------------------------------------------------------------ |
+| `:[range]s[ubstitute]/{pattern}/{string}/[flags] [count]` | For each line in `[range]` replace a match of `{pattern}` with `{string}`. |
+
+详细命令：
+
+```
+4.2 Substitute                                          *:substitute*
+                                                        *:s* *:su*
+:[range]s[ubstitute]/{pattern}/{string}/[flags] [count]
+                        For each line in [range] replace a match of {pattern} with {string}.
+                        For the {pattern} see |pattern|.
+                        {string} can be a literal string, or something special; see |sub-replace-special|.
+                        When [range] and [count] are omitted, replace in the current line only.
+                        When [count] is given, replace in [count] lines, starting with the last line in [range].
+                        When [range] is omitted start in the current line.
+                        Also see |cmdline-ranges|.
+                        See |:s_flags| for [flags].
+```
+
 `[flags]` 有以下一些表示方法：
 
 ```
@@ -197,6 +251,8 @@ $-1         ：  倒数第二行。（这里说明我们可以对某一行加减
 g       ：  对指定范围内的所有匹配项进行替换。
 c       ：  在替换前请求用户确认。
 e       ：  忽略执行过程中的错误。
+i       :   Ignore case for the pattern.
+I       :   Don't ignore case for the pattern.
 
 注意：上面的所有flags都可以组合起来使用，比如 gc 表示对指定范围内的所有匹配项进行替换，并且在每一次替换之前都会请用户确认。
 ```
