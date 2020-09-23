@@ -218,6 +218,21 @@ IdeaVim 如果与原 IDEA 快捷键冲突，可以修改如下：
 
 ![IDEA 无法下载插件](/img/java/idea/use_secure_connection.png)
 
+# Git
+
+## 分支管理
+
+![git branch management](img/java/idea/git_branch_management.png)
+
+| 分支操作                         | 对应命令                                         |
+| -------------------------------- | ------------------------------------------------ |
+| Checkout                         | `git checkout [selected-branch]`                 |
+| New Branch from Selected...      | `git checkout -b [new-branch] [selected-branch]` |
+| Checkout and Rebase onto Current | `git rebase HEAD [selected-branch]`              |
+| Rebase Current onto Selected     | `git rebase [selected-branch]`                   |
+| Merge into Current               | `git merge [selected-branch]`                    |
+| Delete                           | `git branch -d [selected-branch]`                |
+
 # 快捷键
 
 ## 自定义 keymap
