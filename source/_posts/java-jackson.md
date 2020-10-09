@@ -245,3 +245,16 @@ private Object getObject(Method method, String json) {
 下图展示了变量 `returnType` 的实际类型参数 `type` 与接口一为 `Class` 类型不同，接口二为 `ParameterizedType` 参数化类型，值为 `List<XxxRespDTO>`：
 
 ![](/img/java/jackson/ObjectMapper_example_2.png)
+
+# 常见报错
+
+## Unrecognized field, not marked as ignorable
+
+该错误的意思是说，不能够识别的字段没有标示为可忽略。出现该问题的原因就是 JSON 中包含了目标 Java 对象没有的属性。
+
+解决方法有如下几种：
+
+1. 保证传入的 JSON 串不包含目标对象的没有的属性。
+2. `@JsonIgnoreProperties(ignoreUnknown = true)` 在目标对象的类级别上加上该注解和属性，则 Jackson 在反序列化的时候，会忽略该目标对象不存在的属性。
+3. 全局 `DeserializationFeature` 配置
+   `objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false)` 配置该 `objectMapper` 在反序列化时，忽略目标对象没有的属性。凡是使用该 `objectMapper` 反序列化时，都会拥有该特性。
