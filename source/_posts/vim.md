@@ -286,6 +286,34 @@ I       :   Don't ignore case for the pattern.
     :%s/from/to/g   ：  对所有行的内容进行替换。
 ```
 
+### 其它
+
+```bash
+# JSON 格式化
+# : 进入命令行模式
+# % [range] 参数，指定所有行
+# ! 执行具体的命令，这里使用 python
+# -m json.tool 调用python里json.tool这个模块
+:%!python -m json.tool
+```
+
+可以将该常用命令放到 `~/.vimrc` 配置文件中，方便使用：
+
+```bash
+" F3 快捷键 JSON 格式化当前行
+map <F3> :.!python -m json.tool<CR>
+" F4 快捷键 JSON 格式化全文
+map <F4> :%!python -m json.tool<CR>
+
+" :JsonFormat 命令格式化全文
+command! JsonFormat :execute '%!python -m json.tool'
+" :JsonFormat 命令格式化全文，并解决汉字以 unicode 码显示问题，参考：http://qiita.com/tomoemon/items/cc29b414a63e08cd4f89
+command! JsonFormat :execute '%!python -m json.tool'
+  \ | :execute '%!python -c "import re,sys;chr=__builtins__.__dict__.get(\"unichr\", chr);sys.stdout.write(re.sub(r\"\\u[0-9a-f]{4}\", lambda x: chr(int(\"0x\" + x.group(0)[2:], 16)).encode(\"utf-8\"), sys.stdin.read()))"'
+  \ | :set ft=javascript
+  \ | :1
+```
+
 # 配置
 
 使用 Vim 年月较久后总会定制一套个性化的 Vim 配置，例如截取一段常用的 `~/.vimrc` 配置：
@@ -307,6 +335,10 @@ ab asap as soon as possible
 ```
 
 另外注意，Vim 的操作记录会写入 `~/.viminfo` 。
+
+## 设置键盘映射
+
+https://blog.csdn.net/lym152898/article/details/52171494
 
 # GVim
 
@@ -333,3 +365,4 @@ GVim 的多标签切换：
 * 《[如何在 Vim 中得到你最喜爱的 IDE 特性](http://coolshell.cn/articles/894.html)》
 * 《[为什么 Vim 使用 HJKL 键作为方向键](http://www.oschina.net/news/28608/vim-direction-keys)》
 * 《[vim文本替换命令](https://www.cnblogs.com/wind-wang/p/5768000.html)》
+* VIM 插件：https://vimawesome.com/plugin/json-vim
