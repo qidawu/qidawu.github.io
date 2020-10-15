@@ -1,5 +1,5 @@
 ---
-title: IDEA 一点小总结
+title: IDEA 的一些使用总结
 date: 2018-07-29 12:01:58
 updated:
 tags: Java
@@ -207,7 +207,7 @@ MyBatis：
 其它：
 
 - [Material Theme UI](https://plugins.jetbrains.com/plugin/8006-material-theme-ui)：将默认外观改为 [Material Design](https://material.io/) 风格。
-- [Smart Tomcat](https://plugins.jetbrains.com/plugin/9492-smart-tomcat)：社区版没有提供该功能（[点我](https://stackoverflow.com/questions/22047860/tomcat-in-intellij-idea-community-edition)），可以用这个插件替代
+- [Smart Tomcat](https://plugins.jetbrains.com/plugin/9492-smart-tomcat)：社区版没有提供该功能（[点我](https://stackoverflow.com/questions/22047860/tomcat-in-intellij-idea-community-edition)），可以用这个插件替代，参考[这篇](https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247509848&idx=3&sn=bec775d8f6bf98027625511491ec74cf)。
 - [Ace Jump](http://kidneyball.iteye.com/blog/1814028)：使用这个插件，直接使用键盘定位到你想去的地方 。
 
 IdeaVim 如果与原 IDEA 快捷键冲突，可以修改如下：
