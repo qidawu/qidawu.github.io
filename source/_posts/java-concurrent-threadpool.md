@@ -257,11 +257,13 @@ private static int workerCountOf(int c)  { return c & CAPACITY; }
 
 ### 线程工厂
 
-通过提供不同的 `ThreadFactory` 接口实现，可以改变被创建线程的名称、线程组、优先级、守护进程状态，等等。
+通过提供不同的 `ThreadFactory` 接口实现，可以改变被创建线程 `Thread` 的名称、线程组、优先级、守护进程状态，等等。
+
+参考《[Java 并发编程系列（一）常用包总结](/2018/07/10/java-concurrent-package/#ThreadFactory)》
 
 ### 阻塞队列
 
-阻塞队列的使用详见另一篇《Java 集合框架系列（三）并发实现总结》。
+阻塞队列的使用详见另一篇《[Java 集合框架系列（三）并发实现总结](/2018/04/21/java-collections-framework-concurrent-impl/)》。
 
 ![work_queue](/img/java/concurrent/work_queue.png)
 
