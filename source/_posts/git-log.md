@@ -27,7 +27,19 @@ $ git log --graph --oneline --decorate
 
 ## 定制输出格式 2
 
-如果对输出格式还不满意，可以使用 `--pretty` 参数定制输出格式。但由于该参数的选项较多，推荐设置为别名（alias）使用：
+如果对输出格式还不满意，可以使用 `--pretty` 参数定制输出格式：
+
+```bash
+$ git log -5 --pretty=format:"%h - %an, %ar : %s"
+
+f757dcd - wuqd, 20 hours ago : commit msg 5
+5ca68df - wuqd, 13 days ago : commit msg 4
+486b8d4 - wuqd, 3 weeks ago : commit msg 3
+e58ae38 - wuqd, 3 weeks ago : commit msg 2
+4830852 - wuqd, 3 weeks ago : commit msg 1
+```
+
+由于该参数的选项较多，推荐设置为别名（alias）使用：
 
 ``` bash
 $ git config --global alias.lg log --graph --pretty=format:'%Cred%h%Creset - %s %Cgreen(%cr) %C(bold blue)<%an>'
