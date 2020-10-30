@@ -1,5 +1,5 @@
 ---
-title: Java 8 函数式编程系列（二）Optional 总结
+title: Java 8 函数式编程系列（二）Optional API 总结
 date: 2019-05-14 21:48:49
 updated:
 tags: Java
