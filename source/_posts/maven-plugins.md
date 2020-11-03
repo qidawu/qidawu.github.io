@@ -1,5 +1,5 @@
 ---
-title: Maven 实战系列（五）插件总结
+title: Maven 实战系列（六）插件总结
 date: 2017-05-19 22:23:03
 updated:
 tags: Java
@@ -108,6 +108,10 @@ Maven 本质上是一个插件框架，它的核心并不执行任何具体的�
 [INFO] |  +- org.javassist:javassist:jar:3.21.0-GA:compile
 [INFO] |  \- org.jboss.netty:netty:jar:3.2.5.Final:compile
 ```
+
+# Spring Boot 插件
+
+Spring Boot 提供了 `spring-boot-maven-plugin` 插件，可用于本地快速编译并运行、及项目打包。参考：[Maven 插件](/2017/08/01/spring-boot-getting-started/)。
 
 # IDEA Maven 插件
 

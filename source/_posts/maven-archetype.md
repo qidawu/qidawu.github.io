@@ -1,5 +1,5 @@
 ---
-title: Maven 实战系列（六）骨架快速搭建项目
+title: Maven 实战系列（七）骨架快速搭建项目
 date: 2017-05-28 20:20:46
 updated:
 tags: Java

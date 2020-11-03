@@ -132,7 +132,7 @@ Maven 用户可以继承 `spring-boot-starter-parent` POM 项目以获得合理�
 
 ## 组合方式
 
-不是每个人都喜欢继承 `spring-boot-starter-parent` POM 项目。每个公司可能拥有自己的标准父项目，或者你更愿意明确声明所有 Maven 配置。
+不是每个人都喜欢继承 `spring-boot-starter-parent` POM 项目。每个公司可能都拥有自己的标准父项目，或者你更愿意明确声明所有 Maven 配置。
 
 即使如此，你仍然可以通过以组合方式使用 `scope=import`  的 `spring-boot-dependencies` 依赖来享受依赖管理的好处，如下所示：
 

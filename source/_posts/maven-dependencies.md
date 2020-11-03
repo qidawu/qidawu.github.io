@@ -24,7 +24,7 @@ typora-root-url: ..
             <version>…</version>        <!-- 依赖的构件版本 -->
             <type>…</type>              <!-- 依赖类型，默认值为 jar -->
             <scope>…</scope>            <!-- 依赖范围 -->
-            <optional>…</optional>      <!-- 可选依赖 -->
+            <optional>…</optional>      <!-- 可选依赖，默认情况下不会被继承，只有声明了该依赖才会继承 -->
             <exclusions>                <!-- 排除(传递性)依赖 -->
                 <exclusion>…</exclusion>
                 …
@@ -170,3 +170,5 @@ Maven 调解依赖有两个基本原则：
 # 参考
 
 http://maven.apache.org/guides/introduction/introduction-to-optional-and-excludes-dependencies.html
+
+[Maven optional关键字透彻图解](https://juejin.im/post/6844903987322290189)
