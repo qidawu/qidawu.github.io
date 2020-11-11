@@ -79,8 +79,8 @@ Spring AOP 的切点（Pointcut）使用 AspectJ 的“**切点表达式语言�
 
 | 生命周期 | 描述                                                         |
 | -------- | ------------------------------------------------------------ |
-| 编译期   | 切面在目标类编译时被织入。这种方式需要特殊的编译器。AspectJ 的织入编译器就是以这种方式织入切面的。 |
-| 类加载期 | 切面在目标类加载到 JVM 时被织入。这种方式需要特殊的类加载器（Class Loader），它可以在目标类被引入应用之前增强该目标类的字节码。AspectJ 5 的[加载时织入（load-time weaving, LTW）](http://www.eclipse.org/aspectj/doc/next/devguide/ltw.html)就支持以这种方式织入切面。 |
+| 编译期   | 切面在目标类编译时被织入。这种方式需要**特殊的编译器**。AspectJ Compiler 就是以这种方式织入切面的。 |
+| 类加载期 | 切面在目标类加载到 JVM 时被织入。这种方式需要**特殊的类加载器**，它可以在目标类被引入应用之前增强该目标类的字节码。AspectJ 5 的[加载时织入（load-time weaving, LTW）](http://www.eclipse.org/aspectj/doc/next/devguide/ltw.html)就支持以这种方式织入切面。 |
 | 运行期   | 切面在应用运行的某个时刻被织入。一般情况下，在织入切面时，AOP 容器会为目标对象动态地创建一个代理对象。Spring AOP 就是以这种方式织入切面的。Spring AOP 构建在动态代理基础之上，因此，Spring 对 AOP 的支持局限于方法拦截。如果你的 AOP 需求超过了简单的方法调用（如构造器或属性拦截），那么你需要考虑使用 AspectJ 来实现切面。 |
 
 # Spring AOP 与 AspectJ AOP 对比
@@ -93,7 +93,7 @@ Spring AOP 的切点（Pointcut）使用 AspectJ 的“**切点表达式语言�
 
   > 通过在代理类中包裹切面，Spring 在运行期把切面织入到 Spring 管理的 bean 中。如下图所示，代理类封装了目标类，并拦截被通知方法的调用，再把调用转发给真正的目标 bean。当代理拦截到方法调用时，在调用目标 bean 方法之前，会执行切面逻辑。
 
-  ![Spring 的切面由包裹了目标对象的代理类实现。代理类处理方法的调用，执行额外的切面逻辑，并调用目标方法](/img/java/proxy/proxy.png)
+  ![Spring 的切面由包裹了目标对象的代理类实现。代理类处理方法的调用，执行额外的切面逻辑，并调用目标方法](/img/java/proxy/Proxy.png)
 
   > 直到应用需要被代理的 bean 时，Spring 才创建代理对象。如果使用的是 `ApplicationContext` 的话，在 `ApplicationContext` 从 `BeanFactory` 中**加载所有 bean 的时候**，Spring 才会创建被代理的对象。因为 Spring 运行时才创建代理对象，所以我们不需要特殊的编译器来织入 Spring AOP 的切面。
 
@@ -133,6 +133,27 @@ Spring AOP 的设计理念和大多数其它 AOP 框架不同。目标并不是�
 
 ## Spring AOP 的两种实现方式
 
+字节码操作库有很多，常用的例如：
+
+* 官方库：[JDK 9 - JEP 199 - Java Compiler API](http://cr.openjdk.java.net/~jjg/199-269/199.api/java.compiler-summary.html)。用于 JSP 引擎、等等。
+* 三方库：ASM、Javassist
+
+![aop_lib](/img/spring/aop/aop_lib.png)
+
+### JDK Proxy
+
+参考：《[Java 反射篇（四）JDK 动态代理总结](/2018/12/01/java-jdk-proxy/)》
+
+### CGLib
+
+基于 ASM 库。
+
+参考：https://github.com/cglib/cglib/wiki
+
+![cglib](/img/spring/aop/cglib.png)
+
+### 两种实现方式对比
+
 Spring AOP 支持两种模式的动态代理，JDK Proxy 或者 CGLib：
 
 ![Spring AOP process](/img/spring/aop/springaop-process.png)
@@ -149,9 +170,9 @@ Spring AOP 支持两种模式的动态代理，JDK Proxy 或者 CGLib：
 
   - 有的时候调用目标可能不便实现额外接口，从某种角度看，限定调用者实现接口是有些侵入性的实践，类似 CGLib 动态代理就没有这种限制。CGLib 动态代理采取的是创建目标类的子类的方式，因为是子类化，我们可以达到近似使用被调用者本身的效果。
   - 只操作我们关心的类，而不必为其它相关类增加工作量。
-  - 性能更好。
+  - 性能更好，相对于低版本的 JDK Proxy。
 
-核心源码解析：
+### 核心源码解析
 
 ![AopProxy 实现结构](/img/spring/aop/AopProxy.png)
 
@@ -232,7 +253,7 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 
 官方文档的一些关键摘录：
 
-### AOP Proxies
+#### AOP Proxies
 
 Spring AOP defaults to using standard JDK dynamic proxies for AOP proxies. This enables any interface (or set of interfaces) to be proxied.
 
@@ -240,7 +261,7 @@ Spring AOP can also use CGLIB proxies. This is necessary to proxy classes rather
 
 It is important to grasp the fact that Spring AOP is proxy-based. See [Understanding AOP Proxies](https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#aop-understanding-aop-proxies) for a thorough examination of exactly what this implementation detail actually means.
 
-### Proxying Mechanisms
+#### Proxying Mechanisms
 
 Spring AOP uses either JDK dynamic proxies or CGLIB to create the proxy for a given target object. (JDK dynamic proxies are preferred whenever you have a choice).
 
@@ -473,9 +494,15 @@ public List<String> listById(String id) {
 
 https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#aop
 
-《[AspectJ Docs](https://www.eclipse.org/aspectj/docs.php)》
+AspectJ
 
-《[AspectJ Compiler (ajc)](http://www.eclipse.org/aspectj/doc/released/devguide/ajc-ref.html)》
+* https://livebook.manning.com/book/aspectj-in-action-second-edition/chapter-8/
+
+* 《[AspectJ Docs](https://www.eclipse.org/aspectj/docs.php)》
+
+* 《[AspectJ Compiler (ajc)](http://www.eclipse.org/aspectj/doc/released/devguide/ajc-ref.html)》
+
+http://openjdk.java.net/jeps/199
 
 https://github.com/cglib/cglib/wiki
 

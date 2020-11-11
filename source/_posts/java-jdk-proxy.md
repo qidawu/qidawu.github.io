@@ -10,7 +10,7 @@ typora-root-url: ..
 
 > 代理对象 = 增强代码 + 目标对象
 
-![proxy](/img/java/proxy/proxy.png)
+![proxy](/img/java/proxy/Proxy.png)
 
 什么是动态代理？
 
