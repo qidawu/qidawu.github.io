@@ -54,22 +54,34 @@ public class Test {
 
 类从加载到 JVM 内存到被从内存中释放，经历的生命周期如下：
 
-![lifecycle_of_class](/img/java/classloader/lifecycle_of_class.webp)
+![lifecycle_of_class](/img/java/classloader/lifecycle_of_class.png)
+
+- 加载阶段：包括根据类或接口的二进制名称（[binary name](https://docs.oracle.com/javase/8/docs/api/java/lang/ClassLoader.html#name)）查找其字节码文件（可能是之前由 `javac` 编译器源代码编译出的字节码文件；或者是通过动态编译，例如 JDK 动态代理使用的 `sun.misc.ProxyGenerator` 工具类编译出的字节码文件 `$Proxy0.class`），并构造成一个表示该类或接口的 `Class` 类对象。**加载阶段由类加载器 `ClassLoader` 及其子类负责实现：`findClass` 方法负责查找字节码文件，`defineClass` 方法负责构造成 `Class` 对象。**
+- 验证阶段：确保类或接口的二进制代码在结构上是正确的。类文件校验器（Class File Verifier）会进行以下四类校验：
+  - 文件完整性校验（File Integrity Check）：第一步也是最简单的一步是检查类文件的结构。 它确保类文件具有适当的签名（前四个字节为魔数 `0xCAFEBABE`），并且类文件中的每个结构都具有适当的长度。它检查类文件本身不能内容过长或过短，并且常量池仅包含有效条目。当然，类文件的长度可能有所不同，但是每个结构（例如常量池）的长度作为文件规范的一部分都包含其中。
+  - 类完整性校验（Class Integrity Check）：
+    - 该类具有父类（除非该类是 `Object`）。
+    - 该父类不是一个 `final` 类，并且该子类不会尝试覆盖其父类中的 `final` 方法。
+    - 常量池的条目格式正确，并且所有方法和字段引用均具有合法的名称和签名。
+  - 字节码完整性校验（Bytecode Integrity Check）：执行字节码校验器（Bytecode Verifier），检查每个字节码以确定代码在运行时的实际行为，包括对方法参数和字节码操作数的数据流分析，堆栈检查和静态类型检查。是整个验证阶段中最复杂的一步。
+  - 运行时完整性校验（Runtime Integrity Check）
+- 准备阶段：包括为类或接口创建 `static` 静态字段（包括类变量和常量），并赋默认值。
+- 解析阶段：包括检查符号引用是否正确、将符号引用替换为直接引用。
+- 初始化阶段：
+  - 类的初始化阶段包括执行 `static` 静态代码块、为 `static` 静态字段（变量）赋值。
+  - 接口的初始化阶段包括为字段（接口字段默认为 `public static final` 常量）赋值。
 
 各个步骤可以详见官方文档 ["Execution" chapter of The Java™ Language Specification](https://docs.oracle.com/javase/specs/jls/se8/html/jls-12.html)：
 
 ![execution](/img/java/classloader/execution.png)
 
-# 类文件的获取途径
+# 类加载器源码解析
 
-类可以按需动态加载到内存，这是 Java 的一大特点，也称为运行时绑定，或动态绑定。类文件的获取途径如下：
+Java 虚拟机中的类加载器（`ClassLoader`）负责加载来自文件系统、网络或其它来源的类文件。`ClassLoader` 是一个抽象类，其继承结构如下：
 
-- 从 ZIP 包中读取，最常见，JAR，WAR，EAR 格式的基础。
-- 从网络中获取，典型场景是 Applet。
-- 运行时计算生成，典型情景是 JDK 动态代理技术。
-- 从其它文件中生成，典型场景是 JSP 应用，即由 JSP 文件生成对应的 Servlet Class 类。
+![ClassLoader](/img/java/classloader/ClassLoader.png)
 
-加载后，每个 `Class` 对象都包含一个定义它的类加载器的[引用](https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html#getClassLoader--)。可以通过以下方式查看：
+类加载后，每个 `Class` 对象都包含一个定义它的类加载器的[引用](https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html#getClassLoader--)。可以通过以下方式查看：
 
 ```java
 public class Test {
@@ -85,38 +97,9 @@ public class Test {
 }
 ```
 
-# 类加载器源码解析
-
-Java 虚拟机中的类加载器（`ClassLoader`）负责加载来自文件系统、网络或其它来源的类文件。`ClassLoader` 是一个抽象类，其继承结构和实现类如下：
-
-![ClassLoader](/img/java/classloader/ClassLoader.png)
-
-Java 虚拟机在双亲委派模型中使用到 `ExtClassLoader` 和 `AppClassLoader`，用户可以直接使用：
-
-```java
-// 从当前类路径中加载类文件
-Class<?> clazz = Class.forName("com.github.parent.HelloWorld");
-Object instance = clazz.newInstance();
-// sun.misc.Launcher$AppClassLoader
-String name = instance.getClass().getClassLoader().getClass().getName();
-```
-
-如果用户想从其它位置加载类文件，可以自定义类加载器，或者使用 `URLClassLoader` 按本地路径（`file:/`）或网络路径（`http://`）加载类文件，如下：
-
-```java
-// 从 E 盘中加载类文件
-URLClassLoader classLoader = new URLClassLoader(new URL[] {new URL("file:/e:/")});
-// 从 localhost 中加载类文件
-// URLClassLoader classLoader = new URLClassLoader(new URL[] {new URL("http://localhost/testfile/")});
-Class<?> clazz = classLoader.loadClass("com.github.parent.HelloWorld");
-Object instance = clazz.newInstance();
-// java.net.URLClassLoader
-String name = instance.getClass().getClassLoader().getClass().getName();
-```
-
 `ClassLoader` 的核心方法如下：
 
-## 加载类
+## 类加载
 
 ### loadClass
 
@@ -177,7 +160,7 @@ String name = instance.getClass().getClassLoader().getClass().getName();
 
 这整个加载过程被称为“双亲委派模型 (Delegation Model)”（流程见下图）。这种设计的好处体现在：
 
-* 沙箱安全机制：例如自己写的 `java.lang.String` 类不会被加载，否则在 `defineClass` 方法这一步会报错，**防止核心 API 库被随意篡改。**
+* 沙箱安全机制：例如自己写的 `java.lang.String` 类不会被加载，否则在 `defineClass` 方法这一步会报错，**防止恶意代码污染，核心 API 库被随意篡改。**核心 API 库只能由 `Bootstrap ClassLoader` 从`$JAVA_HOME/jre/lib` 目录进行加载。
 * 避免类的重复加载：当父加载器已经加载了该类时，就没有必要再加载一次，**保证被加载类的唯一性。**
 
 ![classloader_hierarchy](/img/java/classloader/classloader_hierarchy.png)
@@ -193,7 +176,7 @@ Object instance = clazz.newInstance();
 
 ### findClass
 
-进入类加载的“加载（Loading）”阶段。该方法应当被子类覆盖重写，用于使用指定的二进制名称（[binary name](https://docs.oracle.com/javase/8/docs/api/java/lang/ClassLoader.html#name)）查找类。`ClassLoader` 的默认实现是抛出一个 `ClassNotFoundException`：
+实现“加载阶段（Loading）”的查找功能。该方法应当被子类覆盖重写，用于使用指定的二进制名称（[binary name](https://docs.oracle.com/javase/8/docs/api/java/lang/ClassLoader.html#name)）查找类或接口的字节码文件。`ClassLoader` 的默认实现是抛出一个 `ClassNotFoundException`：
 
 ```java
     protected Class<?> findClass(String name) throws ClassNotFoundException {
@@ -202,6 +185,26 @@ Object instance = clazz.newInstance();
 ```
 
 可以通过覆盖这个方法实现一个自定义的类加载器（参考 [ClassLoader](https://docs.oracle.com/javase/8/docs/api/java/lang/ClassLoader.html) 介绍的例子，自定义 `NetworkClassLoader`）。
+
+类可以按需动态加载到内存，这是 Java 的一大特点，也称为运行时绑定，或动态绑定。类文件的获取途径如下：
+
+- 从 ZIP 包中读取，最常见，JAR，WAR，EAR 格式的基础。
+- 从网络中获取，典型场景是 Applet。
+- 运行时计算生成，典型情景是 JDK 动态代理技术。
+- 从其它文件中生成，典型场景是 JSP 应用，即由 JSP 文件生成对应的 Servlet Class 类。
+
+如果用户想从其它位置加载类文件，可以自定义类加载器，或者使用自带的 `URLClassLoader` 从本地路径（`file:/`）或网络路径（`http://`）加载类文件，如下：
+
+```java
+// 从 E 盘中加载类文件
+URLClassLoader classLoader = new URLClassLoader(new URL[] {new URL("file:/e:/")});
+// 从 localhost 中加载类文件
+// URLClassLoader classLoader = new URLClassLoader(new URL[] {new URL("http://localhost/testfile/")});
+Class<?> clazz = classLoader.loadClass("com.github.parent.HelloWorld");
+Object instance = clazz.newInstance();
+// java.net.URLClassLoader
+String name = instance.getClass().getClassLoader().getClass().getName();
+```
 
 下面是子类 `URLClassLoader` 的默认实现，源码及注释如下：
 
@@ -220,7 +223,7 @@ Object instance = clazz.newInstance();
                         Resource res = ucp.getResource(path, false);
                         if (res != null) {
                             try {
-                                // 如果找到文件，则解析为 Class 类实例
+                                // 如果找到文件，则构造为 Class 类实例
                                 return defineClass(name, res);
                             } catch (IOException e) {
                                 throw new ClassNotFoundException(name, e);
@@ -244,13 +247,28 @@ Object instance = clazz.newInstance();
 
 ### defineClass
 
-“加载（Loading）”阶段的一部分。有四个 `defineClass` 方法。例如自定义类加载器时最常用的下面这个，用于将字节数组解析为 `Class` 类实例：
+实现“加载阶段（Loading）”的构造功能。
+
+`ClassLoader` 提供了四个 `defineClass` 方法可供自定义类加载器时使用，如下图。其中，第二个方法最常使用：`defineClass(String name, byte[] b, int off, int len)`。
+
+![defineClass](/img/java/classloader/defineClass.png)
+
+其调用的底层源码如下，会调用 `preDefineClass` 和 `postDefineClass` 进行预处理和后置处理：
 
 ```java
-defineClass(String name, byte[] b, int off, int len)
+    protected final Class<?> defineClass(String name, byte[] b, int off, int len,
+                                         ProtectionDomain protectionDomain)
+        throws ClassFormatError
+    {
+        protectionDomain = preDefineClass(name, protectionDomain);
+        String source = defineClassSourceLocation(protectionDomain);
+        Class<?> c = defineClass1(name, b, off, len, protectionDomain, source);
+        postDefineClass(c, protectionDomain);
+        return c;
+    }
 ```
 
-如果自定义类加载器打破了双亲委派模型，然后还去加载核心 API 库，例如 `java.lang.String`，会报错如下：
+如果自定义类加载器打破了双亲委派模型，然后还去加载核心 API 库，例如自己伪造一个 `java.lang.String`，会报错如下：
 
 ```
 java.lang.SecurityException: Prohibited package name: java.lang
@@ -263,7 +281,7 @@ java.lang.SecurityException: Prohibited package name: java.lang
     ...
 ```
 
-`preDefineClass` 方法校验的源码如下，关键判断 `name.startsWith("java.")` 抛出异常：
+这是由于 `preDefineClass` 预处理方法进行了二进制名称的前缀校验，源码如下，关键判断 `name.startsWith("java.")` 抛出异常：
 
 ```java
     /* Determine protection domain, and check that:
@@ -300,7 +318,7 @@ java.lang.SecurityException: Prohibited package name: java.lang
 
 进入类加载的“连接（Linking）”阶段（详见官方文档 "Execution" chapter of The Java™ Language Specification）。
 
-## 加载资源
+## 资源加载
 
 使用场景：例如 Spring Factories 机制中 `SpringFactoriesLoader` 加载类路径下的文件：
 
@@ -504,28 +522,32 @@ Class-Path: commons-daemon.jar
 
 # 参考
 
-https://docs.oracle.com/javase/8/docs/api/java/lang/ClassLoader.html
+JavaDoc
 
-https://docs.oracle.com/javase/specs/jls/se8/html/jls-12.html
+- https://docs.oracle.com/javase/8/docs/api/java/lang/ClassLoader.html
 
-https://docs.oracle.com/javase/8/docs/technotes/tools/findingclasses.html
+- https://docs.oracle.com/javase/specs/jls/se8/html/jls-12.html
 
-https://docs.oracle.com/javase/8/docs/technotes/tools/windows/java.html
+- https://docs.oracle.com/javase/8/docs/technotes/tools/findingclasses.html
 
-https://en.wikipedia.org/wiki/Classpath_(Java)
+- https://docs.oracle.com/javase/8/docs/technotes/tools/windows/java.html
+- http://cr.openjdk.java.net/~mr/jigsaw/ea/module-summary.html
+- [The Class Loader and Class File Verifier](http://medialab.di.unipi.it/web/doc/JNetSec/jns_ch5.htm)
 
-https://en.wikipedia.org/wiki/Java_Class_Library
+Wikipedia
 
-http://cr.openjdk.java.net/~mr/jigsaw/ea/module-summary.html
+- https://en.wikipedia.org/wiki/Classpath_(Java)
+- https://en.wikipedia.org/wiki/Java_class_file
+- https://en.wikipedia.org/wiki/Java_Class_Library
 
 其它：
 
-https://blog.csdn.net/briblue/article/details/54973413
+- https://blog.csdn.net/briblue/article/details/54973413
 
-https://www.cnblogs.com/doit8791/p/5820037.html
+- https://www.cnblogs.com/doit8791/p/5820037.html
 
-《[理解java对象初始化顺序](https://www.cnblogs.com/Kidezyq/p/11769839.html)》先父后子，先静后动
+- 《[理解java对象初始化顺序](https://www.cnblogs.com/Kidezyq/p/11769839.html)》先父后子，先静后动
 
-《[原来热加载如此简单，手动写一个 Java 热加载吧](https://mp.weixin.qq.com/s/iGKprJEqCZpIO77sAMYRCQ)》
+- 《[原来热加载如此简单，手动写一个 Java 热加载吧](https://mp.weixin.qq.com/s/iGKprJEqCZpIO77sAMYRCQ)》
 
-https://zhuanlan.zhihu.com/p/54693308
+- https://zhuanlan.zhihu.com/p/54693308
