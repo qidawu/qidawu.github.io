@@ -6,30 +6,11 @@ tags: Java
 typora-root-url: ..
 ---
 
-# 核心实现类
-
-Reactor Core 提供了两个组合式的异步串行 API：
-
-* `reactor.core.publisher.Mono` (for [0|1] elements)
-* `reactor.core.publisher.Flux` (for [N] elements)
-
-这两个类都是 `org.reactivestreams.Publisher` 接口的实现类：
-
-![Publisher](/img/java/reactive-stream/reactor/Publisher.png)
-
-Reactor Core 还提供了 ``org.reactivestreams.Subscriber` 接口的实现类，如下（还有其它子类，此处不一一例举）：
-
-![Subscriber](/img/java/reactive-stream/reactor/Subscriber.png)
-
-不过一般不会直接使用该实现类，而是使用 `Mono`、`Flux` 提供的 `subscribe` 方法（如下图），并传入 Lambda 表达式语句（代码即参数），由方法的实现负责将参数封装为 `Subscriber` 接口的实现类，供消费使用：
-
-![reactor_subscribe](/img/java/reactive-stream/reactor/reactor_subscribe.png)
-
-# 注意点
-
 尽管 Reactive Streams 规范并未指定任何运算符（Operators），但 Reactor 的核心价值之一就是提供了丰富的运算符。从简单的转换、过滤到复杂的编排和错误处理，涉及方方面面。
 
 推荐通过参考文档而不是 JavaDoc 来学习 Mono/Flux API 和 Operator 操作符。参考：["which operator do I need?" appendix](https://projectreactor.io/docs/core/release/reference/docs/index.html#which-operator)
+
+# 注意点
 
 使用 Reactor API 时，有以下几个注意点：
 
