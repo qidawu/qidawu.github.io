@@ -1,12 +1,12 @@
 ---
-title: Java 集合框架系列（五）Comparator 排序
-date: 2018-05-01 23:46:35
+title: Java 集合框架系列（六）Comparator API 总结
+date: 2018-05-10 23:46:35
 updated:
 tags: Java
 typora-root-url: ..
 ---
 
-本文总结下集合排序的常用方法：
+本文总结下集合元素排序的常用 API：
 
 ![java.util.Comparator](/img/java/collection/java.util.Comparator.png)
 
