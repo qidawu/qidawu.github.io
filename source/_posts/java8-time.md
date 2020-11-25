@@ -481,5 +481,6 @@ HijrahDate hijrahDate = HijrahDate.from(date);
 
 * 《Java 8 实战》
 * Java SE Docs
+* [协调世界时（UTC） - 维基百科](https://zh.wikipedia.org/wiki/%E5%8D%8F%E8%B0%83%E4%B8%96%E7%95%8C%E6%97%B6)
 * 《[LocalDate、LocalDateTime与timestamp、Date的转换](https://www.jianshu.com/p/b4629857fc6f)》
 
