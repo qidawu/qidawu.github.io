@@ -3,6 +3,7 @@ title: "Vim 使用总结"
 date: 2015-09-17 21:50:05
 updated: 
 tags: GNU/Linux
+typora-root-url: ..
 ---
 
 ![Vim](/img/vim/vim.png)
@@ -365,4 +366,5 @@ GVim 的多标签切换：
 * 《[如何在 Vim 中得到你最喜爱的 IDE 特性](http://coolshell.cn/articles/894.html)》
 * 《[为什么 Vim 使用 HJKL 键作为方向键](http://www.oschina.net/news/28608/vim-direction-keys)》
 * 《[vim文本替换命令](https://www.cnblogs.com/wind-wang/p/5768000.html)》
+* 《[5分钟学会 Vim 分屏操作方方面面](https://mp.weixin.qq.com/s?__biz=MzU3NTgyODQ1Nw==&mid=2247499367&idx=2&sn=bfd12789b31b0a6c7810769ec24ba842&chksm=fd1f86e1ca680ff7c7d212139b022ebeefa77f848513fe913359eee5297e8825b0c98ad27e61)》
 * VIM 插件：https://vimawesome.com/plugin/json-vim
