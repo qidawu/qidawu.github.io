@@ -48,7 +48,34 @@ SELECT NOW(6);                          -- 2018-08-08 22:20:46.166123，获取�
 SELECT CURRENT_TIMESTAMP;               -- 2018-08-08 22:20:46，获取当前年月日时分秒
 ```
 
-## 时区转换
+## 时区
+
+### 查看当前时区
+```sql
+show variables like '%time_zone%';  -- 结果主要看 system_time_zone
+```
+
+参考：[MySQL 中几个关于时间/时区的变量](https://www.cnblogs.com/Uest/p/8259821.html)
+
+### 修改时区
+
+通过 SQL `SET` 语法临时修改：
+
+```sql
+set global time_zone = '+8:00';  -- 设置 Global 全局时区，重启后失效
+set time_zone = '+8:00';         -- 设置 Session 会话时区，会话关闭后失效
+```
+
+通过修改配置文件，重启后永久生效：
+
+```sql
+$ vim /etc/mysql/my.cnf
+default-time_zone = '+8:00'
+
+$ service mysql restart
+```
+
+### 时区转换
 
 参考：https://dev.mysql.com/doc/refman/5.7/en/datetime.html
 
@@ -57,9 +84,6 @@ SELECT CURRENT_TIMESTAMP;               -- 2018-08-08 22:20:46，获取当前年
 `CONVERT_TZ(dt, from_tz, to_tz)` 函数用于将 `DATETIME` 类型转为指定时区，例如：
 
 ```SQL
-# 查询当前时区
-show variables like '%time_zone%';
-
 # TIMESTAMP 类型（UTC±00:00） > DATETIME 类型（UTC±00:00） > DATETIME 类型（UTC+08:00）
 SELECT CONVERT_TZ( FROM_UNIXTIME( UNIX_TIMESTAMP() ), '+00:00', '+08:00' ) AS NOW;
 ```
@@ -86,11 +110,19 @@ SELECT UNIX_TIMESTAMP('2008-08-08');    -- 1219125100，将指定参数转换为
 | ------------------------------------------------------------ | ------------------------------- |
 | [`FROM_UNIXTIME(unix_timestamp[,format])`](https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_from-unixtime) | Format Unix timestamp as a date |
 
-例子：
+注意，该函数只支持单位为秒的时间戳，不支持毫秒、微秒，需要先换算：
 
 ```sql
-SELECT FROM_UNIXTIME(1447430881);                          -- 2015-11-13 10:08:01
-SELECT FROM_UNIXTIME(1447430881, '%Y %D %M %h:%i:%s');     -- 2015 13th November 10:08:01
+SELECT FROM_UNIXTIME(1447430881);                                    -- 2015-11-13 10:08:01
+SELECT FROM_UNIXTIME(1447430881123 / 1000);                          -- 2015-11-13 16:08:01.1230
+SELECT FROM_UNIXTIME(1447430881123456 / 1000000, '%Y %D %M %r %f');  -- 2015 13th November 04:08:01 PM 123456
+```
+
+支持指定 `fomart` 格式：
+
+```sql
+SELECT FROM_UNIXTIME(0);                       -- 1970-01-01 00:00:00
+SELECT FROM_UNIXTIME(0, '%Y %D %M %h:%i:%s');  -- 1970 1st January 12:00:00
 ```
 
 ### 日期/时间 > 字符串
@@ -99,17 +131,6 @@ Date/Time to Str（日期/时间转换为字符串）函数：
 
 * `date_format(date, format)`
 * `time_format(time, format)`
-
-`format` 如下：
-
-| `format` | 描述 |
-| -------- | ---- |
-| `%Y`     | 年   |
-| `%m`     | 月   |
-| `%d`     | 日   |
-| `%H`     | 时   |
-| `%i`     | 分   |
-| `%s`     | 秒   |
 
 例子：
 
@@ -133,6 +154,26 @@ select str_to_date('08.09.2008', '%m.%d.%Y');                   -- 2008-08-09
 select str_to_date('08:09:30', '%h:%i:%s');                     -- 08:09:30
 select str_to_date('08.09.2008 08:09:30', '%m.%d.%Y %h:%i:%s'); -- 2008-08-09 08:09:30
 ```
+
+### format 参数
+
+`format` 如下，这里只列出常用的：
+
+| `format` | 描述                                                         |
+| -------- | ------------------------------------------------------------ |
+| `%Y`     | Year, numeric, four digits                                   |
+| `%y`     | Year, numeric (two digits)                                   |
+| `%M`     | Month name (`January`..`December`)                           |
+| `%m`     | Month, numeric (`00`..`12`)                                  |
+| `%D`     | Day of the month with English suffix (`0th`, `1st`, `2nd`, `3rd`, …) |
+| `%d`     | Day of the month, numeric (`00`..`31`)                       |
+| `%H`     | Hour (`00`..`23`)                                            |
+| `%h`     | Hour (`01`..`12`)                                            |
+| `%i`     | Minutes, numeric (`00`..`59`)                                |
+| `%s`     | Seconds (`00`..`59`)                                         |
+| `%f`     | Microseconds (`000000`..`999999`)                            |
+| `%T`     | Time, 24-hour (*`hh:mm:ss`*)                                 |
+| `%r`     | Time, 12-hour (*`hh:mm:ss`* followed by `AM` or `PM`)        |
 
 ## 日期/时间计算
 
