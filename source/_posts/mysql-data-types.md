@@ -214,6 +214,15 @@ MySQL 不能将 `BLOB` 和 `TEXT` 列全部长度的字符串进行索引，也�
 
 ![date_and_time_type_storage_requirements](/img/mysql/datatype/date_and_time_type_storage_requirements.png)
 
+通过分析精确到小数部分的秒（Fractional Seconds Precision）所支持的最大十进制数值，并将其转换为二进制表示，可知为什么精度越高所需的存储空间越多：
+
+| Fractional Seconds Precision | Maximum Decimal Representation | Maximum Binary Representation           | Storage Required |
+| ---------------------------- | ------------------------------ | --------------------------------------- | ---------------- |
+| 0                            | 0                              | 0 (0 bit)                               | 0 byte           |
+| 1, 2                         | 99                             | 0110 0011 (8 bits)                      | 1 byte           |
+| 3, 4                         | 9,999                          | 0010 0111 0000 1111 (16 bits)           | 2 bytes          |
+| 5, 6                         | 999,999                        | 0000 1111 0100 0010 0011 1111 (24 bits) | 3 bytes          |
+
 有关于时间值的内部表示的详细信息，参考 [MySQL Internals: Important Algorithms and Structures - Date and Time Data Type Representation](https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html)
 
 `DATETIME` 类型非小数部分的编码如下：
