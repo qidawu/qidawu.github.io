@@ -62,7 +62,11 @@ https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html
 
 ![mono_ifempty](/img/java/reactive-stream/reactor/mono/mono_ifempty.png)
 
-### 异常处理
+### 执行操作
+
+![mono_od](/img/java/reactive-stream/reactor/mono/mono_do.png)
+
+## 异常处理
 
 ![mono_error](/img/java/reactive-stream/reactor/mono/mono_error.png)
 
@@ -171,6 +175,10 @@ map、flatMap：
 ### 异常处理
 
 ![flux_error](/img/java/reactive-stream/reactor/flux/flux_error.png)
+
+### 执行操作
+
+![flux_do](/img/java/reactive-stream/reactor/flux/flux_do.png)
 
 ## 终结操作
 
