@@ -1,5 +1,5 @@
 ---
-title: MySQL 加锁读机制总结
+title: MySQL 加锁读（Locking Reads）机制总结
 date: 2019-02-20 22:05:04
 updated:
 tags: MySQL
@@ -8,8 +8,8 @@ typora-root-url: ..
 
 MySQL 支持两种读机制：
 
-* [一致性非加锁读（Consistent Non-locking Reads (MVCC)）](https://dev.mysql.com/doc/refman/5.7/en/innodb-consistent-read.html)
-* [加锁读（Locking Reads）](https://dev.mysql.com/doc/refman/5.7/en/innodb-locking-reads.html)
+* [一致性非加锁读（Consistent Non-locking Reads）](https://dev.mysql.com/doc/refman/5.7/en/innodb-consistent-read.html)，是 InnoDB 在 `RR` 隔离级别下处理 SELECT 查询语句的默认模式，用于实现多版本并发控制（MVCC）以解决不可重复读问题。由于无锁，并发性能高。
+* [加锁读（Locking Reads）](https://dev.mysql.com/doc/refman/5.7/en/innodb-locking-reads.html)，是 InnoDB 在 `SERIALIZABLE`  隔离级别下处理 SELECT 查询语句的默认模式，查询默认加共享锁读（S-Locking reads）。由于有锁，并发性能低（因为获取写锁需阻塞等待读锁释放）。
 
 # 加锁读机制
 

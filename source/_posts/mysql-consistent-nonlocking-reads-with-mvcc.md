@@ -1,10 +1,14 @@
 ---
-title: MySQL 一致性非加锁读（MVCC）总结
+title: MySQL 多版本并发控制（MVCC）总结
 date: 2019-03-23 22:36:58
 updated:
 tags: MySQL
 typora-root-url: ..
 ---
+
+# 本文大纲
+
+![Transaction Isolation](/img/mysql/tx_isolation.png)
 
 # 事务的隔离性
 
@@ -28,9 +32,9 @@ typora-root-url: ..
 | 可重复读<br/>`REPEATABLE READ`  | 使用一致性非加锁读（Consistent Non-locking Reads）<br/>同一事务内总是使用**首次快照**，确保可重复读。 | 一致性读取不会在它访问的数据上加任何锁，因此其它事务可以自由地同时修改那些数据，同一份数据在 undo log 会存在**多份历史版本**。（即通过多版本并发控制（MVCC）实现可重复读） |
 | 串行化<br/>`SERIALIZABLE`       | 加共享锁读<br/>（S-Locking reads）                           | 加锁读会给数据加共享锁，其它事务读取时可以继续加共享锁，但修改会阻塞等待以获取排它锁，保证读写的串行化，因此同一份数据只存在**一份当前版本**。（即通过读写锁实现可重复读） |
 
-# MySQL 可重复读实现
+# InnoDB 可重复读实现
 
-下面重点看下 MySQL InnoDB 如何实现可重复读这个隔离级别。它使用了一致性非加锁读（Consistent Non-locking Reads）实现多版本并发控制（MVCC），这种方法不会在它访问的表上设置任何锁，因此其它事务可以自由地同时修改那些表，并发性能高。
+下面重点看下 MySQL InnoDB 如何实现可重复读这个隔离级别。它使用了一致性非加锁读（Consistent Non-locking Reads）实现多版本并发控制（MVCC），这种方法不会在它访问的数据上设置任何锁，因此其它事务可以自由地同时修改那些表，并发性能高。
 
 ## 示例
 
@@ -44,11 +48,9 @@ typora-root-url: ..
 >
 > 可重复读的核心就是一致性读（consistent read）；而事务更新数据的时候，只能用当前读（current read）。如果当前的记录的行锁被其他事务占用的话，就需要进入锁等待。
 
+## Current Read
 
-
-
-
-数据库快照适用于同一事务内的 `SELECT` 语句，而不一定适用于 DML 语句。不同事务间的增删改操作还是会相互影响，例如：
+数据库快照适用于同一事务内的 `SELECT` 语句，而不一定适用于 DML 语句。不同事务间的增删改操作还是会相互影响的，因为 DML 与 SELECT 语句不同，使用的是 *current read*。例如：
 
 * 尽管事务 A 创建一致性视图时查不到 `xyz` 记录，但如果此后其它事务插入了 `xyz` 记录并提交事务，事务 A 仍然可以将它们删除：
 
@@ -70,11 +72,19 @@ typora-root-url: ..
   -- Returns 10: this txn can now see the rows it just updated.
   ```
 
-## 实现原理
+## Consistent Read 实现原理
 
-### 数据版本（Undo Log）
+Consistent Read 实现依赖于 Undo Log 和 Consistent Read-View。
 
-### 一致性视图（Read View）
+### Undo Log 是什么？
+
+> A storage area that holds copies of data modified by active **transactions**. If another transaction needs to see the original data (as part of a **consistent read** operation), the unmodified data is retrieved from this storage area.
+>
+> In MySQL 5.6 and MySQL 5.7, you can use the [`innodb_undo_tablespaces`](https://dev.mysql.com/doc/refman/5.7/en/innodb-parameters.html#sysvar_innodb_undo_tablespaces) variable have undo logs reside in **undo tablespaces**, which can be placed on another storage device such as an **SSD**. In MySQL 8.0, undo logs reside in two default undo tablespaces that are created when MySQL is initialized, and additional undo tablespaces can be created using [`CREATE UNDO TABLESPACE`](https://dev.mysql.com/doc/refman/5.7/en/create-tablespace.html) syntax.
+>
+> The undo log is split into separate portions, the **insert undo buffer** and the **update undo buffer**.
+
+### Consistent Read-View 是什么？
 
 > 在实现上， InnoDB 为每个事务构造了一个数组，用来保存这个事务启动瞬间，当前正在“活跃”的所有事务 ID。“活跃”指的就是，启动了但还没提交。
 >
@@ -136,13 +146,6 @@ v          SELECT * FROM t;
            |    1    |    2    |
            ---------------------
 ```
-
-## 不适用的情况
-
-一致性读取不适用于某些 DDL 语句：
-
-* `DROP TABLE`
-* `ALTER TABLE`
 
 # 参考
 
