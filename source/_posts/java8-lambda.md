@@ -1,8 +1,8 @@
 ---
-title: Java 8 函数式编程系列（一）Lambda 表达式总结
+title: 函数式编程系列（一）Java 8 Lambda 表达式总结
 date: 2019-05-07 15:43:19
 updated:
-tags: Java
+tags: [函数式编程, Java]
 typora-root-url: ..
 ---
 

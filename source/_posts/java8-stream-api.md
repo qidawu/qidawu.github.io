@@ -1,8 +1,8 @@
 ---
-title: Java 8 函数式编程系列（三）Stream API 总结
+title: 函数式编程系列（三）Java 8 Stream API 总结
 date: 2019-05-21 20:35:02
 updated:
-tags: Java
+tags: [函数式编程, Java]
 typora-root-url: ..
 ---
 
