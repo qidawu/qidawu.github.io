@@ -1,8 +1,8 @@
 ---
-title: Java 并发编程系列（二）线程池总结
-date: 2018-07-13 15:07:11
+title: 并发编程系列（三）Java 线程池总结
+date: 2020-05-03 22:07:11
 updated: 
-tags: Java
+tags: [并发编程, Java]
 typora-root-url: ..
 ---
 

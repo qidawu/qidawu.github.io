@@ -1,8 +1,8 @@
 ---
-title: Java 并发编程系列（一）常用包总结
-date: 2018-07-10 15:07:11
+title: 并发编程系列（二）Java 并发包总结
+date: 2020-05-01 15:07:11
 updated: 
-tags: Java
+tags: [并发编程, Java]
 typora-root-url: ..
 ---
 
