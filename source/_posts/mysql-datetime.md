@@ -52,7 +52,11 @@ SELECT CURRENT_TIMESTAMP;               -- 2018-08-08 22:20:46，获取当前年
 
 ### 查看当前时区
 ```sql
-show variables like '%time_zone%';  -- 结果主要看 system_time_zone
+-- 结果主要看 system_time_zone
+show variables like '%time_zone%';
+
+-- 查询系统时区和会话时区
+SELECT @@GLOBAL.time_zone, @@SESSION.time_zone;
 ```
 
 参考：[MySQL 中几个关于时间/时区的变量](https://www.cnblogs.com/Uest/p/8259821.html)
@@ -355,3 +359,5 @@ https://dev.mysql.com/doc/refman/5.7/en/functions.html
 https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html
 
 https://dev.mysql.com/doc/refman/5.7/en/timestamp-initialization.html
+
+https://dev.mysql.com/doc/refman/5.7/en/time-zone-support.html

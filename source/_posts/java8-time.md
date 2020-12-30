@@ -63,11 +63,11 @@ Instant           // 以 Unix 元年时间（UTC 时区 1970-01-01T00:00:00Z，�
 
 ![java.time核心类](/img/java/time/java.time核心类.png)
 
-# 具体实现
-
-## LocalDate、LocalTime
+# LocalDate、LocalTime
 
 `LocalDate`、`LocalTime` 是人类易读的日期和时间格式，表示一个本地时间点。
+
+## 底层实现
 
 `LocalDate` 的底层实现包含不可变的年、月、日：
 
@@ -129,7 +129,7 @@ public final class LocalDateTime
 }
 ```
 
-使用方式：
+## 使用方式
 
 | 方法名     | 是否静态方法 | 描述                                                         |
 | ---------- | ------------ | ------------------------------------------------------------ |
@@ -194,7 +194,7 @@ LocalDate newDate8 = date.with(TemporalAdjusters.lastDayOfMonth());
 
 ![TemporalAdjusters静态工厂方法](/img/java/time/TemporalAdjusters静态工厂方法.png)
 
-## Instant
+# Instant
 
 作为人，我们习惯于以星期几、几号、几点、几分这样的方式理解日期和时间。毫无疑问，这种方式对于计算机而言并不容易理解。从计算机的角度来看，建模时间最自然的格式是表示一个持续时间段上某个点的单一大整型数。这也是新的 `java.time.Instant` 类对时间建模的方式，它是以 **Unix 元年时间**（UTC 时区 1970-01-01T00:00:00Z，“Z” 代表 UTC 时区）开始所经历的秒数进行计算。
 
@@ -213,6 +213,8 @@ LocalDate newDate8 = date.with(TemporalAdjusters.lastDayOfMonth());
 > 1 纳秒(ns) = 10^-9 秒（0.000,000,001，十亿分之一秒）
 > 1 微秒(μs) = 10^-6 秒（0.000,001，百万分之一秒）
 > 1 毫秒(ms) = 10^-3 秒（0.001，千分之一秒）
+
+## 底层实现
 
 ```java
 public final class Instant
@@ -279,11 +281,13 @@ Instant newInstant4 = instant.plusSeconds(30);
 Instant newInstant5 = instant.minusSeconds(30);
 ```
 
-## Duration、Period
+# Duration、Period
 
 `Duration` 和 `Period` 类用于保存两个 `Temporal` 对象之间的时间段。
 
 ![TemporalAmount实现类](/img/java/time/TemporalAmount实现类.png)
+
+## 底层实现
 
 `Duration` 的底层实现仅包含不可变的秒、纳秒：
 
@@ -322,7 +326,7 @@ public final class Period
 }
 ```
 
-使用方式：
+## 使用方式
 
 ```java
 // Duration 类的静态工厂方法 between 仅支持两个 LocalTime 或两个 LocalDateTime、或两个 Instant 对象之间的 duration
@@ -371,38 +375,48 @@ long days2 = period.get(ChronoUnit.DAYS);
 
 ![TemporalUnit枚举](/img/java/time/TemporalUnit枚举.png)
 
-## DateTimeFormatter
+# 日期格式化
 
-和老的 `java.util.DateFormat` 相比，所有的 `DateTimeFormatter` 实例都是线程安全的。所以，你能够以单例模式创建格式器实例，并在多个线程间共享。创建格式器最简单的方法是通过它的常量，定义如下：
+`DateTimeFormatter` 用于日期格式化。和老的 `java.util.DateFormat` 相比，所有的 `DateTimeFormatter` 实例都是线程安全的。所以，你能够以单例模式创建格式器实例，并在多个线程间共享。创建格式器最简单的方法是通过它的常量，定义如下：
 
 ![DateTimeFormatter常量](/img/java/time/DateTimeFormatter常量.png)
 
 `DateTimeFormatter` 还支持通过静态工厂方法创建，如下：
 
 ```java
-String format = date.format(DateTimeFormatter.ISO_DATE);    // 2007-12-03
-String format2 = date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));    // 03/12/2007
-String format3 = date.format(DateTimeFormatter.ofPattern("yyyy MMMM d", Locale.CHINA));    // 2007 十二月 3
+// 2007-12-03
+String format = date.format(DateTimeFormatter.ISO_DATE);
+// 03/12/2007
+String format2 = date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+// 2007 十二月 3
+String format3 = date.format(DateTimeFormatter.ofPattern("yyyy MMMM d", Locale.CHINA));
 
-LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));  // 20071114160942
+// 20071114160942
+LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
 ```
 
 如果还需要更加细粒度的控制，`DateTimeFormatterBuilder` 类还提供了更复杂的格式器构建，你可以选择恰当的方法，一步一步地构造自己的格式器。另外，它还提供了非常强大的解析功能，比如区分大小写的解析、柔性解析（允许解析器使用启发式的机制去解析输入，不精确地匹配指定的模式）、填充，以及在格式器中指定可选节。
 
-## 处理不同的时区
+# 处理不同的时区
 
-### ZoneId
+## ZoneId、ZonedDateTime
 
 上述日期与时间都不包含时区信息。时区的处理是新版日期与时间 API 新增的重要功能，且 API 被极大简化。新的 `java.time.ZoneId` 类是老版本 `java.util.TimeZone` 类的替代品。它的设计目标就是要让用户无需为时区处理的复杂和繁琐而操心，比如处理夏令时（DST）问题。
 
-每个特定的 `ZoneId` 对象都由一个地区 ID 标识。地区 ID 格式为“{区域}/{城市}”，这些地区集合的设定都由 IANA  的时区数据库提供。静态工厂方法构造如下：
+每个特定的 `ZoneId` 对象都由一个地区 ID 标识。地区 ID 格式为“`{区域}/{城市}`”，这些地区集合的设定都由 [IANA  的时区数据库](https://www.iana.org/time-zones)提供。静态工厂方法构造如下：
 
 ```java
-ZoneId zoneId = ZoneId.of("Europe/Paris");
+// 获取服务器所在时区的 ZoneId，例如 Asia/Shanghai 为 UTC+8
 ZoneId currentZone = ZoneId.systemDefault();
+// 获取指定城市的 ZoneId，即 UTC+1
+ZoneId zoneId = ZoneId.of("Europe/Paris");
 ```
 
-一旦得到一个 `ZoneId` 对象，就可以与 `LocalDate`、`LocalDateTime`、`Instant` 对象整合起来，构造一个 `ZonedDateTime` 实例，它代表了相对于指定时区的时间点。`ZonedDateTime` 的底层实现如下：
+一旦得到一个 `ZoneId` 对象，就可以与 `LocalDate`、`LocalDateTime`、`Instant` 对象整合起来，构造一个 `ZonedDateTime` 实例，它代表了**相对于指定时区的时间点**。
+
+### 底层实现
+
+`ZonedDateTime` 的底层实现如下：
 
 ```java
 public final class ZonedDateTime
@@ -422,35 +436,55 @@ public final class ZonedDateTime
 }
 ```
 
-构造方式：
+### 使用方式
 
 ```java
-LocalDate date = LocalDate.ofEpochDay(0);  // 1970-01-01
-LocalDateTime dateTime = date.atStartOfDay();  // 1970-01-01T00:00
-Instant instant = Instant.ofEpochSecond(0);  // 1970-01-01T00:00:00Z
+// 1970-01-01
+LocalDate date = LocalDate.ofEpochDay(0);
+// 1970-01-01T00:00
+LocalDateTime dateTime = date.atStartOfDay();
+// 1970-01-01T00:00:00Z
+Instant instant = Instant.ofEpochSecond(0);
 
-ZonedDateTime zonedDateTime = date.atStartOfDay(zoneId); // 1970-01-01T00:00+01:00[Europe/Paris]
-ZonedDateTime zonedDateTime1 = dateTime.atZone(zoneId); // 1970-01-01T00:00+01:00[Europe/Paris]
-ZonedDateTime zonedDateTime2 = instant.atZone(zoneId); // 1970-01-01T01:00+01:00[Europe/Paris]
-ZonedDateTime zonedDateTime3 = ZonedDateTime.parse("2015-12-03T10:15:30+05:30[Asia/Shanghai]");  // 2015-12-03T10:15:30+08:00[Asia/Shanghai]
+// 1970-01-01T00:00+01:00[Europe/Paris]，底层调用 ZonedDateTime.of(this, zoneId)
+ZonedDateTime zonedDateTime = date.atStartOfDay(zoneId);
+// 1970-01-01T00:00+01:00[Europe/Paris]，底层调用 ZonedDateTime.of(this, zoneId)
+ZonedDateTime zonedDateTime1 = dateTime.atZone(zoneId);
+// 1970-01-01T01:00+01:00[Europe/Paris]，底层调用 ZonedDateTime.ofInstant(this, zoneId)
+ZonedDateTime zonedDateTime2 = instant.atZone(zoneId);
+// 2015-12-03T10:15:30+08:00[Asia/Shanghai]
+ZonedDateTime zonedDateTime3 = ZonedDateTime.parse("2015-12-03T10:15:30+05:30[Asia/Shanghai]");
 ```
 
-通过 `ZoneId` 可以将 `LocalDateTime` 和 `Instant` 进行互转，公式为 UTC + 时区差（东正西负）= 本地时间：
+### LocalDateTime 与 Instant 互转
+
+通过 `ZoneId` 可以将 `LocalDateTime` 和 `Instant` 进行互转，公式为 UTC + 时区差（东正西负）= 本地时间。
+
+`LocalDateTime` > `Instant`：
 
 ```java
-Instant instant2 = dateTime.atZone(ZoneId.systemDefault()).toInstant();  // 东八区的 1970-01-01T00:00，等于 UTC+0 的 1969-12-31T16:00:00Z
-
-LocalDateTime dateTime2 = LocalDateTime.ofInstant(instant2, ZoneId.systemDefault());  // 1970-01-01T00:00
-LocalDateTime dateTime3 = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();  // 1970-01-01T08:00
+// 东八区的 1970-01-01T00:00，等于 UTC+0 的 1969-12-31T16:00:00Z
+Instant instant2 = dateTime.atZone(ZoneId.systemDefault()).toInstant();
 ```
 
-### ZoneOffset
+`Instant` > `LocalDateTime`：
+
+```java
+// 1970-01-01T00:00
+LocalDateTime dateTime2 = LocalDateTime.ofInstant(instant2, ZoneId.systemDefault());
+// 1970-01-01T08:00
+LocalDateTime dateTime3 = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+```
+
+## ZoneOffset、OffsetDateTime
 
 另一种比较通用的表达时区的方式是利用当前时区和 UTC/格林尼治的固定偏差。可以使用 `ZoneOffset` 类，它是 `ZoneId` 的一个子类，表示的是当前时间和 UTC 的偏差：
 
 ```java
 ZoneOffset newYorkOffset = ZoneOffset.of("-05:00");
 ```
+
+### 底层实现
 
 `ZoneOffset` 类可用于构造 `OffsetDateTime` 实例。`OffsetDateTime` 的底层实现如下：
 
@@ -468,18 +502,22 @@ public final class OffsetDateTime
 }
 ```
 
-例子：
+### 使用方式
 
 ```java
-OffsetDateTime dateTimeInNewYork = OffsetDateTime.of(dateTime1, newYorkOffset);  // 1970-01-01T00:00-05:00
-OffsetDateTime dateTimeInNewYork2 = dateTime1.atOffset(newYorkOffset); // 1970-01-01T00:00-05:00
+// 1970-01-01T00:00-05:00
+OffsetDateTime dateTimeInNewYork = OffsetDateTime.of(dateTime1, newYorkOffset); 
+// 1970-01-01T00:00-05:00
+OffsetDateTime dateTimeInNewYork2 = dateTime1.atOffset(newYorkOffset);
 ```
 
 “-05:00” 的偏差实际上对应的是美国东部标准时间。注意，使用这种方式定义的 `ZoneOffset` 并未考虑任何夏令时的影响，所以在大多数情况下，不推荐使用。
 
-## 其它历法系统
+# 其它历法系统
 
-ISO-8601 日历系统（实现类 `LocalDate`）是世界文明日历系统的事实标准。但是，Java 8 中另外还提供了四种其它的日历系统。这些日历系统中的每一个都有一个对应的类，如下图。所有这些类都实现了 `java.time.chrono.ChronoLocalDate` 接口，能够对公历的日期进行建模。
+[历法](https://zh.wikipedia.org/wiki/历法)，又称日历，是用[年](https://zh.wikipedia.org/wiki/年)、[月](https://zh.wikipedia.org/wiki/月)、[日](https://zh.wikipedia.org/wiki/日)等时间单位计算时间的方法。
+
+[ISO-8601](https://zh.wikipedia.org/wiki/ISO_8601) 日历系统（实现类 `LocalDate`）是世界文明日历系统的事实标准。但是，Java 8 中另外还提供了四种其它的日历系统。这些日历系统中的每一个都有一个对应的类，如下图。所有这些类都实现了 `java.time.chrono.ChronoLocalDate` 接口，能够对公历的日期进行建模。
 
 ![ChronoLocalDate实现类](/img/java/time/ChronoLocalDate实现类.png)
 
@@ -496,5 +534,16 @@ HijrahDate hijrahDate = HijrahDate.from(date);
 * 《Java 8 实战》
 * Java SE Docs
 * [协调世界时（UTC） - 维基百科](https://zh.wikipedia.org/wiki/%E5%8D%8F%E8%B0%83%E4%B8%96%E7%95%8C%E6%97%B6)
+* [时区转换器：计算世界各个时区的时差](https://www.zeitverschiebung.net/cn/)
+* https://time.is/UTC
 * 《[LocalDate、LocalDateTime与timestamp、Date的转换](https://www.jianshu.com/p/b4629857fc6f)》
 
+常见历法：
+
+* [格里历（公历）](https://zh.wikipedia.org/wiki/格里曆)
+* [和历](https://zh.wikipedia.org/wiki/和历)
+* [中华民国历](https://zh.wikipedia.org/wiki/民國紀年)
+* [泰国历](https://zh.wikipedia.org/wiki/泰國曆)
+* [伊斯兰历（回历）](https://zh.wikipedia.org/zh/伊斯兰历)
+
+[纪年](https://zh.wikipedia.org/wiki/纪年)，或称**纪元**，是指[历法](https://zh.wikipedia.org/wiki/历法)中的年份命名体系，例如[格里历](https://zh.wikipedia.org/wiki/格里曆)（公历）所使用的[基督纪年](https://zh.wikipedia.org/wiki/基督纪年)（[公元](https://zh.wikipedia.org/wiki/公元)），中国[农历](https://zh.wikipedia.org/wiki/农历)使用的[干支纪年](https://zh.wikipedia.org/wiki/干支纪年)等。世界各地曾存在过各种不同的纪年方法，其中一些至今仍在使用。
