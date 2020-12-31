@@ -55,15 +55,15 @@ Git 相关的配置文件有三个：
 
 对于同一配置项，三个配置文件的优先级是 3 > 2 >1。
 
-## 中文乱码显示问题
-
-1. 打开 GitBash（git-bash.exe）后，对窗口右键->Options->Text->Locale 改为 `zh_CN`，Character set 改为 `GBK` ;
-
-2. 键入exit退出关闭再打开即可。
-
 ## 配置提交作者
 
-开始使用 Git 之前，第一件重要的事情就是配置提交作者，首先做如下检查：
+开始使用 Git 之前，第一件重要的事情就是配置提交作者，配置后就可以愉快的开始使用 Git 了。更多配置请参考 [这里](http://git-scm.com/docs/git-config) 。
+
+首先做如下检查：
+
+### 全局配置
+
+使用 `--global` 查看或修改全局配置文件 `~/.gitconfig`：
 
 ```bash
 $ git config -l | grep user
@@ -76,7 +76,15 @@ $ git config --global user.name "你的姓名"
 $ git config --global user.email "你的邮箱"
 ```
 
-现在，可以愉快的开始使用 Git 了。更多配置请参考 [这里](http://git-scm.com/docs/git-config) 。
+### 项目配置
+
+如果需要单独修改项目配置文件 `.git/config`，去掉 `--global` 参数即可，或者直接打开该文件添加：
+
+```
+[user]
+name = who
+email = who@where.com
+```
 
 ## 配置格式化与空白
 
@@ -97,6 +105,12 @@ Git 预先设置了一些选项来探测和修正空白问题，配置方法待�
 # 常见问题
 
 Git 长期使用上的一点不便，解决方案仅供参考。
+
+## 中文乱码显示问题
+
+1. 打开 GitBash（git-bash.exe）后，对窗口右键->Options->Text->Locale 改为 `zh_CN`，Character set 改为 `GBK` ;
+
+2. 键入exit退出关闭再打开即可。
 
 ## 配置工作目录
 
