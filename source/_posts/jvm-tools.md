@@ -6,7 +6,9 @@ tags: Java
 typora-root-url: ..
 ---
 
-命令行工具：
+# 分类
+
+## 命令行工具
 
 | 命令     | 全称                                                     | 作用                                                         | 备注                          |
 | -------- | -------------------------------------------------------- | ------------------------------------------------------------ | ----------------------------- |
@@ -17,7 +19,7 @@ typora-root-url: ..
 | `jhat`   | JVM Heap Dump Browser                                    | 用于分析 heap dump 文件，它会建立一个 HTTP/HTML 服务器，让用户可以在浏览器上查看分析结果。分析结果默认以包为单位进行分组显示，分析内存泄漏问题主要会使用到其中的 Heap Histogram（与 `jmap -histo` 功能一样）与 OQL 页签功能，前者可以找到内存中总容量最大的对象，后者是标准的对象查询语言，使用类似 SQL 的语法堆内存中的对象进行查询统计。 | 在 JDK 9 中已被  `JHSDB` 替代 |
 | `jstack` | Stack Trace for Java                                     | 显示虚拟机当前时刻的线程快照（thread dump/javacore 文件）。线程快照就是当前虚拟机内每一条线程正在执行的方法堆栈的集合，生成堆栈快照的目的通常是定位线程出现长时间停顿的原因，如线程间死锁、死循环、请求外部资源导致的长时间挂起等，都是导致线程长时间停顿的常见原因。 | 在 JDK 9 中已集成到 `JHSDB`   |
 
-可视化工具：
+## 可视化工具
 
 | 命令        | 名称                  | 基于                      | 作用                                                         | 备注             |
 | ----------- | --------------------- | ------------------------- | ------------------------------------------------------------ | ---------------- |
@@ -25,6 +27,17 @@ typora-root-url: ..
 | `jvisualvm` | Java VisualVM         | 无需特殊 Agent            | 拥有丰富的插件扩展。目前已经从 Oracle JDK 中分离出来，成为一个独立发展的开源项目：http://visualvm.github.io/ | JDK 6 起免费提供 |
 | `jmc`       | Java Mission Control  | Java Flight Recorder, JFR | 曾经是 BEA 公司的图形化诊断工具，随着 BEA 公司被 Oracle 收购而融合进 Oracle JDK。从 JDK 11 开始已被移除出 JDK。2018 年开源并交付给 Open JDK 组织管理。需要与 HotSpot 内部的 JFR 配合才能工作。 | JDK 7 起付费提供 |
 | `jhsdb`     | Java HotSpot Debugger | Serviceability Agent      | 一个基于 Serviceability Agent 的 HotSpot 进程调试器。        | JDK 9 起免费提供 |
+
+## 反汇编工具
+
+> 大多数情况下，通过诸如javap等反编译工具来查看源码的字节码已经能够满足我们的日常需求，但是不排除在有些特定场景下，我们需要通过反汇编来查看相应的汇编指令。本文我们就来介绍两个很好用的工具——HSDIS、JITWatch
+
+| 工具                         | 描述                                           |
+| ---------------------------- | ---------------------------------------------- |
+| HSDIS (HotSpot disassembler) | 一款 HotSpot 虚拟机 JIT 编译代码的反汇编插件。 |
+| JITWatch                     | 用于可视化分析。                               |
+
+https://zhuanlan.zhihu.com/p/158168592?from_voters_page=true
 
 # 命令行工具
 
@@ -180,10 +193,10 @@ PS Perm Generation  // JDK8+ 没有该区域
 
 ## jstack
 
-`jstack` 命令用于查看当前线程堆栈信息，根据堆栈信息我们可以定位到具体代码，所以它在 JVM 性能调优中使用得非常多。
+`jstack` 命令用于 dump 出当前线程堆栈快照，根据堆栈信息我们可以定位到具体代码，所以它在 JVM 性能调优中使用得非常多。
 
 ``` 
-$ jstack 21090 > /tmp/localfile
+$ jstack 21090 > /tmp/threaddump
 $ less /tmp/localfile
 
 Full thread dump Java HotSpot(TM) 64-Bit Server VM (24.79-b02 mixed mode):
@@ -213,7 +226,20 @@ Full thread dump Java HotSpot(TM) 64-Bit Server VM (24.79-b02 mixed mode):
 	......
 ```
 
-该例子中导出的 `/tmp/localfile` 文件异常大，里面有大量 `java.lang.Thread.State: WAITING (parking)` 状态的线程，导致 O 区内存被占满，根据堆栈可以定位到具体的问题代码，可以初步判断是 HTTP 连接耗尽资源导致的问题。
+由于导出的 `threaddump` 文件非常大，可以先统计下所有线程、或关注的线程分别处于什么状态：
+
+```bash
+$ grep /tmp/threaddump | awk '{print $2$3$4$5}' | sort | uniq -c | sort
+
+39  RUNNABLE
+21  TIMED_WAITING (onobjectmonitor)
+6   TIMED_WAITING (parking)
+51  TIMED_WAITING (sleeping)
+3   WAITING (onobjectmonitor)
+305 WAITING (parking)
+```
+
+发现有大量 `WAITING (parking)` 状态的线程。重新打开 `threaddump` 文件排查，根据堆栈可以定位到具体的问题代码，可以初步判断是 HTTP 连接耗尽资源导致的问题。
 
 # 参考
 
