@@ -147,6 +147,8 @@ public final class LocalDateTime
 
 例子：
 
+### 创建实例
+
 ```java
 // 通过静态工厂方法创建实例
 LocalTime time = LocalTime.of(12, 0);
@@ -162,43 +164,68 @@ LocalDateTime dateTime1 = time.atDate(date);
 LocalDateTime dateTime2 = date.atStartOfDay();
 LocalDateTime dateTime3 = LocalDateTime.of(date, time);
 
-// 可以通过传递一个 ChronoField 枚举给 get 方法获取相关信息
+// java.time.LocalDateTime 转 java.sql.Timestamp
+Timestamp timestamp = Timestamp.valueOf(localDateTime);
+```
+
+### 读取字段信息
+
+读取信息使用 `TemporalAccessor` 接口，通过传递一个 `ChronoField` 枚举给 `get` 方法读取相关信息：
+
+![ChronoLocalDate核心接口方法](/img/java/time/temporal核心接口.png)
+
+`ChronoField` 枚举提供的值如下图：
+
+![ChronoField枚举](/img/java/time/ChronoField枚举.png)：
+
+```java
+// 使用 TemporalAccessor#get(TemporalField)，传入 TemporalField 接口的实现类 ChronoField
 int year = date.get(ChronoField.YEAR);
 int month = date.get(ChronoField.MONTH_OF_YEAR);
 int dayOfMonth = date.get(ChronoField.DAY_OF_MONTH);
-// 或者通过 getter 方法直接访问
+
+// LocalTime/LocalDate/LocalDateTime 各自也提供了一组 getter 快捷方法
 int year1 = date.getYear();
 int month1 = date.getMonthValue();
 int dayOfMonth1 = date.getDayOfMonth();
 boolean leapYear = date.isLeapYear();
+```
 
-// 如果想创建一个 LocalDate 对象的修改版，使用 Temporal 接口的 with/plus/minus 方法，会创建一个副本
-LocalDate newDate = date.withYear(2019);
-LocalDate newDate2 = date.withMonth(1);
-LocalDate newDate3 = date.withDayOfMonth(30);
-LocalDate newDate4 = date.with(ChronoField.YEAR, 2019);
-LocalDate newDate5 = date.with(ChronoField.MONTH_OF_YEAR, 1);
-LocalDate newDate6 = date.with(ChronoField.DAY_OF_MONTH, 30);
+### 创建副本并修改
 
+创建副本使用 `Temporal` 接口，其提供了一组 `with`/`plus`/`minus` 方法：
 
-// TemporalAdjuster 接口可用于进行一些更复杂的时间修改操作，方法名非常直观。如果没有找到符合要求的预定义静态工厂方法，可以自己实现该函数式接口
+![ChronoLocalDate核心接口方法](/img/java/time/temporal核心接口.png)
+
+```java
+// 使用 Temporal#with(TemporalField, long)，传入 TemporalField 接口的实现类 ChronoField
+LocalDate newDate = date.with(ChronoField.YEAR, 2019);
+LocalDate newDate2 = date.with(ChronoField.MONTH_OF_YEAR, 1);
+LocalDate newDate3 = date.with(ChronoField.DAY_OF_MONTH, 30);
+
+// LocalTime/LocalDate/LocalDateTime 各自也提供了一组 with 快捷方法
+LocalDate newDate4 = date.withYear(2019);
+LocalDate newDate5 = date.withMonth(1);
+LocalDate newDate6 = date.withDayOfMonth(30);
+```
+
+如果 `with(TemporalField, long)` 方法不满足需求，可以使用更灵活的 `with(TemporalAdjuster)` 方法，配合 `TemporalAdjusters` 工具类提供的静态工厂方法，方法名非常直观：
+
+![TemporalAdjusters静态工厂方法](/img/java/time/TemporalAdjusters静态工厂方法.png)
+
+```java
+// 使用 Temporal#with(TemporalAdjuster)
 LocalDate newDate7 = date.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 LocalDate newDate8 = date.with(TemporalAdjusters.lastDayOfMonth());
 ```
 
-`ChronoField` 枚举提供的值：
+如果在 `TemporalAdjusters` 工具类中没有找到符合要求的预定义静态工厂方法，可以自己实现 `TemporalAdjuster` 函数式接口，以定制一些更复杂的时间修改操作：
 
-![ChronoField枚举](/img/java/time/ChronoField枚举.png)
-
-`TemporalAdjusters` 工具类提供的静态工厂方法：
-
-![TemporalAdjusters静态工厂方法](/img/java/time/TemporalAdjusters静态工厂方法.png)
+![TemporalAdjuster](/img/java/time/TemporalAdjuster.png)
 
 # Instant
 
 作为人，我们习惯于以星期几、几号、几点、几分这样的方式理解日期和时间。毫无疑问，这种方式对于计算机而言并不容易理解。从计算机的角度来看，建模时间最自然的格式是表示一个持续时间段上某个点的单一大整型数。这也是新的 `java.time.Instant` 类对时间建模的方式，它是以 **Unix 元年时间**（UTC 时区 1970-01-01T00:00:00Z，“Z” 代表 UTC 时区）开始所经历的秒数进行计算。
-
-`Instant` 的底层实现仅包含不可变的秒、纳秒。即支持的最高存储精度为纳秒：
 
 > 1 秒(s) = 
 > 1,000 毫秒(ms) = 
@@ -216,6 +243,8 @@ LocalDate newDate8 = date.with(TemporalAdjusters.lastDayOfMonth());
 
 ## 底层实现
 
+从底层实现可见，`Instant` 仅包含不可变的秒、纳秒。即支持的最高存储精度为**纳秒**：
+
 ```java
 public final class Instant
         implements Temporal, TemporalAdjuster, Comparable<Instant>, Serializable {
@@ -230,6 +259,8 @@ public final class Instant
     private final int nanos;
 }
 ```
+
+## 使用方式
 
 通过静态工厂方法创建实例：
 
