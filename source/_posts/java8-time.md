@@ -65,7 +65,71 @@ Instant           // 以 Unix 元年时间（UTC 时区 1970-01-01T00:00:00Z，�
 
 # LocalDate、LocalTime
 
-`LocalDate`、`LocalTime` 是人类易读的日期和时间格式，表示一个本地时间点。
+`LocalDate`、`LocalTime` 是人类易读的日期和时间格式，表示一个本地时间点，**无时区信息**。
+
+## 历法系统介绍
+
+首先了解几个概念：
+
+### 历法
+
+[历法](https://zh.wikipedia.org/wiki/历法)，或称日历，是用[年](https://zh.wikipedia.org/wiki/年)、[月](https://zh.wikipedia.org/wiki/月)、[日](https://zh.wikipedia.org/wiki/日)等时间单位计算时间的方法。Java 8 提供的历法实现如下：
+
+| 历法                                                     | Java 8 实现        |
+| -------------------------------------------------------- | ------------------ |
+| [格里历（公历）](https://zh.wikipedia.org/wiki/格里曆)   | `LocalDate`        |
+| [和历](https://zh.wikipedia.org/wiki/和历)               | `JapaneseDate`     |
+| [中华民国历](https://zh.wikipedia.org/wiki/民國紀年)     | `MinguoDate`       |
+| [泰国历](https://zh.wikipedia.org/wiki/泰國曆)           | `ThaiBuddhistDate` |
+| [伊斯兰历（回历）](https://zh.wikipedia.org/zh/伊斯兰历) | `HijrahDate`       |
+
+[ISO-8601](https://zh.wikipedia.org/wiki/ISO_8601) 日历系统是世界文明日历系统的事实标准，其**日期表示法**为：
+
+> 年由4位数字组成YYYY，或者带正负号的四或五位数字表示±YYYYY。以**[公历](https://zh.wikipedia.org/wiki/公历)公元**1年为0001年，以公元前1年为0000年，公元前2年为-0001年，其他以此类推。
+>
+> 月、日用两位数字表示：MM、DD。
+
+Java 8 中 `LocalDate` 基于 ISO-8601 实现。另外还提供了四种其它的日历系统。这些日历系统中的每一个都有一个对应的类，如下图。所有这些类都实现了 `java.time.chrono.ChronoLocalDate` 接口，能够对公历的日期进行建模。
+
+![ChronoLocalDate实现类](/img/java/time/ChronoLocalDate实现类.png)
+
+```java
+// 格里历（公历）
+LocalDate date = LocalDate.now();
+// 和历
+JapaneseDate japaneseDate = JapaneseDate.from(date);
+// 中华民国历
+MinguoDate minguoDate = MinguoDate.from(date);
+// 泰国历
+ThaiBuddhistDate thaiBuddhistDate = ThaiBuddhistDate.from(date);
+// 伊斯兰历（回历）
+HijrahDate hijrahDate = HijrahDate.from(date);
+```
+
+还有一些特殊的历法，例如[会计年度](https://zh.wikipedia.org/wiki/會計年度)：
+
+> 财政年度，又称会计年度，是指公司或国家每年制定预算或计算收入的统计时间。但每个国家或其法例所辖的组织各有不同，大抵分成两类：
+>
+> * 历年制，即是由1月1日起，使用历年制有中国、德国、法国、等等。
+> * 跨年制，使用跨年制有美国、日本、香港、澳大利亚、等等。
+>
+> 在会计上常会用 [4/4/5 日历](https://en.wikipedia.org/wiki/4-4-5_Calendar)，每一个月会有固定的周数，以便各月之间和各年之间的比较。
+
+### 纪年
+
+> [纪年](https://zh.wikipedia.org/wiki/纪年)，或称**纪元**，是指[历法](https://zh.wikipedia.org/wiki/历法)中的**年份**命名体系，例如[格里历](https://zh.wikipedia.org/wiki/格里曆)（公历）所使用的[基督纪年](https://zh.wikipedia.org/wiki/基督纪年)（[公元](https://zh.wikipedia.org/wiki/公元)），中国[农历](https://zh.wikipedia.org/wiki/农历)使用的[干支纪年](https://zh.wikipedia.org/wiki/干支纪年)等。世界各地曾存在过各种不同的纪年方法，其中一些至今仍在使用，例如日本现在仍在使用[年号纪年](https://zh.wikipedia.org/wiki/年号纪年)。
+>
+> 这里提供了一个常见的[纪年对照表](https://zh.wikipedia.org/wiki/%E6%B0%91%E5%9C%8B%E7%B4%80%E5%B9%B4#%E7%B4%80%E5%B9%B4%E5%B0%8D%E7%85%A7)，可供参考。 
+
+-
+
+> [年号](https://zh.wikipedia.org/wiki/%E5%B9%B4%E5%8F%B7)是中国历史君主时代帝王纪年所立的名号，缘起于西汉汉武帝时期，后来朝鲜新罗在6世纪、日本在7世纪后期、越南在10世纪都因为中国的影响，开始使用年号；台湾岛的郑氏王朝与台湾民主国、朝鲜半岛大韩帝国与高丽、蒙古国建国初年受到中国影响，都还使用过年号，目前唯一使用年号的是仍保持君主制的日本。
+>
+> 值得一提，[中华民国](https://zh.wikipedia.org/wiki/中華民國)所用的[民国纪年](https://zh.wikipedia.org/wiki/民國紀年)、以及[朝鲜民主主义人民共和国](https://zh.wikipedia.org/wiki/朝鮮民主主義人民共和國)使用的[主体纪年](https://zh.wikipedia.org/wiki/主体纪年)，常被误认为是年号，实际上仅是单纯的纪年[历法](https://zh.wikipedia.org/wiki/曆法)。
+
+-
+
+> [一世一元制](https://zh.wikipedia.org/wiki/%E4%B8%80%E4%B8%96%E4%B8%80%E5%85%83%E5%88%B6)，指[君主](https://zh.wikipedia.org/wiki/君主)(国王、大君主、可汗、天皇、皇帝)在其在位期间只使用同一个[年号](https://zh.wikipedia.org/wiki/年號)，不进行改元的制度。例外：如果君主后来另行称帝或是重祚，会另建新年号，以示区别。
 
 ## 底层实现
 
@@ -450,154 +514,9 @@ LocalDateTime.parse("01/01/1999", dtf);
 
 另外，`DateTimeFormatterBuilder` 类还提供了非常强大的解析功能，比如区分大小写的解析、柔性解析（允许解析器使用启发式的机制去解析输入，不精确地匹配指定的模式）、填充，以及在格式器中指定可选节。
 
-# 处理不同的时区
-
-## ZoneId、ZonedDateTime
-
-上述日期与时间都不包含时区信息。时区的处理是新版日期与时间 API 新增的重要功能，且 API 被极大简化。新的 `java.time.ZoneId` 类是老版本 `java.util.TimeZone` 类的替代品。它的设计目标就是要让用户无需为时区处理的复杂和繁琐而操心，比如处理夏令时（DST）问题。
-
-每个特定的 `ZoneId` 对象都由一个地区 ID 标识。地区 ID 格式为“`{区域}/{城市}`”，这些地区集合的设定都由 [IANA  的时区数据库](https://www.iana.org/time-zones)提供。静态工厂方法构造如下：
-
-```java
-// 获取服务器所在时区的 ZoneId，例如 Asia/Shanghai 为 UTC+8
-ZoneId currentZone = ZoneId.systemDefault();
-// 获取指定城市的 ZoneId，即 UTC+1
-ZoneId zoneId = ZoneId.of("Europe/Paris");
-```
-
-一旦得到一个 `ZoneId` 对象，就可以与 `LocalDate`、`LocalDateTime`、`Instant` 对象整合起来，构造一个 `ZonedDateTime` 实例，它代表了**相对于指定时区的时间点**。
-
-### 底层实现
-
-`ZonedDateTime` 的底层实现如下：
-
-```java
-public final class ZonedDateTime
-        implements Temporal, ChronoZonedDateTime<LocalDate>, Serializable {
-    /**
-     * The local date-time.
-     */
-    private final LocalDateTime dateTime;
-    /**
-     * The offset from UTC/Greenwich.
-     */
-    private final ZoneOffset offset;
-    /**
-     * The time-zone.
-     */
-    private final ZoneId zone;
-}
-```
-
-### 使用方式
-
-```java
-// 1970-01-01
-LocalDate date = LocalDate.ofEpochDay(0);
-// 1970-01-01T00:00
-LocalDateTime dateTime = date.atStartOfDay();
-// 1970-01-01T00:00:00Z
-Instant instant = Instant.ofEpochSecond(0);
-
-// 1970-01-01T00:00+01:00[Europe/Paris]，底层调用 ZonedDateTime.of(this, zoneId)
-ZonedDateTime zonedDateTime = date.atStartOfDay(zoneId);
-// 1970-01-01T00:00+01:00[Europe/Paris]，底层调用 ZonedDateTime.of(this, zoneId)
-ZonedDateTime zonedDateTime1 = dateTime.atZone(zoneId);
-// 1970-01-01T01:00+01:00[Europe/Paris]，底层调用 ZonedDateTime.ofInstant(this, zoneId)
-ZonedDateTime zonedDateTime2 = instant.atZone(zoneId);
-// 2015-12-03T10:15:30+08:00[Asia/Shanghai]
-ZonedDateTime zonedDateTime3 = ZonedDateTime.parse("2015-12-03T10:15:30+05:30[Asia/Shanghai]");
-```
-
-### LocalDateTime 与 Instant 互转
-
-通过 `ZoneId` 可以将 `LocalDateTime` 和 `Instant` 进行互转，公式为 UTC + 时区差（东正西负）= 本地时间。
-
-`LocalDateTime` > `Instant`：
-
-```java
-// 东八区的 1970-01-01T00:00，等于 UTC+0 的 1969-12-31T16:00:00Z
-Instant instant2 = dateTime.atZone(ZoneId.systemDefault()).toInstant();
-```
-
-`Instant` > `LocalDateTime`：
-
-```java
-// 1970-01-01T00:00
-LocalDateTime dateTime2 = LocalDateTime.ofInstant(instant2, ZoneId.systemDefault());
-// 1970-01-01T08:00
-LocalDateTime dateTime3 = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
-```
-
-## ZoneOffset、OffsetDateTime
-
-另一种比较通用的表达时区的方式是利用当前时区和 UTC/格林尼治的固定偏差。可以使用 `ZoneOffset` 类，它是 `ZoneId` 的一个子类，表示的是当前时间和 UTC 的偏差：
-
-```java
-ZoneOffset newYorkOffset = ZoneOffset.of("-05:00");
-```
-
-### 底层实现
-
-`ZoneOffset` 类可用于构造 `OffsetDateTime` 实例。`OffsetDateTime` 的底层实现如下：
-
-```java
-public final class OffsetDateTime
-        implements Temporal, TemporalAdjuster, Comparable<OffsetDateTime>, Serializable {
-    /**
-     * The local date-time.
-     */
-    private final LocalDateTime dateTime;
-    /**
-     * The offset from UTC/Greenwich.
-     */
-    private final ZoneOffset offset;
-}
-```
-
-### 使用方式
-
-```java
-// 1970-01-01T00:00-05:00
-OffsetDateTime dateTimeInNewYork = OffsetDateTime.of(dateTime1, newYorkOffset); 
-// 1970-01-01T00:00-05:00
-OffsetDateTime dateTimeInNewYork2 = dateTime1.atOffset(newYorkOffset);
-```
-
-“-05:00” 的偏差实际上对应的是美国东部标准时间。注意，使用这种方式定义的 `ZoneOffset` 并未考虑任何夏令时的影响，所以在大多数情况下，不推荐使用。
-
-# 其它历法系统
-
-[历法](https://zh.wikipedia.org/wiki/历法)，又称日历，是用[年](https://zh.wikipedia.org/wiki/年)、[月](https://zh.wikipedia.org/wiki/月)、[日](https://zh.wikipedia.org/wiki/日)等时间单位计算时间的方法。
-
-[ISO-8601](https://zh.wikipedia.org/wiki/ISO_8601) 日历系统（实现类 `LocalDate`）是世界文明日历系统的事实标准。但是，Java 8 中另外还提供了四种其它的日历系统。这些日历系统中的每一个都有一个对应的类，如下图。所有这些类都实现了 `java.time.chrono.ChronoLocalDate` 接口，能够对公历的日期进行建模。
-
-![ChronoLocalDate实现类](/img/java/time/ChronoLocalDate实现类.png)
-
-```java
-LocalDate date = LocalDate.now();
-JapaneseDate japaneseDate = JapaneseDate.from(date);
-MinguoDate minguoDate = MinguoDate.from(date);
-ThaiBuddhistDate thaiBuddhistDate = ThaiBuddhistDate.from(date);
-HijrahDate hijrahDate = HijrahDate.from(date);
-```
-
 # 参考
 
 * 《Java 8 实战》
 * Java SE Docs
-* [协调世界时（UTC） - 维基百科](https://zh.wikipedia.org/wiki/%E5%8D%8F%E8%B0%83%E4%B8%96%E7%95%8C%E6%97%B6)
-* [时区转换器：计算世界各个时区的时差](https://www.zeitverschiebung.net/cn/)
-* https://time.is/UTC
 * 《[LocalDate、LocalDateTime与timestamp、Date的转换](https://www.jianshu.com/p/b4629857fc6f)》
 * 《[`uuuu` versus `yyyy` in `DateTimeFormatter` formatting pattern codes in Java?](https://stackoverflow.com/questions/41177442/uuuu-versus-yyyy-in-datetimeformatter-formatting-pattern-codes-in-java)》
-
-常见历法：
-
-* [格里历（公历）](https://zh.wikipedia.org/wiki/格里曆)
-* [和历](https://zh.wikipedia.org/wiki/和历)
-* [中华民国历](https://zh.wikipedia.org/wiki/民國紀年)
-* [泰国历](https://zh.wikipedia.org/wiki/泰國曆)
-* [伊斯兰历（回历）](https://zh.wikipedia.org/zh/伊斯兰历)
-
-[纪年](https://zh.wikipedia.org/wiki/纪年)，或称**纪元**，是指[历法](https://zh.wikipedia.org/wiki/历法)中的年份命名体系，例如[格里历](https://zh.wikipedia.org/wiki/格里曆)（公历）所使用的[基督纪年](https://zh.wikipedia.org/wiki/基督纪年)（[公元](https://zh.wikipedia.org/wiki/公元)），中国[农历](https://zh.wikipedia.org/wiki/农历)使用的[干支纪年](https://zh.wikipedia.org/wiki/干支纪年)等。世界各地曾存在过各种不同的纪年方法，其中一些至今仍在使用。
