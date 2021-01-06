@@ -408,15 +408,22 @@ long days2 = period.get(ChronoUnit.DAYS);
 
 # 日期格式化
 
-`DateTimeFormatter` 用于日期格式化。和老的 `java.util.DateFormat` 相比，所有的 `DateTimeFormatter` 实例都是线程安全的。所以，你能够以单例模式创建格式器实例，并在多个线程间共享。创建格式器最简单的方法是通过它的常量，定义如下：
+`DateTimeFormatter` 用于日期格式化。和老的 `java.util.DateFormat` 相比，所有的 `DateTimeFormatter` 实例都是线程安全的。所以，你能够以单例模式创建格式器实例，并在多个线程间共享。
+
+下面介绍创建格式器的三种方式：
+
+方式一，创建格式器最简单的方法是通过它的常量，定义如下：
 
 ![DateTimeFormatter常量](/img/java/time/DateTimeFormatter常量.png)
-
-`DateTimeFormatter` 还支持通过静态工厂方法创建，如下：
 
 ```java
 // 2007-12-03
 String format = date.format(DateTimeFormatter.ISO_DATE);
+```
+
+方式二，`DateTimeFormatter` 还支持通过 `of` 静态工厂方法创建，如下：
+
+```java
 // 03/12/2007
 String format2 = date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 // 2007 十二月 3
@@ -426,7 +433,22 @@ String format3 = date.format(DateTimeFormatter.ofPattern("yyyy MMMM d", Locale.C
 LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
 ```
 
-如果还需要更加细粒度的控制，`DateTimeFormatterBuilder` 类还提供了更复杂的格式器构建，你可以选择恰当的方法，一步一步地构造自己的格式器。另外，它还提供了非常强大的解析功能，比如区分大小写的解析、柔性解析（允许解析器使用启发式的机制去解析输入，不精确地匹配指定的模式）、填充，以及在格式器中指定可选节。
+方式三，如果还需要更加细粒度的控制，`DateTimeFormatterBuilder` 类还提供了更复杂的格式器构建，你可以选择恰当的方法，一步一步地构造自己的格式器：
+
+```java
+DateTimeFormatter dtf = new DateTimeFormatterBuilder().appendPattern("dd/MM/yyyy[ [HH][:mm][:ss][.SSS]]")
+  .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+  .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+  .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+  .toFormatter();
+
+// 1999-01-01T02:04:06
+LocalDateTime.parse("01/01/1999 02:04:06", dtf);
+// 1999-01-01T00:00
+LocalDateTime.parse("01/01/1999", dtf);
+```
+
+另外，`DateTimeFormatterBuilder` 类还提供了非常强大的解析功能，比如区分大小写的解析、柔性解析（允许解析器使用启发式的机制去解析输入，不精确地匹配指定的模式）、填充，以及在格式器中指定可选节。
 
 # 处理不同的时区
 
@@ -568,6 +590,7 @@ HijrahDate hijrahDate = HijrahDate.from(date);
 * [时区转换器：计算世界各个时区的时差](https://www.zeitverschiebung.net/cn/)
 * https://time.is/UTC
 * 《[LocalDate、LocalDateTime与timestamp、Date的转换](https://www.jianshu.com/p/b4629857fc6f)》
+* 《[`uuuu` versus `yyyy` in `DateTimeFormatter` formatting pattern codes in Java?](https://stackoverflow.com/questions/41177442/uuuu-versus-yyyy-in-datetimeformatter-formatting-pattern-codes-in-java)》
 
 常见历法：
 
