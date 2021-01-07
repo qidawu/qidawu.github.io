@@ -18,25 +18,6 @@ typora-root-url: ..
 
 ![java time old api](/img/java/time/java_time_old_api.png)
 
-注意，`java.sql.Timestamp#valueOf(LocalDateTime)` 底层实现使用**格里历（公历）**，并基于**本地时区**（即服务器默认时区），源码使用了 `TimeZone.getDefaultRef()`：
-
-```java
-    /**
-     * Returns the reference to the default TimeZone object. This
-     * method doesn't create a clone.
-     */
-    static TimeZone getDefaultRef() {
-        TimeZone defaultZone = defaultTimeZone;
-        if (defaultZone == null) {
-            // Need to initialize the default time zone.
-            defaultZone = setDefaultZone();
-            assert defaultZone != null;
-        }
-        // Don't clone here.
-        return defaultZone;
-    }
-```
-
 # Java 8 日期与时间
 
 Java 8 引入了新的 `java.time` 类库，用于加强对日期与时间的操作，本文主要总结其 API 结构、具体实现和使用方式。

@@ -141,6 +141,186 @@ OffsetDateTime dateTimeInNewYork2 = dateTime1.atOffset(newYorkOffset);
 
 “-05:00” 的偏差实际上对应的是美国东部标准时间。注意，使用这种方式定义的 `ZoneOffset` 并未考虑任何夏令时的影响，所以在大多数情况下，不推荐使用。
 
+# 常见问题
+
+## java.sql.Timestamp
+
+有时开发会使用 `java.sql.Timestamp` 作为 PO 实体类的时间字段，`java.sql.Timestamp` 底层实现使用**格里历（公历）**，并使用**本地时区**（即服务器默认时区），并受该时区影响。
+
+这里看一段代码，以 2021-01-04 00:00:00 为例演示转换过程：
+
+```java
+LocalDateTime localDateTime = LocalDateTime.parse(
+  "2021-01-04 00:00:00", 
+  DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+);
+ZonedDateTime zonedDateTime = ZonedDateTime.of(localDateTime, ZoneId.of("Asia/Jakarta"));
+
+Timestamp.from(zonedDateTime.toInstant());
+Timestamp.valueOf(localDateTime);
+```
+
+这里试验两个时区：
+
+|                            | Europe/London (UTC) | Asia/Shanghai (UTC+8) |
+| -------------------------- | ------------------- | --------------------- |
+| `ZoneId.systemDefault()`   | Europe/London (UTC) | Asia/Shanghai (UTC+8) |
+| `TimeZone.getDefaultRef()` | Europe/London (UTC) | Asia/Shanghai (UTC+8) |
+
+下面分别看下 `java.sql.Timestamp` 两个 API 会有什么问题：
+
+### #valueOf(LocalDateTime)
+
+转换过程：本地时间 > 系统时区的时间 > UTC-0 时区的时间戳
+
+| Europe/London (UTC)                                          | Asia/Shanghai (UTC+8)                                        |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 2021-01-04T00:00 (`LocalDateTime`) → <br/>2021-01-04T00:00:00.000Z / 1609718400000 (`Timestamp`) | 2021-01-04T00:00 (`LocalDateTime`) → <br/>2021-01-04T00:00:00.000+0800 / 1609689600000 (`Timestamp`) |
+
+可见，由于 `LocalDateTime` 本身不含时区信息，在经由 `Timestamp#valueOf(LocalDateTime)` 转换时，源码中使用了 `TimeZone.getDefaultRef()` 并**受系统默认时区的影响，导致结果前后不一致**。
+
+```java
+    /**
+     * Returns the reference to the default TimeZone object. This
+     * method doesn't create a clone.
+     */
+    static TimeZone getDefaultRef() {
+        TimeZone defaultZone = defaultTimeZone;
+        if (defaultZone == null) {
+            // Need to initialize the default time zone.
+            defaultZone = setDefaultZone();
+            assert defaultZone != null;
+        }
+        // Don't clone here.
+        return defaultZone;
+    }
+```
+
+### #from(Instant)
+
+转换过程：本地时间 > 指定时区的时间 > UTC-0 时区的时间戳
+
+| Europe/London (UTC)                                          | Asia/Shanghai (UTC+8)                                        |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 2021-01-04T00:00 (`LocalDateTime`) → <br/>2021-01-04T00:00+07:00[Asia/Jakarta] (`ZonedDateTime`) → <br/>2021-01-03T17:00:00Z / 1609693200 (`Instant`) →<br/>2021-01-03T17:00:00.000Z / 1609693200000(`Timestamp`) | 2021-01-04T00:00 (`LocalDateTime`) → <br/>2021-01-04T00:00+07:00[Asia/Jakarta] (`ZonedDateTime`) → <br/>2021-01-03T17:00:00Z / 1609693200 (`Instant`) →<br/>2021-01-04T01:00:00.000+0800 / 1609693200000 (`Timestamp`) |
+
+这里看似结果没有问题，`Instant` 和 `Timestamp` 对象在不同时区下都是相同时间戳。
+
+但有一种场景，就是**应用服务器与数据库的时区不一致导致的问题**。假如应用服务器时区为 `Asia/Shanghai (UTC+8)`，数据库时区为 `Europe/London (UTC)`，当把上表 `Timestamp` 对象保存到 MySQL 数据库的 `datetime` 字段时，如果未经时区转换，会导致错误结果。
+
+这里参考 [mysql-connector-java-5.1.42.jar](https://mvnrepository.com/artifact/mysql/mysql-connector-java) 源码如下，重点看 `java.sql.PreparedStatement#setTimestamp` 的方法实现，其使用了 `SimpleDateFormat` 将 `Timestamp` 对象格式化成字符串，**如果未经时区转换，结果如下表，导致前后不一致**：
+
+| 格式化前                     | 格式化后            |
+| ---------------------------- | ------------------- |
+| 2021-01-03T17:00:00.000Z     | 2021-01-03 17:00:00 |
+| 2021-01-04T01:00:00.000+0800 | 2021-01-04 01:00:00 |
+
+```java
+    /**
+     * Set a parameter to a java.sql.Timestamp value. The driver converts this
+     * to a SQL TIMESTAMP value when it sends it to the database.
+     * 
+     * @param parameterIndex
+     *            the first parameter is 1, the second is 2, ...
+     * @param x
+     *            the parameter value
+     * @param tz
+     *            the timezone to use
+     * 
+     * @throws SQLException
+     *             if a database-access error occurs.
+     */
+    private void setTimestampInternal(int parameterIndex, Timestamp x, Calendar targetCalendar, TimeZone tz, boolean rollForward) throws SQLException {
+        ...
+        
+        x = TimeUtil.changeTimezone(this.connection, sessionCalendar, targetCalendar, x, tz, this.connection.getServerTimezoneTZ(), rollForward);
+
+        ...
+                    synchronized (this) {
+                        if (this.tsdf == null) {
+                            this.tsdf = new SimpleDateFormat("''yyyy-MM-dd HH:mm:ss", Locale.US);
+                        }
+
+                        StringBuffer buf = new StringBuffer();
+                        buf.append(this.tsdf.format(x));
+                        
+                        ...
+                        
+                        setInternal(parameterIndex, buf.toString());
+                    }
+    }
+```
+
+上述方法内部调用了 `com.mysql.jdbc.TimeUtil#changeTimezone` 方法，源码如下。
+
+```java
+    /**
+     * Change the given timestamp from one timezone to another
+     * 
+     * @param conn
+     *            the current connection to the MySQL server
+     * @param tstamp
+     *            the timestamp to change
+     * @param fromTz
+     *            the timezone to change from
+     * @param toTz
+     *            the timezone to change to
+     * 
+     * @return the timestamp changed to the timezone 'toTz'
+     */
+    public static Timestamp changeTimezone(MySQLConnection conn, Calendar sessionCalendar, Calendar targetCalendar, Timestamp tstamp, TimeZone fromTz,
+            TimeZone toTz, boolean rollForward) {
+        if ((conn != null)) {
+            // 开启 useTimezone=true，才能进入下面的时区转换逻辑
+            if (conn.getUseTimezone()) {
+                // Convert the timestamp from GMT to the server's timezone
+                Calendar fromCal = Calendar.getInstance(fromTz);
+                fromCal.setTime(tstamp);
+
+                int fromOffset = fromCal.get(Calendar.ZONE_OFFSET) + fromCal.get(Calendar.DST_OFFSET);
+                Calendar toCal = Calendar.getInstance(toTz);
+                toCal.setTime(tstamp);
+
+                int toOffset = toCal.get(Calendar.ZONE_OFFSET) + toCal.get(Calendar.DST_OFFSET);
+                int offsetDiff = fromOffset - toOffset;
+                long toTime = toCal.getTime().getTime();
+
+                if (rollForward) {
+                    toTime += offsetDiff;
+                } else {
+                    toTime -= offsetDiff;
+                }
+
+                Timestamp changedTimestamp = new Timestamp(toTime);
+
+                return changedTimestamp;
+            } else if (conn.getUseJDBCCompliantTimezoneShift()) {
+                if (targetCalendar != null) {
+
+                    Timestamp adjustedTimestamp = new Timestamp(jdbcCompliantZoneShift(sessionCalendar, targetCalendar, tstamp));
+
+                    adjustedTimestamp.setNanos(tstamp.getNanos());
+
+                    return adjustedTimestamp;
+                }
+            }
+        }
+
+        return tstamp;
+    }
+```
+
+如果 JDBC 连接参数未配置 `useTimezone=true`（默认值 `false`），会导致目标时区转换失效，从而产生上述问题。**而如果开启之后，不管应用服务器设置什么时区，都能保证正确转换为数据库目标时区的时间值，反之亦然（数据库 -> 应用服务器）。**这里给两个例子，如下表：
+
+|       | 时区转换前                                | 时区转换后                            |
+| ----- | ----------------------------------------- | ------------------------------------- |
+| UTC+2 | 2021-01-03T19:00:00.000+0200 / 1609693200 | 2021-01-03T17:00:00.000Z / 1609693200 |
+| UTC+8 | 2021-01-04T01:00:00.000+0800 / 1609693200 | 2021-01-03T17:00:00.000Z / 1609693200 |
+
+![after_convert_time_zone+2](/img/java/time/after_convert_time_zone+2.png)
+
+![after_convert_time_zone+8](/img/java/time/after_convert_time_zone+8.png)
+
 # 参考
 
 * 《Java 8 实战》
@@ -150,3 +330,4 @@ OffsetDateTime dateTimeInNewYork2 = dateTime1.atOffset(newYorkOffset);
 * https://time.is/UTC
 * [Time Zone Converter](http://www.timezoneconverter.com/cgi-bin/zoneinfo)
 * [《Java时区数据库与IANA数据》](https://www.coder.work/article/6269420)
+* [《Mysql JDBC里的useTimezone参数是做什么用的？》](https://segmentfault.com/q/1010000000262788)
