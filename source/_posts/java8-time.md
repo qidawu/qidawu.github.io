@@ -6,15 +6,40 @@ tags: Java
 typora-root-url: ..
 ---
 
+# 现有问题
+
 `java.util.Date` 存在的问题：
 
 * 正如类名所表达的，这个类无法表示“日期”（替代方案是 `LocalDate`），只能以毫秒的精度表示“时间”（替代方案是 `LocalDateTime`）。
 * 更糟糕的是它的易用性，比如：年份的起始选择是 1900 年，月份的起始从 0 开始。如果要表达 2014 年 3 月 18 日，需要创建以下 `Date` 实例：`Date date = new Date(144，2，18)`
 * 非线程安全，且所有的日期类都是可变的，这表示在运行期其值可以任意修改，这是 Java 日期类最大的问题之一。
 
-Java 8 引入了新的 `java.time` 类库，用于加强对日期与时间的操作，本文主要总结其 API 结构、具体实现和使用方式。
+`java.util.Date` 及 `java.sql.Timestamp` API 如下：
 
-# API 结构
+![java time old api](/img/java/time/java_time_old_api.png)
+
+注意，`java.sql.Timestamp#valueOf(LocalDateTime)` 底层实现使用**格里历（公历）**，并基于**本地时区**（即服务器默认时区），源码使用了 `TimeZone.getDefaultRef()`：
+
+```java
+    /**
+     * Returns the reference to the default TimeZone object. This
+     * method doesn't create a clone.
+     */
+    static TimeZone getDefaultRef() {
+        TimeZone defaultZone = defaultTimeZone;
+        if (defaultZone == null) {
+            // Need to initialize the default time zone.
+            defaultZone = setDefaultZone();
+            assert defaultZone != null;
+        }
+        // Don't clone here.
+        return defaultZone;
+    }
+```
+
+# Java 8 日期与时间
+
+Java 8 引入了新的 `java.time` 类库，用于加强对日期与时间的操作，本文主要总结其 API 结构、具体实现和使用方式。
 
 先看下涉及的包结构简介：
 
@@ -75,13 +100,13 @@ Instant           // 以 Unix 元年时间（UTC 时区 1970-01-01T00:00:00Z，�
 
 [历法](https://zh.wikipedia.org/wiki/历法)，或称日历，是用[年](https://zh.wikipedia.org/wiki/年)、[月](https://zh.wikipedia.org/wiki/月)、[日](https://zh.wikipedia.org/wiki/日)等时间单位计算时间的方法。Java 8 提供的历法实现如下：
 
-| 历法                                                     | Java 8 实现        |
-| -------------------------------------------------------- | ------------------ |
-| [格里历（公历）](https://zh.wikipedia.org/wiki/格里曆)   | `LocalDate`        |
-| [和历](https://zh.wikipedia.org/wiki/和历)               | `JapaneseDate`     |
-| [中华民国历](https://zh.wikipedia.org/wiki/民國紀年)     | `MinguoDate`       |
-| [泰国历](https://zh.wikipedia.org/wiki/泰國曆)           | `ThaiBuddhistDate` |
-| [伊斯兰历（回历）](https://zh.wikipedia.org/zh/伊斯兰历) | `HijrahDate`       |
+| 历法                                                         | Java 8 实现        |
+| ------------------------------------------------------------ | ------------------ |
+| [格里历（公历）](https://zh.wikipedia.org/wiki/格里曆)，即 [Gregorian calendar](https://en.wikipedia.org/wiki/Gregorian_calendar) | `LocalDate`        |
+| [和历](https://zh.wikipedia.org/wiki/和历)                   | `JapaneseDate`     |
+| [中华民国历](https://zh.wikipedia.org/wiki/民國紀年)         | `MinguoDate`       |
+| [泰国历](https://zh.wikipedia.org/wiki/泰國曆)               | `ThaiBuddhistDate` |
+| [伊斯兰历（回历）](https://zh.wikipedia.org/zh/伊斯兰历)     | `HijrahDate`       |
 
 [ISO-8601](https://zh.wikipedia.org/wiki/ISO_8601) 日历系统是世界文明日历系统的事实标准，其**日期表示法**为：
 
