@@ -55,8 +55,10 @@ SELECT CURRENT_TIMESTAMP;               -- 2018-08-08 22:20:46，获取当前年
 -- 结果主要看 system_time_zone
 show variables like '%time_zone%';
 
--- 查询系统时区和会话时区
-SELECT @@GLOBAL.time_zone, @@SESSION.time_zone;
+-- 查询系统时区、会话时区、下一事务时区
+SELECT @@GLOBAL.time_zone, 
+       @@SESSION.time_zone, 
+       @@time_zone;;
 ```
 
 参考：[MySQL 中几个关于时间/时区的变量](https://www.cnblogs.com/Uest/p/8259821.html)
@@ -66,8 +68,14 @@ SELECT @@GLOBAL.time_zone, @@SESSION.time_zone;
 通过 SQL `SET` 语法临时修改：
 
 ```sql
-set global time_zone = '+8:00';  -- 设置 Global 全局时区，重启后失效
-set time_zone = '+8:00';         -- 设置 Session 会话时区，会话关闭后失效
+-- 设置 Global 全局时区，重启后失效
+set global time_zone = '+8:00';
+
+-- 设置 Session 会话时区，会话关闭后失效
+set time_zone = '+8:00';
+
+-- 设置 下一事务 时区，事务结束后失效
+set @@time_zone = '+8:00';
 ```
 
 通过修改配置文件，重启后永久生效：
@@ -234,10 +242,10 @@ select microsecond(@dt); -- 123456
 按天统计订单量（同理，按小时统计：`DATE_FORMAT(create_time,'%Y-%m-%d %H:00:00')`）：
 
 ```sql
-select count(*), DATE_FORMAT(create_time,'%Y-%m-%d') hours 
+select count(*), DATE_FORMAT(create_time,'%Y-%m-%d') days 
 from t_order 
 where create_time BETWEEN '2008-9-29' AND '2008-9-30' 
-group by hours;
+group by days;
 
 +----------+------------+
 | count(*) | hours      |
