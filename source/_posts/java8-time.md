@@ -482,35 +482,85 @@ long days2 = period.get(ChronoUnit.DAYS);
 
 下面介绍创建格式器的三种方式：
 
-方式一，创建格式器最简单的方法是通过它的常量，定义如下：
+## 预定义的格式器
+
+创建格式器最简单的方法是通过它[预定义的格式器](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#predefined)常量，定义如下：
+
+| Formatter                                                    | Description                                              | Example                                   |
+| :----------------------------------------------------------- | :------------------------------------------------------- | :---------------------------------------- |
+| [`ofLocalizedDate(dateStyle)`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ofLocalizedDate-java.time.format.FormatStyle-) | Formatter with date style from the locale                | '2011-12-03'                              |
+| [`ofLocalizedTime(timeStyle)`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ofLocalizedTime-java.time.format.FormatStyle-) | Formatter with time style from the locale                | '10:15:30'                                |
+| [`ofLocalizedDateTime(dateTimeStyle)`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ofLocalizedDateTime-java.time.format.FormatStyle-) | Formatter with a style for date and time from the locale | '3 Jun 2008 11:05:30'                     |
+| [`ofLocalizedDateTime(dateStyle,timeStyle)`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ofLocalizedDateTime-java.time.format.FormatStyle-) | Formatter with date and time styles from the locale      | '3 Jun 2008 11:05'                        |
+| [`BASIC_ISO_DATE`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#BASIC_ISO_DATE) | Basic ISO date                                           | '20111203'                                |
+| [`ISO_LOCAL_DATE`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_LOCAL_DATE) | ISO Local Date                                           | '2011-12-03'                              |
+| [`ISO_OFFSET_DATE`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_OFFSET_DATE) | ISO Date with offset                                     | '2011-12-03+01:00'                        |
+| [`ISO_DATE`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_DATE) | ISO Date with or without offset                          | '2011-12-03+01:00'; '2011-12-03'          |
+| [`ISO_LOCAL_TIME`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_LOCAL_TIME) | Time without offset                                      | '10:15:30'                                |
+| [`ISO_OFFSET_TIME`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_OFFSET_TIME) | Time with offset                                         | '10:15:30+01:00'                          |
+| [`ISO_TIME`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_TIME) | Time with or without offset                              | '10:15:30+01:00'; '10:15:30'              |
+| [`ISO_LOCAL_DATE_TIME`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_LOCAL_DATE_TIME) | ISO Local Date and Time                                  | '2011-12-03T10:15:30'                     |
+| [`ISO_OFFSET_DATE_TIME`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_OFFSET_DATE_TIME) | Date Time with Offset                                    | 2011-12-03T10:15:30+01:00'                |
+| [`ISO_ZONED_DATE_TIME`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_ZONED_DATE_TIME) | Zoned Date Time                                          | '2011-12-03T10:15:30+01:00[Europe/Paris]' |
+| [`ISO_DATE_TIME`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_DATE_TIME) | Date and time with ZoneId                                | '2011-12-03T10:15:30+01:00[Europe/Paris]' |
+| [`ISO_ORDINAL_DATE`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_ORDINAL_DATE) | Year and day of year                                     | '2012-337'                                |
+| [`ISO_WEEK_DATE`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_WEEK_DATE) | Year and Week                                            | 2012-W48-6'                               |
+| [`ISO_INSTANT`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_INSTANT) | Date and Time of an Instant                              | '2011-12-03T10:15:30Z'                    |
+| [`RFC_1123_DATE_TIME`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#RFC_1123_DATE_TIME) | RFC 1123 / RFC 822                                       | 'Tue, 3 Jun 2008 11:05:30 GMT'            |
 
 ![DateTimeFormatter常量](/img/java/time/DateTimeFormatter常量.png)
 
 ```java
-// 2007-12-03
-String format = date.format(DateTimeFormatter.ISO_DATE);
+// 2021-02-01
+LocalDateTime.now().format(DateTimeFormatter.ISO_DATE);
 ```
 
-方式二，`DateTimeFormatter` 还支持通过 `of` 静态工厂方法创建，如下：
+## 自定义 Pattern
+
+> Patterns are based on a simple sequence of letters and symbols. A pattern is used to create a Formatter using the [`ofPattern(String)`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ofPattern-java.lang.String-) and [`ofPattern(String, Locale)`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ofPattern-java.lang.String-java.util.Locale-) methods.
+>
+> A formatter created from a pattern can be used as many times as necessary, it is immutable and is thread-safe.
+
+`DateTimeFormatter#ofPattern(String)` 静态工厂方法：
 
 ```java
-// 03/12/2007
-String format2 = date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-// 2007 十二月 3
-String format3 = date.format(DateTimeFormatter.ofPattern("yyyy MMMM d", Locale.CHINA));
-
-// 20071114160942
-LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+// 01/02/2021
+LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 ```
 
-方式三，如果还需要更加细粒度的控制，`DateTimeFormatterBuilder` 类还提供了更复杂的格式器构建，你可以选择恰当的方法，一步一步地构造自己的格式器：
+`DateTimeFormatter#ofPattern(String, Locale)` 静态工厂方法：
+
+```java
+// 2021 2 1
+LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy M d", Locale.US));
+// 2021 02 1
+LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy MM d", Locale.US));
+// 2021 Feb 1
+LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy MMM d", Locale.US));
+// 2021 February 1
+LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy MMMM d", Locale.US));
+// 2021 F 1
+LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy MMMMM d", Locale.US));
+```
+
+Pattern 的字母数量决定格式，以月份为例：
+
+* Exactly 1 pattern letter will use the minimum number of digits and without padding.
+* Exactly 2 pattern letters, the count of digits is used as the width of the output field, with the value zero-padded as necessary.
+* Exactly 3 pattern letters will use the [`short form`](https://docs.oracle.com/javase/8/docs/api/java/time/format/TextStyle.html#SHORT).
+* Exactly 4 pattern letters will use the [`full form`](https://docs.oracle.com/javase/8/docs/api/java/time/format/TextStyle.html#FULL). 
+* Exactly 5 pattern letters will use the [`narrow form`](https://docs.oracle.com/javase/8/docs/api/java/time/format/TextStyle.html#NARROW).
+
+## 更灵活的构建器
+
+如果还需要更加细粒度的控制，`DateTimeFormatterBuilder` 类还提供了更复杂的格式器构建，你可以选择恰当的方法，一步一步地构造自己的格式器：
 
 ```java
 DateTimeFormatter dtf = new DateTimeFormatterBuilder().appendPattern("dd/MM/yyyy[ [HH][:mm][:ss][.SSS]]")
   .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
   .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
   .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
-  .toFormatter();
+  .toFormatter(Locale.US);
 
 // 1999-01-01T02:04:06
 LocalDateTime.parse("01/01/1999 02:04:06", dtf);
@@ -525,4 +575,5 @@ LocalDateTime.parse("01/01/1999", dtf);
 * 《Java 8 实战》
 * Java SE Docs
 * 《[LocalDate、LocalDateTime与timestamp、Date的转换](https://www.jianshu.com/p/b4629857fc6f)》
+* 《[Parsing and Formatting (The Java™ Tutorials > Date Time > Standard Calendar)](https://docs.oracle.com/javase/tutorial/datetime/iso/format.html)》
 * 《[`uuuu` versus `yyyy` in `DateTimeFormatter` formatting pattern codes in Java?](https://stackoverflow.com/questions/41177442/uuuu-versus-yyyy-in-datetimeformatter-formatting-pattern-codes-in-java)》
