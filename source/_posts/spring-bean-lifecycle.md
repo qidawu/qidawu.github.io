@@ -64,8 +64,19 @@ Spring 框架提供了以下三种方式指定 bean 生命周期的初始化和�
 使用 `@Scope` 注解定义 bean 的作用域，它可以与 `@Component` 或 `@Bean` 一起使用：
 
 * 单例(Singleton):在整个应用中，只创建bean的一个实例。
-* 原型(Prototype):每次注入或者通过Spring应用上下文获取的时候，都会创建一个新的bean实例。
+
+* 原型(Prototype):每次注入或者通过Spring应用上下文获取的时候，都会创建一个新的bean实例。注意，此时目标 bean 要使用代理模式，否则无法达到效果：
+
+  ```
+  // 目标 bean 为类
+  @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE, proxyMode = ScopedProxyMode.TARGET_CLASS)
+  
+  // 目标 bean 为接口
+  @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE, proxyMode = ScopedProxyMode.INTERFACES)
+  ```
+
 * 会话(Session):在Web应用中，为每个会话创建一个bean实例。
+
 * 请求(Rquest):在Web应用中，为每个请求创建一个bean实例。
 
 # 参考
