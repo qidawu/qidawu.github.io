@@ -24,7 +24,7 @@ typora-root-url: ..
 | 命令        | 名称                  | 基于                      | 作用                                                         | 备注             |
 | ----------- | --------------------- | ------------------------- | ------------------------------------------------------------ | ---------------- |
 | `jconsole`  | Java Console          | JMX                       | 一款基于 JMX (Java Management Extensions) 的可视化监视、管理工具。它的主要功能是通过 JMX  的 MBean (Managed Bean) 对系统进行信息收集和参数动态调整。 | JDK 5 起免费提供 |
-| `jvisualvm` | Java VisualVM         | 无需特殊 Agent            | 拥有丰富的插件扩展。目前已经从 Oracle JDK 中分离出来，成为一个独立发展的开源项目：http://visualvm.github.io/ | JDK 6 起免费提供 |
+| `jvisualvm` | Java VisualVM         | 无需特殊 Agent            | 拥有丰富的插件扩展。目前已经从 Oracle JDK 中分离出来，成为一个独立发展的开源项目：https://visualvm.github.io/ | JDK 6 起免费提供 |
 | `jmc`       | Java Mission Control  | Java Flight Recorder, JFR | 曾经是 BEA 公司的图形化诊断工具，随着 BEA 公司被 Oracle 收购而融合进 Oracle JDK。从 JDK 11 开始已被移除出 JDK。2018 年开源并交付给 Open JDK 组织管理。需要与 HotSpot 内部的 JFR 配合才能工作。 | JDK 7 起付费提供 |
 | `jhsdb`     | Java HotSpot Debugger | Serviceability Agent      | 一个基于 Serviceability Agent 的 HotSpot 进程调试器。        | JDK 9 起免费提供 |
 
@@ -240,6 +240,12 @@ $ grep /tmp/threaddump | awk '{print $2$3$4$5}' | sort | uniq -c | sort
 ```
 
 发现有大量 `WAITING (parking)` 状态的线程。重新打开 `threaddump` 文件排查，根据堆栈可以定位到具体的问题代码，可以初步判断是 HTTP 连接耗尽资源导致的问题。
+
+# 可视化工具
+
+## VisualVM
+
+VisualVM 拥有丰富的[插件](https://visualvm.github.io/plugins.html)扩展。目前已经从 Oracle JDK 中分离出来，成为一个独立发展的开源项目：https://visualvm.github.io/
 
 # 参考
 
