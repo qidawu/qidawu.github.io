@@ -32,22 +32,11 @@ Java 8 引入了新的 `java.time` 类库，用于加强对日期与时间的操
 | [java.time.zone](https://docs.oracle.com/javase/8/docs/api/java/time/zone/package-summary.html) | Support for time-zones and their rules.                      |
 | [java.time.format](https://docs.oracle.com/javase/8/docs/api/java/time/format/package-summary.html) | Provides classes to print and parse dates and times.         |
 
-`java.time` 的核心接口：
+## java.time
+
+`java.time` 包的核心接口：
 
 ![java-time核心接口](/img/java/time/java-time核心接口.png)
-
-`java.time.temporal` 包的核心接口：
-
-| Interface          | Description                                                  |
-| ------------------ | ------------------------------------------------------------ |
-| `TemporalAccessor` | 框架级别的根接口，定义了对 temporal 对象的只读访问。         |
-| `Temporal`         | 框架级别的接口，定义了对 temporal 对象的读写访问。实现类有 `LocalDate`、`OffsetDateTime`、`Instant` 等等。继承自 `TemporalAccessor`。 |
-| `TemporalAmount`   | 框架级别的接口，定义了一个时间段，例如”6 小时“、”8 天“、”3 个月“。实现类有 `Duration`、`Period`。可传入 temporal 对象的 `plus` 或 `minus` 方法进行时间调整。 |
-| `TemporalUnit`     | 日期和时间的单元，`ChronoUnit` 枚举实现了该接口。可传入 temporal 对象的 `plus` 或 `minus` 方法进行时间调整。 |
-| `TemporalField`    | 日期和时间的字段。`ChronoField` 枚举实现了该接口，可传入 temporal 对象的 `get` 或 `with` 方法获取或修改枚举对应的值。 |
-| `TemporalAdjuster` | 函数式接口，定义了对 temporal 对象的调整策略。可以使用 `TemporalAdjusters` 工具类的静态工厂方法生成对象实例，并传入temporal 对象的 `with` 方法进行时间调整。 |
-
-![ChronoLocalDate核心接口方法](/img/java/time/temporal核心接口.png)
 
 `java.time` 包的常用类：
 
@@ -68,6 +57,21 @@ Instant           // 以 Unix 元年时间（UTC 时区 1970-01-01T00:00:00Z，�
 ```
 
 ![java.time核心类](/img/java/time/java.time核心类.png)
+
+## java.time.temporal
+
+`java.time.temporal` 包的核心接口：
+
+| Interface          | Description                                                  |
+| ------------------ | ------------------------------------------------------------ |
+| `TemporalAccessor` | 框架级别的根接口，定义了对 temporal 对象的只读访问。         |
+| `Temporal`         | 框架级别的接口，定义了对 temporal 对象的读写访问。实现类有 `LocalDate`、`OffsetDateTime`、`Instant` 等等。继承自 `TemporalAccessor`。 |
+| `TemporalAmount`   | 框架级别的接口，定义了一个时间段，例如”6 小时“、”8 天“、”3 个月“。实现类有 `Duration`、`Period`。可传入 temporal 对象的 `plus` 或 `minus` 方法进行时间调整。 |
+| `TemporalUnit`     | 日期和时间的单元，`ChronoUnit` 枚举实现了该接口。可传入 temporal 对象的 `plus` 或 `minus` 方法进行时间调整。 |
+| `TemporalField`    | 日期和时间的字段。`ChronoField` 枚举实现了该接口，可传入 temporal 对象的 `get` 或 `with` 方法获取或修改枚举对应的值。 |
+| `TemporalAdjuster` | 函数式接口，定义了对 temporal 对象的调整策略。可以使用 `TemporalAdjusters` 工具类的静态工厂方法生成对象实例，并传入temporal 对象的 `with` 方法进行时间调整。 |
+
+![ChronoLocalDate核心接口方法](/img/java/time/temporal核心接口.png)
 
 # LocalDate、LocalTime
 
@@ -516,6 +520,8 @@ LocalDateTime.now().format(DateTimeFormatter.ISO_DATE);
 ```
 
 ## 自定义 Pattern
+
+[Patterns for Formatting and Parsing](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#patterns):
 
 > Patterns are based on a simple sequence of letters and symbols. A pattern is used to create a Formatter using the [`ofPattern(String)`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ofPattern-java.lang.String-) and [`ofPattern(String, Locale)`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ofPattern-java.lang.String-java.util.Locale-) methods.
 >
