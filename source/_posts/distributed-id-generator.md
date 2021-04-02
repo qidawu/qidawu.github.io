@@ -55,6 +55,18 @@ typora-root-url: ..
 3. 解决时间回拨问题。如果回拨时长较短（可配置，代码中配了 5 ms），线程等待；如果较长，则利用扩展位避免生成重复 ID（扩展位可配，代码中配置了 3 位，即最多支持 3 次回拨，超出则抛异常）。
 
 ```Java
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+
 @Slf4j
 public class IdGeneratorTest {
 
@@ -62,17 +74,12 @@ public class IdGeneratorTest {
     public void test() {
         int initialCapacity = 1000;
         Set<Long> ids = new HashSet<>(initialCapacity);
-        IdGenerator idGenerator = new IdGenerator(3, 5);
+        IdGenerator idGenerator = new IdGenerator(3, 31);
         
         for (int i = 0; i < initialCapacity; i++) {
             long id = idGenerator.nextId();
             ids.add(id);
-            
-            // Binary is 101110001000100000101011001100101110100011111100101000000000000, id is 6648462698734309376
-            // Binary is 10111000100010000010101100110010111010001, time is 2020-03-25T14:17:09.841
-            // Binary is 11111, dataCenterNo is 31
-            // Binary is 101, workerNo is 5
-            // Binary is 0, seqNo is 0
+
             IdGenerator.log(id);
         }
         assertEquals(ids.size(), initialCapacity);
@@ -83,27 +90,45 @@ public class IdGeneratorTest {
 @Slf4j
 class IdGenerator {
 
+    // 时间戳
     private long timestamp;
+    // 数据中心
     private int dataCenterNo;
+    // 机器
     private int workerNo;
+    // 序列号
     private int seqNo;
+    // 扩展位
     private int ext;
 
+    // 数据中心 取值范围（十进制）：0~3
     private static final int DATA_CENTER_NO_BITS = 2;
+    // 机器 取值范围（十进制）：0~31
     private static final int WORKER_NO_BITS = 5;
+    // 序列号 取值范围（十进制）：0~4095
     private static final int SEQ_NO_BITS = 12;
+    // 扩展位 取值范围（十进制）：0~7
     private static final int EXT_BITS = 3;
 
+    // 数据中心 最大值（十进制）：3
+    private static final int MAX_DATA_CENTER_NO = (1 << DATA_CENTER_NO_BITS) - 0B1;
+    // 机器 最大值（十进制）：31
+    private static final int MAX_WORKER_NO = (1 << WORKER_NO_BITS) - 0B1;
+    // 序列号 最大值（十进制）：4095
+    private static final int MAX_SEQ_NO = (1 << SEQ_NO_BITS) - 0B1;
+    // 扩展位 最大值（十进制）：7
+    private static final int MAX_EXT = (1 << EXT_BITS) - 0B1;
+  
+    // 时间戳 左移 22 位
     private static final int TIMESTAMP_SHIFT = DATA_CENTER_NO_BITS + WORKER_NO_BITS + SEQ_NO_BITS + EXT_BITS;
-    private static final int DATA_CENTER_NO_SHIFT = SEQ_NO_BITS + WORKER_NO_BITS + EXT_BITS;
+    // 数据中心 左移 20 位
+    private static final int DATA_CENTER_NO_SHIFT = WORKER_NO_BITS + SEQ_NO_BITS + EXT_BITS;
+    // 机器 左移 15 位
     private static final int WORKER_NO_SHIFT = SEQ_NO_BITS + EXT_BITS;
+    // 序列号 左移 3 位
     private static final int SEQ_NO_SHIFT = EXT_BITS;
 
-    private static final int MAX_DATA_CENTER_NO = (1 << DATA_CENTER_NO_BITS) - 0B1;
-    private static final int MAX_WORKER_NO = (1 << WORKER_NO_BITS) - 0B1;
-    private static final int MAX_SEQ_NO = (1 << SEQ_NO_BITS) - 0B1;
-    private static final int MAX_EXT = (1 << EXT_BITS) - 0B1;
-    
+    // 最大回拨毫秒数
     private static final int MAX_BACKWARD_MILLIS = 5;
 
     /**
@@ -201,6 +226,19 @@ class IdGenerator {
 
 }
 ```
+
+输出结果：
+
+```
+// Binary is 101111000100100011111011111000111010101011111111000000000000000, id is 6783685416349302784
+// Binary is 10111100010010001111101111100011101010101, time is 2021-04-02T17:43:58.037
+// Binary is 11, dataCenterNo is 3
+// Binary is 11111, workerNo is 31
+// Binary is 0, seqNo is 0
+// Binary is 0, ext is 0
+```
+
+二进制分段如下：`10111100010010001111101111100011101010101_11_11111_000000000000_000`
 
 # 延伸阅读：位运算
 
