@@ -8,6 +8,8 @@ typora-root-url: ..
 
 # 继承
 
+C++ 继承的语法如下，支持单继承和多继承：
+
 ```C++
 // Single inheritance 单继承
 class derived_class: access_specifier base_class

@@ -221,6 +221,8 @@ C 语言有九种控制语句。 可分成以下三类：
 
 # 参考
 
-http://www.cplusplus.com/doc/tutorial/
+https://www.cplusplus.com/doc/tutorial/
 
-http://www.cplusplus.com/doc/tutorial/variables/
+https://www.cplusplus.com/doc/tutorial/variables/
+
+https://www.cplusplus.com/doc/tutorial/namespaces/

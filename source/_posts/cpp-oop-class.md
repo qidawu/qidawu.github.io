@@ -24,8 +24,8 @@ class class_name {
 
 ## 访问修饰符
 
-- `private` members of a class are accessible only from within other members of the same class (or from their *"friends"*). By default, all members of a class have private access for all its members.
-- `protected` members are accessible from other members of the same class (or from their *"friends"*), but also from members of their derived classes.
+- `private` members of a class are accessible only from within other members of the same class (or from their `friend`). By default, all members of a class have private access for all its members.
+- `protected` members are accessible from other members of the same class (or from their `friend`), but also from members of their derived classes.
 - Finally, `public` members are accessible from anywhere where the object is visible.
 
 ## this 指针
@@ -235,6 +235,8 @@ int main () {
   return 0;
 }
 ```
+
+友元函数破坏了类的封装性，实践中不建议使用。
 
 ## 重载（overload）
 
