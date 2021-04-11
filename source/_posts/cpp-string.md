@@ -45,8 +45,6 @@ string str = "hello world";
   cout << "str3: " << str3 << " size: " << sizeof(str3) << endl;
 ```
 
-`cstring` 头文件提供了大量的函数，用来操作 *C strings* and arrays，参考：http://www.cplusplus.com/reference/cstring/
-
 # 字符串指针
 
 用字符数组和字符串指针都可实现字符串的存储和运算，但是两者是有区别的：
@@ -61,9 +59,27 @@ string str = "hello world";
   *(str3 + 1) = 'a';  // 运行时出错。因为不能改变字符串常量的值
 ```
 
-# 字符串类
+# string 字符串类
 
 `string` 头文件提供了 `string` 类，参考：http://www.cplusplus.com/reference/string/
+
+# cstring 操纵器
+
+`cstring` 头文件提供了大量的函数，用来操纵 *C strings* and arrays，参考：http://www.cplusplus.com/reference/cstring/
+
+例如：
+
+* Copying:
+  * [`strcpy`](http://www.cplusplus.com/reference/cstring/strcpy/) Copy string
+* Concatenation:
+  * [`strcat`](http://www.cplusplus.com/reference/cstring/strcat/) Concatenate strings
+* Comparison:
+  * [`strcmp`](http://www.cplusplus.com/reference/cstring/strcmp/) Compare two strings
+* Searching:
+  * [`strchr`](http://www.cplusplus.com/reference/cstring/strchr/) Locate first occurrence of character in string
+  * [`strrchr`](http://www.cplusplus.com/reference/cstring/strrchr/) Locate last occurrence of character in string
+* Other:
+  * [`strlen`](http://www.cplusplus.com/reference/cstring/strlen/) Get string length
 
 # 参考
 
