@@ -3,6 +3,7 @@ title: Spring Bean 生命周期与作用域总结
 date: 2017-06-03 22:20:33
 updated:
 tags: [Java, Spring]
+typora-root-url: ..
 ---
 
 # Bean 的生命周期
@@ -11,33 +12,37 @@ Spring Bean Factory 负责管理 bean 的生命周期，可以分为三个阶段
 
 ![Spring Bean Life Cycle](/img/spring/spring-bean-life-cycle.png)
 
-初始化阶段：
+一、初始化阶段：
 
 * Instantiation：Spring 启动，查找并加载需要被 Spring 管理的bean，进行 Bean 的实例化，调用构造方法。
 * Populate Properties：属性注入，包括引用的 Bean 和值，调用 setter 方法。
 * 调用该 Bean 实现的各种生命周期回调接口。
 
-就绪阶段：
+二、就绪阶段：
 
 * 此时，Bean 已经准备就绪，可以被应用程序使用了。它们将一直驻留在应用上下文中，直到应用上下文被销毁。
 
-销毁阶段：
+三、销毁阶段：
 
 * 调用该 Bean 实现的各种生命周期回调接口。
 
 ## 初始化和销毁方法
 
-Spring 框架提供了以下三种方式指定 bean 生命周期的初始化和销毁回调方法：
+Spring 框架提供了以下几种方式指定 bean 生命周期的初始化和销毁回调方法：
 
-* 实现 Spring 框架的回调接口：
-  * `org.springframework.beans.factory.InitializingBean`
-  * `org.springframework.beans.factory.DisposableBean`
-* 在 Spring bean 配置文件或 `@Bean` 注解中指定以下属性：
-  * `@Bean(initMethod="xxx" destroyMethod="xxx")`
-  * `<bean init-method="xxx" destroy-method="xxx" />`
-* 使用 JavaEE 规范 `javax.annotation` 包中提供的注解：
-  - `@PostConstruct`
-  - `@PreDestroy`
+|                                                    | 初始化                                                       | 销毁                                                         |
+| -------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 实现 Spring Boot 的接口                            | [`ApplicationRunner`](https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/ApplicationRunner.html) |                                                              |
+| 实现 Spring Framework 的接口                       | [`InitializingBean`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/InitializingBean.html) | [`DisposableBean`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/DisposableBean.html) |
+| 在 Spring `@Bean` 注解中指定属性                   | `@Bean(initMethod="xxx")`                                    | `@Bean(destroyMethod="xxx")`                                 |
+| 在 Spring bean 配置文件指定属性                    | `<bean init-method="xxx" />`                                 | `<bean destroy-method="xxx" />`                              |
+| 使用 JavaEE 规范 `javax.annotation` 包中提供的注解 | `@PostConstruct`                                             | `@PreDestroy`                                                |
+
+在 Spring 容器启动后执行一些初始化逻辑是一个很常见的场景，注意使用不同的方式，顺序不同：
+
+![](/img/spring/spring-bean-lifecycle-3.png)
+
+参考：https://zhuanlan.zhihu.com/p/44786291
 
 ## Aware 接口
 
