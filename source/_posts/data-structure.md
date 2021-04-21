@@ -15,3 +15,5 @@ typora-root-url: ..
 https://www.cs.usfca.edu/~galles/visualization/Algorithms.html
 
 https://www.bigocheatsheet.com
+
+[逻辑结构与物理结构](https://baozoulin.gitbook.io/-data-structure/chapter1/12-luo-ji-jie-gou-yu-wu-li-jie-gou)

@@ -22,7 +22,27 @@ typora-root-url: ..
 
 # 集合接口
 
-集合接口分为两组：`java.util.Collection` 和 `java.util.Map`，这些接口构成了集合框架的基础：
+集合接口分为下面两组，这些接口构成了集合框架的基础：
+
+* `java.util.Collection`，表示一组对象集合
+
+  > A collection represents a group of objects, known as its *elements*. 
+  >
+  > * Some collections allow duplicate elements and others do not. 
+  >
+  > * Some are ordered and others unordered. 
+  >
+  > The JDK does not provide any *direct* implementations of this interface: it provides implementations of more specific subinterfaces like `Set` and `List`. 
+  > 
+  > This interface is typically used to pass collections around and manipulate them where maximum generality is desired.
+
+* `java.util.Map`，用于存储键值对
+
+  > An object that maps keys to values.
+  >
+  > * A map cannot contain duplicate keys; 
+  >
+  > * each key can map to at most one value.
 
 ## Collection
 
@@ -30,7 +50,7 @@ typora-root-url: ..
 
 ![Collection](/img/java/collection/Collection.png)
 
-五个重点接口的方法及使用要点如下：
+其中，常用的五个重点接口的方法及使用要点如下：
 
 ![methods_of_collection](/img/java/collection/methods_of_collection.png)
 
@@ -39,6 +59,10 @@ typora-root-url: ..
 其它集合接口基于 `java.util.Map`，不是真正的集合。但是，这些接口包含集合视图（*collection-view*）操作，使得它们可以作为集合进行操作。
 
 ![Map](/img/java/collection/Map.png)
+
+`java.util.Map` 接口的方法如下:
+
+![Map methods](/img/java/collection/Map_methods.png)
 
 # 集合实现类
 
@@ -58,7 +82,7 @@ typora-root-url: ..
 
 ![map_impl](/img/java/collection/map_impl.JPG)
 
-集合接口的主要实现，命名通常形如 <*Implementation-style*><*Interface*>。通用实现类汇总如下（表头为数据结构，左列为接口）：
+集合接口的主要实现，命名通常形如 <*Implementation-style*><*Interface*>。通用实现类汇总如下（左列为接口，表头为数据结构）：
 
 |         | **Resizable Array**                                          | **Linked List**                                              | **Hash Table**                                               | **Hash Table + Linked List**                                 | **Balanced Tree**                                            | **Heap**                                                     |
 | ------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -78,8 +102,8 @@ typora-root-url: ..
 
 早期版本的集合类，已被改进以实现新的集合接口：
 
-- `Vector` - `List` 接口的可变长数组实现，线程同步，包含其它遗留方法。
-- `Hashtable` -  `Map` 接口的散列表实现，线程同步，键和值都不允许为 `null`，包含其它遗留方法。
+- `java.util.Vector` - `List` 接口的可变长数组实现，线程同步，包含其它遗留方法。
+- `java.util.Hashtable` -  `Map` 接口的散列表实现，线程同步，键和值都不允许为 `null`，包含其它遗留方法。继承自抽象类 `java.util.Dictionary`。
 
 ## 并发实现
 
@@ -110,6 +134,12 @@ typora-root-url: ..
 
   ```java
   Collections.asLifoQueue(Deque)
+  ```
+
+* 将数组转换为 `List` 集合：
+
+  ```java
+  Arrays.asList(...)
   ```
 
 ## 包装器实现
@@ -210,3 +240,5 @@ typora-root-url: ..
 # 参考
 
 https://docs.oracle.com/javase/8/docs/technotes/guides/collections/index.html
+
+[Why Java Collection Framework doesn't contain Tree and Graph ?](https://stackoverflow.com/questions/4978487/why-java-collection-framework-doesnt-contain-tree-and-graph)

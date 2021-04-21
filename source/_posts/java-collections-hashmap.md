@@ -12,17 +12,26 @@ typora-root-url: ..
 
 ![keynote_of_hash_table](/img/java/collection/keynote_of_hash_table.png)
 
-# 内部类
+# 节点设计
 
-## Entry 接口设计
+散列表的节点设计如下：
 
-`java.util.Map` 接口中的内部接口 `Entry` 如下，其中 `getKey`、`getValue`、`setValue`、`equals`、`hashCode` 五个方法待实现：
+| 接口和类                        | 描述                                                         |
+| ------------------------------- | ------------------------------------------------------------ |
+| `java.util.Map#Entry`           | `Entry` 接口定义了 `getKey`、`getValue`、`setValue`、`equals`、`hashCode` 五个待实现方法。 |
+| `java.util.HashMap#Node`        | 单链表节点实现，用于解决**散列冲突**。                       |
+| `java.util.LinkedHashMap#Entry` | 单链表节点实现，并在此基础上增加了前驱节点 `before`、后继节点 `after` 以实现节点的**顺序遍历**。 |
+| `java.util.HashMap#TreeNode`    | 红黑树节点实现，用于解决**散列冲突**。同时为了避免链表过长及散列表碰撞攻击，如果节点数超过 8 个，则进行树化 `treeifyBin`，避免大量散列冲突导致散列表退化成单链表，导致查询时间复杂度从 `O(1)` 退化成 `O(n)。` |
 
 ![Entry](/img/java/collection/Map_Entry.png)
 
 ## 单链表节点实现
 
-![Node](/img/java/collection/HashMap_Node.png)
+单链表节点的散列表结构如下，下图体现了单链表节点 `key` 和 `next` 属性：
+
+![hashtable_examples](/img/java/collection/hashtable_examples.png)
+
+源码如下：
 
 ```java
     /**
@@ -69,13 +78,9 @@ typora-root-url: ..
     }
 ```
 
-单链表节点的散列表结构如下，下图体现了单链表节点 `key` 和 `next` 属性：
-
-![hashtable_examples](/img/java/collection/hashtable_examples.png)
-
 ## 红黑树节点实现
 
-![TreeNode](/img/java/collection/HashMap_TreeNode.png)
+源码如下：
 
 ```java
     /**
@@ -456,7 +461,7 @@ int hash(Object key) {
 * 散列表只在首次设值时，才初始化；
 * 散列函数：`(n - 1) & hash`，通过**取模法**计算存放的数组下标。通过该散列函数将元素的键值（key）映射为数组下标，然后将数据存储在数组中对应的下标位置。当我们按照键值查询元素时，用同样的散列函数，将键值转化为数组下标，从对应的数组下标的位置取数据。因此散列函数在散列表中起着非常关键的作用。
 * 为了避免散列值冲突，除了对比散列值是否相等之外，还需要对比 `key` 是否相等；
-* 散列冲突解决方法：链表法。同时为了避免链表过长及**散列表碰撞攻击**，如果节点数超过 8 个，则进行树化 `treeifyBin`，避免大量散列冲突导致散列表退化成单链表，导致查询时间复杂度从 0(1) 退化成 0(n)；
+* 散列冲突解决方法：链表法。同时为了避免链表过长及**散列表碰撞攻击**，如果节点数超过 8 个，则进行树化 `treeifyBin`，避免大量散列冲突导致散列表退化成单链表，导致查询时间复杂度从 `O(1)` 退化成 `O(n)`；
 * 如果实际映射数量超过阈值，则进行 `resize` 扩容。
 
 ```java
@@ -806,35 +811,6 @@ int hash(Object key) {
     }
 ```
 
-## 迭代
-
-外部循环：
-
-```java
-// key 迭代
-for (String key : map.keySet()) {}
-
-// value 迭代
-for (String value : map.values()) {}
-
-// entry 显式迭代器
-Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
-while (it.hasNext()) {
-    Map.Entry<String, String> entry = it.next();
-}
-
-// foreach 循环增强，不再需要显式迭代器，简化迭代集合操作
-for (Map.Entry<String, String> entry : map.entrySet()) {}
-```
-
-内部循环：
-
-```java
-map.forEach((key, value) -> {});
-```
-
-![map_entryset](/img/java/collection/map_entryset.png)
-
 ## Java 8 新增方法
 
 Java 8 为 `Map` 接口引入了一组新的 `default` 默认方法，如下：
@@ -919,11 +895,13 @@ Guava 的 `Maps` 还提供了更多的 API，可以自行研究使用。
 
 # 参考
 
-https://docs.oracle.com/javase/8/docs/api/index.html
+https://en.wikipedia.org/wiki/Hash_table
 
 《[散列函数设计：除留余数法](http://www.nowamagic.net/academy/detail/3008040)》
 
-《[讨论 - 为什么hash函数的除留余数法要选一个**素数**？](https://exp.newsmth.net/topic/6d669fb1a27ff48272c158e84b69c93f)》造成散列冲突的概率更小
+
+
+https://docs.oracle.com/javase/8/docs/api/index.html
 
 《[Java中hash算法细述](https://blog.csdn.net/majinggogogo/article/details/80260400)》
 
