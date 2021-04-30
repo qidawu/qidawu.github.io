@@ -44,6 +44,39 @@ Spring 框架提供了以下几种方式指定 bean 生命周期的初始化和�
 
 参考：https://zhuanlan.zhihu.com/p/44786291
 
+例子：
+
+```java
+@Component
+public class OssUtil {
+
+    @Value("${oss.endpoint}")
+    private String endpoint;
+
+    @Value("${oss.access-key-id}")
+    private String accessKeyId;
+
+    @Value("${oss.access-key-secret}")
+    private String accessKeySecret;
+
+    @Value("${oss.bucket-name}")
+    private String bucketName;
+
+    private OSS ossClient;
+
+    @PostConstruct
+    private void construct() {
+        ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+    }
+
+    @PreDestroy
+    private void destory() {
+        ossClient.shutdown();
+    }
+
+}
+```
+
 ## Aware 接口
 
 在日常的开发中，我们经常需要用到 Spring 容器本身的功能资源，可以通过 Spring 提供的一系列 `Aware (org.springframework.beans.factory)` 子接口来实现具体的功能。`Aware` 是一个具有标识作用的超级接口，实现该接口的 bean 具有被 Spring 容器通知的能力，而被通知的方式就是通过回调，以依赖注入的方式为 bean 设置相应属性，这是一个典型的依赖注入的使用场景。`Aware` 接口的继承关系如下：
