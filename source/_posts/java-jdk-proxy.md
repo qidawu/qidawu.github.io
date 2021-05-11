@@ -1,5 +1,5 @@
 ---
-title: Java 反射篇（四）JDK 动态代理总结
+title: Java 反射篇（四）动态代理之 JDK Proxy 总结
 date: 2018-11-31 22:53:54
 updated:
 tags: Java
@@ -12,13 +12,34 @@ typora-root-url: ..
 
 ![proxy](/img/java/proxy/Proxy.png)
 
+有哪些代理方式？
+
+* 静态代理
+* 动态代理
+
 什么是动态代理？
 
-> 动态代理是一种方便**运行时动态生成代理、动态处理代理方法调用的机制**。这个概念是与静态代理相对的，静态代理需要为每一个目标类都手工编写或用工具生成一个对应的代理类，非常繁琐。
+> 动态代理是一种在**运行时**动态生成代理的机制。这个概念是与静态代理相对的，静态代理需要为每一个目标类都手工编写或用工具生成一个对应的代理类，非常繁琐。
+
+动态代理的实现方式？
+
+> 动态代理的实现方式有很多种，比如：
 >
-> 很多场景都是利用类似机制做到的，比如用来包装 RPC 调用、面向切面的编程（AOP）。
+> * 利用 JDK 自身提供的动态代理 API（`java.lang.reflect`）
 >
-> 动态代理的实现方式有很多，比如 JDK 自身提供的动态代理，或者利用性能更高的第三方字节码生成框架（例如 ASM、cglib（基于 ASM）、Javassist 等）。
+> * 或者利用性能更高的第三方字节码生成框架（例如 ASM、cglib（基于 ASM）、Javassist 等）
+>
+> 最终目标都是生成一个代理类的字节码。
+
+哪些场景用到动态代理？
+
+> 比如：
+>
+> 包装 RPC 调用、…
+>
+> 面向切面的编程（AOP）
+>
+> ![](/img/spring/aop/aop_lib.png)
 
 动态代理从代理对象创建到方法执行的整体流程如下：
 
@@ -32,7 +53,7 @@ typora-root-url: ..
 
 ![jdk_proxy_process2](/img/java/proxy/jdk_proxy_example.png)
 
-首先创建接口和目标类：
+首先创建接口 `Flyable` 和目标类 `Bird`：
 
 ```java
 /**
@@ -301,6 +322,8 @@ public final class $Proxy0 extends Proxy implements Flyable {
 
 《[Proxy pattern 设计模式](https://en.wikipedia.org/wiki/Proxy_pattern)》
 
+《[代理设计模式](https://refactoringguru.cn/design-patterns/proxy)》
+
 《[10分钟看懂动态代理设计模式](https://www.jianshu.com/p/fc285d669bc5)》
 
 《[动态代理是基于什么原理？](https://time.geekbang.org/column/article/7489)》
@@ -308,3 +331,6 @@ public final class $Proxy0 extends Proxy implements Flyable {
 《[Java 动态代理作用是什么？ - 知乎用户的回答](https://www.zhihu.com/question/20794107/answer/658139129)》
 
 《[Understanding “proxy” arguments of the invoke method of java.lang.reflect.InvocationHandler](http://stackoverflow.com/questions/22930195/understanding-proxy-arguments-of-the-invoke-method-of-java-lang-reflect-invoca)》
+
+《[字节码增强技术探索](https://tech.meituan.com/2019/09/05/java-bytecode-enhancement.html)》
+
