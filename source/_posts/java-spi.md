@@ -164,11 +164,12 @@ SPI 的核心在于内部类 `LazyIterator`，承担了以下职责：
 }
 ```
 
-# 动态加载机制
+# 使用场景
 
 Java SPI 实际上是“**基于接口的编程＋策略模式＋配置文件**”组合实现的动态加载机制。这种动态加载机制的使用场景如下：
 
-* JDBC Driver 驱动程序加载，详见：[JDBC Driver 驱动程序总结](/2019/01/23/java-jdbc-driver/)
+* JDBC Driver 驱动程序管理类 [`java.sql.DriverManager`](https://docs.oracle.com/javase/8/docs/api/java/sql/DriverManager.html)。详见：[JDBC Driver 驱动程序总结](/2018/02/03/java-jdbc-driver/)
+* JSR-303 Bean Validation 的 [`javax.validation.Validation`](https://docs.oracle.com/javaee/7/api/javax/validation/Validation.html)
 * 日志门面接口实现类加载，SLF4J 加载不同提供商的日志实现类。
 * Spring
   * 对 servlet3.0 规范对 `ServletContainerInitializer` 的实现
