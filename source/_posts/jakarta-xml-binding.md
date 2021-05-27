@@ -1,12 +1,33 @@
 ---
-title: 通过 JAXB 注解生成 XML 示例
-date: 2017-01-10 22:09:48
+title: Jakarta EE 系列（三）XML Binding 规范与实践总结
+date: 2020-10-10 22:09:48
 updated:
 tags: Java
 typora-root-url: ..
 ---
 
-本文演示通过 JAXB 生成和解析 XML，主要涉及以下常用注解，更多注解可以自行尝试：
+# 规范
+
+> The Jakarta XML Binding provides an API and tools that automate the mapping between XML documents and Java objects.
+
+规范文档：https://jakarta.ee/specifications/xml-binding/
+
+# 实现
+
+官方认证实现：https://eclipse-ee4j.github.io/jaxb-ri/
+
+依赖下载：https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-ri，将传递依赖：
+
+```XML
+<dependency>
+  <groupId>jakarta.xml.bind</groupId>
+  <artifactId>jakarta.xml.bind-api</artifactId>
+</dependency>
+```
+
+# 示例
+
+本文演示如何生成和解析 XML，主要涉及以下常用注解，更多注解可以自行尝试：
 
 ```Java
 @XmlRootElement
@@ -67,7 +88,7 @@ class Child {
 }
 ```
 
-# XML 工具类
+## XML 工具类
 
 ```Java
 @Slf4j
@@ -139,7 +160,7 @@ public class XmlUtils {
 }
 ```
 
-# 生成 XML
+## 生成 XML
 
 ```Java
 @Test
@@ -182,7 +203,7 @@ public void testToXml() {
 </head>
 ```
 
-# 解析 XML
+## 解析 XML
 
 ```Java
 @Test
@@ -209,3 +230,6 @@ public void testUnXml() {
 Head(tradeCode=XT-001, tradeDate=2020-03-19, tradeTime=18:39:28, serialNo=114d2c0c-30a8-4275-982c-f8eba86cbadb, parent=Parent(child=[Child(key=key, value=value), Child(key=key, value=value)]))
 ```
 
+# 参考
+
+https://jakarta.ee/specifications/xml-binding/
