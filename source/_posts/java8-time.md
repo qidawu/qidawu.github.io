@@ -116,7 +116,10 @@ ThaiBuddhistDate thaiBuddhistDate = ThaiBuddhistDate.from(date);
 HijrahDate hijrahDate = HijrahDate.from(date);
 ```
 
-还有一些特殊的历法，例如[会计年度](https://zh.wikipedia.org/wiki/會計年度)：
+还有一些常见的历法，例如：
+
+* [中国传统历法](https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BC%A0%E7%BB%9F%E5%8E%86%E6%B3%95)
+* [会计年度](https://zh.wikipedia.org/wiki/會計年度)：
 
 > 财政年度，又称会计年度，是指公司或国家每年制定预算或计算收入的统计时间。但每个国家或其法例所辖的组织各有不同，大抵分成两类：
 >
