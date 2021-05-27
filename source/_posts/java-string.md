@@ -26,7 +26,7 @@ typora-root-url: ..
 
 ## `intern()` 方法
 
-# 字符串的不可变性
+# 字符串的特性
 
 三种常用字符串类的区别如下：
 
@@ -36,9 +36,9 @@ typora-root-url: ..
 | `java.lang.StringBuffer`  | Java SE 1.0 | mutable     | thread-safe    |
 | `java.lang.StringBuilder` | Java SE 1.5 | mutable     | no thread-safe |
 
-# 字符串拼接-字节码分析
+## 字符串拼接-字节码分析
 
-https://lingcoder.github.io/OnJava8/#/book/18-Strings?id=-%e7%9a%84%e9%87%8d%e8%bd%bd%e4%b8%8e-stringbuilder
+[+ 的重载与 StringBuilder](https://lingcoder.github.io/OnJava8/#/book/18-Strings?id=-%e7%9a%84%e9%87%8d%e8%bd%bd%e4%b8%8e-stringbuilder)
 
 # 工具类
 
