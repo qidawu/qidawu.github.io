@@ -41,5 +41,6 @@ tags: Git
 
 # 参考
 
+* 《[Commit message 和 Change log 编写指南](http://www.ruanyifeng.com/blog/2016/01/commit_message_change_log.html)》
 * 《[Git 分支管理策略 - 阮一峰](http://www.ruanyifeng.com/blog/2012/07/git.html)》
 * 《[A successful Git branching model](http://nvie.com/posts/a-successful-git-branching-model/)》
