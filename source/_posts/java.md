@@ -126,6 +126,12 @@ Reference
 
 作为分水岭，2017 年 11 月，Oracle 将 Java EE 移交给 Eclipse 基金会。 2018 年 3 月 5 日，Eclipse 基金会宣布 Java EE (Enterprise Edition) 被更名为 Jakarta EE。
 
+参考：《[Java EE 规范重命名为 Jakarta EE](https://www.infoq.cn/article/62TVY0c7ANAm*rjdzKfj)》
+
+- Jakarta 9（2019 及以后）使用 jakarta 命名空间。
+- Java EE 5（2005）到 Java EE 8（2017）使用 javax 命名空间。
+- Java EE 4 使用 javax 命名空间。
+
 | 规范                                                         | 创建组织                                                     |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | Java EE 1.3 (JSR-058)                                        | Java Community Process                                       |
@@ -134,8 +140,8 @@ Reference
 | [Java EE 6 (JSR-316)](https://docs.oracle.com/javaee/6/)     | Java Community Process                                       |
 | [Java EE 7 (JSR-342)](https://docs.oracle.com/javaee/7/index.html) | Java Community Process                                       |
 | Java EE 8 (JSR-366)                                          | Java Community Process                                       |
-| Jakarta EE 8                                                 | Jakarta EE Platform Specification Project with guidance provided by the [Jakarta EE Working Group](https://jakarta.ee/) |
-| Jakarta EE 9                                                 | Jakarta EE Platform Specification Project with guidance provided by the [Jakarta EE Working Group](https://jakarta.ee/) |
+| [Jakarta EE 8](https://jakarta.ee/release/8/)                | Jakarta EE Platform Specification Project with guidance provided by the [Jakarta EE Working Group](https://jakarta.ee/) |
+| [Jakarta EE 9](https://jakarta.ee/release/9/)                | Jakarta EE Platform Specification Project with guidance provided by the [Jakarta EE Working Group](https://jakarta.ee/) |
 
 ## Java EE
 
