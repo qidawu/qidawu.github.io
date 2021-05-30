@@ -88,6 +88,14 @@ StringEscapeUtils.unescapeJson("{hello: \"world\"}");
 
 《[Java String 对象，你真的了解了吗？](https://cloud.tencent.com/developer/article/1511298)》
 
+《[几张图轻松理解 `String.intern()`](https://blog.csdn.net/tyyking/article/details/82496901)》
+
+《[字符串常量池深入解析](https://blog.csdn.net/weixin_40304387/article/details/81071816)》
+
+《[JVM 常量池、运行时常量池、字符串常量池](https://www.cnblogs.com/natian-ws/p/10749164.html)》
+
+
+
 《[Java8 对字符串连接的改进](https://segmentfault.com/a/1190000007835105)》
 
 《[HTML 字符实体](http://www.w3school.com.cn/html/html_entities.asp)》
