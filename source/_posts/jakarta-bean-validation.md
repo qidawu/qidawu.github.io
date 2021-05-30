@@ -1,5 +1,5 @@
 ---
-title: Jakarta EE 系列（一）Bean Validation 规范与实践总结
+title: Jakarta EE 系列（三）Bean Validation 规范与实践总结
 date: 2020-10-05 23:32:08
 updated:
 tags: [Java]

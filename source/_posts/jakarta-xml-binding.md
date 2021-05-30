@@ -1,5 +1,5 @@
 ---
-title: Jakarta EE 系列（三）XML Binding 规范与实践总结
+title: Jakarta EE 系列（四）XML Binding 规范与实践总结
 date: 2020-10-10 22:09:48
 updated:
 tags: Java
