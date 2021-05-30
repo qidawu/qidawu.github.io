@@ -14,8 +14,9 @@ typora-root-url: ..
 | [Jakarta Expression Language (EL)](https://jakarta.ee/specifications/expression-language/) | Defines an expression language for Java applications        | [Eclipse Expression Language](https://eclipse-ee4j.github.io/el-ri/) |
 | [Jakarta Server Faces (JSF)](https://jakarta.ee/specifications/faces/) | MVC framework for building user interfaces for web apps     | [Eclipse Mojarra](https://eclipse-ee4j.github.io/mojarra/)   |
 | [Jakarta MVC](https://jakarta.ee/specifications/mvc/)        | Standardizes the action-based model-view-controller pattern | [Eclipse Krazo](https://eclipse-ee4j.github.io/krazo/)       |
-| [Jakarta RESTful Web Services](https://jakarta.ee/specifications/restful-ws/) | API to develop web services following the REST pattern      | [Eclipse Jersey]()                                           |
+| [Jakarta RESTful Web Services (JAX-RS)](https://jakarta.ee/specifications/restful-ws/) | API to develop web services following the REST pattern      | [Eclipse Jersey](https://eclipse-ee4j.github.io/jersey/)     |
 | [Jakarta Enterprise Web Services](https://jakarta.ee/specifications/enterprise-ws/) | Web Services for Jakarta EE architecture                    | [Eclipse GlassFish](https://eclipse-ee4j.github.io/glassfish/) |
+| [Jakarta WebSocket](https://jakarta.ee/specifications/websocket/) | API for Server and Client Endpoints for WebSocket protocol  | [Eclipse Tyrus](https://eclipse-ee4j.github.io/tyrus/)       |
 | ......                                                       |                                                             |                                                              |
 
 一点关于 EL 的历史：
