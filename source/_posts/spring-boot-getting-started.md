@@ -155,23 +155,30 @@ Maven 用户可以继承 `spring-boot-starter-parent` POM 项目以获得合理�
 
 # Maven 插件
 
-`spring-boot-maven-plugin` 插件含有几个 goal，主要提供两个功能：
+`spring-boot-maven-plugin` 插件内置[几个 goal](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals)，如下：
 
-* `spring-boot:run` 用于快速编译并运行。
-* `spring-boot:repackage` 用于将项目**打包**成一个可执行的 jar/war 包，使用命令：`mvn package spring-boot:repackage`。
+| Goal                                                         | Description                                                  | 备注 |
+| :----------------------------------------------------------- | :----------------------------------------------------------- | ---- |
+| [spring-boot:build-image](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-build-image) | Package an application into a OCI image using a buildpack.   |      |
+| [spring-boot:build-info](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-build-info) | Generate a `build-info.properties` file based on the content of the current `MavenProject`. |      |
+| [spring-boot:help](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-help) | Display help information on spring-boot-maven-plugin. Call `mvn spring-boot:help -Ddetail=true -Dgoal=<goal-name>` to display parameter details. |      |
+| [spring-boot:repackage](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-repackage) | Repackage existing JAR and WAR archives so that they can be executed from the command line using `java -jar`. With `layout=NONE` can also be used simply to package a JAR with nested dependencies (and no main class, so not executable). | 常用 |
+| [spring-boot:run](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-run) | Run an application in place.                                 | 常用 |
+| [spring-boot:start](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-start) | Start a spring application. Contrary to the `run` goal, this does not block and allows other goals to operate on the application. This goal is typically used in integration test scenario where the application is started before a test suite and stopped after. |      |
+| [spring-boot:stop](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-stop) | Stop an application that has been started by the "start" goal. Typically invoked once a test suite has completed. |      |
 
 参考：
 
 * [Spring Boot Maven Plugin](https://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins-maven-plugin.html)
 * https://docs.spring.io/spring-boot/docs/current/maven-plugin/
 
-# 运行项目
+## 项目运行方式一
 
-## 方式一
+使用 `spring-boot-maven-plugin` 插件自带的命令 `mvn spring-boot:run`，快速编译并运行。
 
-使用 `spring-boot-maven-plugin` 插件自带的命令 `mvn spring-boot:run`
+## 项目运行方式二
 
-## 方式二
+先将项目打包成一个可执行的 jar/war 包，使用命令：`mvn package spring-boot:repackage`。
 
 使用插件打包好的 jar 包内会内嵌一个容器，你可以像运行任何其它应用程序一样运行它：
 
@@ -185,7 +192,44 @@ $ java -jar target/myapplication-0.0.1-SNAPSHOT.jar
 $ java -jar -spring.profiles.active=prod target/myapplication-0.0.1-SNAPSHOT.jar
 ```
 
+## 项目运行方式三
+
+> In addition to running Spring Boot applications by using `java -jar`, it is also possible to make **fully executable** applications for Unix systems. A fully executable jar can be executed like any other executable binary or it can be [registered with `init.d` or `systemd`](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services). This helps when installing and managing Spring Boot applications in common production environments.
+>
+> Fully executable jars work by embedding an extra script at the front of the file. It is recommended that you make your jar or war fully executable only if you intend to execute it directly, rather than running it with `java -jar` or deploying it to a servlet container.
+>
+> To create a ‘fully executable’ jar with Maven, use the following plugin configuration:
+>
+> ```XML
+> <plugin>
+>     <groupId>org.springframework.boot</groupId>
+>     <artifactId>spring-boot-maven-plugin</artifactId>
+>     <configuration>
+>         <executable>true</executable>
+>     </configuration>
+> </plugin>
+> ```
+>
+> You can then run your application by typing `./my-application.jar` (where `my-application` is the name of your artifact). The directory containing the jar is used as your application’s working directory.
+
+更多信息参考：[7.3 Installing Spring Boot Applications](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing)
+
+* Unix/Linux Services
+  * Installation as an `init.d` Service (System V)
+  * Installation as a `systemd` Service (`systemd` is the successor of the System V init system and is now being used by many modern Linux distributions.)
+  * Customizing the Startup Script
+
+### 在运行时自定义脚本项
+
+> For items of the script that need to be customized *after* the jar has been written, you can use environment variables or a [config file](https://docs.spring.io/spring-boot/docs/current/reference/html/deployment.html#deployment.installing.nix-services.script-customization.when-running.conf-file).
+>
+> The [following environment properties](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services.script-customization.when-running) are supported with the default script.
+
+更多信息参考：[7.3.2 Unix/Linux Services - Customizing a Script When It Runs](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services.script-customization.when-running)
+
 # 外部配置
+
+更多信息参考：[5.2. Externalized Configuration](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#features.external-config)
 
 Spring Boot 能从多种属性源获得属性，包括如下几处：
 
@@ -282,11 +326,14 @@ https://www.cnblogs.com/duanxz/p/9337022.html
 
 《Spring Boot in Action》
 
+https://github.com/spring-projects/spring-boot
+
 https://docs.spring.io/spring-boot/docs/current/
 
-https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter
-
-https://github.com/spring-projects/spring-boot
+* [4.1.5. Using Spring Boot Starters](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter)
+* [5.2. Externalized Configuration](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#features.external-config)
+* [7.3 Installing Spring Boot Applications](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing)
+  * [7.3.2 Unix/Linux Services - Customizing the Startup Script](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services.script-customization)
 
 [Spring Boot Tomcat配置](https://yq.aliyun.com/articles/619390)
 
