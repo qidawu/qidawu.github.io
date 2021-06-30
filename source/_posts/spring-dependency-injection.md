@@ -3,6 +3,7 @@ title: Spring 依赖注入总结
 date: 2017-05-29 22:30:34
 updated:
 tags: [Java, Spring]
+typora-root-url: ..
 ---
 
 # 什么是依赖注入？
@@ -57,6 +58,147 @@ tags: [Java, Spring]
 Spring 通过它的配置，能够了解这些组成部分是如何装配起来的。这样的话，就可以在不改变所依赖的类的情况下，修改依赖关系。
 
 Spring 提供几种配置方式，用于 bean 的声明及装配，详见《[Spring Bean 几种配置方式总结](/2017/06/04/spring-bean-wiring/)》。
+
+# 例子
+
+## 例子一
+
+通过依赖注入获取 Bean：
+
+```java
+// Spring 会将 service 对象作为集合注入到 list
+@Autowired
+private List<DemoService> demoServices;
+
+// Spring 会将 service 的名字作为 key，service 对象作为 value 注入到 Map
+@Autowired
+private Map<String, DemoService> demoServiceMap;
+```
+
+## 例子二
+
+通过 `BeanFactory` 主动获取 Bean：
+
+![](/img/spring/getBean.png)
+
+```java
+@Service
+public class XxxHandlerFactoryBean implements ApplicationContextAware {
+
+    private final Map<String, Class<?>> map = new HashMap<>();
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        // 通过注解获取 Beans
+        Map<String, Object> beans = applicationContext.getBeansWithAnnotation(PayMethod.class);
+        beans.forEach((beanName, bean) -> {
+            Class<?> beanClass = bean.getClass();
+            PayMethod payMethod = beanClass.getAnnotation(PayMethod.class);
+            map.put(payMethod.code(), beanClass);
+        });
+    }
+
+    public Class<?> getBeanClass(String code) {
+        Class<?> aClass = map.get(code);
+        if (aClass == null) {
+            throw new NotImplementedException("Not Implemented");
+        }
+        return aClass;
+    }
+
+}
+```
+
+## 例子三
+
+下例通过 Collection Injection 实现自定义策略模式。
+
+首先，创建策略注解。注意，此处还使用了 `@Service`，表示标注了 `@PayMethod` 注解的类都由 Spring Bean Factory 来创建对象并管理：
+
+```java
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.lang.annotation.*;
+
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Service
+public @interface PayMethod {
+  
+    PayMethodEnum code();
+
+    @RequiredArgsConstructor
+    @Getter
+    enum PayMethodEnum {
+       ...
+    }
+
+}
+```
+
+然后，创建策略类：
+
+```java
+/**
+ * 策略接口
+ */
+public interface XxxHandler {
+  ...
+}
+
+/**
+ * 策略实现
+ */
+@PayMethod(code = PayMethod.PayMethodEnum.Aaa)
+public class AaaHandler implements XxxHandler {
+  ...
+}
+```
+
+最后，创建工厂类：
+
+```java
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang3.NotImplementedException;
+
+@Service
+public class XxxHandlerFactoryBean {
+
+    private Map<PayMethod.PayMethodEnum, XxxHandler> map;
+
+    /**
+     * 通过构造方法注入策略实现
+     */
+    @Autowired
+    public XxxHandlerFactory(List<XxxHandler> handlers) {
+        this.map = handlers.stream()
+                .filter(handler -> getAnnotation(handler) != null)
+                .collect(Collectors.toMap(handler -> getAnnotation(handler).code(), Function.identity()));
+    }
+
+    private PayMethod getAnnotation(XxxHandler handler) {
+        return handler.getClass().getAnnotation(PayMethod.class);
+    }
+
+    public XxxHandler getHandler(String code) {
+        PayMethod.PayMethodEnum payMethodEnum = PayMethod.PayMethodEnum.valueOfCode(code);
+        XxxHandler handler = map.get(payMethodEnum);
+        if (handler == null) {
+            throw new NotImplementedException("Not Implemented");
+        }
+        return handler;
+    }
+
+}
+```
 
 # 参考
 
