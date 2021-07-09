@@ -229,7 +229,7 @@ Hibernate Validator 版本兼容性如下：
 | Hibernate Validator                                        | Java    | Bean Validation 规范                                         | Expression Language (EL) 规范                                |
 | ---------------------------------------------------------- | ------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | [7.0 series](http://hibernate.org/validator/releases/7.0/) | 8 or 11 | [Jakarta EE 9 - Bean Validation 3.0](https://jakarta.ee/specifications/bean-validation/3.0/) | [Jakarta EE 9 - Expression Language 4.0](https://jakarta.ee/specifications/expression-language/4.0/) |
-| [6.0 series](http://hibernate.org/validator/releases/6.0/) | 8 or 11 | [Jakarta EE 8 - Bean Validation 2.0](https://jakarta.ee/specifications/bean-validation/2.0/) | [Jakarta EE 8 - Expression Language 3.0](https://jakarta.ee/specifications/expression-language/3.0/) |
+| [6.1 series](http://hibernate.org/validator/releases/6.0/) | 8 or 11 | [Jakarta EE 8 - Bean Validation 2.0](https://jakarta.ee/specifications/bean-validation/2.0/) | [Jakarta EE 8 - Expression Language 3.0](https://jakarta.ee/specifications/expression-language/3.0/) |
 | [5.0 series](http://hibernate.org/validator/releases/5.0/) | 6 or 7  | [JavaEE 7 - Bean Validation 1.1 (JSR 349)](https://beanvalidation.org/1.1/) | Java EE 7 - Expression Language 3.0 (JSR 341)                |
 
 引入 Hibernate Validator 后，将传递依赖 Bean Validation API 规范相应的版本，无需重复引入：
