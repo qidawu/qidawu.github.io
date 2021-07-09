@@ -72,28 +72,28 @@ assertTrue(aClass2 == aClass3);
 
 拿到 `Class` 实例后，可以通过下列方法获取字段、方法、构造方法、注解，以进行后续操作。方法名以 `getDeclared` 开头的表示仅获取当前类的信息（不包括父类）：
 
-| Member        | Class API                        | Param  type             | Return type | Inherited members | Private members |
-| ------------- | -------------------------------- | ----------------------- | ----------- | ----------------- | --------------- |
-| `Class`       | `getDeclaredClasses()`           |                         | Array       | N                 | Y               |
-|               | `getClasses()`                   |                         | Array       | Y                 | N               |
-| `Field`       | `getDeclaredField()`             | `String`                | Single      | N                 | Y               |
-|               | `getField()`                     | `String`                | Single      | Y                 | N               |
-|               | `getDeclaredFields()`            |                         | Array       | N                 | Y               |
-|               | `getFields()`                    |                         | Array       | Y                 | N               |
-| `Method`      | `getDeclaredMethod()`            | `String`, `Class<?>...` | Single      | N                 | Y               |
-|               | `getMethod()`                    | `String`, `Class<?>...` | Single      | Y                 | N               |
-|               | `getDeclaredMethods()`           |                         | Array       | N                 | Y               |
-|               | `getMethods()`                   |                         | Array       | Y                 | N               |
-| `Constructor` | `getDeclaredConstructor()`       | `Class<?>...`           | Single      | N/A               | Y               |
-|               | `getConstructor()`               | `Class<?>...`           | Single      | N/A               | N               |
-|               | `getDeclaredConstructors()`      |                         | Array       | N/A               | Y               |
-|               | `getConstructors()`              |                         | Array       | N/A               | N               |
-| `Annotation`  | `getDeclaredAnnotation()`        | `Class<T>`              | Single      | N                 | N/A             |
-|               | `getAnnotation()`                | `Class<T>`              | Single      | Y                 | N/A             |
-|               | `getDeclaredAnnotationsByType()` | `Class<T>`              | Array       | N                 | N/A             |
-|               | `getAnnotationsByType()`         | `Class<T>`              | Array       | Y                 | N/A             |
-|               | `getDeclaredAnnotations()`       |                         | Array       | N                 | N/A             |
-|               | `getAnnotations()`               |                         | Array       | Y                 | N/A             |
+| Member        | Class API                        | Param  type             | Return type | Inherited members | Private members                   |
+| ------------- | -------------------------------- | ----------------------- | ----------- | ----------------- | --------------------------------- |
+| `Class`       | `getDeclaredClasses()`           |                         | Array       | N                 | Y                                 |
+|               | `getClasses()`                   |                         | Array       | Y                 | N                                 |
+| `Field`       | `getDeclaredField()`             | `String`                | Single      | N                 | Y                                 |
+|               | `getField()`                     | `String`                | Single      | Y                 | `java.lang.NoSuchFieldException`  |
+|               | `getDeclaredFields()`            |                         | Array       | N                 | Y                                 |
+|               | `getFields()`                    |                         | Array       | Y                 | N                                 |
+| `Method`      | `getDeclaredMethod()`            | `String`, `Class<?>...` | Single      | N                 | Y                                 |
+|               | `getMethod()`                    | `String`, `Class<?>...` | Single      | Y                 | `java.lang.NoSuchMethodException` |
+|               | `getDeclaredMethods()`           |                         | Array       | N                 | Y                                 |
+|               | `getMethods()`                   |                         | Array       | Y                 | N                                 |
+| `Constructor` | `getDeclaredConstructor()`       | `Class<?>...`           | Single      | N/A               | Y                                 |
+|               | `getConstructor()`               | `Class<?>...`           | Single      | N/A               | `java.lang.NoSuchMethodException` |
+|               | `getDeclaredConstructors()`      |                         | Array       | N/A               | Y                                 |
+|               | `getConstructors()`              |                         | Array       | N/A               | N                                 |
+| `Annotation`  | `getDeclaredAnnotation()`        | `Class<T>`              | Single      | N                 | N/A                               |
+|               | `getAnnotation()`                | `Class<T>`              | Single      | Y                 | N/A                               |
+|               | `getDeclaredAnnotationsByType()` | `Class<T>`              | Array       | N                 | N/A                               |
+|               | `getAnnotationsByType()`         | `Class<T>`              | Array       | Y                 | N/A                               |
+|               | `getDeclaredAnnotations()`       |                         | Array       | N                 | N/A                               |
+|               | `getAnnotations()`               |                         | Array       | Y                 | N/A                               |
 
 # 字段
 
@@ -206,25 +206,44 @@ Person peter = constructor.newInstance("Peter");
 
 # 继承关系
 
+通过以下方法获取父类或已实现接口：
+
 ```java
 // 获取父类（Object 的父类是 null，其他任何非 interface 的 Class 都必定存在一个父类类型）
 Class<? super T> getSuperclass()
 
 // 获取已实现接口（只返回当前类直接实现的接口类型，并不包括其父类实现的接口类型）
 Class<?>[] getInterfaces()
+```
 
-// 使用 instanceof 操作符判断一个实例的继承关系
+## isInstance
+
+使用 `instanceof` 操作符或者 `Class#isInstance` 方法，可以判断一个实例的继承关系：
+
+```java
 Object n = Integer.valueOf(123);
 boolean isDouble = n instanceof Double; // false
 boolean isInteger = n instanceof Integer; // true
 boolean isNumber = n instanceof Number; // true
 boolean isSerializable = n instanceof java.io.Serializable; // true
 
-// 如果 instanceof 为 true，可以使用以下方法做强制类型转换
+boolean isDouble = Double.class.isInstance(n); // false
+```
+
+## cast
+
+如果 `instanceof` 为 `true`，可以使用以下方法对实例进行强制类型转换：
+
+```java
 Number num1 = (Number) n;
 Number num2 = Number.class.cast(n);
+```
 
-// 如果是两个 Class 实例，要判断一个向上转型是否成立，可以调用 isAssignableFrom()
+## isAssignableFrom
+
+如果是两个 `Class` 实例，要判断向上转型是否成立，可以调用 `Class#isAssignableFrom` 方法：
+
+```java
 Integer.class.isAssignableFrom(Integer.class); // true，因为Integer可以赋值给Integer
 Number.class.isAssignableFrom(Integer.class); // true，因为Integer可以赋值给Number
 Object.class.isAssignableFrom(Integer.class); // true，因为Integer可以赋值给Object
