@@ -9,12 +9,12 @@ typora-root-url: ..
 重点：区分下述四种形式：
 
 ```C
-// 字符数组
+// 字符数组（Character sequences）
 char str[] = {'h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
 char str[] = "hello world";
 // 字符串指针
 char *str = "hello world";
-// 字符串类
+// 字符串类（string）
 string str = "hello world";
 ```
 
@@ -82,6 +82,8 @@ string str = "hello world";
   * [`strlen`](http://www.cplusplus.com/reference/cstring/strlen/) Get string length
 
 # 参考
+
+https://www.cplusplus.com/doc/tutorial/ntcs/
 
 https://www.runoob.com/cplusplus/cpp-strings.html
 
