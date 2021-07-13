@@ -47,8 +47,8 @@ int &ref;  // declaration of reference variable 'ref' requires an initializer
 
 | 操作系统 | 指针变量的存储大小 |
 | -------- | ------------------ |
-| 32 位    | 4 个字节           |
-| 64 位    | 8 个字节           |
+| 32 bits  | 4 Bytes            |
+| 64 bits  | 8 Bytes            |
 
 本机为 64 位操作系统，验证如下：
 
