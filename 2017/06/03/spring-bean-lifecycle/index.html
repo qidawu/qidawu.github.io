@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Spring Bean 生命周期与作用域总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Spring Bean 生命周期与作用域总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Spring Bean 生命周期与作用域总结</h1><div class="post-info">2017-06-03<a href="/tags/Java/" title="Java" class="post-demo">Java</a><a href="/tags/Spring/" title="Spring" class="post-demo">Spring</a></div><div class="post-content"><h1 id="Bean-的生命周期"><a href="#Bean-的生命周期" class="headerlink" title="Bean 的生命周期"></a>Bean 的生命周期</h1><p>Spring Bean Factory 负责管理 bean 的生命周期，可以分为三个阶段：</p>
+<p><img src="/img/spring/spring-bean-life-cycle.png" alt="Spring Bean Life Cycle"></p>
+<p>一、初始化阶段：</p>
+<ul>
+<li>Instantiation：Spring 启动，查找并加载需要被 Spring 管理的bean，进行 Bean 的实例化，调用构造方法。</li>
+<li>Populate Properties：属性注入，包括引用的 Bean 和值，调用 setter 方法。</li>
+<li>调用该 Bean 实现的各种生命周期回调接口。</li>
+</ul>
+<p>二、就绪阶段：</p>
+<ul>
+<li>此时，Bean 已经准备就绪，可以被应用程序使用了。它们将一直驻留在应用上下文中，直到应用上下文被销毁。</li>
+</ul>
+<p>三、销毁阶段：</p>
+<ul>
+<li>调用该 Bean 实现的各种生命周期回调接口。</li>
+</ul>
+<h2 id="初始化和销毁方法"><a href="#初始化和销毁方法" class="headerlink" title="初始化和销毁方法"></a>初始化和销毁方法</h2><p>Spring 框架提供了以下几种方式指定 bean 生命周期的初始化和销毁回调方法：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>初始化</th>
+<th>销毁</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>实现 Spring Boot 的接口</td>
+<td><a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/ApplicationRunner.html" target="_blank" rel="noopener"><code>ApplicationRunner</code></a></td>
+<td></td>
+</tr>
+<tr>
+<td>实现 Spring Framework 的接口</td>
+<td><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/InitializingBean.html" target="_blank" rel="noopener"><code>InitializingBean</code></a></td>
+<td><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/DisposableBean.html" target="_blank" rel="noopener"><code>DisposableBean</code></a></td>
+</tr>
+<tr>
+<td>在 Spring <code>@Bean</code> 注解中指定属性</td>
+<td><code>@Bean(initMethod=&quot;xxx&quot;)</code></td>
+<td><code>@Bean(destroyMethod=&quot;xxx&quot;)</code></td>
+</tr>
+<tr>
+<td>在 Spring bean 配置文件指定属性</td>
+<td><code>&lt;bean init-method=&quot;xxx&quot; /&gt;</code></td>
+<td><code>&lt;bean destroy-method=&quot;xxx&quot; /&gt;</code></td>
+</tr>
+<tr>
+<td>使用 JavaEE 规范 <code>javax.annotation</code> 包中提供的注解</td>
+<td><code>@PostConstruct</code></td>
+<td><code>@PreDestroy</code></td>
+</tr>
+</tbody></table>
+<p>在 Spring 容器启动后执行一些初始化逻辑是一个很常见的场景，注意使用不同的方式，顺序不同：</p>
+<p><img src="/img/spring/spring-bean-lifecycle-3.png" alt=""></p>
+<p>参考：<a href="https://zhuanlan.zhihu.com/p/44786291" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/44786291</a></p>
+<p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OssUtil</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value</span>(<span class="string">"$&#123;oss.endpoint&#125;"</span>)</span><br><span class="line">    <span class="keyword">private</span> String endpoint;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value</span>(<span class="string">"$&#123;oss.access-key-id&#125;"</span>)</span><br><span class="line">    <span class="keyword">private</span> String accessKeyId;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value</span>(<span class="string">"$&#123;oss.access-key-secret&#125;"</span>)</span><br><span class="line">    <span class="keyword">private</span> String accessKeySecret;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value</span>(<span class="string">"$&#123;oss.bucket-name&#125;"</span>)</span><br><span class="line">    <span class="keyword">private</span> String bucketName;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> OSS ossClient;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostConstruct</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">construct</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        ossClient = <span class="keyword">new</span> OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PreDestroy</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">destory</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        ossClient.shutdown();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Aware-接口"><a href="#Aware-接口" class="headerlink" title="Aware 接口"></a>Aware 接口</h2><p>在日常的开发中，我们经常需要用到 Spring 容器本身的功能资源，可以通过 Spring 提供的一系列 <code>Aware (org.springframework.beans.factory)</code> 子接口来实现具体的功能。<code>Aware</code> 是一个具有标识作用的超级接口，实现该接口的 bean 具有被 Spring 容器通知的能力，而被通知的方式就是通过回调，以依赖注入的方式为 bean 设置相应属性，这是一个典型的依赖注入的使用场景。<code>Aware</code> 接口的继承关系如下：</p>
+<p><img src="/img/spring/aware_interface.png" alt="Aware 接口"></p>
+<p>这些 <code>*Aware</code> 子接口在 Spring Bean  的生命周期中被回调的顺序如下：</p>
+<ol>
+<li><code>BeanNameAware (org.springframework.beans.factory)</code></li>
+<li><code>BeanClassLoaderAware (org.springframework.beans.factory)</code></li>
+<li><code>BeanFactoryAware (org.springframework.beans.factory)</code></li>
+<li><code>EnvironmentAware (org.springframework.context)</code></li>
+<li><code>EmbeddedValueResolverAware (org.springframework.context)</code></li>
+<li><code>ResourceLoaderAware (org.springframework.context)</code></li>
+<li><code>ApplicationEventPublisherAware (org.springframework.context)</code></li>
+<li><code>MessageSourceAware (org.springframework.context)</code></li>
+<li><code>ApplicationContextAware (org.springframework.context)</code></li>
+</ol>
+<p><img src="/img/spring/spring-bean-lifecycle-2.jpg" alt=""></p>
+<h1 id="Bean-的作用域"><a href="#Bean-的作用域" class="headerlink" title="Bean 的作用域"></a>Bean 的作用域</h1><p>使用 <code>@Scope</code> 注解定义 bean 的作用域，它可以与 <code>@Component</code> 或 <code>@Bean</code> 一起使用：</p>
+<ul>
+<li><p>单例(Singleton):在整个应用中，只创建bean的一个实例。</p>
+</li>
+<li><p>原型(Prototype):每次注入或者通过Spring应用上下文获取的时候，都会创建一个新的bean实例。注意，此时目标 bean 要使用代理模式，否则无法达到效果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 目标 bean 为类</span><br><span class="line">@Scope(value &#x3D; ConfigurableBeanFactory.SCOPE_PROTOTYPE, proxyMode &#x3D; ScopedProxyMode.TARGET_CLASS)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 目标 bean 为接口</span><br><span class="line">@Scope(value &#x3D; ConfigurableBeanFactory.SCOPE_PROTOTYPE, proxyMode &#x3D; ScopedProxyMode.INTERFACES)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>会话(Session):在Web应用中，为每个会话创建一个bean实例。</p>
+</li>
+<li><p>请求(Rquest):在Web应用中，为每个请求创建一个bean实例。</p>
+</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/beans/factory/Aware.html" target="_blank" rel="noopener">org.springframework.beans.factory.Aware</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2017/06/04/spring-bean-wiring/" class="prev">PREV</a><a href="/2017/06/01/spring-application-context/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

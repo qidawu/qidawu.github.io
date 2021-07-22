@@ -1,0 +1,131 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> GUN/Bash 系列（七）提示符（Prompting） · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="GUN/Bash 系列（七）提示符（Prompting） - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">GUN/Bash 系列（七）提示符（Prompting）</h1><div class="post-info">2015-04-01<a href="/tags/GNU-Linux/" title="GNU/Linux" class="post-demo">GNU/Linux</a></div><div class="post-content"><p>在使用交互式 Bash 时，一个配置得当的命令提示符可以为用户带来不少便利，本文讲解如何配置命令提示符。</p>
+<h1 id="默认提示符"><a href="#默认提示符" class="headerlink" title="默认提示符"></a>默认提示符</h1><p>命令提示符涉及到以下两个环境变量：</p>
+<table>
+<thead>
+<tr>
+<th>环境变量</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>PS1</code></td>
+<td>主提示符，Bash 会在准备好读入一条命令时显示，默认值 <code>\s-\v\$</code></td>
+</tr>
+<tr>
+<td><code>PS2</code></td>
+<td>次提示符，Bash 会在需要更多的输入来完成一条命令时显示，默认值 <code>&gt;</code></td>
+</tr>
+</tbody></table>
+<h1 id="定制提示符"><a href="#定制提示符" class="headerlink" title="定制提示符"></a>定制提示符</h1><p>Bash 允许通过插入一些反斜杠转义的特殊字符来定制这些提示符，常用的转义字符如下：</p>
+<table>
+<thead>
+<tr>
+<th>转义字符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>\h</code></td>
+<td>主机名，第一个 <code>.</code> 之前的部分</td>
+</tr>
+<tr>
+<td><code>\H</code></td>
+<td>主机名</td>
+</tr>
+<tr>
+<td><code>\j</code></td>
+<td>shell 当前管理的作业数量</td>
+</tr>
+<tr>
+<td><code>\l</code></td>
+<td>shell 的终端设备名的基本部分</td>
+</tr>
+<tr>
+<td><code>\n</code></td>
+<td>新行符</td>
+</tr>
+<tr>
+<td><code>\r</code></td>
+<td>回车</td>
+</tr>
+<tr>
+<td><code>\s</code></td>
+<td>shell 的名称， <code>$0</code> 的基本部分 (最后一个斜杠后面的部分)</td>
+</tr>
+<tr>
+<td><code>\u</code></td>
+<td>当前用户的用户名</td>
+</tr>
+<tr>
+<td><code>\v</code></td>
+<td>bash 的版本 (例如，4.3)</td>
+</tr>
+<tr>
+<td><code>\w</code></td>
+<td>当前工作目录</td>
+</tr>
+<tr>
+<td><code>\W</code></td>
+<td>当前工作目录的基本部分</td>
+</tr>
+<tr>
+<td><code>\!</code></td>
+<td>此命令的历史编号</td>
+</tr>
+<tr>
+<td><code>\#</code></td>
+<td>此命令的命令编号</td>
+</tr>
+<tr>
+<td><code>\$</code></td>
+<td>如果有效 UID 为 0，则显示 <code>#</code>, 否则 <code>$</code></td>
+</tr>
+<tr>
+<td><code>\\</code></td>
+<td>一个反斜杠</td>
+</tr>
+</tbody></table>
+<p>除此之外，还有一些不太常用的日期转义字符：</p>
+<table>
+<thead>
+<tr>
+<th>转义字符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>\d</code></td>
+<td>当前日期，格式是 “星期 月份 日” (例如，”Tue May 26”)</td>
+</tr>
+<tr>
+<td><code>\D{format}</code></td>
+<td>自定义日期格式，花括号是必需的</td>
+</tr>
+<tr>
+<td><code>\t</code></td>
+<td>当前时间，采用 24 小时制的 <code>HH:MM:SS</code> 格式</td>
+</tr>
+<tr>
+<td><code>\T</code></td>
+<td>当前时间，采用 12 小时制的 <code>HH:MM:SS</code> 格式</td>
+</tr>
+<tr>
+<td><code>\@</code></td>
+<td>当前时间，采用 12 小时制上午/下午 <code>am/pm</code> 格式</td>
+</tr>
+<tr>
+<td><code>\A</code></td>
+<td>当前时间，采用 24 小时制上午/下午格式</td>
+</tr>
+</tbody></table>
+<h2 id="如何定制"><a href="#如何定制" class="headerlink" title="如何定制"></a>如何定制</h2><p>由于 <code>PS1</code> 默认设置的 <code>\s-\v\$</code> 实在是太废毫无信息量可言，显示如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash-4.3$</span><br></pre></td></tr></table></figure>
+
+<p>因此可以通过修改 <code>~/.bash_profile</code> 文件来定制自己的命令提示符。例如，使用 CentOS 默认设置的 <code>[\u@\h \W]\$</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ vim ~&#x2F;.bash_profile</span><br><span class="line"></span><br><span class="line">export PS1&#x3D;&quot;[\u@\h \w]\$ &quot;</span><br></pre></td></tr></table></figure>
+
+<p>定制后，能够知道当前用户、主机名、工作目录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@BGP-BJ-C-5HL ~]$</span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://www.gnu.org/software/bash/manual/bashref.html#Controlling-the-Prompt" target="_blank" rel="noopener">http://www.gnu.org/software/bash/manual/bashref.html#Controlling-the-Prompt</a></p>
+<p>《<a href="http://www.cnblogs.com/lienhua34/p/5018119.html" target="_blank" rel="noopener">自定义shell终端提示符（例如颜色）</a>》</p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2015/04/03/docker-installation-problem/" class="prev">PREV</a><a href="/2015/03/16/gnu-bash-shell-expansions/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

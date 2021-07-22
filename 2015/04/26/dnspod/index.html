@@ -1,0 +1,80 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> 使用 DNSPod 解决 GoDaddy 域名解析不稳定的问题 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="使用 DNSPod 解决 GoDaddy 域名解析不稳定的问题 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">使用 DNSPod 解决 GoDaddy 域名解析不稳定的问题</h1><div class="post-info">2015-04-26<a href="/tags/DNS/" title="DNS" class="post-demo">DNS</a><a href="/tags/建站/" title="建站" class="post-demo">建站</a></div><div class="post-content"><p>由于众所周知的原因，GoDaddy 的 Nameservers 有时会被墙，导致其在国内的域名解析服务一直都很不稳定，因此抽空改用了国内的 DNSPod 服务，步骤如下：</p>
+<h1 id="注册-DNSPod-账号"><a href="#注册-DNSPod-账号" class="headerlink" title="注册 DNSPod 账号"></a>注册 DNSPod 账号</h1><p>DNSPod 已并入腾讯，使用 QQ 账号绑定并登录即可。</p>
+<h1 id="添加域名"><a href="#添加域名" class="headerlink" title="添加域名"></a>添加域名</h1><p>添加在域名服务商中购买的域名即可，不带 www 前缀。</p>
+<h1 id="添加-CNAME-记录（canonical-name）"><a href="#添加-CNAME-记录（canonical-name）" class="headerlink" title="添加 CNAME 记录（canonical name）"></a>添加 CNAME 记录（canonical name）</h1><p>这里各人需求不同，设置因人而异。</p>
+<p>对于我的需求而言，需要为域名 <code>cnblog.me</code> 添加两条 <code>CNAME</code> 记录，分别是带 www 前缀和不带的：</p>
+<table>
+<thead>
+<tr>
+<th>主机记录</th>
+<th>记录类型</th>
+<th>记录值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>www</td>
+<td>CNAME</td>
+<td>cynthia903.github.io</td>
+</tr>
+<tr>
+<td>@</td>
+<td>CNAME</td>
+<td>cynthia903.github.io</td>
+</tr>
+</tbody></table>
+<p>什么是主机记录？DNSPod 的备注清晰地描述道，主机记录就是域名前缀，常见用法有：</p>
+<table>
+<thead>
+<tr>
+<th>主机记录</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>www</td>
+<td>解析后的域名为 <a href="http://www.cnblog.me" target="_blank" rel="noopener">www.cnblog.me</a></td>
+</tr>
+<tr>
+<td>@</td>
+<td>直接解析主域名 cnblog.me</td>
+</tr>
+<tr>
+<td>*</td>
+<td>泛解析，匹配其他所有域名 *.cnblog.me</td>
+</tr>
+</tbody></table>
+<h1 id="修改-NS-记录（name-server）"><a href="#修改-NS-记录（name-server）" class="headerlink" title="修改 NS 记录（name server）"></a>修改 NS 记录（name server）</h1><p>什么是 <code>NS</code> 记录？</p>
+<blockquote>
+<p>即域名服务器记录，用于指定该域名由哪个 DNS 服务器进行域名解析。注册域名时，总会有默认的 NS 记录。</p>
+</blockquote>
+<p>接下来我们需要将域名服务商 GoDaddy 默认配置的 <code>NS</code> 记录修改为 DNSPod 提供的 <code>NS</code> 记录，以解决域名解析不稳定的问题。</p>
+<h2 id="记下-DNSPod-的-NS-记录"><a href="#记下-DNSPod-的-NS-记录" class="headerlink" title="记下 DNSPod 的 NS 记录"></a>记下 DNSPod 的 NS 记录</h2><p>DNSPod 默认配置并提供的 <code>NS</code> 记录如下：</p>
+<table>
+<thead>
+<tr>
+<th>主机记录</th>
+<th>记录类型</th>
+<th>记录值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>@</td>
+<td>NS</td>
+<td>f1g1ns1.dnspod.net</td>
+</tr>
+<tr>
+<td>@</td>
+<td>NS</td>
+<td>f1g1ns2.dnspod.net</td>
+</tr>
+</tbody></table>
+<h2 id="修改默认配置的-NS-记录"><a href="#修改默认配置的-NS-记录" class="headerlink" title="修改默认配置的 NS 记录"></a>修改默认配置的 NS 记录</h2><p>进入 GoDaddy 的 NAMESERVER SETTINGS ，SETUP TYPE 默认为 Standard ，并默认配置了一组 <code>NS</code> 记录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ns35.domaincontrol.com</span><br><span class="line">ns36.domaincontrol.com</span><br></pre></td></tr></table></figure>
+
+<p>由于 GoDaddy 默认配置的这组 Nameservers <code>*.domaincontrol.com</code> 被墙，导致域名解析不稳定，需要修改为国内 DNSPod 的 Nameservers 。</p>
+<p>将 SETUP TYPE 切换到 Custom ，并添加 DNSPod 提供的 <code>NS</code> 记录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">f1g1ns1.dnspod.net</span><br><span class="line">f1g1ns2.dnspod.net</span><br></pre></td></tr></table></figure>
+
+<p>修改成功后，域名 <code>cnblog.me</code> 将会使用 DNSPod 提供的域名解析服务。</p>
+<h1 id="DNS-解析测试"><a href="#DNS-解析测试" class="headerlink" title="DNS 解析测试"></a>DNS 解析测试</h1><p>使用 dig 命令测试，可见 <code>www.cnblog.me</code> 的 <code>CNAME</code> 记录、 <code>NS</code> 记录已经配置成功：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ dig +trace www.cnblog.me</span><br><span class="line"></span><br><span class="line">......（此处略过 Root、TLD，只展示权威域名服务器的解析结果）</span><br><span class="line">www.cnblog.me.          600     IN      CNAME   cynthia903.github.io.</span><br><span class="line">cnblog.me.              600     IN      NS      f1g1ns1.dnspod.net.</span><br><span class="line">cnblog.me.              600     IN      NS      f1g1ns2.dnspod.net.</span><br></pre></td></tr></table></figure></div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2015/05/01/java-jsp/" class="prev">PREV</a><a href="/2015/04/21/eclipse-default-key-assist/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

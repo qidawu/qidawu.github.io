@@ -1,0 +1,78 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Git 实战系列（四）git checkout 命令撤销修改 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Git 实战系列（四）git checkout 命令撤销修改 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Git 实战系列（四）git checkout 命令撤销修改</h1><div class="post-info">2015-08-15<a href="/tags/Git/" title="Git" class="post-demo">Git</a></div><div class="post-content"><p><code>checkout</code> 命令可以用于三种场景：</p>
+<ul>
+<li>切换分支</li>
+<li>创建分支</li>
+<li>撤销修改</li>
+</ul>
+<p>本文只介绍第三种场景。</p>
+<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><p>如果我们想要撤销一个文件的本地修改，自然可以手工编辑恢复，但这样做实在是吃力不讨好。 <code>checkout</code> 命令可以帮助我们：</p>
+<h2 id="只撤销本地修改"><a href="#只撤销本地修改" class="headerlink" title="只撤销本地修改"></a>只撤销本地修改</h2><p>修改文件后，使用 <code>status</code> 命令查看一下文件状态：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ git status</span><br><span class="line">Changes not staged <span class="keyword">for</span> commit:</span><br><span class="line">  (use <span class="string">"git add/rm &lt;file&gt;..."</span> to update what will be committed)</span><br><span class="line">  (use <span class="string">"git checkout -- &lt;file&gt;..."</span> to discard changes <span class="keyword">in</span> working directory)</span><br><span class="line"></span><br><span class="line">      modified:   /there/is/a/modified/file</span><br></pre></td></tr></table></figure>
+
+<p>Git 提示我们，对于未 <code>add</code> 进暂存区的文件，可以使用 <code>git checkout -- &lt;file&gt;</code> 快速撤销本地修改。</p>
+<h2 id="同时撤销本地和暂存区修改"><a href="#同时撤销本地和暂存区修改" class="headerlink" title="同时撤销本地和暂存区修改"></a>同时撤销本地和暂存区修改</h2><p>那么，对于已 <code>add</code> 进暂存区的文件，如何撤销本地修改？还是先使用 <code>status</code> 命令查看一下文件状态：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ git status</span><br><span class="line">Changes to be committed:</span><br><span class="line">  (use <span class="string">"git reset HEAD &lt;file&gt;..."</span> to unstage)</span><br><span class="line"></span><br><span class="line">      modified:   /there/is/a/modified/file</span><br></pre></td></tr></table></figure>
+
+<h3 id="先取消暂存修改"><a href="#先取消暂存修改" class="headerlink" title="先取消暂存修改"></a>先取消暂存修改</h3><p>Git 提示我们，可以使用 <code>reset</code> 命令取消暂存：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git reset &#x2F;there&#x2F;is&#x2F;a&#x2F;modified&#x2F;file</span><br></pre></td></tr></table></figure>
+
+<p>取消暂存后，文件状态就回到了跟“例1”一样了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ git status</span><br><span class="line">Changes not staged <span class="keyword">for</span> commit:</span><br><span class="line">  (use <span class="string">"git add/rm &lt;file&gt;..."</span> to update what will be committed)</span><br><span class="line">  (use <span class="string">"git checkout -- &lt;file&gt;..."</span> to discard changes <span class="keyword">in</span> working directory)</span><br><span class="line"></span><br><span class="line">      modified:   /there/is/a/modified/file</span><br></pre></td></tr></table></figure>
+
+<h3 id="再撤销本地修改"><a href="#再撤销本地修改" class="headerlink" title="再撤销本地修改"></a>再撤销本地修改</h3><p>这时按提示使用 <code>checkout</code> 即可：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git checkout -- /there/is/a/modified/file</span><br></pre></td></tr></table></figure>
+
+<p>这时工作目录就干净了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git status</span><br><span class="line">nothing to commit, working directory clean</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，结合使用 <code>reset</code> 和 <code>checkout</code> 命令，可以撤销 index 和 working tree 的修改。</p>
+<h3 id="一步到位"><a href="#一步到位" class="headerlink" title="一步到位"></a>一步到位</h3><p>那么有更便捷的、一步到位的办法吗？有，指定提交即可：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ git status</span><br><span class="line">Changes to be committed:</span><br><span class="line">  (use <span class="string">"git reset HEAD &lt;file&gt;..."</span> to unstage)</span><br><span class="line"></span><br><span class="line">      modified:   /there/is/a/modified/file</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git checkout HEAD -- /there/is/a/modified/file</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git status</span><br><span class="line">nothing to commit, working directory clean</span><br></pre></td></tr></table></figure>
+
+<p>那么 <code>checkout</code> 命令的全貌究竟是怎样的呢？</p>
+<h1 id="checkout-命令格式"><a href="#checkout-命令格式" class="headerlink" title="checkout 命令格式"></a><code>checkout</code> 命令格式</h1><p><code>checkout</code> 命令的格式及描述如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git checkout [&lt;tree-ish&gt;] [--] &lt;paths&gt;...</span><br><span class="line"></span><br><span class="line">Updates the named paths <span class="keyword">in</span> the working tree from the index file (default) or from a named &lt;tree-ish&gt; (most often a commit, tag or branch)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>默认使用 index 暂存区的内容覆盖本地修改，如果不指定 <code>&lt;tree-ish&gt;</code> 参数。</li>
+<li>或者可以使用指定的提交、标记、分支版本覆盖本地修改。</li>
+<li>为了避免文件路径 <code>&lt;paths&gt;</code> 和 <code>&lt;tree-ish&gt;</code> 同名而发生冲突，在 <code>&lt;paths&gt;</code> 前用 <code>--</code> 作为分隔。</li>
+</ul>
+<h1 id="checkout-与-reset"><a href="#checkout-与-reset" class="headerlink" title="checkout 与 reset"></a><code>checkout</code> 与 <code>reset</code></h1><p>还记得在《<a href="http://www.cnblog.me/2015/08/09/git-reset/" target="_blank" rel="noopener">git reset 命令回退版本</a>》中介绍的 <code>reset</code> 命令吗？它与 <code>checkout</code> 命令之间有什么区别与关系？</p>
+<h2 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h2><p>在这里介绍 <code>reset</code> 命令的另一种形式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git reset [&lt;tree-ish&gt;] [--] &lt;paths&gt;...</span><br><span class="line"></span><br><span class="line">This form copy entries from &lt;tree-ish&gt; to the index <span class="keyword">for</span> all &lt;paths&gt;. (It does not affect the working tree or the current branch.)</span><br></pre></td></tr></table></figure>
+
+<p>与 <code>checkout</code> 命令的参数一模一样，区别是什么？</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>操作目标</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>checkout</code></td>
+<td>工作目录（working tree）</td>
+<td>用于撤销本地修改</td>
+</tr>
+<tr>
+<td><code>reset</code></td>
+<td>暂存区（index）</td>
+<td>只用于覆盖暂存区</td>
+</tr>
+</tbody></table>
+<p>因此 <code>git reset &lt;paths&gt;</code> 等于 <code>git add &lt;paths&gt;</code> 的逆向操作。</p>
+<p>如果企图用 <code>reset</code> 命令覆盖工作目录，是会报错的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git reset --hard &#x2F;there&#x2F;is&#x2F;a&#x2F;modified&#x2F;file</span><br><span class="line">fatal: Cannot do hard reset with paths.</span><br></pre></td></tr></table></figure>
+
+<h2 id="关系"><a href="#关系" class="headerlink" title="关系"></a>关系</h2><blockquote>
+<p>After running <code>git reset &lt;paths&gt;</code> to update the index entry, you can use <code>git checkout -- &lt;paths&gt;</code> to check the contents out of the index to the working tree. </p>
+<p>Alternatively, using <code>git checkout [&lt;tree-ish&gt;] [--] &lt;paths&gt;</code> and specifying a commit, you can copy the contents of a path out of a commit to the <strong>index</strong> and to the <strong>working tree</strong> in one go.</p>
+</blockquote>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a href="http://git-scm.com/docs/git-checkout/" target="_blank" rel="noopener">git checkout</a>》<br>《<a href="http://git-scm.com/docs/git-reset/" target="_blank" rel="noopener">git reset</a>》<br>《<a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/001374831943254ee90db11b13d4ba9a73b9047f4fb968d000" target="_blank" rel="noopener">Git 教程 - 撤销修改</a>》</p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2015/08/17/git-merge/" class="prev">PREV</a><a href="/2015/08/09/git-reset/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

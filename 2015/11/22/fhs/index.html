@@ -1,0 +1,88 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Linux 系统主要目录介绍 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Linux 系统主要目录介绍 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Linux 系统主要目录介绍</h1><div class="post-info">2015-11-22<a href="/tags/GNU-Linux/" title="GNU/Linux" class="post-demo">GNU/Linux</a></div><div class="post-content"><p>从 Windows 转到 Linux 的初学者，往往对 Linux 的目录结构感到无所适从。本文介绍的 FHS 标准，是理解这些目录结构的关键。</p>
+<h1 id="FHS-标准"><a href="#FHS-标准" class="headerlink" title="FHS 标准"></a>FHS 标准</h1><p>FHS（Filesystem Hierarchy Standard，文件系统层次结构标准）采用树形结构组织文件，并定义了 Linux 系统中主要目录的用途、所需要的最小构成的文件和目录，同时还给出了例外处理与矛盾处理。多数 Linux 版本采用这种目录组织形式，类似于 Windows 操作系统中 C 盘的文件目录。</p>
+<p>事实上，FHS 针对目录树结构仅定义出两层目录（<code>/</code> 及 <code>/usr</code>、<code>/var</code>）底下应该放置什么数据，下面分别介绍这些目录：</p>
+<h2 id="root"><a href="#root" class="headerlink" title="/ (root)"></a>/ (root)</h2><p>在 FHS 标准中，所有的文件和目录都必须出现在根目录 <code>/</code> 下，即使它们存储在不同的存储设备或网络主机中。此外还要求根目录 <code>/</code> 下必须要有以下目录或符号链接（symbolic links）：</p>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/etc</code></td>
+<td>Host-specific system configuration</td>
+<td>系统配置文件</td>
+</tr>
+<tr>
+<td><code>/dev</code></td>
+<td>Device files</td>
+<td>设备文件</td>
+</tr>
+<tr>
+<td><code>/bin</code></td>
+<td>Essential command binaries (for use by all users)</td>
+<td>重要的执行文件</td>
+</tr>
+<tr>
+<td><code>/sbin</code></td>
+<td>Essential system binaries (for use by root)</td>
+<td>重要的系统执行文件</td>
+</tr>
+<tr>
+<td><code>/lib</code></td>
+<td>Essential shared libraries and kernel modules</td>
+<td>执行文件所需的函数库与内核所需的模块。<code>/bin</code> 和 <code>/sbin</code> 中二进制文件必要的函数库</td>
+</tr>
+<tr>
+<td><code>/boot</code></td>
+<td>Static files of the boot loader (include kenerl file、drivers)</td>
+<td>系统开机文件</td>
+</tr>
+<tr>
+<td><code>/media</code></td>
+<td>Mount point for removeable media</td>
+<td></td>
+</tr>
+<tr>
+<td><code>/mnt</code></td>
+<td>Mount point for mounting a filesystem temporarily (include hard disk、U disk、CD、DVD…)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>/opt</code></td>
+<td>Add-on application software packages</td>
+<td></td>
+</tr>
+<tr>
+<td><code>/srv</code></td>
+<td>Data for services provided by this system</td>
+<td></td>
+</tr>
+<tr>
+<td><code>/tmp</code></td>
+<td>Temporary files</td>
+<td>临时文件</td>
+</tr>
+</tbody></table>
+<p>注意：</p>
+<ul>
+<li>由于根目录 <code>/</code> 与<strong>开机、还原、系统修复</strong>等操作有关，而开机过程中<strong>仅有根目录会被挂载，其它分区则是在开机完成之后才会持续进行挂载</strong>，因此，根目录下与开机过程有关的目录（即上表前六个目录）不能够与根目录分开到不同分区。</li>
+<li>由于 FHS 的目录结构已经提供了足够的灵活性，因此标准要求，应用程序禁止在根目录下创建新的子目录，理由如下：<ul>
+<li>这会额外占用根目录所在分区的空间，但系统管理员基于性能与安全考虑，会希望保持该分区小而简（small and simple）；</li>
+<li>It evades whatever discipline the system administrator may have set up for distributing standard file hierarchies across mountable volumes.</li>
+</ul>
+</li>
+</ul>
+<h2 id="usr-unix-software-resource"><a href="#usr-unix-software-resource" class="headerlink" title="/usr (unix software resource)"></a>/usr (unix software resource)</h2><p>该目录与软件安装/执行有关。</p>
+<ul>
+<li>FHS 建议所有软件开发者，应该将他们的数据合理的分别放置到这个目录下的子目录，而<strong>不要自行建立该软件自己独立的目录</strong>。</li>
+<li>由于所有系统默认的软件（distribution 发布者提供的软件）都会放置到 <code>/usr</code> 下，因此这个目录有点类似 Windows 系统的 <code>C:\Windows\</code> 和 <code>C:\Program files\</code> 这两个目录的综合体，系统刚安装完毕时，这个目录会占用最多的硬盘容量。</li>
+<li>用户后续安装的应用程序，也建议放置到 <code>/usr</code> 下。</li>
+</ul>
+<h2 id="var-variable"><a href="#var-variable" class="headerlink" title="/var (variable)"></a>/var (variable)</h2><p>该目录与系统运作过程有关。</p>
+<p>如果 <code>/usr</code> 是系统安装时会占用较大硬盘容量的目录，那么 <code>/var</code> 则是在系统运行时才会渐渐占用硬盘容量的目录。 <code>/var</code> 目录主要针对常态性变动的文件，包括缓存（cache）、登录文件（log file）以及某些软件运行所产生的日志文件，因此这个目录会越来越大，建议单独挂载分区。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>由于根目录所在分区的容量有限，因此像 <code>/usr</code>、<code>/var</code>、<code>/home</code> 这种大目录最好不要与根目录放在同一个分区内，而是建议单独挂载分区。如此一来不但可以提高系统性能，根目录所在的文件系统也不容易发生问题。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a href="http://www.ruanyifeng.com/blog/2012/02/a_history_of_unix_directory_structure.html" target="_blank" rel="noopener">Unix目录结构的来历</a>》<br>《<a href="http://vbird.dic.ksu.edu.tw/linux_basic/0210filepermission.php" target="_blank" rel="noopener">Linux 的文件权限与目录配置</a>》<br>《<a href="http://www.pathname.com/fhs/" target="_blank" rel="noopener">FHS 官方文档</a>》<br>《<a href="http://www.pathname.com/fhs/pub/fhs-2.3.html" target="_blank" rel="noopener">FHS 2.3 官方文档</a>》</p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2016/02/10/javascript-intro/" class="prev">PREV</a><a href="/2015/11/15/gnu-text-utilities/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> JavaScript 事件绑定机制 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="JavaScript 事件绑定机制 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">JavaScript 事件绑定机制</h1><div class="post-info">2016-05-08<a href="/tags/前端/" title="前端" class="post-demo">前端</a></div><div class="post-content"><p>本文目的：</p>
+<ul>
+<li>理解并能按需使用各种事件绑定 API</li>
+<li>理解事件对象</li>
+<li>理解事件流</li>
+</ul>
+<h1 id="事件绑定"><a href="#事件绑定" class="headerlink" title="事件绑定"></a>事件绑定</h1><p>事件是用户或浏览器自身执行的某种动作，例如 <code>onclick</code> 、 <code>onload</code> ，都是事件的名字。而响应某个事件的函数就叫做 <strong>事件处理程序（Event Handlers）</strong>。为事件绑定处理程序的方式有以下几种：</p>
+<h2 id="HTML"><a href="#HTML" class="headerlink" title="HTML"></a>HTML</h2><p>做法：在 HTML 元素中直接编写事件处理程序：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 输出“Clicked” —— 事件处理程序中，可以直接编写 JavaScript 代码 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"button"</span> <span class="attr">value</span>=<span class="string">"Click Me"</span> <span class="attr">onclick</span>=<span class="string">"alert('Clicked')"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 输出“click” —— 事件处理程序中，可以直接访问事件对象 event --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"button"</span> <span class="attr">value</span>=<span class="string">"Click Me"</span> <span class="attr">onclick</span>=<span class="string">"alert('event.type')"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 输出“Click Me” —— 事件处理程序中，this 指向事件的目标元素 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"button"</span> <span class="attr">value</span>=<span class="string">"Click Me"</span> <span class="attr">onclick</span>=<span class="string">"alert('this.value')"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>其中除了可以编写 JavaScript 代码，还可以调用外部脚本：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 事件处理程序中的代码在执行时，有权访问全局作用域中的任何代码 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"button"</span> <span class="attr">value</span>=<span class="string">"Click Me"</span> <span class="attr">onclick</span>=<span class="string">"showMessage()"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span></span><br><span class="line"><span class="actionscript">    <span class="function"><span class="keyword">function</span> <span class="title">showMessage</span><span class="params">()</span> </span>&#123;</span></span><br><span class="line"><span class="actionscript">        alert(<span class="string">"Hello world!"</span>);</span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>特点：上述 <code>onclick</code> 事件将自动产生一个事件处理程序（函数），例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">onclick</span>(<span class="params">event</span>) </span>&#123;</span><br><span class="line">    alert(<span class="string">'Clicked'</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>优点：简单、粗暴，浏览器兼容性好。</p>
+<p>缺点：</p>
+<ul>
+<li>存在时差问题。用户可能会在 HTML 元素一出现在页面上时，就触发相应事件，但当时的事件处理程序有可能还未具备执行条件（例如事件处理程序所在的外部脚本文件还未加载或解析完毕），此时会引发 <code>undefined</code> 错误。</li>
+</ul>
+<ul>
+<li>HTML 与 JavaScript 代码紧密耦合。如果要重命名事件处理程序，就要改动两个地方，容易改漏、改错。</li>
+</ul>
+<h2 id="DOM-Level-0"><a href="#DOM-Level-0" class="headerlink" title="DOM Level 0"></a>DOM Level 0</h2><p>做法：首先获取目标 HTML 元素的引用，然后将一个事件处理程序赋值给其指定的事件属性：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"button"</span> <span class="attr">id</span>=<span class="string">'btn'</span> <span class="attr">value</span>=<span class="string">"Click Me"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> btn = <span class="built_in">document</span>.getElementById(<span class="string">'btn'</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="actionscript">    <span class="comment">// 绑定事件处理程序</span></span></span><br><span class="line"><span class="actionscript">    btn.onclick = <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>&#123;</span></span><br><span class="line"><span class="actionscript">        alert(<span class="string">'Clicked'</span>);</span></span><br><span class="line"><span class="actionscript">        alert(<span class="keyword">this</span>.id);    <span class="comment">// 输出“myDiv” —— this 指向事件的目标元素</span></span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="actionscript">    <span class="comment">// 删除事件处理程序</span></span></span><br><span class="line"><span class="actionscript">    btn.onclick = <span class="literal">null</span>;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>特点：本质上，DOM 0级事件处理程序 <strong>等于</strong> HTML 事件处理程序，例如：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"button"</span> <span class="attr">id</span>=<span class="string">'btn'</span> <span class="attr">value</span>=<span class="string">"Click Me"</span> <span class="attr">onclick</span>=<span class="string">"alert('Clicked')"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span></span><br><span class="line"><span class="actionscript">    setTimeout(<span class="function"><span class="keyword">function</span><span class="params">()</span> </span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">var</span> btn = <span class="built_in">document</span>.getElementById(<span class="string">'btn'</span>);</span></span><br><span class="line"><span class="actionscript">        alert(<span class="keyword">typeof</span> btn.onclick);    <span class="comment">// 通过 HTML 的事件属性，访问其 HTML 事件处理程序，并输出其类型“function”</span></span></span><br><span class="line"><span class="actionscript">        btn.onclick = <span class="literal">null</span>;    <span class="comment">// 几秒后，将会删除该按钮的事件处理程序</span></span></span><br><span class="line">    &#125;, 3000);</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>优点：</p>
+<ul>
+<li>传统、常用、浏览器兼容性好。</li>
+<li>解决了 HTML 事件处理程序的两个缺点。</li>
+</ul>
+<p>缺点：一个事件只能绑定唯一一个事件处理程序。</p>
+<h2 id="DOM-Level-2"><a href="#DOM-Level-2" class="headerlink" title="DOM Level 2"></a>DOM Level 2</h2><p>做法：目前最主流的写法，可以支持事件冒泡或捕获：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;input type=<span class="string">"button"</span> id=<span class="string">'btn'</span> value=<span class="string">"Click Me"</span> /&gt;</span><br><span class="line"></span><br><span class="line">&lt;script type=<span class="string">"text/javascript"</span>&gt;</span><br><span class="line">    <span class="keyword">var</span> btn = <span class="built_in">document</span>.getElementById(<span class="string">'btn'</span>),</span><br><span class="line">        showMessage = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">            alert(<span class="string">'Clicked'</span>);</span><br><span class="line">            alert(<span class="keyword">this</span>.id);    <span class="comment">// 输出“myDiv” —— this 指向事件的目标元素</span></span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 绑定事件处理程序。false 表示在“冒泡阶段”和“目标阶段”触发</span></span><br><span class="line">    btn.addEventListener(<span class="string">'click'</span>, showMessage, <span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 删除事件处理程序。注意，匿名函数无法移除</span></span><br><span class="line">    btn.removeEventListener(<span class="string">'click'</span>, showMessage, <span class="literal">false</span>);</span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>优点：一个事件可以绑定多个事件处理程序，以绑定的顺序执行。</p>
+<p>缺点：浏览器兼容性差，IE8 及以下版本不支持。</p>
+<p>API：<code>element.addEventListener(event, function, useCapture)</code> 。其中 <code>useCapture</code> 可选，布尔值，指定事件是否在捕获或冒泡阶段执行：</p>
+<ul>
+<li><code>true</code> 捕获阶段执行</li>
+<li><code>false</code> 冒泡阶段执行（默认值）</li>
+</ul>
+<h2 id="IE"><a href="#IE" class="headerlink" title="IE"></a>IE</h2><p>IE 实现了与 DOM 2 级类似的两个方法，只支持事件冒泡：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;input type=<span class="string">"button"</span> id=<span class="string">'btn'</span> value=<span class="string">"Click Me"</span> /&gt;</span><br><span class="line"></span><br><span class="line">&lt;script type=<span class="string">"text/javascript"</span>&gt;</span><br><span class="line">    <span class="keyword">var</span> btn = <span class="built_in">document</span>.getElementById(<span class="string">'btn'</span>),</span><br><span class="line">        showMessage = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">            alert(<span class="string">'Clicked'</span>);</span><br><span class="line">            alert(<span class="keyword">this</span> === <span class="built_in">window</span>);    <span class="comment">// 输出“true” —— 注意 this 指向 window</span></span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 绑定事件处理程序。仅在“冒泡阶段”和“目标阶段”触发</span></span><br><span class="line">    btn.attachEvent(<span class="string">'onclick'</span>, showMessage);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 删除事件处理程序。注意，匿名函数无法移除</span></span><br><span class="line">    btn.detachEvent(<span class="string">'onclick'</span>, showMessage);</span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>优点：一个事件可以绑定多个事件处理程序，以绑定的顺序 <strong>逆序</strong> 执行。</p>
+<p>缺点：浏览器兼容性差，仅支持 IE 及 Opera。</p>
+<h2 id="Cross-Browser"><a href="#Cross-Browser" class="headerlink" title="Cross-Browser"></a>Cross-Browser</h2><p>鉴于上述几种方式的各有优劣，为了以跨浏览器的方式处理事件，可以定义自己的  <code>EventUtil</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> EventUtil = &#123;</span><br><span class="line"></span><br><span class="line">    addHandler: <span class="function"><span class="keyword">function</span>(<span class="params">element, type, handler</span>)</span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (element.addEventListener)&#123;</span><br><span class="line">            element.addEventListener(type, handler, <span class="literal">false</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (element.attachEvent)&#123;</span><br><span class="line">            element.attachEvent(“on” + type, handler);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            element[“on” + type] = handler;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    removeHandler: <span class="function"><span class="keyword">function</span>(<span class="params">element, type, handler</span>)</span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (element.removeEventListener)&#123;</span><br><span class="line">            element.removeEventListener(type, handler, <span class="literal">false</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (element.detachEvent)&#123;</span><br><span class="line">            element.detachEvent(“on” + type, handler);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            element[“on” + type] = <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h1 id="事件对象"><a href="#事件对象" class="headerlink" title="事件对象"></a>事件对象</h1><p>在触发 DOM 上的某个事件时，会产生一个事件对象 <code>event</code> ，这个对象中包含着所有与事件有关的信息。尽管触发的事件类型不同，可用属性和方法也会不同，但是所有事件都会包含下列常用成员：</p>
+<table>
+<thead>
+<tr>
+<th>DOM Level 2</th>
+<th>Type</th>
+<th>IE</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>type</code></td>
+<td>String</td>
+<td><code>type</code></td>
+<td>String</td>
+<td>被触发的事件类型</td>
+</tr>
+<tr>
+<td><code>eventPhase</code></td>
+<td>Integer</td>
+<td>-</td>
+<td>-</td>
+<td>调用事件处理程序的所处阶段：<code>1</code> 表示捕获阶段，<code>2</code> 表示“处于目标”，<code>3</code> 表示冒泡阶段</td>
+</tr>
+<tr>
+<td><code>target</code></td>
+<td>Element</td>
+<td><code>srcElement</code></td>
+<td>Element</td>
+<td>事件的目标元素</td>
+</tr>
+<tr>
+<td><code>currentTarget</code></td>
+<td>Element</td>
+<td>-</td>
+<td>-</td>
+<td>当前正在处理事件的元素。如果事件处于目标元素，则 <code>this === currentTarget === target</code></td>
+</tr>
+<tr>
+<td><code>stopPropagation()</code></td>
+<td>Function</td>
+<td><code>cancelBubble</code></td>
+<td>Boolean</td>
+<td>取消事件的进一步捕获或冒泡</td>
+</tr>
+<tr>
+<td><code>preventDefault()</code></td>
+<td>Function</td>
+<td><code>returnValue</code></td>
+<td>Boolean</td>
+<td>取消事件的默认行为。该方法将通知 Web 浏览器不要执行与事件关联的默认动作（如果存在这样的动作）。例如，如果 <code>type</code> 属性是 “submit”，可以阻止提交表单。</td>
+</tr>
+</tbody></table>
+<h1 id="事件流"><a href="#事件流" class="headerlink" title="事件流"></a>事件流</h1><p>最后总结下与事件处理程序息息相关的“事件流”。事件流是指从页面中接收事件的顺序。但有意思的是，历史上 IE 和 Netscape 开发团队居然提出了 <strong>完全相反</strong> 的事件流概念 —— IE 使用“<strong>事件冒泡（Event Bubbling）</strong>”、Netscape 使用“<strong>事件捕获（Event Capturing）</strong>”。下图演示了这两种事件流的区别：</p>
+<p><img src="/img/javascript/event-flow.png" alt="事件流（Event Flow）"></p>
+<p>下表列出了四种事件绑定所使用的事件流模型：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>事件冒泡 or 事件捕获？</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>HTML</td>
+<td>取决于 IE or Netscape</td>
+</tr>
+<tr>
+<td>DOM Level 0</td>
+<td>取决于 IE or Netscape</td>
+</tr>
+<tr>
+<td>DOM Level 2</td>
+<td>事件冒泡 + 事件捕获</td>
+</tr>
+<tr>
+<td>IE</td>
+<td>事件冒泡</td>
+</tr>
+</tbody></table>
+<p>下面重点讲解 DOM Level 2 事件处理程序所规定的事件流，其共包含三个阶段（其运行效果如上图从 1 到 10）：</p>
+<ol>
+<li>事件捕获阶段，可用于事件截获</li>
+<li>处于目标阶段</li>
+<li>事件冒泡阶段，可用于<a href="/2016/05/22/javascript-event-delegation">事件委托（Event Delegation）</a></li>
+</ol>
+<p>下面这段代码演示了 DOM Level 2 的整个事件流：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"button"</span> <span class="attr">id</span>=<span class="string">'btn'</span> <span class="attr">value</span>=<span class="string">"Click Me"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="actionscript">    <span class="comment">// 仅在“事件捕获阶段”和“处于目标阶段”触发</span></span></span><br><span class="line"><span class="javascript">    <span class="built_in">document</span>.body.addEventListener(<span class="string">'click'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">event</span>)</span>&#123;</span></span><br><span class="line"><span class="actionscript">        alert(event.eventPhase + <span class="string">' body'</span>);</span></span><br><span class="line"><span class="actionscript">    &#125;, <span class="literal">true</span>);</span></span><br><span class="line">  </span><br><span class="line"><span class="actionscript">    <span class="comment">// 仅在“事件冒泡阶段”和“处于目标阶段”触发</span></span></span><br><span class="line"><span class="javascript">    <span class="built_in">document</span>.getElementById(<span class="string">'btn'</span>).addEventListener(<span class="string">'click'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">event</span>)</span>&#123;</span></span><br><span class="line"><span class="actionscript">        alert(event.eventPhase + <span class="string">' input'</span>);</span></span><br><span class="line"><span class="actionscript">    &#125;, <span class="literal">false</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="actionscript">    <span class="comment">// 仅在“事件冒泡阶段”和“处于目标阶段”触发</span></span></span><br><span class="line"><span class="javascript">    <span class="built_in">document</span>.addEventListener(<span class="string">'click'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">event</span>)</span>&#123;</span></span><br><span class="line"><span class="actionscript">        alert(event.eventPhase + <span class="string">' document'</span>);</span></span><br><span class="line"><span class="actionscript">    &#125;, <span class="literal">false</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>点击 <code>input</code> 按钮，将依次输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1 body</span><br><span class="line">2 input</span><br><span class="line">3 document</span><br></pre></td></tr></table></figure>
+
+<p>可见，DOM Level 2 是同时支持事件冒泡 + 事件捕获的。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《JavaScript 高级程序设计》</li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2016/05/22/javascript-event-delegation/" class="prev">PREV</a><a href="/2016/05/08/optimizing-hexo-speed-with-coding-pages/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

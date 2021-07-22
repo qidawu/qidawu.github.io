@@ -1,0 +1,613 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> GNU/CoreUtils 常用命令总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="GNU/CoreUtils 常用命令总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">GNU/CoreUtils 常用命令总结</h1><div class="post-info">2015-11-10<a href="/tags/GNU-Linux/" title="GNU/Linux" class="post-demo">GNU/Linux</a></div><div class="post-content"><p>GNU/CoreUtils 是一组类 Unix 操作系统所需的基础软件包。它包含三组命令，常用的命令如 <code>cat</code>、<code>ls</code>、<code>rm</code>。学习 GNU/Linux 的第一步，就是要熟悉软件包下常用的命令。下面分别介绍这三组常用的命令：</p>
+<h1 id="File-utilities"><a href="#File-utilities" class="headerlink" title="File utilities"></a>File utilities</h1><h2 id="Basic-operations"><a href="#Basic-operations" class="headerlink" title="Basic operations"></a>Basic operations</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>cp</code></td>
+<td>Copy files and directories</td>
+<td><code>cp -rp</code> 备份目录。<br/><code>-r</code> 递归复制目录，否则提示“略过目录‘xxx’”。<br/><code>-p</code> 保留源文件或目录的属性（包括属主、属组、权限、修改时间等）。<br/><code>-f</code> 强制覆盖。</td>
+</tr>
+<tr>
+<td><code>mv</code></td>
+<td>Move (rename) files</td>
+<td></td>
+</tr>
+<tr>
+<td><code>rm</code></td>
+<td>Remove files or directories</td>
+<td><code>rm -rf</code> 强制递归删除文件或目录。<br/><code>-r</code> 递归删除，将指定目录下的所有文件及子目录一并处理。<br/><code>-f</code> 强制删除文件或目录。</td>
+</tr>
+<tr>
+<td><code>ln</code></td>
+<td>Create a link to a file</td>
+<td><code>ln -s TARGET LINK_NAME</code> 创建软链接。</td>
+</tr>
+<tr>
+<td><code>mkdir</code></td>
+<td>Create a directory</td>
+<td><code>-p</code> 递归创建目录。</td>
+</tr>
+<tr>
+<td><code>rmdir</code></td>
+<td>Remove empty directories</td>
+<td><code>-p</code> 递归删除空目录，如果目录非空会删除失败并提示：<code>rmdir: failed to remove &#39;xxx&#39;: Directory not empty</code></td>
+</tr>
+</tbody></table>
+<h2 id="Directory-listing"><a href="#Directory-listing" class="headerlink" title="Directory listing"></a>Directory listing</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ls</code></td>
+<td>List directory contents</td>
+<td><code>-l</code> 查看详细信息。<br/><code>-a</code> 显示隐藏文件。<br/><code>-d</code> 仅列出目录本身，而不是列出目录内的文件。<br/><code>-h</code> 将文件容量以人类较易读的方式（如GB、KB等）列出来。<br/><code>-t</code> 按时间排序显示，默认为新的排在前面。<br/><code>-S</code> 按文件容量大小排序，而不是用文件名。</td>
+</tr>
+<tr>
+<td><code>dir</code></td>
+<td>List directory contents briefly</td>
+<td>Exactly like <code>ls -C -b</code></td>
+</tr>
+<tr>
+<td><code>vdir</code></td>
+<td>List directory contents verbosely</td>
+<td>Exactly like <code>ls -l -b</code></td>
+</tr>
+</tbody></table>
+<h2 id="Changing-file-attributes"><a href="#Changing-file-attributes" class="headerlink" title="Changing file attributes"></a>Changing file attributes</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>chown</code></td>
+<td>Change file owner and group</td>
+<td><code>chown -R owner:group /there/is/a/file</code><br/><code>-R</code> 递归修改，常用于一次性更改某一目录内所有的文件、目录。目标属主必须在 <code>/etc/passwd</code>。</td>
+</tr>
+<tr>
+<td><code>chgrp</code></td>
+<td>Change group ownership</td>
+<td><code>-R</code> 递归修改，目标属组必须在 <code>/etc/group</code>。</td>
+</tr>
+<tr>
+<td><code>chmod</code></td>
+<td>Change access permissions</td>
+<td><code>chmod [ugoa...][[+-=][rwxX]...][,...]</code><br/>可用：<code>u</code>、<code>g</code>、<code>o</code>、<code>a</code>，可用权限：<code>r=4</code>、<code>w=2</code>、<code>x=1</code><br/>例如：<code>chmod u+x</code></td>
+</tr>
+<tr>
+<td><code>touch</code></td>
+<td>Change file timestamps</td>
+<td>改变文件访问和修改时间，也可用于快速创建一个文件。</td>
+</tr>
+</tbody></table>
+<h2 id="Disk-usage"><a href="#Disk-usage" class="headerlink" title="Disk usage"></a>Disk usage</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>df</code></td>
+<td>Show disk free space on file systems</td>
+<td><code>-h</code> 以 K，M，G 为单位，更易读的方式显示。<br/><code>-i</code> list inode information instead of block usage</td>
+</tr>
+<tr>
+<td><code>du</code></td>
+<td>Show disk usage on file systems</td>
+<td><code>-h</code> 以 K，M，G 为单位，更易读的方式显示。<br/><code>-s, --summarize</code> 汇总显示（等于 <code>--max-depth=0</code>）<br/><code>-d, --max-depth=N</code> 显示第 N 层子目录各自的大小，常用于找出最占空间的目录。例如：<code>du --max-depth=1 -h ./</code><br/><code>--exclude=PATTERN</code> Exclude files that match PATTERN.</td>
+</tr>
+<tr>
+<td><code>stat</code></td>
+<td>Return data about an inode</td>
+<td></td>
+</tr>
+<tr>
+<td><code>truncate</code></td>
+<td>Shrink or extend the size of a file to the specified size</td>
+<td>-s 参数指定一个大小：K, M, G, T, P, E, Z, Y</td>
+</tr>
+</tbody></table>
+<h1 id="Text-utilities"><a href="#Text-utilities" class="headerlink" title="Text utilities"></a>Text utilities</h1><h2 id="Output-of-entire-files"><a href="#Output-of-entire-files" class="headerlink" title="Output of entire files"></a>Output of entire files</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>cat</code></td>
+<td>Concatenates and prints files on the standard output</td>
+<td>常用于连接并输出多个文件的内容。</td>
+</tr>
+<tr>
+<td><code>tac</code></td>
+<td>Concatenates and prints files on the standard output in reverse</td>
+<td>常用于反向连接并输出多个文件的内容。</td>
+</tr>
+<tr>
+<td><code>nl</code></td>
+<td>Numbers lines of files</td>
+<td><code>-b</code> 指定行号的方式，主要有 <code>a</code> <code>t</code>两种：<br/><code>-b a</code> 无论是否是空行，同样列出行号。<br/><code>-b t</code> 默认值，不列出空行行号。</td>
+</tr>
+<tr>
+<td><code>base64</code></td>
+<td>base64 encode/decode data and print to standard output</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="Output-of-parts-of-files"><a href="#Output-of-parts-of-files" class="headerlink" title="Output of parts of files"></a>Output of parts of files</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>head</code></td>
+<td>Output the first part of files</td>
+<td>默认输出 10 行</td>
+</tr>
+<tr>
+<td><code>tail</code></td>
+<td>Output the last part of files</td>
+<td><code>-n</code> 输出倒数 n 行（默认输出 10 行）<br/><code>-f</code> 不停读取输出文件的最新内容，常用于实时监视日志输出，用 <code>Ctrl＋C</code> 来终止。</td>
+</tr>
+<tr>
+<td><code>tailf</code></td>
+<td></td>
+<td>等同于 <code>tail -f -n 10</code></td>
+</tr>
+<tr>
+<td><code>split</code></td>
+<td>Split a file into pieces</td>
+<td>用于按行、按大小分割文件</td>
+</tr>
+<tr>
+<td><code>csplit</code></td>
+<td>Split a file into context-determined pieces</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="Operating-on-sorted-files"><a href="#Operating-on-sorted-files" class="headerlink" title="Operating on sorted files"></a>Operating on sorted files</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>sort</code></td>
+<td>Sort text files</td>
+<td>详见<a href="http://www.cnblog.me/2015/11/15/gnu-text-utilities/" target="_blank" rel="noopener">本文</a></td>
+</tr>
+<tr>
+<td><code>shuf</code></td>
+<td>Shuffling text</td>
+<td></td>
+</tr>
+<tr>
+<td><code>uniq</code></td>
+<td>Uniquify files</td>
+<td>详见<a href="http://www.cnblog.me/2015/11/15/gnu-text-utilities/" target="_blank" rel="noopener">本文</a></td>
+</tr>
+</tbody></table>
+<h2 id="Operating-on-fields"><a href="#Operating-on-fields" class="headerlink" title="Operating on fields"></a>Operating on fields</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>cut</code></td>
+<td>Print selected parts of lines</td>
+<td>详见<a href="http://www.cnblog.me/2015/11/15/gnu-text-utilities/" target="_blank" rel="noopener">本文</a></td>
+</tr>
+<tr>
+<td><code>paste</code></td>
+<td>Merge lines of files</td>
+<td>合并多个文件的所有行</td>
+</tr>
+<tr>
+<td><code>join</code></td>
+<td>Joins lines of two files on a common field</td>
+<td>合并两个文件中相同位置的行</td>
+</tr>
+</tbody></table>
+<h2 id="Operating-on-characters"><a href="#Operating-on-characters" class="headerlink" title="Operating on characters"></a>Operating on characters</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>tr</code></td>
+<td>Translate or delete characters</td>
+<td>详见<a href="http://www.cnblog.me/2015/11/15/gnu-text-utilities/" target="_blank" rel="noopener">本文</a></td>
+</tr>
+<tr>
+<td><code>expand</code></td>
+<td>Convert tabs to spaces</td>
+<td></td>
+</tr>
+<tr>
+<td><code>unexpand</code></td>
+<td>Convert spaces to tabs</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="Summarizing-files"><a href="#Summarizing-files" class="headerlink" title="Summarizing files"></a>Summarizing files</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>wc</code></td>
+<td>Print the number of bytes, words, and lines in files</td>
+<td>详见<a href="http://www.cnblog.me/2015/11/15/gnu-text-utilities/" target="_blank" rel="noopener">本文</a></td>
+</tr>
+<tr>
+<td><code>sum</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>cksum</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>md5sum</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>sha1sum</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>sha256sum</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>sha512sum</code></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h1 id="Shell-utilities"><a href="#Shell-utilities" class="headerlink" title="Shell utilities"></a>Shell utilities</h1><h2 id="User-information"><a href="#User-information" class="headerlink" title="User information"></a>User information</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>Print user identity</td>
+<td>显示当前用户的信息（uid、gid、groups）</td>
+</tr>
+<tr>
+<td><code>logname</code></td>
+<td>Print current login name</td>
+<td></td>
+</tr>
+<tr>
+<td><code>whoami</code></td>
+<td>Print effective user ID</td>
+<td></td>
+</tr>
+<tr>
+<td><code>groups</code></td>
+<td>Print group names a user is in</td>
+<td></td>
+</tr>
+<tr>
+<td><code>users</code></td>
+<td>Print login names of users currently logged in</td>
+<td></td>
+</tr>
+<tr>
+<td><code>who</code></td>
+<td>Print who is currently logged in</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="System-context"><a href="#System-context" class="headerlink" title="System context"></a>System context</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>date</code></td>
+<td>Print or set system date and time</td>
+<td><code>date +%Y-%m-%d</code>  2016-12-28</td>
+</tr>
+<tr>
+<td><code>arch</code></td>
+<td>Print machine hardware name</td>
+<td></td>
+</tr>
+<tr>
+<td><code>nproc</code></td>
+<td>Print the number of available processors</td>
+<td></td>
+</tr>
+<tr>
+<td><code>uname</code></td>
+<td>Print system information</td>
+<td></td>
+</tr>
+<tr>
+<td><code>hostname</code></td>
+<td>Print or set system name</td>
+<td></td>
+</tr>
+<tr>
+<td><code>hostid</code></td>
+<td>Print numeric host identifier</td>
+<td></td>
+</tr>
+<tr>
+<td><code>uptime</code></td>
+<td>Print system uptime and load</td>
+<td>常用于查看系统负载</td>
+</tr>
+</tbody></table>
+<h2 id="Working-context"><a href="#Working-context" class="headerlink" title="Working context"></a>Working context</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>pwd</code></td>
+<td>Print working directory</td>
+<td>显示当前所在目录</td>
+</tr>
+<tr>
+<td><code>stty</code></td>
+<td>Print or change terminal characteristics</td>
+<td></td>
+</tr>
+<tr>
+<td><code>tty</code></td>
+<td>Print file name of terminal on standard input</td>
+<td></td>
+</tr>
+<tr>
+<td><code>printenv</code></td>
+<td>Print all or some environment variables</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="Modified-command-invocation"><a href="#Modified-command-invocation" class="headerlink" title="Modified command invocation"></a>Modified command invocation</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>nohup</code></td>
+<td>Run a command immune to hangups</td>
+<td></td>
+</tr>
+<tr>
+<td><code>timeout</code></td>
+<td>Run a command with a time limit</td>
+<td></td>
+</tr>
+<tr>
+<td><code>env</code></td>
+<td>Run a command in a modified environment</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="Process-control"><a href="#Process-control" class="headerlink" title="Process control"></a>Process control</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>kill</code></td>
+<td>Send a signal to processes</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="Delaying"><a href="#Delaying" class="headerlink" title="Delaying"></a>Delaying</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>sleep</code></td>
+<td>Delay for a specified time</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="Redirection"><a href="#Redirection" class="headerlink" title="Redirection"></a>Redirection</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>tee</code></td>
+<td>Redirect output to multiple files or processes</td>
+<td>详见<a href="http://www.cnblog.me/2015/11/15/gnu-text-utilities/" target="_blank" rel="noopener">本文</a></td>
+</tr>
+</tbody></table>
+<h2 id="Conditions"><a href="#Conditions" class="headerlink" title="Conditions"></a>Conditions</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>false</code></td>
+<td>Do nothing, unsuccessfully</td>
+<td></td>
+</tr>
+<tr>
+<td><code>true</code></td>
+<td>Do nothing, successfully</td>
+<td></td>
+</tr>
+<tr>
+<td><code>test</code></td>
+<td>Check file types and compare values</td>
+<td></td>
+</tr>
+<tr>
+<td><code>expr</code></td>
+<td>Evaluate expressions</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="Printing-text"><a href="#Printing-text" class="headerlink" title="Printing text"></a>Printing text</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>echo</code></td>
+<td>Print a line of text</td>
+<td><code>-n</code> 不输出末尾换行符<br/><code>-e</code> 开启转义字符，例如：反斜杠 <code>\\</code>、换行符 <code>\n</code></td>
+</tr>
+<tr>
+<td><code>printf</code></td>
+<td>Format and print data</td>
+<td></td>
+</tr>
+<tr>
+<td><code>yes</code></td>
+<td>Print a string until interrupted</td>
+<td></td>
+</tr>
+</tbody></table>
+<p><code>yes</code> 命令小技巧，使用管道自动输入“y”进行文件强制覆盖，方法：<code>yes | cp 源文件 目的文件</code></p>
+<h2 id="Numeric-operations"><a href="#Numeric-operations" class="headerlink" title="Numeric operations"></a>Numeric operations</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>seq</code></td>
+<td>Print numeric sequences</td>
+<td></td>
+</tr>
+<tr>
+<td><code>numfmt</code></td>
+<td>Reformat numbers</td>
+<td>常用于格式化数字</td>
+</tr>
+</tbody></table>
+<h2 id="File-name-manipulation"><a href="#File-name-manipulation" class="headerlink" title="File name manipulation"></a>File name manipulation</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>basename</code></td>
+<td>Strip directory and suffix from a file name</td>
+<td>截取出文件名</td>
+</tr>
+<tr>
+<td><code>dirname</code></td>
+<td>Strip last file name component</td>
+<td>截取出目录名</td>
+</tr>
+</tbody></table>
+<h1 id="zip-压缩文件查看命令"><a href="#zip-压缩文件查看命令" class="headerlink" title="zip 压缩文件查看命令"></a>zip 压缩文件查看命令</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">zip -rmq dist.zip dist</span><br><span class="line"></span><br><span class="line">-q	表示不显示压缩进度状态</span><br><span class="line">-r	表示子目录子文件全部压缩为zip；这部分比较重要，不然的话只有something这个文件夹被压缩，里面的没有被压缩进去</span><br><span class="line">-e	表示你的压缩文件需要加密，终端会提示你输入密码的；还有种加密方法，这种是直接在命令行里做的，比如zip -r -P Password01! modudu.zip SomeDir, 就直接用Password01!来加密modudu.zip了</span><br><span class="line">-m	表示压缩完删除原文件</span><br><span class="line"></span><br><span class="line">unzip [选项] dist.zip</span><br><span class="line"></span><br><span class="line">-x 文件列表 解压缩文件，但不包括指定的file文件。 </span><br><span class="line">-v 查看压缩文件目录，但不解压。 </span><br><span class="line">-t 测试文件有无损坏，但不解压。 </span><br><span class="line">-d 目录 把压缩文件解到指定目录下。 </span><br><span class="line">-z 只显示压缩文件的注解。 </span><br><span class="line">-n 不覆盖已经存在的文件。 </span><br><span class="line">-o 覆盖已存在的文件且不要求用户确认。 </span><br><span class="line">-j 不重建文档的目录结构，把所有文件解压到同一目录下。</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>zcat</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>zless</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>zmore</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>zgrep</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>zdiff</code></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《<a href="https://en.wikipedia.org/wiki/List_of_GNU_packages" target="_blank" rel="noopener">List of GNU packages</a>》</li>
+<li>《<a href="https://en.wikipedia.org/wiki/GNU_Core_Utilities" target="_blank" rel="noopener">GNU Core Utilities</a>》</li>
+<li>《<a href="http://www.gnu.org/software/coreutils/manual/html_node/index.html" target="_blank" rel="noopener">GNU Coreutils Manual</a>》</li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2015/11/15/gnu-text-utilities/" class="prev">PREV</a><a href="/2015/09/30/cdn-gslb-dns/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

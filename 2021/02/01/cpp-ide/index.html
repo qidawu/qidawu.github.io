@@ -1,0 +1,64 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> C/C++ 语言系列（一）IDE 准备 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="C/C++ 语言系列（一）IDE 准备 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">C/C++ 语言系列（一）IDE 准备</h1><div class="post-info">2021-02-01<a href="/tags/C-C/" title="C/C++" class="post-demo">C/C++</a></div><div class="post-content"><h1 id="VS-Code-插件安装"><a href="#VS-Code-插件安装" class="headerlink" title="VS Code 插件安装"></a>VS Code 插件安装</h1><p>打开 VScode，进入 <code>Extensions</code> 模块，搜索以下扩展并安装： </p>
+<ul>
+<li>C/C++</li>
+<li>C/C++ Clang Command Adapter</li>
+<li>C++ Intellisense</li>
+<li>Code Runner</li>
+</ul>
+<p>安装完成后，扩展将会自动激活。此时<strong>重启</strong> VScode。 </p>
+<h1 id="Hello-world-测试"><a href="#Hello-world-测试" class="headerlink" title="Hello world 测试"></a>Hello world 测试</h1><p>新建一个 <code>.cpp</code> 文件，输入如下代码： </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"hello, world\n"</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>点击 <strong>运行</strong> 按钮，<code>Terminal</code> 显示编译如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++ HelloWorld.cpp -o HelloWorld</span><br></pre></td></tr></table></figure>
+
+<p>编译完成后，运行并输出如下：<code>hello, world</code>。至此，配置全部完成。 </p>
+<h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><h2 id="DIFFERENCE-BETWEEN-g-amp-gcc"><a href="#DIFFERENCE-BETWEEN-g-amp-gcc" class="headerlink" title="DIFFERENCE BETWEEN g++ &amp; gcc"></a>DIFFERENCE BETWEEN g++ &amp; gcc</h2><blockquote>
+<p><a href="https://www.geeksforgeeks.org/builtin-functions-gcc-compiler/" target="_blank" rel="noopener">GCC</a> 代表 <a href="https://www.geeksforgeeks.org/gcc-command-in-linux-with-examples/" target="_blank" rel="noopener">GNU Compiler Collections</a>，主要用于编译 C 和 C++ 语言。它还可以用于编译 Objective C 和 Objective C++。编译源代码文件时需要的最重要的选项是源程序的名称，其余每个参数都是可选的，如警告、调试、链接库、目标文件等。</p>
+<p><a href="https://www.geeksforgeeks.org/compiling-with-g-plus-plus/" target="_blank" rel="noopener">g++ 命令</a>是 GNU C++ 编译器调用的命令，用于源代码的预处理、编译、汇编和链接以生成可执行文件。</p>
+<table>
+<thead>
+<tr>
+<th align="left">g++</th>
+<th align="left">gcc</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">g++ is used to compile C++ program.</td>
+<td align="left">gcc is used to compile C program.</td>
+</tr>
+<tr>
+<td align="left">g++ can compile any <code>.c</code> or <code>.cpp</code> files but they will be treated as C++ files only.</td>
+<td align="left">gcc can compile any <code>.c</code> or <code>.cpp</code> files but they will be treated as C and C++ respectively.</td>
+</tr>
+<tr>
+<td align="left">Command to compile C++ program through g++ is <code>g++ fileName.cpp -o binary</code></td>
+<td align="left">command to compile C program through gcc is <code>gcc fileName.c -o binary</code></td>
+</tr>
+<tr>
+<td align="left">Using g++ to link the object files, files automatically links in the std C++ libraries.</td>
+<td align="left">gcc does not do this.</td>
+</tr>
+<tr>
+<td align="left">g++ compiles with more predefined macros.</td>
+<td align="left">gcc compiles C++ files with more number of predefined macros. Some of them are #define <strong>GXX_WEAK</strong> 1, #define __cplusplus 1, #define __DEPRECATED 1, etc</td>
+</tr>
+</tbody></table>
+</blockquote>
+<h2 id="DIFFERENCE-BETWEEN-gcc-amp-make"><a href="#DIFFERENCE-BETWEEN-gcc-amp-make" class="headerlink" title="DIFFERENCE BETWEEN gcc &amp; make"></a>DIFFERENCE BETWEEN gcc &amp; make</h2><blockquote>
+<p>gcc是编译器 而make不是 make是依赖于Makefile来编译多个源文件的工具 在Makefile里同样是用gcc(或者别的编译器)来编译程序.</p>
+<p>gcc是编译一个文件，make是编译多个源文件的工程文件的工具。</p>
+<p>make是一个命令工具，是一个解释makefile中指令的命令工具。</p>
+<p>make就是一个gcc/g++的调度器，通过读入一个文件（默认文件名为Makefile或者makefile），执行一组以gcc/g++为主的shell命令序列。输入文件主要用来记录文件之间的依赖关系和命令执行顺序。</p>
+<p>gcc是编译工具；</p>
+<p>make是定义了一系列的规则来指定，哪些文件需要先编译，哪些文件需要后编译；</p>
+<p>也就是说make是调用gcc的。</p>
+</blockquote>
+<h2 id="cannot-edit-in-read-only-editor"><a href="#cannot-edit-in-read-only-editor" class="headerlink" title="cannot edit in read-only editor"></a>cannot edit in read-only editor</h2><p><img src="/img/cpp/auto_guess_encoding.png" alt=""></p>
+<h2 id="GBK-to-UTF-8-乱码问题"><a href="#GBK-to-UTF-8-乱码问题" class="headerlink" title="GBK to UTF-8 乱码问题"></a>GBK to UTF-8 乱码问题</h2><p><a href="https://www.cnblogs.com/kingsonfu/p/11010086.html" target="_blank" rel="noopener">https://www.cnblogs.com/kingsonfu/p/11010086.html</a></p>
+<p><img src="/img/cpp/cannot_edit_in_read-only_editor.png" alt=""></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://www.cplusplus.com/doc/tutorial/introduction/" target="_blank" rel="noopener">http://www.cplusplus.com/doc/tutorial/introduction/</a></p>
+<p><a href="http://www.dooccn.com/cpp/" target="_blank" rel="noopener">C++ 在线编译器</a></p>
+<p><a href="https://cppinsights.io/" target="_blank" rel="noopener">C++ Insights</a></p>
+<p><a href="https://gcc.godbolt.org/" target="_blank" rel="noopener">C++ Compiler Explorer</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2021/02/02/cpp-basics/" class="prev">PREV</a><a href="/2021/01/03/java-logging/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

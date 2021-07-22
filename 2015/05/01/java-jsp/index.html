@@ -1,0 +1,113 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> JSP 标签总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="JSP 标签总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">JSP 标签总结</h1><div class="post-info">2015-05-01<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><p>JSP 有以下三类标签：</p>
+<h1 id="JSP-Directive"><a href="#JSP-Directive" class="headerlink" title="JSP Directive"></a>JSP Directive</h1><p>指令标签用于设置与整个 JSP 页面相关的属性，非常常用。</p>
+<table>
+<thead>
+<tr>
+<th>标签</th>
+<th>标签</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;%@ page ... %&gt;</code></td>
+<td><code>&lt;jsp:directive.page attribute=&quot;value&quot; /&gt;</code></td>
+<td>定义页面的依赖属性，例如脚本语言、页面编码、缓存需求等等</td>
+</tr>
+<tr>
+<td><code>&lt;%@ include ... %&gt;</code></td>
+<td><code>&lt;jsp:directive.include file=&quot;relative url&quot; /&gt;</code></td>
+<td>引入其它文件，例如 JSP、HTML、文本文件</td>
+</tr>
+<tr>
+<td><code>&lt;%@ taglib ... %&gt;</code></td>
+<td><code>&lt;jsp:directive.taglib uri=&quot;uri&quot; prefix=&quot;prefixOfTag&quot; /&gt;</code></td>
+<td>引入标签库，可以是 JSP 标准标签库（JSTL）、也可以是自定义标签库</td>
+</tr>
+</tbody></table>
+<h1 id="JSP-Syntax"><a href="#JSP-Syntax" class="headerlink" title="JSP Syntax"></a>JSP Syntax</h1><p>语法标签是 Java 早期为了便于开发人员在 JSP 页面中书写业务逻辑而设计的，但目前不再建议使用。</p>
+<table>
+<thead>
+<tr>
+<th>标签</th>
+<th>标签</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;% scriptlet %&gt;</code></td>
+<td><code>&lt;jsp:scriptlet&gt; scriptlet &lt;/jsp:scriptlet&gt;</code></td>
+<td>脚本程序，可以包含任意有效的 Java 语句、变量、方法或表达式</td>
+</tr>
+<tr>
+<td><code>&lt;%! declaration %&gt;</code></td>
+<td><code>&lt;jsp:declaration&gt; declaration &lt;/jsp:declaration&gt;</code></td>
+<td>声明语句，可以声明一个或多个变量、方法，供后面的 Java 代码使用</td>
+</tr>
+<tr>
+<td><code>&lt;%= expression %&gt;</code></td>
+<td><code>&lt;jsp:expression&gt; expression &lt;/jsp:expression&gt;</code></td>
+<td>表达式，其结果会被转为字符串并输出到 HTML 页面</td>
+</tr>
+<tr>
+<td><code>&lt;%-- comment --%&gt;</code></td>
+<td></td>
+<td>代码注释</td>
+</tr>
+</tbody></table>
+<p>举个栗子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;%! String output &#x3D; &quot;world&quot;; %&gt;</span><br><span class="line">    </span><br><span class="line">    &lt;% out.println(&quot;Hello &quot; + output); %&gt;</span><br><span class="line">    &lt;br&#x2F;&gt;</span><br><span class="line">    &lt;%&#x3D; &quot;Hello &quot; + output %&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
+
+<p>渲染输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Hello world </span><br><span class="line">Hello world</span><br></pre></td></tr></table></figure>
+
+<p>上例中，虽然结合使用这三种语法标签，可以在 JSP 页面中写出大段的 Java 逻辑代码，但强烈不建议这么做，因为这样会导致前端页面和业务逻辑之间紧耦合，以致后续难以维护。</p>
+<h1 id="JSP-Action"><a href="#JSP-Action" class="headerlink" title="JSP Action"></a>JSP Action</h1><p>函数标签是一些预定义好的行为标签，但不常用。</p>
+<table>
+<thead>
+<tr>
+<th>标签</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;jsp:include&gt;</code></td>
+<td>用于在当前页面中包含静态或动态资源</td>
+</tr>
+<tr>
+<td><code>&lt;jsp:useBean&gt;</code></td>
+<td>寻找和初始化一个 JavaBean 组件</td>
+</tr>
+<tr>
+<td><code>&lt;jsp:setProperty&gt;</code></td>
+<td>设置 JavaBean 组件的值</td>
+</tr>
+<tr>
+<td><code>&lt;jsp:getProperty&gt;</code></td>
+<td>将 JavaBean 组件的值插入到 output 中</td>
+</tr>
+<tr>
+<td><code>&lt;jsp:forward&gt;</code></td>
+<td>从一个 JSP 文件向另一个文件传递一个包含用户请求的 request 对象</td>
+</tr>
+<tr>
+<td><code>&lt;jsp:plugin&gt;</code></td>
+<td>用于在生成的 HTML 页面中包含 Applet 和 JavaBean 对象</td>
+</tr>
+<tr>
+<td><code>&lt;jsp:element&gt;</code></td>
+<td>动态创建一个 XML 元素</td>
+</tr>
+<tr>
+<td><code>&lt;jsp:attribute&gt;</code></td>
+<td>定义动态创建的 XML 元素的属性</td>
+</tr>
+<tr>
+<td><code>&lt;jsp:body&gt;</code></td>
+<td>定义动态创建的 XML 元素的主体</td>
+</tr>
+<tr>
+<td><code>&lt;jsp:text&gt;</code></td>
+<td>用于封装模板数据</td>
+</tr>
+</tbody></table>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2015/05/02/java-jstl/" class="prev">PREV</a><a href="/2015/04/26/dnspod/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

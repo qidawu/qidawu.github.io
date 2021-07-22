@@ -1,0 +1,97 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> OAuth 2.0 几种授权类型总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="OAuth 2.0 几种授权类型总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">OAuth 2.0 几种授权类型总结</h1><div class="post-info">2019-12-02<a href="/tags/安全/" title="安全" class="post-demo">安全</a></div><div class="post-content"><p>OAuth 协议解决了以下问题：</p>
+<ul>
+<li>密码泄露风险</li>
+<li>无法控制授权范围、有效期</li>
+</ul>
+<p>OAuth 协议中，术语“授权类型（<a href="https://oauth.net/2/grant-types/" target="_blank" rel="noopener">Grant Types</a>）”是指应用获取“访问令牌（Access Token）”的方式。OAuth 2.0 定义了以下几种授权类型：</p>
+<ul>
+<li>用户类资源：需要用户先授权<ul>
+<li>授权码模式（<a href="https://oauth.net/2/grant-types/authorization-code/" target="_blank" rel="noopener">Authorization Code</a>），需要用户授权</li>
+<li>简化模式（<a href="https://oauth.net/2/grant-types/implicit/" target="_blank" rel="noopener">Implicit</a>），不建议使用</li>
+<li>密码模式（<a href="https://oauth.net/2/grant-types/password/" target="_blank" rel="noopener">Password</a>）</li>
+<li>设备码模式（<a href="https://oauth.net/2/grant-types/device-code/" target="_blank" rel="noopener">Device Code</a>）</li>
+</ul>
+</li>
+<li>商户类资源，无需用户授权<ul>
+<li>客户端模式（<a href="https://oauth.net/2/grant-types/client-credentials/" target="_blank" rel="noopener">Client Credentials</a>），也叫商户模式接入</li>
+</ul>
+</li>
+<li>其它<ul>
+<li>令牌刷新模式（<a href="https://oauth.net/2/grant-types/refresh-token/" target="_blank" rel="noopener">Refresh Token</a>）</li>
+</ul>
+</li>
+</ul>
+<p>几种授权类型都有其对应的使用场景，各有利弊，但目的都是为了获取访问令牌。访问令牌是一个用于访问已授权资源的临时凭据。</p>
+<p>商户在接入认证服务器之前，需要先申请一套专用的 <code>client_id</code>、<code>client_secret</code>，据此再申请 <code>access_token</code>。下表总结了其中三种主流授权类型下，申请 <code>access_token</code> 令牌的前置条件：</p>
+<table>
+<thead>
+<tr>
+<th>授权方式</th>
+<th>grant_type</th>
+<th>授权的前置条件</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>授权码模式</td>
+<td><code>authorization_code</code></td>
+<td>授权码</td>
+<td>这种模式是最常见、功能最完整、流程最严密的授权模式，第三方应用需要先获取授权码，才能申请到令牌。它的特点就是通过第三方应用的后台服务器，与“服务提供商”的认证服务器进行互动，<strong>通过授权码（<code>authorization_code</code>）交换访问令牌（<code>access_token</code>）</strong>，第三方应用不接触用户密码，安全性高。</td>
+</tr>
+<tr>
+<td>密码模式</td>
+<td><code>password</code></td>
+<td>用户的账号、密码</td>
+<td>这种模式通常用在用户对该应用高度信任的情况下，或者所有服务都由同一家公司提供。在这种模式下，用户必须把自己的<strong>用户名和密码</strong>发给应用。应用使用这些信息，再向“服务提供商”索要授权，其风险在于应用获知了密码。但应用无需存储密码，而是存储和使用令牌即可。<br/>密码模式还有一种主流的变种，即使用<strong>用户手机号和短信验证码</strong>申请令牌，相比密码模式会更安全些。为了区分，可以自定义一个 <code>grant_type</code> 为 <code>sms_verify_code</code>。</td>
+</tr>
+<tr>
+<td>客户端模式</td>
+<td><code>client_credentials</code></td>
+<td>无</td>
+<td>第三方应用以自己的名义，而不是以用户的名义，向“服务提供商”进行认证，并获取商户类资源，而不是用户类资源。</td>
+</tr>
+</tbody></table>
+<h1 id="授权码模式"><a href="#授权码模式" class="headerlink" title="授权码模式"></a>授权码模式</h1><p>OAuth 旨在让用户能够对第三方应用授予有限的访问权限。第三方应用首先需要确定所需的权限，然后将用户导向浏览器以获得其授权。简单回顾下：</p>
+<p><img src="/img/security/oauth2.webp" alt="OAuth2 Authorization Code Flow"></p>
+<p>要开始授权流程，第三方应用需要先构建 URL。这里附一张流程图，详细总结下授权码模式的整个流程：</p>
+<p><img src="/img/security/oauth2.png" alt="OAuth 2.0 授权码模式"></p>
+<p>报文如下：</p>
+<p><img src="/img/security/grant_type_of_authorization_code.png" alt="OAuth 2.0 授权码模式"></p>
+<p>交互方式上特别注意浏览器会进行几次 302 重定向。流程总结如下：</p>
+<ol>
+<li>第三方应用首先向服务提供商申请 <code>client_id</code> 应用唯一标识、<code>client_secret</code> 密钥，用于后续获取令牌时提供身份校验；</li>
+<li>获取授权码：此时要提供预分配好的 <code>client_id</code> 标识来源，提供 <code>scope</code> 标识要申请的权限，提供 <code>redirect_uri</code> 标识授权完毕后要回跳的第三方应用的链接。</li>
+<li>第一次 302 重定向：认证服务器展示登录授权页。</li>
+<li>第二次 302 重定向：在用户提交授权，认证服务器认证成功后，会分配授权码 <code>code</code>，并重定向回第三方应用的 <code>redirect_uri</code> 。</li>
+<li>建议第三方应用要根据当前用户会话生成随机且唯一的 <code>state</code> 参数，并在接收到授权码时先进行校验，避免 CSRF 攻击。</li>
+<li>最后，第三方应用会向认证服务器申请令牌 <code>access_token</code>，此时要提供预分配好的 <code>code</code>、<code>client_id</code>、<code>client_secret</code> 以便认证。这一步是在后端之间完成的，对用户不可见。</li>
+<li><code>access_token</code> 是有有效期的，过期后需要刷新。</li>
+<li>拿到令牌 <code>access_token</code> 后，第三方应用就可以访问资源方，获取所需资源。<code>access_token</code> 相当于用户的 session id。</li>
+</ol>
+<p>以微信公众平台为例，<a href="https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421140842" target="_blank" rel="noopener">微信网页授权</a> 就是使用了“授权码模式（<code>grant_type=authorization_code</code>）”。商户在完成接入并获取<strong>用户</strong>的 <code>access_token</code> 之后，可用于如下场景：</p>
+<ul>
+<li>获取用户 openid</li>
+<li>获取用户信息（如昵称、头像、性别、所在地）</li>
+<li>……</li>
+</ul>
+<h1 id="密码模式"><a href="#密码模式" class="headerlink" title="密码模式"></a>密码模式</h1><p>报文如下：</p>
+<p><img src="/img/security/grant_type_of_password.png" alt="OAuth 2.0 密码模式"></p>
+<h1 id="客户端模式"><a href="#客户端模式" class="headerlink" title="客户端模式"></a>客户端模式</h1><p>客户端授权模式用于请求商户资源，而不是用户资源，报文如下：</p>
+<p><img src="/img/security/grant_type_of_client_credentials.png" alt="OAuth 2.0 客户端模式"></p>
+<p>以微信公众平台为例，<a href="https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421140183" target="_blank" rel="noopener">获取公众号的 access_token</a> 就是使用了“客户端模式（<code>grant_type=client_credential</code>）”。商户在完成接入并获取<strong>应用</strong>的 <code>access_token</code> 之后，可用于如下场景：</p>
+<ul>
+<li>自定义菜单的配置</li>
+<li>消息推送</li>
+<li>素材管理</li>
+<li>用户管理</li>
+<li>帐户管理</li>
+<li>数据统计</li>
+<li>…… 大量服务</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://oauth.net/2/" target="_blank" rel="noopener">https://oauth.net/2/</a></p>
+<p><a href="https://developer.okta.com/blog/2017/06/21/what-the-heck-is-oauth" target="_blank" rel="noopener">What the Heck is OAuth?</a></p>
+<p><a href="https://developer.linkedin.com/zh-cn/docs/oauth2" target="_blank" rel="noopener">https://developer.linkedin.com/zh-cn/docs/oauth2</a></p>
+<p><a href="http://www.ruanyifeng.com/blog/2014/05/oauth_2_0.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2014/05/oauth_2_0.html</a></p>
+<p><a href="https://www.jianshu.com/p/c7c8f51713b6" target="_blank" rel="noopener">移花接木：针对OAuth2的CSRF攻击</a></p>
+<p><a href="https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421140842" target="_blank" rel="noopener">微信网页授权（授权码模式）</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2020/01/03/mysql-primary-key-and-foreign-key/" class="prev">PREV</a><a href="/2019/11/26/mysql-deferred-join/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

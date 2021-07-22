@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> GUN/Bash 系列（五）Shell 内建命令总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="GUN/Bash 系列（五）Shell 内建命令总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">GUN/Bash 系列（五）Shell 内建命令总结</h1><div class="post-info">2015-03-15<a href="/tags/GNU-Linux/" title="GNU/Linux" class="post-demo">GNU/Linux</a></div><div class="post-content"><p>GUN/Bash 提供了一些内建命令 (BUILTIN COMMANDS)，用于在命令行上方便使用：</p>
+<h1 id="常用类"><a href="#常用类" class="headerlink" title="常用类"></a>常用类</h1><p><code>echo</code> 显示一行文本或变量</p>
+<p><code>unset</code> 取消变量</p>
+<p><code>set</code> 查看所有变量（环境变量&amp;用户变量）</p>
+<p><code>env</code> 查看所有环境变量（格式好看些）</p>
+<p><code>export</code></p>
+<ul>
+<li>查看所有环境变量</li>
+<li>将局部变量转成环境变量：<ul>
+<li>可以利用 <code>export</code> 命令将局部变量转为环境变量，但是用户注销时值将丢失；</li>
+<li>环境配置文件中，经常会用到 <code>export</code> 命令，相当于每次登录时系统都帮用户 <code>export</code> 一下所需环境变量；</li>
+<li>环境变量在当前进程 fork 出来的子进程中也能被访问到；</li>
+<li>目前发现安装软件时有用。</li>
+</ul>
+</li>
+</ul>
+<p><code>source</code> 或 <code>.</code></p>
+<ul>
+<li>加载环境配置文件（无须 <code>exit</code> 注销）</li>
+<li>执行脚本（在父进程bash中执行，设置的变量都会保留）</li>
+</ul>
+<p><code>declare</code> 或 <code>typeset</code></p>
+<ul>
+<li><code>-a</code> 定义数组类型</li>
+<li><code>-i</code> 定义整数类型</li>
+<li><code>-x</code> 将用户变量转成环境变量（与 <code>export</code> 一样）</li>
+<li><code>+x</code> 将环境变量降为用户变量</li>
+<li><code>-r</code> 定义 readonly 类型</li>
+</ul>
+<p><code>read</code> 读取来自键盘输入的变量</p>
+<ul>
+<li><code>-p</code> 后接提示符</li>
+<li><code>-t</code> 后接等待“秒数”</li>
+</ul>
+<p><code>test</code></p>
+<ul>
+<li><code>-e</code> 该文件名是否存在（exist）</li>
+<li><code>-s</code> 该文件大小是否非 0</li>
+<li><code>-z</code> 是否为空字符串（zero）</li>
+<li><code>-f</code> 是否为文件（file）</li>
+<li><code>-d</code> 是否为目录（directory）</li>
+<li><code>-b</code> 是否为块特殊文件（block）</li>
+<li><code>-L</code> 是否为连接文件（link）</li>
+<li><code>-r</code> <code>-w</code> <code>-x</code> 是否可读、可写、可执行</li>
+<li><code>-a</code> <code>-o</code> <code>!</code> 且、或、非</li>
+<li><code>-eq</code> <code>-ne</code> <code>-gt</code> <code>-lt</code> <code>-ge</code> <code>-le</code> （判断2个整数）相等、不等、大于、小于、大于等于、小于等于</li>
+</ul>
+<p><code>[]</code></p>
+<ul>
+<li>中括号 <code>[]</code> 的使用方法与 <code>test</code> 命令几乎一模一样，只是中括号常用于条件判断式 <code>if…then…fi</code></li>
+<li>中括号内的每个元素，都要有<strong>空格符</strong>分隔</li>
+<li>中括号内的变量，最好都以<strong>双引号</strong>括起来</li>
+<li>中括号内的常量（字符串），最好都以单引号 <code>&#39;&#39;</code> 或双引号 <code>&quot;&quot;</code> 括起来</li>
+</ul>
+<p><code>sh</code> 以 <code>sh</code> 方式执行，至少需要 <code>r</code> 权限；若以绝对路径方式执行，则需要 <code>r</code> 与 <code>x</code> 权限</p>
+<ul>
+<li><code>-n</code> 不执行 script，仅验证语法。若语法无误，则不显示任何信息。（貌似仅能验证关键字错误？）</li>
+<li><code>-v</code> 在执行 script 前，先将 script 的内容输出到屏幕上</li>
+<li><code>-x</code> 将 script 执行过程逐步输出到屏幕上</li>
+</ul>
+<h1 id="作业控制类"><a href="#作业控制类" class="headerlink" title="作业控制类"></a>作业控制类</h1><p>Bash 是一个多任务的 CLI ，有以下作业控制（Job Control）相关的命令：</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>jobs</code></td>
+<td>显示（当前会话中的）后台作业表</td>
+</tr>
+<tr>
+<td><code>fg</code></td>
+<td>将后台作业调到前台执行（前台运行作业）</td>
+</tr>
+<tr>
+<td><code>bg</code></td>
+<td>继续执行指定的后台作业（后台运行作业）</td>
+</tr>
+<tr>
+<td><code>Ctrl+Z</code></td>
+<td>暂停/挂起目前的命令，转入后台运行。通过在命令后追加一个&amp;，可以将该命令转入后台运行</td>
+</tr>
+<tr>
+<td><code>Ctrl+C</code></td>
+<td>终止目前的命令</td>
+</tr>
+</tbody></table>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://www.gnu.org/software/bash/manual/bashref.html#Shell-Builtin-Commands" target="_blank" rel="noopener">http://www.gnu.org/software/bash/manual/bashref.html#Shell-Builtin-Commands</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2015/03/16/gnu-bash-shell-expansions/" class="prev">PREV</a><a href="/2015/03/12/gnu-bash-shell-commands/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

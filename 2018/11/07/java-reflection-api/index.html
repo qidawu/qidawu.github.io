@@ -1,0 +1,238 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Java 反射篇（一）基础 API 总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Java 反射篇（一）基础 API 总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Java 反射篇（一）基础 API 总结</h1><div class="post-info">2018-11-07<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><p>什么是反射？</p>
+<blockquote>
+<p>反射机制是 Java 语言提供的一种基础功能，赋予程序在<strong>运行时自省</strong>（introspect，官方用语）的能力。通过反射我们可以直接操作类或者对象，比如获取某个对象的类定义，获取类声明的属性和方法，调用方法或者构造对象，甚至可以运行时修改类定义。</p>
+</blockquote>
+<p>主要类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">java.lang.Class</span><br><span class="line">java.lang.Package</span><br><span class="line">java.lang.reflect.Field</span><br><span class="line">java.lang.reflect.Method</span><br><span class="line">java.lang.reflect.Constructor</span><br><span class="line"><span class="comment">// JDK 1.8 新引入，通过该类的 getName 方法能在运行时得到参数的名称（前提是通过 -parameters 指定编译器在编译的时候将参数名编译进去）</span></span><br><span class="line">java.lang.reflect.Parameter</span><br><span class="line"></span><br><span class="line">java.lang.reflect.Array</span><br></pre></td></tr></table></figure>
+
+<p>工具类：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java.lang.reflect.Modifier</span><br></pre></td></tr></table></figure>
+
+<p>继承关系：</p>
+<p><img src="/img/java/reflection/main_api.png" alt="main_api"></p>
+<h1 id="Class-类"><a href="#Class-类" class="headerlink" title="Class 类"></a>Class 类</h1><p>如何获取一个 <code>class</code> 的 <code>Class</code> 实例？有几种方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 方法一：直接通过一个 class 的静态变量 class 获取</span></span><br><span class="line">Class&lt;String&gt; aClass = String<span class="class">.<span class="keyword">class</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 方法二：通过实例变量提供的 getClass() 方法获取</span></span><br><span class="line">Class&lt;? extends String&gt; aClass2 = <span class="string">"Hello"</span>.getClass();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 方法三：通过 class 的完整类名获取，底层调用的是应用类加载器 Application ClassLoader (sun.misc.Launcher$AppClassLoader)</span></span><br><span class="line">Class&lt;?&gt; aClass3 = Class.forName(<span class="string">"java.lang.String"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 方法四：通过自定义 ClassLoader 获取</span></span><br><span class="line">URLClassLoader classLoader = <span class="keyword">new</span> URLClassLoader(<span class="keyword">new</span> URL[] &#123;<span class="keyword">new</span> URL(<span class="string">"file:/c:/"</span>)&#125;);</span><br><span class="line">Class&lt;?&gt; aClass4 = classLoader.loadClass(<span class="string">"java.lang.String"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取父类</span></span><br><span class="line">Class&lt;? <span class="keyword">super</span> String&gt; superclass = String<span class="class">.<span class="keyword">class</span>.<span class="title">getSuperclass</span>()</span>;  <span class="comment">// class java.lang.Object</span></span><br><span class="line"><span class="comment">// 获取外部类</span></span><br><span class="line">Class&lt;?&gt; enclosingClass = Map.Entry<span class="class">.<span class="keyword">class</span>.<span class="title">getEnclosingClass</span>()</span>;  <span class="comment">// interface java.util.Map</span></span><br><span class="line"><span class="comment">// 获取内部类</span></span><br><span class="line">Class&lt;?&gt;[] classes = HashMap<span class="class">.<span class="keyword">class</span>.<span class="title">getClasses</span>()</span>;  <span class="comment">// 2 个内部类</span></span><br><span class="line">Class&lt;?&gt;[] declaredClasses = HashMap<span class="class">.<span class="keyword">class</span>.<span class="title">getDeclaredClasses</span>()</span>;  <span class="comment">// 13 个内部类</span></span><br></pre></td></tr></table></figure>
+
+<p>由于 <code>Class</code> 实例在 JVM 中是唯一的，因此，上述方法获取的 <code>Class</code> 实例都是同一个实例。可以用 <code>==</code> 比较两个 <code>Class</code> 实例求证：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// true</span></span><br><span class="line">assertTrue(aClass == aClass2);</span><br><span class="line">assertTrue(aClass == aClass3);</span><br><span class="line">assertTrue(aClass2 == aClass3);</span><br></pre></td></tr></table></figure>
+
+<p>拿到 <code>Class</code> 实例后，可以通过下列方法获取字段、方法、构造方法、注解，以进行后续操作。方法名以 <code>getDeclared</code> 开头的表示仅获取当前类的信息（不包括父类）：</p>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Class API</th>
+<th>Param  type</th>
+<th>Return type</th>
+<th>Inherited members</th>
+<th>Private members</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Class</code></td>
+<td><code>getDeclaredClasses()</code></td>
+<td></td>
+<td>Array</td>
+<td>N</td>
+<td>Y</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getClasses()</code></td>
+<td></td>
+<td>Array</td>
+<td>Y</td>
+<td>N</td>
+</tr>
+<tr>
+<td><code>Field</code></td>
+<td><code>getDeclaredField()</code></td>
+<td><code>String</code></td>
+<td>Single</td>
+<td>N</td>
+<td>Y</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getField()</code></td>
+<td><code>String</code></td>
+<td>Single</td>
+<td>Y</td>
+<td><code>java.lang.NoSuchFieldException</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>getDeclaredFields()</code></td>
+<td></td>
+<td>Array</td>
+<td>N</td>
+<td>Y</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getFields()</code></td>
+<td></td>
+<td>Array</td>
+<td>Y</td>
+<td>N</td>
+</tr>
+<tr>
+<td><code>Method</code></td>
+<td><code>getDeclaredMethod()</code></td>
+<td><code>String</code>, <code>Class&lt;?&gt;...</code></td>
+<td>Single</td>
+<td>N</td>
+<td>Y</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getMethod()</code></td>
+<td><code>String</code>, <code>Class&lt;?&gt;...</code></td>
+<td>Single</td>
+<td>Y</td>
+<td><code>java.lang.NoSuchMethodException</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>getDeclaredMethods()</code></td>
+<td></td>
+<td>Array</td>
+<td>N</td>
+<td>Y</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getMethods()</code></td>
+<td></td>
+<td>Array</td>
+<td>Y</td>
+<td>N</td>
+</tr>
+<tr>
+<td><code>Constructor</code></td>
+<td><code>getDeclaredConstructor()</code></td>
+<td><code>Class&lt;?&gt;...</code></td>
+<td>Single</td>
+<td>N/A</td>
+<td>Y</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getConstructor()</code></td>
+<td><code>Class&lt;?&gt;...</code></td>
+<td>Single</td>
+<td>N/A</td>
+<td><code>java.lang.NoSuchMethodException</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>getDeclaredConstructors()</code></td>
+<td></td>
+<td>Array</td>
+<td>N/A</td>
+<td>Y</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getConstructors()</code></td>
+<td></td>
+<td>Array</td>
+<td>N/A</td>
+<td>N</td>
+</tr>
+<tr>
+<td><code>Annotation</code></td>
+<td><code>getDeclaredAnnotation()</code></td>
+<td><code>Class&lt;T&gt;</code></td>
+<td>Single</td>
+<td>N</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getAnnotation()</code></td>
+<td><code>Class&lt;T&gt;</code></td>
+<td>Single</td>
+<td>Y</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getDeclaredAnnotationsByType()</code></td>
+<td><code>Class&lt;T&gt;</code></td>
+<td>Array</td>
+<td>N</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getAnnotationsByType()</code></td>
+<td><code>Class&lt;T&gt;</code></td>
+<td>Array</td>
+<td>Y</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getDeclaredAnnotations()</code></td>
+<td></td>
+<td>Array</td>
+<td>N</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getAnnotations()</code></td>
+<td></td>
+<td>Array</td>
+<td>Y</td>
+<td>N/A</td>
+</tr>
+</tbody></table>
+<h1 id="字段"><a href="#字段" class="headerlink" title="字段"></a>字段</h1><p>一个 <code>Field</code> 对象包含了一个字段的所有信息，例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 字段名称</span></span><br><span class="line"><span class="function">String <span class="title">getName</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="comment">// 字段类型</span></span></span><br><span class="line"><span class="function">Class&lt;?&gt; <span class="title">getType</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="comment">// 字段的修饰符，返回值是一个int，不同的 bit 表示不同的含义。使用 Modifier 工具类进行解析</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">getModifiers</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
+
+<p>以 <code>String</code> 类的 <code>value</code> 字段为例，它的定义是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">String</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">byte</span>[] value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>用反射获取该字段的信息，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Field f = String.class.getDeclaredField("value");</span><br><span class="line">f.getName(); <span class="comment">// "value"</span></span><br><span class="line">f.getType(); <span class="comment">// class [B 表示byte[]类型</span></span><br><span class="line"><span class="keyword">int</span> m = f.getModifiers();</span><br><span class="line">Modifier.isFinal(m); <span class="comment">// true</span></span><br><span class="line">Modifier.isPublic(m); <span class="comment">// false</span></span><br><span class="line">Modifier.isProtected(m); <span class="comment">// false</span></span><br><span class="line">Modifier.isPrivate(m); <span class="comment">// true</span></span><br><span class="line">Modifier.isStatic(m); <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+
+<p>获取或设置字段值，使用如下方法。注意如果试图获取非 <code>public</code> 字段，将抛出异常 <code>java.lang.IllegalAccessException</code>，解决办法是先设置 <code>setAccessible(true)</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取字段值</span></span><br><span class="line"><span class="function">Object <span class="title">get</span><span class="params">(Object obj)</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">getBoolean</span><span class="params">(Object obj)</span></span></span><br><span class="line"><span class="function"><span class="keyword">byte</span> <span class="title">getByte</span><span class="params">(Object obj)</span></span></span><br><span class="line"><span class="function"><span class="keyword">char</span> <span class="title">getChar</span><span class="params">(Object obj)</span></span></span><br><span class="line"><span class="function"><span class="keyword">short</span> <span class="title">getShort</span><span class="params">(Object obj)</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">getInt</span><span class="params">(Object obj)</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">getLong</span><span class="params">(Object obj)</span></span></span><br><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">getFloat</span><span class="params">(Object obj)</span></span></span><br><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">getDouble</span><span class="params">(Object obj)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="comment">// 设置字段值</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">set</span><span class="params">(Object obj, Object value)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setBoolean</span><span class="params">(Object obj, <span class="keyword">boolean</span> z)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setByte</span><span class="params">(Object obj, <span class="keyword">byte</span> b)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setChar</span><span class="params">(Object obj, <span class="keyword">char</span> c)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setShort</span><span class="params">(Object obj, <span class="keyword">short</span> s)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setInt</span><span class="params">(Object obj, <span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setLong</span><span class="params">(Object obj, <span class="keyword">long</span> l)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setFloat</span><span class="params">(Object obj, <span class="keyword">float</span> f)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setDouble</span><span class="params">(Object obj, <span class="keyword">double</span> d)</span></span></span><br></pre></td></tr></table></figure>
+
+<h1 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h1><p>一个 <code>Method</code> 对象包含一个方法的所有信息，例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 方法名称</span></span><br><span class="line"><span class="function">String <span class="title">getName</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="comment">// 方法参数个数</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">getParameterCount</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="comment">// 方法参数类型</span></span></span><br><span class="line"><span class="function">Class&lt;?&gt;[] <span class="title">getParameterTypes</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="comment">// 方法参数注解</span></span></span><br><span class="line"><span class="function">Annotation[][] <span class="title">getParameterAnnotations</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="comment">// 方法返回值类型</span></span></span><br><span class="line"><span class="function">Class&lt;?&gt; <span class="title">getReturnType</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="comment">// 方法异常类型</span></span></span><br><span class="line"><span class="function">Class&lt;?&gt;[] <span class="title">getExceptionTypes</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="comment">// 方法的修饰符，返回值是一个int，不同的 bit 表示不同的含义。使用 Modifier 工具类进行解析</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">getModifiers</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
+
+<p>方法调用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 第一个参数为指定的实例对象。</span></span><br><span class="line"><span class="comment">// 如果是静态方法，可传 null。</span></span><br><span class="line"><span class="comment">// 如果是非 public 方法，需先设置 setAccessible(true)</span></span><br><span class="line"><span class="function">Object <span class="title">invoke</span><span class="params">(Object obj, Object... args)</span></span></span><br></pre></td></tr></table></figure>
+
+<h1 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a>构造方法</h1><p>创建新实例的几种方式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 方式一：通过 new 操作符</span></span><br><span class="line">Person p = <span class="keyword">new</span> Person();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 方式二：通过反射，调用 Class 提供的 newInstance() 方法。局限是只能调用其 public 无参构造方法</span></span><br><span class="line">Person p = Person<span class="class">.<span class="keyword">class</span>.<span class="title">newInstance</span>()</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 方式三：通过反射，调用 Constructor 提供的 newInstance() 方法。如果是非 public 方法，需先设置 setAccessible(true)</span></span><br><span class="line"><span class="comment">// 这里通过 private Person(String name) 构造新实例</span></span><br><span class="line">Constructor&lt;Person&gt; constructor = Person<span class="class">.<span class="keyword">class</span>.<span class="title">getDeclaredConstructor</span>(<span class="title">String</span>.<span class="title">class</span>)</span>;</span><br><span class="line">constructor.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">Person peter = constructor.newInstance(<span class="string">"Peter"</span>);</span><br></pre></td></tr></table></figure>
+
+<h1 id="继承关系"><a href="#继承关系" class="headerlink" title="继承关系"></a>继承关系</h1><p>通过以下方法获取父类或已实现接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取父类（Object 的父类是 null，其他任何非 interface 的 Class 都必定存在一个父类类型）</span></span><br><span class="line">Class&lt;? <span class="keyword">super</span> T&gt; getSuperclass()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取已实现接口（只返回当前类直接实现的接口类型，并不包括其父类实现的接口类型）</span></span><br><span class="line">Class&lt;?&gt;[] getInterfaces()</span><br></pre></td></tr></table></figure>
+
+<h2 id="isInstance"><a href="#isInstance" class="headerlink" title="isInstance"></a>isInstance</h2><p>使用 <code>instanceof</code> 操作符或者 <code>Class#isInstance</code> 方法，可以判断一个实例的继承关系：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Object n = Integer.valueOf(<span class="number">123</span>);</span><br><span class="line"><span class="keyword">boolean</span> isDouble = n <span class="keyword">instanceof</span> Double; <span class="comment">// false</span></span><br><span class="line"><span class="keyword">boolean</span> isInteger = n <span class="keyword">instanceof</span> Integer; <span class="comment">// true</span></span><br><span class="line"><span class="keyword">boolean</span> isNumber = n <span class="keyword">instanceof</span> Number; <span class="comment">// true</span></span><br><span class="line"><span class="keyword">boolean</span> isSerializable = n <span class="keyword">instanceof</span> java.io.Serializable; <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">boolean</span> isDouble = Double<span class="class">.<span class="keyword">class</span>.<span class="title">isInstance</span>(<span class="title">n</span>)</span>; <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="cast"><a href="#cast" class="headerlink" title="cast"></a>cast</h2><p>如果 <code>instanceof</code> 为 <code>true</code>，可以使用以下方法对实例进行强制类型转换：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Number num1 = (Number) n;</span><br><span class="line">Number num2 = Number<span class="class">.<span class="keyword">class</span>.<span class="title">cast</span>(<span class="title">n</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="isAssignableFrom"><a href="#isAssignableFrom" class="headerlink" title="isAssignableFrom"></a>isAssignableFrom</h2><p>如果是两个 <code>Class</code> 实例，要判断向上转型是否成立，可以调用 <code>Class#isAssignableFrom</code> 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Integer<span class="class">.<span class="keyword">class</span>.<span class="title">isAssignableFrom</span>(<span class="title">Integer</span>.<span class="title">class</span>)</span>; <span class="comment">// true，因为Integer可以赋值给Integer</span></span><br><span class="line">Number<span class="class">.<span class="keyword">class</span>.<span class="title">isAssignableFrom</span>(<span class="title">Integer</span>.<span class="title">class</span>)</span>; <span class="comment">// true，因为Integer可以赋值给Number</span></span><br><span class="line">Object<span class="class">.<span class="keyword">class</span>.<span class="title">isAssignableFrom</span>(<span class="title">Integer</span>.<span class="title">class</span>)</span>; <span class="comment">// true，因为Integer可以赋值给Object</span></span><br><span class="line">Integer<span class="class">.<span class="keyword">class</span>.<span class="title">isAssignableFrom</span>(<span class="title">Number</span>.<span class="title">class</span>)</span>; <span class="comment">// false，因为Number不能赋值给Integer</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://docs.oracle.com/javase/8/docs/technotes/guides/reflection/index.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/technotes/guides/reflection/index.html</a></p>
+<p><a href="https://docs.oracle.com/javase/tutorial/reflect/index.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/tutorial/reflect/index.html</a></p>
+<p><a href="https://www.cnblogs.com/Kidezyq/p/11763988.html" target="_blank" rel="noopener">JDK1.8 反射包新增了<code>Parameter</code>类</a></p>
+<p><a href="https://www.liaoxuefeng.com/wiki/1252599548343744/1255945147512512" target="_blank" rel="noopener">https://www.liaoxuefeng.com/wiki/1252599548343744/1255945147512512</a></p>
+<p>API：</p>
+<ul>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Package.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/lang/Package.html</a></li>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html</a></li>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Field.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Field.html</a></li>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Method.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Method.html</a></li>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Constructor.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Constructor.html</a></li>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Parameter.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Parameter.html</a></li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2018/11/14/java-reflection-annotation/" class="prev">PREV</a><a href="/2018/11/05/java-spi/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

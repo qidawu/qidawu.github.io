@@ -1,0 +1,219 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Dubbo 协议小结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Dubbo 协议小结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Dubbo 协议小结</h1><div class="post-info">2017-11-24<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><h1 id="RPC-框架对比"><a href="#RPC-框架对比" class="headerlink" title="RPC 框架对比"></a>RPC 框架对比</h1><p>市面上的 RPC 框架功能比较：</p>
+<p><img src="/img/dubbo/rpc_framework_compare.png" alt="RPC框架功能比较"></p>
+<h1 id="协议对比"><a href="#协议对比" class="headerlink" title="协议对比"></a>协议对比</h1><table>
+<thead>
+<tr>
+<th></th>
+<th>连接个数</th>
+<th>连接方式</th>
+<th>传输协议</th>
+<th>传输方式</th>
+<th>序列化</th>
+<th>适用范围</th>
+<th>适用场景</th>
+<th>参考</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>dubbo://</code></td>
+<td>单连接</td>
+<td>长连接</td>
+<td>TCP</td>
+<td>NIO 异步传输</td>
+<td>Hessian 二进制序列化</td>
+<td>传入传出参数数据包较小（建议小于100K），消费者比提供者个数多，单一消费者无法压满提供者，尽量不要用 dubbo 协议传输大文件或超大字符串。</td>
+<td>常规远程服务方法调用</td>
+<td><a href="http://dubbo.apache.org/zh-cn/docs/user/references/protocol/dubbo.html" target="_blank" rel="noopener">dubbo</a></td>
+</tr>
+<tr>
+<td><code>rmi://</code></td>
+<td>多连接</td>
+<td>短连接</td>
+<td>TCP</td>
+<td>同步传输</td>
+<td>Java 标准二进制序列化</td>
+<td>传入传出参数数据包大小混合，消费者与提供者个数差不多，可传文件。</td>
+<td>常规远程服务方法调用，与原生RMI服务互操作</td>
+<td></td>
+</tr>
+<tr>
+<td><code>hessian://</code></td>
+<td>多连接</td>
+<td>短连接</td>
+<td>HTTP</td>
+<td>同步传输</td>
+<td>Hessian二进制序列化</td>
+<td>传入传出参数数据包较大，提供者比消费者个数多，提供者压力较大，可传文件。</td>
+<td>页面传输，文件传输，或与原生hessian服务互操作</td>
+<td><a href="http://hessian.caucho.com/" target="_blank" rel="noopener">hession</a></td>
+</tr>
+<tr>
+<td><code>http://</code></td>
+<td>多连接</td>
+<td>短连接</td>
+<td>HTTP</td>
+<td>同步传输</td>
+<td>表单序列化</td>
+<td>传入传出参数数据包大小混合，提供者比消费者个数多，可用浏览器查看，可用表单或URL传入参数，暂不支持传文件。</td>
+<td>需同时给应用程序和浏览器 JS 使用的服务。</td>
+<td></td>
+</tr>
+<tr>
+<td><code>webservice://</code></td>
+<td>多连接</td>
+<td>短连接</td>
+<td>HTTP</td>
+<td>同步传输</td>
+<td>SOAP 文本序列化</td>
+<td></td>
+<td>系统集成，跨语言调用</td>
+<td><a href="http://cxf.apache.org/" target="_blank" rel="noopener">Apache CXF</a></td>
+</tr>
+<tr>
+<td><code>thrift://</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><a href="http://thrift.apache.org/" target="_blank" rel="noopener">Thrift</a></td>
+</tr>
+<tr>
+<td><code>memcached://</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>redis://</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>rest://</code></td>
+<td>多连接</td>
+<td>可长可短</td>
+<td>HTTP</td>
+<td>同步传输</td>
+<td>JSON/XML</td>
+<td></td>
+<td></td>
+<td><a href="https://github.com/jax-rs" target="_blank" rel="noopener">JAX-RS</a></td>
+</tr>
+</tbody></table>
+<h1 id="REST-协议小结"><a href="#REST-协议小结" class="headerlink" title="REST 协议小结"></a>REST 协议小结</h1><p>根据 dubbox、dubbo REST 官方文档，摘录了使用上的一些注意点：</p>
+<h2 id="配置总览"><a href="#配置总览" class="headerlink" title="配置总览"></a>配置总览</h2><h3 id="服务提供端"><a href="#服务提供端" class="headerlink" title="服务提供端"></a>服务提供端</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dubbo:protocol</span> <span class="attr">name</span>=<span class="string">"rest"</span> <span class="attr">server</span>=<span class="string">""</span> <span class="attr">port</span>=<span class="string">""</span> <span class="attr">contextpath</span>=<span class="string">""</span> <span class="attr">threads</span>=<span class="string">""</span> <span class="attr">iothreads</span>=<span class="string">""</span> <span class="attr">keepalive</span>=<span class="string">""</span> <span class="attr">accepts</span>=<span class="string">""</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>描述</th>
+<th>生效范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>name</code></td>
+<td>启用 REST 协议</td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>server</code></td>
+<td>REST Server 的实现</td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>port</code></td>
+<td>端口号</td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>contextpath</code></td>
+<td>应用上下文路径</td>
+<td>all</td>
+</tr>
+<tr>
+<td><code>threads</code></td>
+<td>线程池大小</td>
+<td>jetty、netty、tomcat</td>
+</tr>
+<tr>
+<td><code>iothreads</code></td>
+<td>IO worker线程数</td>
+<td>netty</td>
+</tr>
+<tr>
+<td><code>keepalive</code></td>
+<td>是否长连接，默认为 <code>true</code> 长连接</td>
+<td>netty、tomcat</td>
+</tr>
+<tr>
+<td><code>accepts</code></td>
+<td>最大的HTTP连接数</td>
+<td>tomcat</td>
+</tr>
+</tbody></table>
+<p>目前在dubbo中支持5种嵌入式rest server的实现：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- rest协议默认选用jetty。jetty是非常成熟的java servlet容器，并和dubbo已经有较好的集成（目前5种嵌入式server中只有jetty、tomcat、tjws，与dubbo监控系统等完成了无缝的集成）。 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dubbo:protocol</span> <span class="attr">name</span>=<span class="string">"rest"</span> <span class="attr">server</span>=<span class="string">"jetty"</span>/&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 在嵌入式tomcat上，REST的性能比jetty上要好得多（参见官网的基准测试），建议在需要高性能的场景下采用tomcat。 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dubbo:protocol</span> <span class="attr">name</span>=<span class="string">"rest"</span> <span class="attr">server</span>=<span class="string">"tomcat"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dubbo:protocol</span> <span class="attr">name</span>=<span class="string">"rest"</span> <span class="attr">server</span>=<span class="string">"netty"</span>/&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 轻量级嵌入式server，非常方便在集成测试中快速启动使用，当然也可以在负荷不高的生产环境中使用。注意，tjws is now deprecated --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dubbo:protocol</span> <span class="attr">name</span>=<span class="string">"rest"</span> <span class="attr">server</span>=<span class="string">"tjws"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dubbo:protocol</span> <span class="attr">name</span>=<span class="string">"rest"</span> <span class="attr">server</span>=<span class="string">"sunhttp"</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>同时也支持采用外部应用服务器来做rest server的实现：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- web.xml 参考官网 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dubbo:protocol</span> <span class="attr">name</span>=<span class="string">"rest"</span> <span class="attr">server</span>=<span class="string">"servlet"</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="服务消费端"><a href="#服务消费端" class="headerlink" title="服务消费端"></a>服务消费端</h3><p>如果REST服务的消费端也是dubbo系统，可以配置每个消费端的超时时间和HTTP连接数，详情参考官方文档。</p>
+<h2 id="REST-服务提供端"><a href="#REST-服务提供端" class="headerlink" title="REST 服务提供端"></a>REST 服务提供端</h2><h3 id="标准-Java-REST-API：JAX-RS"><a href="#标准-Java-REST-API：JAX-RS" class="headerlink" title="标准 Java REST API：JAX-RS"></a>标准 Java REST API：JAX-RS</h3><ul>
+<li>Dubbox 基于标准的 Java REST API——JAX-RS 2.0（Java API for RESTful Web Services 的简写），提供了接近透明的REST调用支持。由于完全兼容Java标准API，所以为dubbo开发的所有REST服务，未来脱离dubbo或者任何特定的REST底层实现一般也可以正常运行。</li>
+<li>Dubbo的REST调用和dubbo中其它某些RPC不同的是，需要在服务代码中添加JAX-RS的annotation（以及JAXB、Jackson的annotation），如果你觉得这些annotation一定程度“污染”了你的服务代码，你可以考虑编写额外的Facade和DTO类，在Facade和DTO上添加annotation，而Facade将调用转发给真正的服务实现类。当然事实上，直接在服务代码中添加annotation基本没有任何负面作用，而且这本身是Java EE的标准用法，另外JAX-RS和JAXB的annotation是属于java标准，比我们经常使用的spring、dubbo等等annotation更没有vendor lock-in的问题，所以一般没有必要因此而引入额外对象。</li>
+<li>JAX-RS与Spring MVC的对比：<ul>
+<li>JAX-RS 相对更适合纯粹的服务化应用，也就是传统Java EE中所说的中间层服务。</li>
+<li>在dubbo应用中，我想很多人都比较喜欢直接将一个本地的spring service bean（或者叫manager之类的）完全透明的发布成远程服务，则这里用JAX-RS是更自然更直接的，不必额外的引入MVC概念。</li>
+</ul>
+</li>
+<li>就学习 JAX-RS 来说，一般主要掌握其各种 annotation 的用法即可。参考：<ul>
+<li><a href="http://docs.oracle.com/javaee/7/tutorial/doc/jaxrs.htm" target="_blank" rel="noopener">http://docs.oracle.com/javaee/7/tutorial/doc/jaxrs.htm</a></li>
+<li><a href="http://www.ibm.com/developerworks/cn/java/j-lo-jaxrs/" target="_blank" rel="noopener">http://www.ibm.com/developerworks/cn/java/j-lo-jaxrs/</a></li>
+</ul>
+</li>
+</ul>
+<h3 id="HTTP-POST-GET-的实现"><a href="#HTTP-POST-GET-的实现" class="headerlink" title="HTTP POST/GET 的实现"></a>HTTP POST/GET 的实现</h3><ul>
+<li>REST服务中虽然建议使用HTTP协议中四种标准方法POST、DELETE、PUT、GET来分别实现常见的“增删改查”，但实际中，我们一般情况直接用POST来实现“增改”，GET来实现“删查”即可（DELETE和PUT甚至会被一些防火墙阻挡）。</li>
+</ul>
+<h3 id="JSON、XML-等多数据格式的支持"><a href="#JSON、XML-等多数据格式的支持" class="headerlink" title="JSON、XML 等多数据格式的支持"></a>JSON、XML 等多数据格式的支持</h3><ul>
+<li>在一个REST服务同时对多种数据格式支持的情况下，根据JAX-RS标准，一般是通过HTTP中的MIME header（content-type和accept）来指定当前想用的是哪种格式的数据。</li>
+<li>目前业界普遍使用的方式，是使用一个URL后缀（.json和.xml）来指定想用的数据格式。比用HTTP Header更简单直观。Twitter、微博等的REST API都是采用这种方式。</li>
+</ul>
+<h3 id="定制序列化"><a href="#定制序列化" class="headerlink" title="定制序列化"></a>定制序列化</h3><ul>
+<li>Dubbo中的REST实现是用JAXB做XML序列化，用Jackson做JSON序列化，所以在对象上添加JAXB或Jackson的annotation即可以定制映射。更多资料请参考JAXB和Jackson的官方文档。</li>
+<li>由于JAX-RS的实现一般都用标准的JAXB（Java API for XML Binding）来序列化和反序列化XML格式数据，所以我们需要为每一个要用XML传输的对象添加一个类级别的JAXB annotation <code>@XmlRootElement</code>，否则序列化将报错。</li>
+</ul>
+<h3 id="添加自定义的-Filter、Interceptor-等"><a href="#添加自定义的-Filter、Interceptor-等" class="headerlink" title="添加自定义的 Filter、Interceptor 等"></a>添加自定义的 Filter、Interceptor 等</h3><ul>
+<li>JAX-RS标准的 <code>Filter</code> 和 <code>Interceptor</code> 可以对请求与响应过程做定制化的拦截处理。</li>
+</ul>
+<h3 id="添加自定义的-Exception-处理"><a href="#添加自定义的-Exception-处理" class="headerlink" title="添加自定义的 Exception 处理"></a>添加自定义的 Exception 处理</h3><ul>
+<li>JAX-RS标准的 <code>ExceptionMapper</code>，可以用来定制特定exception发生后应该返回的HTTP响应。</li>
+</ul>
+<h2 id="REST-服务消费端"><a href="#REST-服务消费端" class="headerlink" title="REST 服务消费端"></a>REST 服务消费端</h2><h3 id="场景1：非-dubbo-的消费端调用-dubbo-的-REST-服务（non-dubbo-gt-dubbo）"><a href="#场景1：非-dubbo-的消费端调用-dubbo-的-REST-服务（non-dubbo-gt-dubbo）" class="headerlink" title="场景1：非 dubbo 的消费端调用 dubbo 的 REST 服务（non-dubbo &gt; dubbo）"></a>场景1：非 dubbo 的消费端调用 dubbo 的 REST 服务（non-dubbo &gt; dubbo）</h3><ul>
+<li>使用标准的JAX-RS Client API或者特定REST实现的Client API来调用REST服务。当然，在java中也可以直接用自己熟悉的比如HttpClient，FastJson，XStream等等各种不同技术来实现REST客户端。</li>
+</ul>
+<h3 id="场景2：dubbo-消费端调用-dubbo-的-REST-服务（dubbo-gt-dubbo）"><a href="#场景2：dubbo-消费端调用-dubbo-的-REST-服务（dubbo-gt-dubbo）" class="headerlink" title="场景2：dubbo 消费端调用 dubbo 的 REST 服务（dubbo &gt; dubbo）"></a>场景2：dubbo 消费端调用 dubbo 的 REST 服务（dubbo &gt; dubbo）</h3><ul>
+<li>dubbo消费端调用dubbo的REST服务，这种场景下必须把JAX-RS的annotation添加到服务接口上，这样在dubbo在消费端才能共享相应的REST配置信息，并据之做远程调用。</li>
+<li>dubbo的REST支持采用Java标准的<a href="http://beanvalidation.org/" target="_blank" rel="noopener">bean validation annotation（JSR 303)</a>来做输入校验。为了和其他dubbo远程调用协议保持一致，在rest中作校验的annotation必须放在服务的接口上，这样至少有一个好处是，dubbo的消费端可以共享这个接口的信息，dubbo消费端甚至不需要做远程调用，在本地就可以完成输入校验。</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://dubbo.apache.org/zh-cn/docs/user/references/protocol/rest.html" target="_blank" rel="noopener">http://dubbo.apache.org/zh-cn/docs/user/references/protocol/rest.html</a></p>
+<p><a href="https://github.com/dangdangdotcom/dubbox" target="_blank" rel="noopener">https://github.com/dangdangdotcom/dubbox</a></p>
+<p><a href="https://dangdangdotcom.github.io/dubbox/rest.html" target="_blank" rel="noopener">https://dangdangdotcom.github.io/dubbox/rest.html</a></p>
+<p><a href="https://mvnrepository.com/artifact/com.gaosi/dubbox" target="_blank" rel="noopener">https://mvnrepository.com/artifact/com.gaosi/dubbox</a></p>
+<p>Dubbox fork from Dubbo，目前只发布了一个版本：2.8.4</p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2017/12/25/apache-commons-lang/" class="prev">PREV</a><a href="/2017/11/15/dubbo-config/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

@@ -1,0 +1,1876 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="学习笔记 知识总结 思考感悟"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><ul class="home post-list"><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2016/02/17/javascript-object/" class="post-title-link">Javascript 引用类型之 Object</a></h2><div class="post-info">2016-02-17<a href="/tags/前端/" title="前端" class="post-demo">前端</a></div><div class="post-content"><h1 id="Object"><a href="#Object" class="headerlink" title="Object"></a>Object</h1><p>ECMAScript 中使用最多的类型就是 <code>Object</code>。虽然 <code>Object</code> 的实例不具备多少功能，但对于在应用程序中存储和传输数据而言，它们是非常理想的选择。</p>
+<h2 id="创建方式"><a href="#创建方式" class="headerlink" title="创建方式"></a>创建方式</h2><p>创建 <code>Object</code> 实例的方式有两种。第一种是使用 <code>new</code> 操作符后跟 <code>Object</code> 构造函数，如下所示：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">person.name = <span class="string">"Nicholas"</span>;</span><br><span class="line">person.age = <span class="number">29</span>;</span><br></pre></td></tr></table></figure>
+
+<p>另一种方式是使用对象字面量表示法。对象字面量是对象定义的一种简写形式，目的在于简化创建包含大量属性的对象的过程：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> person = &#123;</span><br><span class="line">    name : <span class="string">"Nicholas"</span>,</span><br><span class="line">    age : <span class="number">29</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>使用这种对象字面量语法要求的代码量更少，而且能够给人以封装数据的感觉。</p>
+<p>实际上，对象字面量也是向函数传递大量可选参数的首选方式。一般来讲，命名参数虽然容易处理，但在有多个可选参数的情况下就会显示不够灵活。例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">doSomething</span>(<span class="params">arg0, arg1, arg2, arg3, arg4</span>) </span>&#123;　　</span><br><span class="line">    ... </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">doSomething(<span class="string">''</span>, <span class="string">'foo'</span>, <span class="number">5</span>, [], <span class="literal">false</span>);    <span class="comment">// 这里必须传够五个命名参数，无法跳过中间某个可选参数</span></span><br></pre></td></tr></table></figure>
+
+<p>但最好的做法是对那些必需值使用命名参数，而使用对象字面量来封装多个可选参数：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">doSomething</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 不传任何参数也能正常运行</span></span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">arguments</span>[<span class="number">0</span>]) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 为 undefined 的参数设置默认值</span></span><br><span class="line">    <span class="keyword">var</span> oArgs = <span class="built_in">arguments</span>[<span class="number">0</span>]</span><br><span class="line">        arg0  = oArgs.arg0 || <span class="string">""</span>,</span><br><span class="line">        arg1  = oArgs.arg1 || <span class="string">""</span>,</span><br><span class="line">        arg2  = oArgs.arg2 || <span class="number">0</span>,</span><br><span class="line">        arg3  = oArgs.arg3 || [],</span><br><span class="line">        arg4  = oArgs.arg4 || <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 传入可选参数而不报错</span></span><br><span class="line">doSomething(&#123;</span><br><span class="line">    arg1: <span class="string">"foo"</span>,</span><br><span class="line">    arg2: <span class="number">5</span>,</span><br><span class="line">    arg4: <span class="literal">false</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="属性和方法"><a href="#属性和方法" class="headerlink" title="属性和方法"></a>属性和方法</h2><p>由于在 ECMAScript 中 <code>Object</code> 是所有对象的基础，因此所有对象都具有下列这些基本的属性和方法：</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>constructor</code></td>
+<td>保存着用于创建当前对象的函数。</td>
+</tr>
+<tr>
+<td><code>isPrototypeOf(object)</code></td>
+<td>用于检查传入的对象是否是传入对象的原型。</td>
+</tr>
+<tr>
+<td><code>hasOwnProperty(propertyName)</code></td>
+<td>用于检查给定的属性在当前对象实例中（而不是在实例的原型中）是否存在。</td>
+</tr>
+<tr>
+<td><code>propertyIsEnumerable(propertyName)</code></td>
+<td>用于检查给定的属性是否能够使用 <code>for-in</code> 语句来枚举。</td>
+</tr>
+<tr>
+<td><code>toLocaleString()</code></td>
+<td>返回对象的字符串表示，该字符串与执行环境的地区对应。</td>
+</tr>
+<tr>
+<td><code>toString()</code></td>
+<td>返回对象的字符串表示。</td>
+</tr>
+<tr>
+<td><code>valueOf()</code></td>
+<td>返回对象的字符串、数值或布尔值表示。通常与 <code>toString()</code> 方法的返回值相同。</td>
+</tr>
+</tbody></table>
+<p>例如，要检查某个对象的专有属性，可以使用 <code>hasOwnProperty(propertyName)</code> 方法进行判断：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = &#123;<span class="attr">foo</span>: <span class="string">'foo'</span>, <span class="attr">bar</span>: <span class="string">'bar'</span>&#125;;</span><br><span class="line">obj.hasOwnProperty(<span class="string">'foo'</span>)    <span class="comment">// true</span></span><br><span class="line">obj.hasOwnProperty(<span class="string">'constructor'</span>)    <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《JavaScript 高级程序设计》</li>
+<li>《JavaScript 语言精粹》</li>
+</ul>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2016/02/11/javascript-primitive-types/" class="post-title-link">Javascript 基本数据类型</a></h2><div class="post-info">2016-02-11<a href="/tags/前端/" title="前端" class="post-demo">前端</a></div><div class="post-content"><p>尽管 ECMAScript 是一门弱类型语言，但它的内部提供了五种基本数据类型以便开发者使用。下面分别介绍：</p>
+<h1 id="基本数据类型"><a href="#基本数据类型" class="headerlink" title="基本数据类型"></a>基本数据类型</h1><h2 id="Undefined"><a href="#Undefined" class="headerlink" title="Undefined"></a>Undefined</h2><p>在使用 <code>var</code> 声明变量但未对其加以初始化时，这个变量的值就是 <code>undefined</code>。</p>
+<h2 id="Null"><a href="#Null" class="headerlink" title="Null"></a>Null</h2><p>表示一个空对象指针。</p>
+<h2 id="String"><a href="#String" class="headerlink" title="String"></a>String</h2><p>String 类型用于表示 16 位 Unicode 字符组成的字符序列，即字符串。字符串可以由双引号（<code>&quot;&quot;</code>）或单引号（<code>&#39;&#39;</code>）表示，内含转义字符。</p>
+<h2 id="Boolean"><a href="#Boolean" class="headerlink" title="Boolean"></a>Boolean</h2><p>虽然 Boolean 类型只有两个字面值——<code>true</code>、<code>false</code>，但 ECMAScript 中所有类型的值都有与之等价的值。下表给出了转换规则：</p>
+<h3 id="转换规则"><a href="#转换规则" class="headerlink" title="转换规则"></a>转换规则</h3><table>
+<thead>
+<tr>
+<th>数据类型</th>
+<th>转换为 <code>true</code> 的值</th>
+<th>转换为 <code>false</code> 的值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Boolean</td>
+<td><code>true</code></td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td>String</td>
+<td>任何非空字符串</td>
+<td><code>&quot;&quot;</code>（空字符串）</td>
+</tr>
+<tr>
+<td>Number</td>
+<td>任何非零数字值（包括无穷大 <code>Infinity</code>）</td>
+<td><code>0</code>、<code>NaN</code></td>
+</tr>
+<tr>
+<td>Object</td>
+<td>任何对象</td>
+<td><code>null</code></td>
+</tr>
+<tr>
+<td>Undefined</td>
+<td>不适用</td>
+<td><code>undefined</code></td>
+</tr>
+</tbody></table>
+<p>这些转换规则对于理解流控制语句（如 <code>if</code> 语句）、布尔操作符（<code>!</code>、<code>&amp;&amp;</code>、<code>||</code>）自动执行相应的 Boolean 转换非常重要，例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(<span class="string">'false'</span>) &#123;<span class="built_in">console</span>.log(<span class="string">'true'</span>)&#125;</span><br><span class="line"><span class="literal">true</span>    <span class="comment">// 输出 true，因为进行了自动类型转换</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">window</span>.hello;    <span class="comment">// undefined，因为该成员属性不存在</span></span><br><span class="line"><span class="keyword">var</span> foo = <span class="built_in">window</span>.hello || <span class="string">'unknown'</span>;    <span class="comment">// 布尔操作符 || 可以用来填充默认值</span></span><br><span class="line">foo;    <span class="comment">// 值为 'unknown'</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">window</span>.hello.world;    <span class="comment">// 抛出 TypeError 异常，因为尝试从 undefined 的成员属性中取值</span></span><br><span class="line"><span class="keyword">var</span> bar = <span class="built_in">window</span>.hello &amp;&amp; <span class="built_in">window</span>.hello.world;    <span class="comment">// 布尔操作符 &amp;&amp; 可以用来避免该异常</span></span><br><span class="line">bar;    <span class="comment">// 值为 undefined</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Number"><a href="#Number" class="headerlink" title="Number"></a>Number</h2><h3 id="字面量"><a href="#字面量" class="headerlink" title="字面量"></a>字面量</h3><table>
+<thead>
+<tr>
+<th>字面量</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>70</code></td>
+<td>十进制的 70。</td>
+</tr>
+<tr>
+<td><code>-70</code></td>
+<td>十进制的负 70。</td>
+</tr>
+<tr>
+<td><code>070</code></td>
+<td>八进制的 56。八进制字面值的第一位必须是零(<code>0</code>)，然后是八进制数字序列(<code>0~7</code>)。</td>
+</tr>
+<tr>
+<td><code>0xA</code></td>
+<td>十六进制的 10。十六进制字面值的前两位必须是 <code>0x</code>，后跟任何十六进制数字(<code>0~9</code> 及 <code>A~F</code>)。</td>
+</tr>
+<tr>
+<td><code>3.125e7</code></td>
+<td>科学计数法，表示“3.125 乘以 10 的 7 次幂（<code>3.125 * Math.pow(10, 7)</code>）”，即 31250000。推荐使用这种简洁的方式来表示那些极大或极小的数值。</td>
+</tr>
+<tr>
+<td><code>3e-7</code></td>
+<td>科学计数法，表示 0.0000003。默认情况下，ECMASctipt 会将那些小数点后面带有 6 个零以上的浮点数值转换为以 e 表示法表示的数值。</td>
+</tr>
+<tr>
+<td><code>Infinity</code></td>
+<td>如果某次计算的结果得到了一个超出 ECMAScript 数值范围的值，那么该值将被自动转换成特殊的 <code>Infinity</code> 值。该值将无法继续参与下一次的计算，因为 <code>Infinity</code> 不是能够参与计算的数值。要想确定一个数值是不是有穷的（即是否位于最小和最大的数值之间），可以使用 <code>isFinite()</code> 函数进行判断。</td>
+</tr>
+<tr>
+<td><code>NaN</code></td>
+<td>非数值（Not a Number）是一个特殊的数值，用于表示一个本来要返回数值的操作数未返回数值的情况（这样就不会抛出错误了）。ECMAScript 定义了 <code>isNaN()</code> 函数，接收任何类型参数并（调用 <code>Number()</code> 函数）进行 <strong>自动类型转换</strong>，如果转换失败则这个参数“不是数值”。</td>
+</tr>
+</tbody></table>
+<h3 id="浮点数值"><a href="#浮点数值" class="headerlink" title="浮点数值"></a>浮点数值</h3><p>Number 类型使用 IEEE754 格式来表示整数和浮点数值。这种格式有个通病：浮点数值计算会产生 <strong>舍入误差</strong> 的问题，从而导致无法测试 <strong>特定的</strong> 浮点数值，例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (a + b == <span class="number">0.3</span>) &#123; <span class="comment">// 不要做这样的浮点测试！例如 0.1 加 0.2 的结果不是 0.3，而是 0.30000000000000004。</span></span><br><span class="line">    alert(<span class="string">"You got 0.3."</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可见，浮点数值的最高精度虽然有 17 位小数，但在进行算术计算时其精确度远远不如整数。因此建议先将浮点数值转换成整数值进行计算后，再转回浮点数，如此一来就能缓解这个问题。</p>
+<p>此外，由于保存浮点数值需要的内存空间是保存整数值的 <strong>两倍</strong>，因此 ECMAScript 会不失时机地将浮点数值转换为整数值，例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> floatNum1 = <span class="number">1.</span>;    <span class="comment">// 小数点后面没有数字——解析为 1</span></span><br><span class="line"><span class="keyword">var</span> floatNum2 = <span class="number">10.0</span>;  <span class="comment">// 浮点数值本身表示整数——解析为 10</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="数值范围"><a href="#数值范围" class="headerlink" title="数值范围"></a>数值范围</h3><p>由于内存限制，ECMAScript 并不能保存世界上所有的数值，其限制范围下表：</p>
+<table>
+<thead>
+<tr>
+<th>常量</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Number.MIN_VALUE</code></td>
+<td>ECMAScript 能够表示的最小数值，大多数浏览器中为 <code>5e-324</code></td>
+</tr>
+<tr>
+<td><code>Number.MAX_VALUE</code></td>
+<td>ECMAScript 能够表示的最大数值，大多数浏览器中为 <code>1.7976931348623157e+308</code></td>
+</tr>
+</tbody></table>
+<p>如果某次计算的结果得到了一个超出 ECMAScript 数值范围的值，那么该值将被自动转换成特殊的 <code>Infinity</code> 值。该值将无法继续参与下一次的计算，因为 <code>Infinity</code> 不是能够参与计算的数值。要想确定一个数值是不是有穷的（即是否位于最小和最大的数值之间），可以使用 <code>isFinite()</code> 函数进行判断。</p>
+<h3 id="数值转换"><a href="#数值转换" class="headerlink" title="数值转换"></a>数值转换</h3><p>有 3 个函数可以把非数值转换为数值：<code>Number()</code>、<code>parseInt()</code> 和 <code>parseFloat()</code>。第一个函数可以用于任何数据类型，而另两个函数则专门用于把字符串转换成数值。<br>但由于 <code>Number()</code> 函数在转换字符串时比较复杂而且不够合理，因此更常用的是 <code>parseInt()</code> 和 <code>parseFloat()</code> 函数。</p>
+<p><code>parseInt()</code> 函数在转换字符串时，更多的是看其是否符合数值模式：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> num1 = <span class="built_in">parseInt</span>(<span class="string">'  70'</span>);       <span class="comment">// 70（忽略字符串前面的空格，直至找到第一个非空格字符）</span></span><br><span class="line"><span class="keyword">var</span> num2 = <span class="built_in">parseInt</span>(<span class="string">'blue'</span>);       <span class="comment">// NaN（如果第一个字符不是数字字符或者负号，返回 NaN）</span></span><br><span class="line"><span class="keyword">var</span> num3 = <span class="built_in">parseInt</span>(<span class="string">""</span>);           <span class="comment">// NaN（转换空字符串，也返回 NaN）</span></span><br><span class="line"><span class="keyword">var</span> num4 = <span class="built_in">parseInt</span>(<span class="string">"1234blue"</span>);   <span class="comment">// 1234（解析直至遇到一个非数字字符）</span></span><br><span class="line"><span class="keyword">var</span> num5 = <span class="built_in">parseInt</span>(<span class="number">22.5</span>);         <span class="comment">// 22（小数点并不是有效的数字字符）</span></span><br></pre></td></tr></table></figure>
+
+<p>如果字符串中的第一个字符是数字字符，<code>parseInt()</code> 也能够识别出各种整数格式：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> num6 = <span class="built_in">parseInt</span>(<span class="string">"70"</span>);         <span class="comment">// 70(十进制数)</span></span><br><span class="line"><span class="keyword">var</span> num5 = <span class="built_in">parseInt</span>(<span class="string">"070"</span>);        <span class="comment">// 存在分歧，ECMAScript 3 认为是 56 (八进制),ECMAScript 5 认为是 70 (十进制)</span></span><br><span class="line"><span class="keyword">var</span> num3 = <span class="built_in">parseInt</span>(<span class="string">"0xA"</span>);        <span class="comment">// 10(十六进制数)</span></span><br></pre></td></tr></table></figure>
+
+<p>为了消除在使用 <code>parseInt()</code> 函数时可能导致的上述困惑，可以为这个函数提供第二个参数：转换时使用的基数（即多少进制）：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> num1 = <span class="built_in">parseInt</span>(<span class="string">"10"</span>, <span class="number">2</span>);    <span class="comment">// 2 (按二进制解析)</span></span><br><span class="line"><span class="keyword">var</span> num2 = <span class="built_in">parseInt</span>(<span class="string">"10"</span>, <span class="number">8</span>);    <span class="comment">// 8 (按八进制解析)</span></span><br><span class="line"><span class="keyword">var</span> num3 = <span class="built_in">parseInt</span>(<span class="string">"10"</span>, <span class="number">10</span>);   <span class="comment">// 10 (按十进制解析)</span></span><br><span class="line"><span class="keyword">var</span> num4 = <span class="built_in">parseInt</span>(<span class="string">"10"</span>, <span class="number">16</span>);   <span class="comment">// 16 (按十六进制解析)</span></span><br></pre></td></tr></table></figure>
+
+<p>多数情况下，我们要解析的都是十进制数值，因此始终将 10 作为第二个参数是非常必要的。</p>
+<h1 id="基本包装类型"><a href="#基本包装类型" class="headerlink" title="基本包装类型"></a>基本包装类型</h1><p>为了便于操作基本类型值，ECMAScript 还提供了以下 3 个特殊的引用类型，它们都具有与各自的基本类型相应的特殊行为。实际上，每当读取一个基本类型值的时候，后台就会<strong>隐式地</strong>创建一个对应的基本包装类型的对象，从而让我们能够调用一些实用方法来操作这些数据。</p>
+<table>
+<thead>
+<tr>
+<th>字面量</th>
+<th>包装方法</th>
+<th>实用方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>true</code>、<code>false</code></td>
+<td><code>Boolean()</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>70</code> 十进制<br/><code>070</code> 八进制<br/><code>0xA</code> 十六进制<br/><code>3.125e7</code> 科学计数法</td>
+<td><code>Number()</code></td>
+<td><code>toFixed(fractionDigits)</code> 按照指定的小数位四舍五入<br/><code>toExponential(fractionDigits)</code> 科学计数法<br/><code>toPrecision(precision)</code><br/><code>toString(radix)</code> 使用指定基数（即多少进制）将数字转换为字符串</td>
+</tr>
+<tr>
+<td><code>&quot;&quot;</code>、<code>&#39;&#39;</code></td>
+<td><code>String()</code></td>
+<td><code>charAt()</code><br/><code>concat()</code><br/><code>substring()</code><br/><code>indexOf()</code><br/><code>toLowerCase()</code><br/><code>match()</code><br/>……</td>
+</tr>
+</tbody></table>
+<p>不建议<strong>显式地</strong>创建基本包装类型的对象，因为会造成 <code>typeof</code> 操作符判断不符合预期：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typeof</span> <span class="keyword">new</span> <span class="built_in">Boolean</span>(<span class="literal">true</span>)</span><br><span class="line"><span class="string">"object"</span></span><br><span class="line"><span class="keyword">typeof</span> <span class="keyword">new</span> <span class="built_in">Number</span>(<span class="number">70</span>)</span><br><span class="line"><span class="string">"object"</span></span><br><span class="line"><span class="keyword">typeof</span> <span class="keyword">new</span> <span class="built_in">String</span>(<span class="string">''</span>)</span><br><span class="line"><span class="string">"object"</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="快速类型转换"><a href="#快速类型转换" class="headerlink" title="快速类型转换"></a>快速类型转换</h1><p>最后是一些类型转换的小技巧：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> myVar   = <span class="string">"3.14159"</span>,</span><br><span class="line">    str     = <span class="string">""</span>+myVar, <span class="comment">//  to string</span></span><br><span class="line">    int     = ~~myVar,  <span class="comment">//  to integer</span></span><br><span class="line">    float   = <span class="number">1</span>*myVar,  <span class="comment">//  to float</span></span><br><span class="line">    bool    = !!myVar,  <span class="comment">//  to boolean - any string with length and any number except 0 are true</span></span><br><span class="line">    array   = [myVar];  <span class="comment">//  to array</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《JavaScript 高级程序设计》</li>
+<li>《JavaScript 语言精粹》</li>
+<li>《<a href="http://www.w3school.com.cn/js/pro_js_typeconversion.asp" target="_blank" rel="noopener">ECMAScript 类型转换</a>》</li>
+</ul>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2016/02/10/javascript-intro/" class="post-title-link">Javascript 简介</a></h2><div class="post-info">2016-02-10<a href="/tags/前端/" title="前端" class="post-demo">前端</a></div><div class="post-content"><p>一个完整的 JavaScript 实现由下列三个不同的部分组成：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">+--------------------------+</span><br><span class="line">|                          |</span><br><span class="line">|        JavaScript        |</span><br><span class="line">|                          |</span><br><span class="line">| +----------+ +---+ +---+ |</span><br><span class="line">| |ECMAScript| |DOM| |BOM| |</span><br><span class="line">| +----------+ +---+ +---+ |</span><br><span class="line">|                          |</span><br><span class="line">+--------------------------+</span><br></pre></td></tr></table></figure>
+
+<p>下面分别介绍这些部分：</p>
+<h1 id="核心（ECMAScript）"><a href="#核心（ECMAScript）" class="headerlink" title="核心（ECMAScript）"></a>核心（ECMAScript）</h1><p>以网景的 Netscape Navigator 内置的 JavaScript 1.1 为蓝本，由 ECMA-262 定义的 ECMAScript 是一种 <strong>与 Web 浏览器没有依赖关系</strong> 的脚本语言标准，它由下列基础部分组成：</p>
+<ul>
+<li>语法（Syntax）</li>
+<li>类型（Types）</li>
+<li>语句（Statements）</li>
+<li>关键字（Keywords）</li>
+<li>保留字（Reserved words）</li>
+<li>操作符（Operators）</li>
+<li>对象（Objects）</li>
+</ul>
+<h2 id="宿主环境"><a href="#宿主环境" class="headerlink" title="宿主环境"></a>宿主环境</h2><p>ECMA-262 定义的只是这门语言的基础部分，而在此基础之上，<strong>宿主环境（host environment）</strong> 可以构建更完善的脚本语言。常见的宿主环境有：</p>
+<ul>
+<li>Web Broswer</li>
+<li>Node.js</li>
+<li>Adobe Flash</li>
+</ul>
+<p>以我们最常见的 Web Broswer 为例，不仅提供了基本的 ECMAScript 实现，同时还提供了该语言的扩展，以便语言与环境之间对接交互。而这些扩展——如 DOM，则利用 ECMAScript 的核心类型（Types）和语法（Syntax）提供更多更具体的功能，以便实现针对环境的操作。</p>
+<h2 id="版本"><a href="#版本" class="headerlink" title="版本"></a>版本</h2><p>ECMA-262 目前已经发布了六个大版本的 ECMAScript：</p>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>发布时间</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>1997 年 6 月</td>
+<td>以网景的 Netscape Navigator 内置的 JavaScript 1.1 为蓝本制定，但删除了所有针对浏览器的代码，并支持 Unicode 标准（从而支持多语言开发）。</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1998 年 6 月</td>
+<td>基本没有修改。</td>
+</tr>
+<tr>
+<td>3</td>
+<td>1999 年 12 月</td>
+<td>标准的第一次大修改，涉及：新增的正则表达式，更好的字符串处理，新的控制语句，try / catch 异常处理的支持，更严格的错误定义，数值格式化输出和其它增强功能。该版标志着 ECMAScript 成为了一门真正的编程语言。</td>
+</tr>
+<tr>
+<td><del>4</del></td>
+<td><del>已废弃</del></td>
+<td>该版对 ECMAScript 进行了大刀阔斧的修改，但由于复杂的语言政治分歧而被废弃了。</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2009 年 12 月</td>
+<td>澄清了第三版规范许多模糊之处，并增加了一些新功能，如：原生 JSON 对象、继承的方法和高级属性定义，以及“严格模式（strict mode）”。<strong>是目前浏览器兼容性最好、最主流的版本。</strong></td>
+</tr>
+<tr>
+<td>5.1</td>
+<td>2011 年 6 月</td>
+<td>基本没有修改。</td>
+</tr>
+<tr>
+<td>6</td>
+<td>2015 年 6 月</td>
+<td>标准的又一次大修改，被称为 ECMAScript 2015。它为编写日益复杂的应用程序增加了大量重要的新语法，包括：类（classes）和模块（modules）、新的迭代器（iterators）和 for/of 循环（loops）、Python 风格的生成器（generators）和生成器表达式、arrow functions, binary data, typed arrays, collections (maps, sets and weak maps), promises, number and math enhancements, reflection, and proxies …<br/>更多特性详见<a href="http://es6-features.org/#Constants" target="_blank" rel="noopener">这里</a>。</td>
+</tr>
+<tr>
+<td>7</td>
+<td>制定中</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="兼容"><a href="#兼容" class="headerlink" title="兼容"></a>兼容</h2><p>各个浏览器对 ECMAScript 5 的兼容性可查看 <a href="http://caniuse.com/#feat=es5" target="_blank" rel="noopener">这里</a> 。</p>
+<h1 id="文档对象模型（DOM）"><a href="#文档对象模型（DOM）" class="headerlink" title="文档对象模型（DOM）"></a>文档对象模型（DOM）</h1><p>文档对象模型（DOM，Document Object Model）是针对 XML 但经过扩展用于 HTML 的 API。借助 DOM 提供的 API，开发人员可以轻松自如地删除、添加、替换或修改任何节点，获得控制页面内容和结构的主动权。</p>
+<h1 id="浏览器对象模型（BOM）"><a href="#浏览器对象模型（BOM）" class="headerlink" title="浏览器对象模型（BOM）"></a>浏览器对象模型（BOM）</h1><p>浏览器对象模型（BOM，Browser Object Model）是一组浏览器提供的自定义扩展 API，可以控制浏览器显示的页面以外的部分，例如：</p>
+<ul>
+<li>弹出新浏览器窗口的功能；</li>
+<li>移动、缩放和关闭浏览器窗口的功能；</li>
+<li>提供浏览器详细信息的 navigator 对象；</li>
+<li>提供浏览器所加载页面的详细信息的 location 对象；</li>
+<li>提供用户显示器分辨率详细信息的 screen 对象；</li>
+<li>对 cookies 的支持；</li>
+<li>像 XMLHttpRequest 和 IE 的 ActiveXObject 这样的自定义对象。</li>
+</ul>
+<p>常用的 BOM API 如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">window</span><br><span class="line">  |</span><br><span class="line">  +--&gt; document</span><br><span class="line">  |</span><br><span class="line">  +--&gt; location</span><br><span class="line">  |</span><br><span class="line">  +--&gt; navigator</span><br><span class="line">  |</span><br><span class="line">  +--&gt; screen</span><br><span class="line">  |</span><br><span class="line">  +--&gt; history</span><br><span class="line">  |</span><br><span class="line">  +--&gt; ...</span><br></pre></td></tr></table></figure>
+
+<p>由于没有 BOM 标准可以遵循，因此每个浏览器都有自己的实现。虽然也存在一些事实标准，例如要有 window 对象和 navigator 对象等，但每个浏览器都会为这两个对象乃至其它对象定义自己的属性和方法。如今 HTML 5 致力于把很多 BOM 功能纳入正式规范，BOM 实现的细节有望朝着兼容性越来越高的方向发展。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《JavaScript 高级程序设计》</li>
+<li>《<a href="https://en.wikipedia.org/wiki/ECMAScript" target="_blank" rel="noopener">ECMAScript - Wikipedia</a>》</li>
+<li>《<a href="https://en.wikipedia.org/wiki/Document_Object_Model" target="_blank" rel="noopener">Document Object Model - Wikipedia</a>》</li>
+<li>《<a href="https://en.wikipedia.org/wiki/Browser_Object_Model" target="_blank" rel="noopener">Browser Object Model - Wikipedia</a>》</li>
+</ul>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/11/22/fhs/" class="post-title-link">Linux 系统主要目录介绍</a></h2><div class="post-info">2015-11-22<a href="/tags/GNU-Linux/" title="GNU/Linux" class="post-demo">GNU/Linux</a></div><div class="post-content"><p>从 Windows 转到 Linux 的初学者，往往对 Linux 的目录结构感到无所适从。本文介绍的 FHS 标准，是理解这些目录结构的关键。</p>
+<h1 id="FHS-标准"><a href="#FHS-标准" class="headerlink" title="FHS 标准"></a>FHS 标准</h1><p>FHS（Filesystem Hierarchy Standard，文件系统层次结构标准）采用树形结构组织文件，并定义了 Linux 系统中主要目录的用途、所需要的最小构成的文件和目录，同时还给出了例外处理与矛盾处理。多数 Linux 版本采用这种目录组织形式，类似于 Windows 操作系统中 C 盘的文件目录。</p>
+<p>事实上，FHS 针对目录树结构仅定义出两层目录（<code>/</code> 及 <code>/usr</code>、<code>/var</code>）底下应该放置什么数据，下面分别介绍这些目录：</p>
+<h2 id="root"><a href="#root" class="headerlink" title="/ (root)"></a>/ (root)</h2><p>在 FHS 标准中，所有的文件和目录都必须出现在根目录 <code>/</code> 下，即使它们存储在不同的存储设备或网络主机中。此外还要求根目录 <code>/</code> 下必须要有以下目录或符号链接（symbolic links）：</p>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/etc</code></td>
+<td>Host-specific system configuration</td>
+<td>系统配置文件</td>
+</tr>
+<tr>
+<td><code>/dev</code></td>
+<td>Device files</td>
+<td>设备文件</td>
+</tr>
+<tr>
+<td><code>/bin</code></td>
+<td>Essential command binaries (for use by all users)</td>
+<td>重要的执行文件</td>
+</tr>
+<tr>
+<td><code>/sbin</code></td>
+<td>Essential system binaries (for use by root)</td>
+<td>重要的系统执行文件</td>
+</tr>
+<tr>
+<td><code>/lib</code></td>
+<td>Essential shared libraries and kernel modules</td>
+<td>执行文件所需的函数库与内核所需的模块。<code>/bin</code> 和 <code>/sbin</code> 中二进制文件必要的函数库</td>
+</tr>
+<tr>
+<td><code>/boot</code></td>
+<td>Static files of the boot loader (include kenerl file、drivers)</td>
+<td>系统开机文件</td>
+</tr>
+<tr>
+<td><code>/media</code></td>
+<td>Mount point for removeable media</td>
+<td></td>
+</tr>
+<tr>
+<td><code>/mnt</code></td>
+<td>Mount point for mounting a filesystem temporarily (include hard disk、U disk、CD、DVD…)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>/opt</code></td>
+<td>Add-on application software packages</td>
+<td></td>
+</tr>
+<tr>
+<td><code>/srv</code></td>
+<td>Data for services provided by this system</td>
+<td></td>
+</tr>
+<tr>
+<td><code>/tmp</code></td>
+<td>Temporary files</td>
+<td>临时文件</td>
+</tr>
+</tbody></table>
+<p>注意：</p>
+<ul>
+<li>由于根目录 <code>/</code> 与<strong>开机、还原、系统修复</strong>等操作有关，而开机过程中<strong>仅有根目录会被挂载，其它分区则是在开机完成之后才会持续进行挂载</strong>，因此，根目录下与开机过程有关的目录（即上表前六个目录）不能够与根目录分开到不同分区。</li>
+<li>由于 FHS 的目录结构已经提供了足够的灵活性，因此标准要求，应用程序禁止在根目录下创建新的子目录，理由如下：<ul>
+<li>这会额外占用根目录所在分区的空间，但系统管理员基于性能与安全考虑，会希望保持该分区小而简（small and simple）；</li>
+<li>It evades whatever discipline the system administrator may have set up for distributing standard file hierarchies across mountable volumes.</li>
+</ul>
+</li>
+</ul>
+<h2 id="usr-unix-software-resource"><a href="#usr-unix-software-resource" class="headerlink" title="/usr (unix software resource)"></a>/usr (unix software resource)</h2><p>该目录与软件安装/执行有关。</p>
+<ul>
+<li>FHS 建议所有软件开发者，应该将他们的数据合理的分别放置到这个目录下的子目录，而<strong>不要自行建立该软件自己独立的目录</strong>。</li>
+<li>由于所有系统默认的软件（distribution 发布者提供的软件）都会放置到 <code>/usr</code> 下，因此这个目录有点类似 Windows 系统的 <code>C:\Windows\</code> 和 <code>C:\Program files\</code> 这两个目录的综合体，系统刚安装完毕时，这个目录会占用最多的硬盘容量。</li>
+<li>用户后续安装的应用程序，也建议放置到 <code>/usr</code> 下。</li>
+</ul>
+<h2 id="var-variable"><a href="#var-variable" class="headerlink" title="/var (variable)"></a>/var (variable)</h2><p>该目录与系统运作过程有关。</p>
+<p>如果 <code>/usr</code> 是系统安装时会占用较大硬盘容量的目录，那么 <code>/var</code> 则是在系统运行时才会渐渐占用硬盘容量的目录。 <code>/var</code> 目录主要针对常态性变动的文件，包括缓存（cache）、登录文件（log file）以及某些软件运行所产生的日志文件，因此这个目录会越来越大，建议单独挂载分区。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>由于根目录所在分区的容量有限，因此像 <code>/usr</code>、<code>/var</code>、<code>/home</code> 这种大目录最好不要与根目录放在同一个分区内，而是建议单独挂载分区。如此一来不但可以提高系统性能，根目录所在的文件系统也不容易发生问题。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a href="http://www.ruanyifeng.com/blog/2012/02/a_history_of_unix_directory_structure.html" target="_blank" rel="noopener">Unix目录结构的来历</a>》<br>《<a href="http://vbird.dic.ksu.edu.tw/linux_basic/0210filepermission.php" target="_blank" rel="noopener">Linux 的文件权限与目录配置</a>》<br>《<a href="http://www.pathname.com/fhs/" target="_blank" rel="noopener">FHS 官方文档</a>》<br>《<a href="http://www.pathname.com/fhs/pub/fhs-2.3.html" target="_blank" rel="noopener">FHS 2.3 官方文档</a>》</p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/11/15/gnu-text-utilities/" class="post-title-link">GNU 常用文本处理命令</a></h2><div class="post-info">2015-11-15<a href="/tags/GNU-Linux/" title="GNU/Linux" class="post-demo">GNU/Linux</a></div><div class="post-content"><p>续上文。</p>
+<p>GNU/CoreUtils 的 Text utilities 提供了一些便利的文本处理命令，配合“管道”组合使用可以大大提高文本处理效率。</p>
+<h1 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h1><p>下面介绍一些最常用的利用管道进行组合的命令：</p>
+<h2 id="grep"><a href="#grep" class="headerlink" title="grep"></a>grep</h2><p><code>grep</code> 命令使用正则表达式以行为单位进行文本搜索（global search regular expression(RE) and print out the line），其命令格式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep [选项] &#39;PATTERN&#39; [文本文件]</span><br></pre></td></tr></table></figure>
+
+<p>常用选项：</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-c, --count</code></td>
+<td>打印匹配的行数</td>
+</tr>
+<tr>
+<td><code>-n, --line-number</code></td>
+<td>打印行号</td>
+</tr>
+<tr>
+<td><code>-v, --revert-match</code></td>
+<td>反转查找</td>
+</tr>
+<tr>
+<td><code>-A , --after</code></td>
+<td>可加数字，表示打印后面n行</td>
+</tr>
+<tr>
+<td><code>-B , --before</code></td>
+<td>可加数字，表示打印前面n行</td>
+</tr>
+<tr>
+<td><code>--color</code></td>
+<td>关键字高亮</td>
+</tr>
+</tbody></table>
+<h2 id="tr"><a href="#tr" class="headerlink" title="tr"></a>tr</h2><p><code>tr</code> 命令用于替换或删除指定的字符（注意不接收文件参数），其命令格式如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tr [options] string1 string2</span><br></pre></td></tr></table></figure>
+
+<p>可用于将小写转换成大写：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">echo</span> <span class="string">'abcdef'</span> | tr <span class="string">'a-z'</span> <span class="string">'A-Z'</span></span><br><span class="line">ABCDEF</span><br></pre></td></tr></table></figure>
+
+<p> <code>-d</code> 参数可用于删除指定的字符：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">echo</span> <span class="string">'abcdef'</span> | tr -d <span class="string">'def'</span></span><br><span class="line">abc</span><br></pre></td></tr></table></figure>
+
+<p><code>-s</code> 参数可用于删除所有重复出现字符序列，只保留第一个；即将重复出现字符串压缩为一个字符串：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">echo</span> <span class="string">'abbbbbbbbbc'</span> | tr -s <span class="string">'b'</span></span><br><span class="line">abc</span><br></pre></td></tr></table></figure>
+
+<p><code>-d</code> 和 <code>-s</code> 常用于删除所有换行符 <code>\n</code> 和合并空格 <code>[:space:]</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cat logfile | tr -d <span class="string">'\n\t'</span> | tr -s [:space:]</span><br></pre></td></tr></table></figure>
+
+<h2 id="cut"><a href="#cut" class="headerlink" title="cut"></a>cut</h2><p><code>cut</code> 命令以行为单位，用于截取某段数据，如字节、字符和字段。其命令格式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cut [选项] [范围] [文本文件]</span><br></pre></td></tr></table></figure>
+
+<p>使用 <code>-d</code> 指定分隔符（默认为制表符），例如：<code>cut -d &#39;:&#39; -f -2 /etc/passwd</code>。</p>
+<p>常用的几种选项如下：</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-f, --fields</code></td>
+<td>以字段为单位</td>
+</tr>
+<tr>
+<td><code>-c, --characters</code></td>
+<td>以字符为单位</td>
+</tr>
+<tr>
+<td><code>-b, -- bytes</code></td>
+<td>以字节为单位</td>
+</tr>
+</tbody></table>
+<p>常用的几种范围如下：</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>n</code></td>
+<td>第 n 个</td>
+</tr>
+<tr>
+<td><code>n-</code></td>
+<td>从第 n 个到最后一个</td>
+</tr>
+<tr>
+<td><code>n-m</code></td>
+<td>从第 n 个到第 m 个</td>
+</tr>
+<tr>
+<td><code>-m</code></td>
+<td>从第一个到第 m 个</td>
+</tr>
+<tr>
+<td><code>-</code></td>
+<td>从第一个到最后一个</td>
+</tr>
+<tr>
+<td><code>n,m</code></td>
+<td>第 n、m 个</td>
+</tr>
+</tbody></table>
+<p>注意，在 UTF-8 编码下，汉字占三个字节。</p>
+<h2 id="sort"><a href="#sort" class="headerlink" title="sort"></a>sort</h2><p><code>sort</code> 命令以行为单位，用于对文本文件内容进行<strong>排序</strong>。其命令格式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sort [选项] [文本文件]</span><br></pre></td></tr></table></figure>
+
+<p>常用的选项如下：</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-n</code></td>
+<td>依照数值的大小排序（默认是以文字）</td>
+</tr>
+<tr>
+<td><code>-r</code></td>
+<td>反向排序</td>
+</tr>
+</tbody></table>
+<h2 id="uniq"><a href="#uniq" class="headerlink" title="uniq"></a>uniq</h2><p><code>uniq</code> 命令以行为单位，用于<strong>合并</strong>文本文件中重复出现的行列。它比较相邻的行，在正常情况下，第二个及以后更多个重复行将被删去，因此在合并前常常会先使用 <code>sort</code> 命令排序。行比较是根据所用字符集的排序序列进行的。其命令格式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uniq [选项] [文本文件]</span><br></pre></td></tr></table></figure>
+
+<p>常用的选项如下：</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-i</code></td>
+<td>忽略大小写</td>
+</tr>
+<tr>
+<td><code>-c</code></td>
+<td>进行计数</td>
+</tr>
+<tr>
+<td><code>-d</code></td>
+<td>只显示重复行</td>
+</tr>
+<tr>
+<td><code>-u</code></td>
+<td>只显示不重复的行</td>
+</tr>
+</tbody></table>
+<h2 id="wc"><a href="#wc" class="headerlink" title="wc"></a>wc</h2><p><code>wc</code> 命令用于统计字节数、字数、行数，其命令格式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wc [选项] [文本文件]</span><br></pre></td></tr></table></figure>
+
+<p>常用的选项如下：</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-l, --lines</code></td>
+<td>只显示行数</td>
+</tr>
+<tr>
+<td><code>-w, --words</code></td>
+<td>只显示字数</td>
+</tr>
+<tr>
+<td><code>-c, --chars 或 --bytes</code></td>
+<td>只显示字节数</td>
+</tr>
+</tbody></table>
+<h2 id="tee"><a href="#tee" class="headerlink" title="tee"></a>tee</h2><p><code>tee</code> 是一种双向重定向命令，用于可以将数据流处理过程中的<strong>某段结果</strong>保存到文件，其处理过程如下：</p>
+<p><img src="/img/gnu-text-utilities/tee.png" alt="tee"></p>
+<p>常用的选项如下：</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-a, --append</code></td>
+<td>附加到既有文件的后面，而非覆盖它</td>
+</tr>
+<tr>
+<td><code>-i, --ignore-interrupts</code></td>
+<td>忽略中断信号</td>
+</tr>
+</tbody></table>
+<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><p>1、统计 Nginx 独立 IP 数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cut -d &quot; &quot; -f 1 nginx_log | sort | uniq | wc –l</span><br></pre></td></tr></table></figure>
+
+<p>2、统计当前用户最常用的 10 条命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cut -d &quot; &quot; -f 1 ~&#x2F;.bash_history | sort | uniq -c | sort -nr | head</span><br></pre></td></tr></table></figure>
+
+<p>3、统计重复行，逆序方式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sort &#x2F;data&#x2F;tradehistory_20150804.txt | uniq -cd | sort -nr</span><br></pre></td></tr></table></figure>
+
+<p>4、统计多个文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ cat &#x2F;data&#x2F;tradehistory_2015080*.txt | cut -d &#39;,&#39; -f 13 | sort | uniq -c | sort -nr</span><br><span class="line">29549 20150803</span><br><span class="line">24086 20150805</span><br><span class="line">19520 20150804</span><br></pre></td></tr></table></figure></div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/11/10/gnu-coreutils/" class="post-title-link">GNU/CoreUtils 常用命令总结</a></h2><div class="post-info">2015-11-10<a href="/tags/GNU-Linux/" title="GNU/Linux" class="post-demo">GNU/Linux</a></div><div class="post-content"><p>GNU/CoreUtils 是一组类 Unix 操作系统所需的基础软件包。它包含三组命令，常用的命令如 <code>cat</code>、<code>ls</code>、<code>rm</code>。学习 GNU/Linux 的第一步，就是要熟悉软件包下常用的命令。下面分别介绍这三组常用的命令：</p>
+<h1 id="File-utilities"><a href="#File-utilities" class="headerlink" title="File utilities"></a>File utilities</h1><h2 id="Basic-operations"><a href="#Basic-operations" class="headerlink" title="Basic operations"></a>Basic operations</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>cp</code></td>
+<td>Copy files and directories</td>
+<td><code>cp -rp</code> 备份目录。<br/><code>-r</code> 递归复制目录，否则提示“略过目录‘xxx’”。<br/><code>-p</code> 保留源文件或目录的属性（包括属主、属组、权限、修改时间等）。<br/><code>-f</code> 强制覆盖。</td>
+</tr>
+<tr>
+<td><code>mv</code></td>
+<td>Move (rename) files</td>
+<td></td>
+</tr>
+<tr>
+<td><code>rm</code></td>
+<td>Remove files or directories</td>
+<td><code>rm -rf</code> 强制递归删除文件或目录。<br/><code>-r</code> 递归删除，将指定目录下的所有文件及子目录一并处理。<br/><code>-f</code> 强制删除文件或目录。</td>
+</tr>
+<tr>
+<td><code>ln</code></td>
+<td>Create a link to a file</td>
+<td><code>ln -s TARGET LINK_NAME</code> 创建软链接。</td>
+</tr>
+<tr>
+<td><code>mkdir</code></td>
+<td>Create a directory</td>
+<td><code>-p</code> 递归创建目录。</td>
+</tr>
+<tr>
+<td><code>rmdir</code></td>
+<td>Remove empty directories</td>
+<td><code>-p</code> 递归删除空目录，如果目录非空会删除失败并提示：<code>rmdir: failed to remove &#39;xxx&#39;: Directory not empty</code></td>
+</tr>
+</tbody></table>
+<h2 id="Directory-listing"><a href="#Directory-listing" class="headerlink" title="Directory listing"></a>Directory listing</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ls</code></td>
+<td>List directory contents</td>
+<td><code>-l</code> 查看详细信息。<br/><code>-a</code> 显示隐藏文件。<br/><code>-d</code> 仅列出目录本身，而不是列出目录内的文件。<br/><code>-h</code> 将文件容量以人类较易读的方式（如GB、KB等）列出来。<br/><code>-t</code> 按时间排序显示，默认为新的排在前面。<br/><code>-S</code> 按文件容量大小排序，而不是用文件名。</td>
+</tr>
+<tr>
+<td><code>dir</code></td>
+<td>List directory contents briefly</td>
+<td>Exactly like <code>ls -C -b</code></td>
+</tr>
+<tr>
+<td><code>vdir</code></td>
+<td>List directory contents verbosely</td>
+<td>Exactly like <code>ls -l -b</code></td>
+</tr>
+</tbody></table>
+<h2 id="Changing-file-attributes"><a href="#Changing-file-attributes" class="headerlink" title="Changing file attributes"></a>Changing file attributes</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>chown</code></td>
+<td>Change file owner and group</td>
+<td><code>chown -R owner:group /there/is/a/file</code><br/><code>-R</code> 递归修改，常用于一次性更改某一目录内所有的文件、目录。目标属主必须在 <code>/etc/passwd</code>。</td>
+</tr>
+<tr>
+<td><code>chgrp</code></td>
+<td>Change group ownership</td>
+<td><code>-R</code> 递归修改，目标属组必须在 <code>/etc/group</code>。</td>
+</tr>
+<tr>
+<td><code>chmod</code></td>
+<td>Change access permissions</td>
+<td><code>chmod [ugoa...][[+-=][rwxX]...][,...]</code><br/>可用：<code>u</code>、<code>g</code>、<code>o</code>、<code>a</code>，可用权限：<code>r=4</code>、<code>w=2</code>、<code>x=1</code><br/>例如：<code>chmod u+x</code></td>
+</tr>
+<tr>
+<td><code>touch</code></td>
+<td>Change file timestamps</td>
+<td>改变文件访问和修改时间，也可用于快速创建一个文件。</td>
+</tr>
+</tbody></table>
+<h2 id="Disk-usage"><a href="#Disk-usage" class="headerlink" title="Disk usage"></a>Disk usage</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>df</code></td>
+<td>Show disk free space on file systems</td>
+<td><code>-h</code> 以 K，M，G 为单位，更易读的方式显示。<br/><code>-i</code> list inode information instead of block usage</td>
+</tr>
+<tr>
+<td><code>du</code></td>
+<td>Show disk usage on file systems</td>
+<td><code>-h</code> 以 K，M，G 为单位，更易读的方式显示。<br/><code>-s, --summarize</code> 汇总显示（等于 <code>--max-depth=0</code>）<br/><code>-d, --max-depth=N</code> 显示第 N 层子目录各自的大小，常用于找出最占空间的目录。例如：<code>du --max-depth=1 -h ./</code><br/><code>--exclude=PATTERN</code> Exclude files that match PATTERN.</td>
+</tr>
+<tr>
+<td><code>stat</code></td>
+<td>Return data about an inode</td>
+<td></td>
+</tr>
+<tr>
+<td><code>truncate</code></td>
+<td>Shrink or extend the size of a file to the specified size</td>
+<td>-s 参数指定一个大小：K, M, G, T, P, E, Z, Y</td>
+</tr>
+</tbody></table>
+<h1 id="Text-utilities"><a href="#Text-utilities" class="headerlink" title="Text utilities"></a>Text utilities</h1><h2 id="Output-of-entire-files"><a href="#Output-of-entire-files" class="headerlink" title="Output of entire files"></a>Output of entire files</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>cat</code></td>
+<td>Concatenates and prints files on the standard output</td>
+<td>常用于连接并输出多个文件的内容。</td>
+</tr>
+<tr>
+<td><code>tac</code></td>
+<td>Concatenates and prints files on the standard output in reverse</td>
+<td>常用于反向连接并输出多个文件的内容。</td>
+</tr>
+<tr>
+<td><code>nl</code></td>
+<td>Numbers lines of files</td>
+<td><code>-b</code> 指定行号的方式，主要有 <code>a</code> <code>t</code>两种：<br/><code>-b a</code> 无论是否是空行，同样列出行号。<br/><code>-b t</code> 默认值，不列出空行行号。</td>
+</tr>
+<tr>
+<td><code>base64</code></td>
+<td>base64 encode/decode data and print to standard output</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="Output-of-parts-of-files"><a href="#Output-of-parts-of-files" class="headerlink" title="Output of parts of files"></a>Output of parts of files</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>head</code></td>
+<td>Output the first part of files</td>
+<td>默认输出 10 行</td>
+</tr>
+<tr>
+<td><code>tail</code></td>
+<td>Output the last part of files</td>
+<td><code>-n</code> 输出倒数 n 行（默认输出 10 行）<br/><code>-f</code> 不停读取输出文件的最新内容，常用于实时监视日志输出，用 <code>Ctrl＋C</code> 来终止。</td>
+</tr>
+<tr>
+<td><code>tailf</code></td>
+<td></td>
+<td>等同于 <code>tail -f -n 10</code></td>
+</tr>
+<tr>
+<td><code>split</code></td>
+<td>Split a file into pieces</td>
+<td>用于按行、按大小分割文件</td>
+</tr>
+<tr>
+<td><code>csplit</code></td>
+<td>Split a file into context-determined pieces</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="Operating-on-sorted-files"><a href="#Operating-on-sorted-files" class="headerlink" title="Operating on sorted files"></a>Operating on sorted files</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>sort</code></td>
+<td>Sort text files</td>
+<td>详见<a href="http://www.cnblog.me/2015/11/15/gnu-text-utilities/" target="_blank" rel="noopener">本文</a></td>
+</tr>
+<tr>
+<td><code>shuf</code></td>
+<td>Shuffling text</td>
+<td></td>
+</tr>
+<tr>
+<td><code>uniq</code></td>
+<td>Uniquify files</td>
+<td>详见<a href="http://www.cnblog.me/2015/11/15/gnu-text-utilities/" target="_blank" rel="noopener">本文</a></td>
+</tr>
+</tbody></table>
+<h2 id="Operating-on-fields"><a href="#Operating-on-fields" class="headerlink" title="Operating on fields"></a>Operating on fields</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>cut</code></td>
+<td>Print selected parts of lines</td>
+<td>详见<a href="http://www.cnblog.me/2015/11/15/gnu-text-utilities/" target="_blank" rel="noopener">本文</a></td>
+</tr>
+<tr>
+<td><code>paste</code></td>
+<td>Merge lines of files</td>
+<td>合并多个文件的所有行</td>
+</tr>
+<tr>
+<td><code>join</code></td>
+<td>Joins lines of two files on a common field</td>
+<td>合并两个文件中相同位置的行</td>
+</tr>
+</tbody></table>
+<h2 id="Operating-on-characters"><a href="#Operating-on-characters" class="headerlink" title="Operating on characters"></a>Operating on characters</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>tr</code></td>
+<td>Translate or delete characters</td>
+<td>详见<a href="http://www.cnblog.me/2015/11/15/gnu-text-utilities/" target="_blank" rel="noopener">本文</a></td>
+</tr>
+<tr>
+<td><code>expand</code></td>
+<td>Convert tabs to spaces</td>
+<td></td>
+</tr>
+<tr>
+<td><code>unexpand</code></td>
+<td>Convert spaces to tabs</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="Summarizing-files"><a href="#Summarizing-files" class="headerlink" title="Summarizing files"></a>Summarizing files</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>wc</code></td>
+<td>Print the number of bytes, words, and lines in files</td>
+<td>详见<a href="http://www.cnblog.me/2015/11/15/gnu-text-utilities/" target="_blank" rel="noopener">本文</a></td>
+</tr>
+<tr>
+<td><code>sum</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>cksum</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>md5sum</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>sha1sum</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>sha256sum</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>sha512sum</code></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h1 id="Shell-utilities"><a href="#Shell-utilities" class="headerlink" title="Shell utilities"></a>Shell utilities</h1><h2 id="User-information"><a href="#User-information" class="headerlink" title="User information"></a>User information</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>Print user identity</td>
+<td>显示当前用户的信息（uid、gid、groups）</td>
+</tr>
+<tr>
+<td><code>logname</code></td>
+<td>Print current login name</td>
+<td></td>
+</tr>
+<tr>
+<td><code>whoami</code></td>
+<td>Print effective user ID</td>
+<td></td>
+</tr>
+<tr>
+<td><code>groups</code></td>
+<td>Print group names a user is in</td>
+<td></td>
+</tr>
+<tr>
+<td><code>users</code></td>
+<td>Print login names of users currently logged in</td>
+<td></td>
+</tr>
+<tr>
+<td><code>who</code></td>
+<td>Print who is currently logged in</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="System-context"><a href="#System-context" class="headerlink" title="System context"></a>System context</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>date</code></td>
+<td>Print or set system date and time</td>
+<td><code>date +%Y-%m-%d</code>  2016-12-28</td>
+</tr>
+<tr>
+<td><code>arch</code></td>
+<td>Print machine hardware name</td>
+<td></td>
+</tr>
+<tr>
+<td><code>nproc</code></td>
+<td>Print the number of available processors</td>
+<td></td>
+</tr>
+<tr>
+<td><code>uname</code></td>
+<td>Print system information</td>
+<td></td>
+</tr>
+<tr>
+<td><code>hostname</code></td>
+<td>Print or set system name</td>
+<td></td>
+</tr>
+<tr>
+<td><code>hostid</code></td>
+<td>Print numeric host identifier</td>
+<td></td>
+</tr>
+<tr>
+<td><code>uptime</code></td>
+<td>Print system uptime and load</td>
+<td>常用于查看系统负载</td>
+</tr>
+</tbody></table>
+<h2 id="Working-context"><a href="#Working-context" class="headerlink" title="Working context"></a>Working context</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>pwd</code></td>
+<td>Print working directory</td>
+<td>显示当前所在目录</td>
+</tr>
+<tr>
+<td><code>stty</code></td>
+<td>Print or change terminal characteristics</td>
+<td></td>
+</tr>
+<tr>
+<td><code>tty</code></td>
+<td>Print file name of terminal on standard input</td>
+<td></td>
+</tr>
+<tr>
+<td><code>printenv</code></td>
+<td>Print all or some environment variables</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="Modified-command-invocation"><a href="#Modified-command-invocation" class="headerlink" title="Modified command invocation"></a>Modified command invocation</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>nohup</code></td>
+<td>Run a command immune to hangups</td>
+<td></td>
+</tr>
+<tr>
+<td><code>timeout</code></td>
+<td>Run a command with a time limit</td>
+<td></td>
+</tr>
+<tr>
+<td><code>env</code></td>
+<td>Run a command in a modified environment</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="Process-control"><a href="#Process-control" class="headerlink" title="Process control"></a>Process control</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>kill</code></td>
+<td>Send a signal to processes</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="Delaying"><a href="#Delaying" class="headerlink" title="Delaying"></a>Delaying</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>sleep</code></td>
+<td>Delay for a specified time</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="Redirection"><a href="#Redirection" class="headerlink" title="Redirection"></a>Redirection</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>tee</code></td>
+<td>Redirect output to multiple files or processes</td>
+<td>详见<a href="http://www.cnblog.me/2015/11/15/gnu-text-utilities/" target="_blank" rel="noopener">本文</a></td>
+</tr>
+</tbody></table>
+<h2 id="Conditions"><a href="#Conditions" class="headerlink" title="Conditions"></a>Conditions</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>false</code></td>
+<td>Do nothing, unsuccessfully</td>
+<td></td>
+</tr>
+<tr>
+<td><code>true</code></td>
+<td>Do nothing, successfully</td>
+<td></td>
+</tr>
+<tr>
+<td><code>test</code></td>
+<td>Check file types and compare values</td>
+<td></td>
+</tr>
+<tr>
+<td><code>expr</code></td>
+<td>Evaluate expressions</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="Printing-text"><a href="#Printing-text" class="headerlink" title="Printing text"></a>Printing text</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>echo</code></td>
+<td>Print a line of text</td>
+<td><code>-n</code> 不输出末尾换行符<br/><code>-e</code> 开启转义字符，例如：反斜杠 <code>\\</code>、换行符 <code>\n</code></td>
+</tr>
+<tr>
+<td><code>printf</code></td>
+<td>Format and print data</td>
+<td></td>
+</tr>
+<tr>
+<td><code>yes</code></td>
+<td>Print a string until interrupted</td>
+<td></td>
+</tr>
+</tbody></table>
+<p><code>yes</code> 命令小技巧，使用管道自动输入“y”进行文件强制覆盖，方法：<code>yes | cp 源文件 目的文件</code></p>
+<h2 id="Numeric-operations"><a href="#Numeric-operations" class="headerlink" title="Numeric operations"></a>Numeric operations</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>seq</code></td>
+<td>Print numeric sequences</td>
+<td></td>
+</tr>
+<tr>
+<td><code>numfmt</code></td>
+<td>Reformat numbers</td>
+<td>常用于格式化数字</td>
+</tr>
+</tbody></table>
+<h2 id="File-name-manipulation"><a href="#File-name-manipulation" class="headerlink" title="File name manipulation"></a>File name manipulation</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>basename</code></td>
+<td>Strip directory and suffix from a file name</td>
+<td>截取出文件名</td>
+</tr>
+<tr>
+<td><code>dirname</code></td>
+<td>Strip last file name component</td>
+<td>截取出目录名</td>
+</tr>
+</tbody></table>
+<h1 id="zip-压缩文件查看命令"><a href="#zip-压缩文件查看命令" class="headerlink" title="zip 压缩文件查看命令"></a>zip 压缩文件查看命令</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">zip -rmq dist.zip dist</span><br><span class="line"></span><br><span class="line">-q	表示不显示压缩进度状态</span><br><span class="line">-r	表示子目录子文件全部压缩为zip；这部分比较重要，不然的话只有something这个文件夹被压缩，里面的没有被压缩进去</span><br><span class="line">-e	表示你的压缩文件需要加密，终端会提示你输入密码的；还有种加密方法，这种是直接在命令行里做的，比如zip -r -P Password01! modudu.zip SomeDir, 就直接用Password01!来加密modudu.zip了</span><br><span class="line">-m	表示压缩完删除原文件</span><br><span class="line"></span><br><span class="line">unzip [选项] dist.zip</span><br><span class="line"></span><br><span class="line">-x 文件列表 解压缩文件，但不包括指定的file文件。 </span><br><span class="line">-v 查看压缩文件目录，但不解压。 </span><br><span class="line">-t 测试文件有无损坏，但不解压。 </span><br><span class="line">-d 目录 把压缩文件解到指定目录下。 </span><br><span class="line">-z 只显示压缩文件的注解。 </span><br><span class="line">-n 不覆盖已经存在的文件。 </span><br><span class="line">-o 覆盖已存在的文件且不要求用户确认。 </span><br><span class="line">-j 不重建文档的目录结构，把所有文件解压到同一目录下。</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>zcat</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>zless</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>zmore</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>zgrep</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>zdiff</code></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《<a href="https://en.wikipedia.org/wiki/List_of_GNU_packages" target="_blank" rel="noopener">List of GNU packages</a>》</li>
+<li>《<a href="https://en.wikipedia.org/wiki/GNU_Core_Utilities" target="_blank" rel="noopener">GNU Core Utilities</a>》</li>
+<li>《<a href="http://www.gnu.org/software/coreutils/manual/html_node/index.html" target="_blank" rel="noopener">GNU Coreutils Manual</a>》</li>
+</ul>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/09/30/cdn-gslb-dns/" class="post-title-link">浅析基于 DNS 解析方式的 GSLB</a></h2><div class="post-info">2015-09-30<a href="/tags/DNS/" title="DNS" class="post-demo">DNS</a></div><div class="post-content"><p>GSLB（Global Server Load Balance，全局负载均衡）作为 CDN 系统架构中最核心的部分，负责流量调度。本文站在服务提供方的视角，做一些技术总结。</p>
+<h1 id="GSLB-横向对比"><a href="#GSLB-横向对比" class="headerlink" title="GSLB 横向对比"></a>GSLB 横向对比</h1><p>下表是三种常见的实现方式对比：</p>
+<table>
+<thead>
+<tr>
+<th>比较项</th>
+<th>基于 DNS 解析方式</th>
+<th>基于 HTTP 重定向方式</th>
+<th>基于 IP 路由方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>性能</td>
+<td>本地 DNS 服务器和用户终端 DNS 缓存能力使 GSLB 的负载得到有效分担</td>
+<td>GSLB 处理压力大，容易成为系统性能的瓶颈</td>
+<td>借助 IP 网络设备完成负载均衡，没有单点性能瓶颈</td>
+</tr>
+<tr>
+<td>准确度</td>
+<td>定位准确度取决于本地 DNS 覆盖范围，用户的<strong>本地 DNS 设置错误会造成定位不准确</strong></td>
+<td>在对用户 IP 地址数据进行有效维护的前提下，定位准确且精度高</td>
+<td>就近性调度准确，但对设备健康性等动态信息响应会有延迟</td>
+</tr>
+<tr>
+<td>效率</td>
+<td>效率约等于 DNS 系统本身处理效率</td>
+<td>依靠服务器做处理，对硬件资源的要求高</td>
+<td>效率约等于 IP 设备本身效率</td>
+</tr>
+<tr>
+<td>扩展性</td>
+<td>扩展性和通用性好</td>
+<td>扩展性较差，需对各种应用协议进行定制开发</td>
+<td>通用性好，但适用范围有限</td>
+</tr>
+<tr>
+<td>商用性</td>
+<td>在 Web 加速领域使用较多</td>
+<td>国内流媒体 CDN 应用较多</td>
+<td>尚无商用案例</td>
+</tr>
+</tbody></table>
+<p>其中，基于 DNS 解析方式的 GSLB 有两个注意点：</p>
+<h2 id="准确度"><a href="#准确度" class="headerlink" title="准确度"></a>准确度</h2><p>本地 DNS 服务器（英文：Local DNS Server，缩写：LDNS）是用户所在局域网或 ISP 网络中使用的域名服务器，定位准确度就取决于它了。因为当用户在浏览器里访问某个域名时，浏览器会首先向 LDNS 发起查询，LDNS 再<strong>代为</strong>向整个 DNS 域名系统发起查询，直到找到解析结果。域名解析流程详见<a href="http://www.cnblog.me/2015/09/24/dns/" target="_blank" rel="noopener">本文</a>。</p>
+<p>如果 LDNS 设置不当，例如没有使用当前 ISP 提供的当地 LDNS，如 8.8.8.8，这种实现方式可能会误判用户的位置，从而将用户误导到错误的 CDN 缓存节点，造成加速效果差的问题。</p>
+<h2 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h2><p>DNS 的查询机制给使用它的互联网应用带来额外的时延，有时时延还比较大，为了解决问题，引入了“缓存”机制。缓存是指 DNS 查询结果在 LDNS 中缓存，当其它主机向它发起查询请求时，它就直接向主机返回缓存中能够找到的结果，直到数据过期。</p>
+<p>在基于 DNS 解析方式下无论采用何种工作方式，都会有一些请求不会到达 GSLB，这是 DNS 系统本身的缓存机制在起作用。当用户请求的域名在本地 DNS 或本机（客户端浏览器）得到了解析结果，这些请求就不会达到 GSLB。Cache 更新时间越短，用户请求到达 GSLB 的几率越大。由于 DNS 的缓存机制屏蔽掉相当一部分用户请求，从而大大减轻了 GSLB 处理压力，使得系统抗流量冲击能力显著提升，这也是很多商业 CDN 选择 DNS 机制做全局负载均衡的原因之一。但弊端在于，如果在 DNS 缓存刷新间隔之内系统发生影响用户服务的变化，比如某个节点故障，某个链路拥塞等，用户依然会被调度到故障点去。</p>
+<h1 id="智能-DNS-实现浅析"><a href="#智能-DNS-实现浅析" class="headerlink" title="智能 DNS 实现浅析"></a>智能 DNS 实现浅析</h1><p>基于 DNS 解析方式的 GSLB 的实现关键，就在于使 DNS “智能化”。简单来说，就是通过建立 IP 地址访问列表，判断用户的访问来源，以确定其访问节点的位置。下面浅析如何实现智能 DNS：</p>
+<h2 id="IP-地址收集策略"><a href="#IP-地址收集策略" class="headerlink" title="IP 地址收集策略"></a>IP 地址收集策略</h2><p>由于基于 DNS 解析方式的 CDN 使用 LDNS 进行寻址，因此我们只需要收集互联网上 DNS 服务器的 IP 地址。这样一来，收集的数量就会大大降低。为了更进一步缩小范围，一般使用 IP 地址加子网掩码的形式，如 123.175.0.0/16。在 IP 地址列表文件，就这么一行，却可以囊括很多 DNS 服务器。</p>
+<h2 id="IP-地址收集方法"><a href="#IP-地址收集方法" class="headerlink" title="IP 地址收集方法"></a>IP 地址收集方法</h2><p>除了可以跟第三方购买 IP 地址段之外，这里重点介绍下如何自行收集 IP 地址段。</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/en/thumb/4/4f/ICANN.svg/171px-ICANN.svg.png" alt="ICANN"></p>
+<p><a href="https://en.wikipedia.org/wiki/ICANN" target="_blank" rel="noopener">ICANN</a> —— 一个负责 IP 地址分配以及域名管理的机构，与之关联的五个 <a href="https://en.wikipedia.org/wiki/Regional_Internet_registry" target="_blank" rel="noopener">RIR</a> 机构负责替 ICANN 分配与登记部分区域的 IP 地址段：</p>
+<table>
+<thead>
+<tr>
+<th>RIR</th>
+<th>Region</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="http://www.afrinic.net/" target="_blank" rel="noopener">AFRINIC</a></td>
+<td>Africa region</td>
+</tr>
+<tr>
+<td><a href="http://www.apnic.net/" target="_blank" rel="noopener">APNIC</a></td>
+<td>Asia and Pacific region</td>
+</tr>
+<tr>
+<td><a href="http://www.arin.net/" target="_blank" rel="noopener">ARIN</a></td>
+<td>Canada, many Caribbean and North Atlantic islands, and the United States</td>
+</tr>
+<tr>
+<td><a href="http://www.lacnic.net/" target="_blank" rel="noopener">LACNIC</a></td>
+<td>Latin America and parts of the Caribbean</td>
+</tr>
+<tr>
+<td><a href="http://www.ripe.net/" target="_blank" rel="noopener">RIPE NCC</a></td>
+<td>Europe, the Middle East and parts of Central Asia</td>
+</tr>
+</tbody></table>
+<p>可见，亚太地区的 IP 地址由 APNIC 分配，访问<a href="https://www.apnic.net/publications/research-and-insights/stats" target="_blank" rel="noopener">这里</a>可以知道在何处得到 IP 地址分配的有用信息。进入 FTP ，阅读 README 以了解该下载哪个文件以及文件的格式。下载 <code>delegated-apnic-latest</code> 文件，过滤出分配给中国大陆（CN）的 IP 地址。</p>
+<p>然后可以通过 <a href="http://ipwhois.cnnic.cn/" target="_blank" rel="noopener">CNNIC IP 地址注册信息查询系统</a>查询这个地址段属于哪个运营商，但一次只能查询一个地址段，根本无法手工完成所有地址段的查询，因此推荐在 Linux 下使用 whois 工具以遍历的方式逐个查询，然后按关键字归类、去重、排序，按运营商产生几个独立的文件。如果各 IP 地址租用方未能按统一的标准在 APNIC 提交注册信息则需要特殊处理。</p>
+<h2 id="IP-地址列表使用"><a href="#IP-地址列表使用" class="headerlink" title="IP 地址列表使用"></a>IP 地址列表使用</h2><p>最后，将每个 IP 地址列表文件关联一个 Bind 的视图 View。定义视图的目的在于，当有来自某个文件所列 IP 范围内的客户发起查询请求时，使用本视图的区文件进行域名解析。通俗的说，就是让某个运营商线路的用户，去访问某个运营商机房的服务器。</p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/09/24/dns/" class="post-title-link">DNS 知识总结</a></h2><div class="post-info">2015-09-24<a href="/tags/DNS/" title="DNS" class="post-demo">DNS</a></div><div class="post-content"><p>工作、生活中常与域名打交道，尤其是近期需要为公司的系统上 CDN 服务，因此对 CDN 的核心 DNS 做了一番重温、总结。</p>
+<h1 id="DNS-是什么？"><a href="#DNS-是什么？" class="headerlink" title="DNS 是什么？"></a>DNS 是什么？</h1><p>DNS 是互联网的一项基础服务，它将人类易记的<a href="https://en.wikipedia.org/wiki/Domain_name" target="_blank" rel="noopener">域名</a>解析为不易记的 IP 地址，使人更方便的访问互联网。</p>
+<h1 id="DNS-的结构？"><a href="#DNS-的结构？" class="headerlink" title="DNS 的结构？"></a>DNS 的结构？</h1><p><a href="https://en.wikipedia.org/wiki/Domain_Name_System" target="_blank" rel="noopener">域名系统（DNS）</a>是一个多层级、分布式的系统，就如同一个树状结构：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">                    +---+                                 </span><br><span class="line">                    | . |   Root nameserver               </span><br><span class="line">                    +-+-+                                 </span><br><span class="line">                      |                                   </span><br><span class="line">  +-------+-------+---+---+-------+-------+               </span><br><span class="line">  |       |       |       |       |       |               </span><br><span class="line">+-+-+   +-+-+   +-+-+   +-+-+   +-+-+   +-+-+    </span><br><span class="line">|com|   |net|   |org|   |gov|   |cn |   |...|   Top-level domain</span><br><span class="line">+---+   +---+   +-+-+   +---+   +---+   +---+             </span><br><span class="line">                  |                                       </span><br><span class="line">             +----+----+                     </span><br><span class="line">             |wikipedia|   First-level domain                     </span><br><span class="line">             +----+----+                                  </span><br><span class="line">                  |                                       </span><br><span class="line">          +---------------+                               </span><br><span class="line">          |       |       |                               </span><br><span class="line">        +-+-+   +-+-+   +-+--+                            </span><br><span class="line">        |www|   |ftp|   |mail|   Resource record          </span><br><span class="line">        +---+   +---+   +----+</span><br></pre></td></tr></table></figure>
+
+<p>域名系统（DNS）的每一级只知道直接下级的位置，而无法获得跨级的位置，因此在域名解析的时候，需要自上而下、逐级查询。这种机制虽然看似低效，却能够提供分布式、高容错的服务，避免让域名系统（DNS）成为一个集中式的单点系统。</p>
+<h1 id="DNS-如何解析域名？"><a href="#DNS-如何解析域名？" class="headerlink" title="DNS 如何解析域名？"></a>DNS 如何解析域名？</h1><p>对某个域名发起第一次解析请求时，负责处理递归查询的<strong>本地 DNS 服务器</strong>要发送好几次查询：</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/An_example_of_theoretical_DNS_recursion.svg/1024px-An_example_of_theoretical_DNS_recursion.svg.png" alt="A DNS recursor consults three name servers to resolve the address www.wikipedia.org."></p>
+<p>域名解析的时候，需要自上而下、逐级查询：先查根域，再查顶级域，再查一级域名，最终定位到 IP 地址。<code>dig</code> 命令加 <code>+trace</code> 参数可以<strong>追踪</strong>整个域名解析过程，从中了解经过的每一级 nameserver，其结果简化如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">$ dig +trace www.wikipedia.org</span><br><span class="line"></span><br><span class="line">;; global options: +cmd</span><br><span class="line">.                    NS      a.root-servers.net.</span><br><span class="line">.                    NS      b.root-servers.net.</span><br><span class="line">.                    NS      c.root-servers.net.</span><br><span class="line">.                    NS      d.root-servers.net.</span><br><span class="line">.                    NS      e.root-servers.net.</span><br><span class="line">.                    NS      f.root-servers.net.</span><br><span class="line">.                    NS      g.root-servers.net.</span><br><span class="line">.                    NS      h.root-servers.net.</span><br><span class="line">.                    NS      i.root-servers.net.</span><br><span class="line">.                    NS      j.root-servers.net.</span><br><span class="line">.                    NS      k.root-servers.net.</span><br><span class="line">.                    NS      l.root-servers.net.</span><br><span class="line">.                    NS      m.root-servers.net.</span><br><span class="line">;; Received 315 bytes from 202.96.128.166#53(202.96.128.166) in 642 ms</span><br><span class="line"></span><br><span class="line">org.                 NS      a0.org.afilias-nst.info.</span><br><span class="line">org.                 NS      a2.org.afilias-nst.info.</span><br><span class="line">org.                 NS      b0.org.afilias-nst.org.</span><br><span class="line">org.                 NS      b2.org.afilias-nst.org.</span><br><span class="line">org.                 NS      c0.org.afilias-nst.info.</span><br><span class="line">org.                 NS      d0.org.afilias-nst.org.</span><br><span class="line">;; Received 691 bytes from 199.7.83.42#53(l.root-servers.net) in 408 ms</span><br><span class="line"></span><br><span class="line">wikipedia.org.       NS      ns0.wikimedia.org.</span><br><span class="line">wikipedia.org.       NS      ns1.wikimedia.org.</span><br><span class="line">wikipedia.org.       NS      ns2.wikimedia.org.</span><br><span class="line">;; Received 651 bytes from 199.19.53.1#53(c0.org.afilias-nst.info) in 1155 ms</span><br><span class="line"></span><br><span class="line">www.wikipedia.org.   A       198.35.26.96</span><br><span class="line">;; Received 90 bytes from 91.198.174.239#53(ns2.wikimedia.org) in 365 ms</span><br></pre></td></tr></table></figure>
+
+<p>下面分别介绍每一级 nameserver：</p>
+<h2 id="根域名（Root-nameserver）"><a href="#根域名（Root-nameserver）" class="headerlink" title="根域名（Root nameserver）"></a>根域名（Root nameserver）</h2><p><code>.</code> 代表的<a href="https://en.wikipedia.org/wiki/Root_name_server" target="_blank" rel="noopener">根域名服务器（Root nameserver）</a>，是 DNS 中最高级别的<a href="https://en.wikipedia.org/wiki/Name_server" target="_blank" rel="noopener">域名服务器（nameserver）</a>，负责返回顶级域名的<a href="https://en.wikipedia.org/wiki/Authoritative_name_server" target="_blank" rel="noopener">权威域名服务器（authoritative nameserver）</a>的地址。</p>
+<p>早期的域名必须以英文句号“<code>.</code>”结尾，当用户访问 <code>www.wikipedia.org</code> 的 HTTP 服务时必须在地址栏中输入：<code>http://www.wikipedia.org.</code>，这样 DNS 才能够进行域名解析。如今 DNS 服务器已经可以自动补上结尾的句号。</p>
+<p>目前全球共有 13 组根域名服务器，以英文字母 A 到 M 依序编号，域名格式为“<code>字母.root-servers.net</code>”。编号相同的根域名服务器使用同一个 IP，数百台根域名服务器总共只使用 13 个 IP，因此可以抵抗针对其所进行的分布式拒绝服务攻击（DDoS）。这些根域名服务器的运行软件皆为 <a href="https://en.wikipedia.org/wiki/BIND" target="_blank" rel="noopener">BIND</a>、<a href="https://en.wikipedia.org/wiki/NSD" target="_blank" rel="noopener">NSD</a>。</p>
+<h2 id="顶级域名（Top-level-domain）"><a href="#顶级域名（Top-level-domain）" class="headerlink" title="顶级域名（Top-level domain）"></a>顶级域名（Top-level domain）</h2><p><a href="https://en.wikipedia.org/wiki/Top-level_domain" target="_blank" rel="noopener">顶级域名（Top-level domain, TLD）</a>主要分为两类：</p>
+<ul>
+<li><a href="http://zh.wikipedia.org/wiki/GTLD" target="_blank" rel="noopener">通用顶级域名（Generic top-level domain，gTLD）</a>，如常见的：<code>.com</code>、<code>.net</code>、<code>.org</code>、<code>.gov</code>、… 本站 <code>.me</code> 是一个新开放的通用顶级域名。</li>
+<li><a href="http://zh.wikipedia.org/wiki/CcTLD" target="_blank" rel="noopener">国家和地区顶级域名（Country code top-level domain，ccTLD）</a>，一般用两个字母的国家或地区名缩写代称，如：<code>.cn</code>、<code>.jp</code>、…</li>
+</ul>
+<p>顶级域名的数量仍在不断增长中，除了英文字母的域名，还不断新增各种语系的域名，如中文域名。</p>
+<h2 id="一级域名（First-level-domain）"><a href="#一级域名（First-level-domain）" class="headerlink" title="一级域名（First-level domain）"></a>一级域名（First-level domain）</h2><p>组织或个人通过域名代理服务商（如 GoDaddy、万网）进行注册的域名。根据需要还可以自行在一级域名下新增二级、三级等子域名。</p>
+<h2 id="资源记录（Resource-record）"><a href="#资源记录（Resource-record）" class="headerlink" title="资源记录（Resource record）"></a>资源记录（Resource record）</h2><p>域名系统中，一般一个<a href="https://en.wikipedia.org/wiki/DNS_zone" target="_blank" rel="noopener">域（DNS zone）</a>通过一个 <a href="https://en.wikipedia.org/wiki/Zone_file" target="_blank" rel="noopener">zone 文件</a>保存该域的相关配置信息。zone 文件包含了域名和 IP 地址等资源之间的映射，以<a href="https://en.wikipedia.org/wiki/Domain_Name_System#DNS_resource_records" target="_blank" rel="noopener">资源记录（Resource recerd, RR）</a>的文本形式进行组织。<a href="https://en.wikipedia.org/wiki/List_of_DNS_record_types" target="_blank" rel="noopener">这里</a>列举了所有的资源记录类型。</p>
+<p>以域名 <code>example.com</code> 为例，其 zone 文件简化如下：</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>ttl</th>
+<th>record class</th>
+<th>record type</th>
+<th>record data</th>
+<th>comment</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>example.com.</td>
+<td>1h</td>
+<td>IN</td>
+<td>NS</td>
+<td>ns</td>
+<td>ns.example.com is a nameserver for example.com</td>
+</tr>
+<tr>
+<td>ns</td>
+<td>1h</td>
+<td>IN</td>
+<td>A</td>
+<td>192.0.2.2</td>
+<td>IPv4 address for ns.example.com</td>
+</tr>
+<tr>
+<td>example.com.</td>
+<td>1h</td>
+<td>IN</td>
+<td>A</td>
+<td>192.0.2.1</td>
+<td>IPv4 address for example.com</td>
+</tr>
+<tr>
+<td>www</td>
+<td>1h</td>
+<td>IN</td>
+<td>CNAME</td>
+<td>example.com.</td>
+<td><a href="http://www.example.com" target="_blank" rel="noopener">www.example.com</a> is an alias for example.com</td>
+</tr>
+</tbody></table>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>综上，注册域名、管理资源记录都是站长最常见的操作。至于域名解析就交给本地 DNS 服务器代为处理，一般用户都无需操心。</p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/09/17/vim/" class="post-title-link">Vim 使用总结</a></h2><div class="post-info">2015-09-17<a href="/tags/GNU-Linux/" title="GNU/Linux" class="post-demo">GNU/Linux</a></div><div class="post-content"><p><img src="/img/vim/vim.png" alt="Vim"></p>
+<p>使用 <a href="http://www.vim.org/" target="_blank" rel="noopener">Vim</a> 也有好几年了，虽然这款“编辑器之神”的学习曲线非常陡峭，但一旦上手将会极大提高文本编辑效率，因此值得投入精力学习。</p>
+<p>本文我将会从三个方面总结 Vim 的知识。</p>
+<h1 id="模式"><a href="#模式" class="headerlink" title="模式"></a>模式</h1><p>Vim 效率之高的秘密，就在于它拥有多种“模式”。如果你已经习惯了 Windows 下的编辑器，这些模式在一开始会很违反你的使用直觉。因此学习 Vim 的第一件事，就是要习惯这些模式之间的切换。</p>
+<p>Vim 共具有 6 种基本模式和 5 种派生模式，下面只介绍最常用的 4 个基本模式：</p>
+<h2 id="普通模式（NORMAL-MODE）"><a href="#普通模式（NORMAL-MODE）" class="headerlink" title="普通模式（NORMAL MODE）"></a>普通模式（NORMAL MODE）</h2><p>Vim 启动后的默认模式。这正好和许多新用户期待的操作方式相反，因为大多数编辑器的默认模式为插入模式（就是一打开编辑器就可以开始码字）。</p>
+<p>Vim 强大的编辑能力中很大部分是来自于其普通模式的命令（及组合）。在普通模式下，用户可以执行一般的编辑器命令，比如移动光标，删除文本等等。如果进一步学习各种各样的文本间移动／跳转命令和其它编辑命令，并且能够<strong>灵活组合使用</strong>的话，能够比那些没有模式的编辑器更加高效的进行文本编辑。</p>
+<p>下面介绍普通模式下几类常用的快捷键：</p>
+<h3 id="移动命令"><a href="#移动命令" class="headerlink" title="移动命令"></a>移动命令</h3><p>跨行移动：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>hjkl</code></td>
+<td>VIM allows using the cursor keys in order to move around. However, for a pure VIM experience you should stick to using ‘h’, ‘j’, ‘k’ and ‘l’. It’s considered more efficient since you don’t have to move your hand from the home row when you’re typing.</td>
+</tr>
+<tr>
+<td><code>gg</code></td>
+<td>到第一行</td>
+</tr>
+<tr>
+<td><code>G</code></td>
+<td>到最后一行</td>
+</tr>
+<tr>
+<td><code>nG</code></td>
+<td>到第 n 行</td>
+</tr>
+<tr>
+<td><code>%</code></td>
+<td>匹配括号移动，包括 () {} []（需要先把光标先移到括号上）</td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td>匹配光标当前所在的单词（<code>#</code> 反向）</td>
+</tr>
+</tbody></table>
+<p>当前行移动：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>0</code></td>
+<td>到行头（<code>$</code> 反向）</td>
+</tr>
+<tr>
+<td><code>^</code></td>
+<td>到本行第一个非 blank 字符的位置（所谓 blank 字符就是空格、tab、换行、回车等）</td>
+</tr>
+<tr>
+<td><code>w</code></td>
+<td>到下一个单词的开头（<code>b</code> 反向）</td>
+</tr>
+<tr>
+<td><code>e</code></td>
+<td>到下一个单词的结尾</td>
+</tr>
+<tr>
+<td><code>f</code></td>
+<td>Find next character（<code>F</code> 反向） <br/> <code>fi</code> 到字符 i 处<br/> <code>4fi</code> 到第四个字符 i 处</td>
+</tr>
+<tr>
+<td><code>t</code></td>
+<td>Find before character（<code>T</code> 反向）</td>
+</tr>
+</tbody></table>
+<p><img src="/img/vim/vim_line_moves.jpg" alt="Vim 当前行移动"></p>
+<h3 id="编辑命令"><a href="#编辑命令" class="headerlink" title="编辑命令"></a>编辑命令</h3><p>文本替换：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>r</code></td>
+<td>Replace current character <br/> When you need to replace only one character under your cursor, <strong>without changing to insert mode</strong>, use <code>r</code>.</td>
+</tr>
+</tbody></table>
+<p>剪切/复制/粘贴：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>x</code></td>
+<td>Cut current character</td>
+</tr>
+<tr>
+<td><code>d</code></td>
+<td><code>dd</code> Cut current line <br/> <code>dt</code> Cut till …</td>
+</tr>
+<tr>
+<td><code>y</code></td>
+<td><code>yy</code> Copy current line (yank) <br/> <code>yt</code> Copy till …</td>
+</tr>
+<tr>
+<td><code>p</code></td>
+<td>Paste</td>
+</tr>
+</tbody></table>
+<p>缩进/补全：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;&lt;</code></td>
+<td>左缩进</td>
+</tr>
+<tr>
+<td><code>&gt;&gt;</code></td>
+<td>右缩进</td>
+</tr>
+<tr>
+<td><code>=</code></td>
+<td>自动缩进</td>
+</tr>
+<tr>
+<td><code>Ctrl + p</code></td>
+<td>在 Insert 模式下，自动补全…</td>
+</tr>
+</tbody></table>
+<p>从别的编辑器里粘贴到 vim 里的代码经常由于不正常的缩进变得格式混乱，可以使用如下命令：</p>
+<ul>
+<li><p>自动缩进当前行： <code>==</code></p>
+</li>
+<li><p>全文格式化：<code>gg=G</code> ，即：</p>
+<ol>
+<li>gg - Goto the beginning of the file</li>
+<li>= - apply indentation</li>
+<li>G - till end of file</li>
+</ol>
+</li>
+</ul>
+<h3 id="重复命令"><a href="#重复命令" class="headerlink" title="重复命令"></a>重复命令</h3><table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>.</code></td>
+<td>重复执行上一个命令</td>
+</tr>
+<tr>
+<td><code>n&lt;command&gt;</code></td>
+<td>重复执行某个命令 n 次</td>
+</tr>
+<tr>
+<td><code>&lt;start position&gt;&lt;command&gt;&lt;end position&gt;</code></td>
+<td>对某段起止文本执行某个命令，例如：<code>d</code>（删除）、<code>y</code>（复制）、<code>v</code>（选择）、<code>gU</code>（变大写）、<code>gu</code>（变小写）。例如：<code>gg=G</code></td>
+</tr>
+</tbody></table>
+<h2 id="插入模式（INSERT-MODE）"><a href="#插入模式（INSERT-MODE）" class="headerlink" title="插入模式（INSERT MODE）"></a>插入模式（INSERT MODE）</h2><p>在这个模式中，大多数按键都会向文本缓冲中插入文本。大多数新用户希望文本编辑器在编辑过程中一直保持这个模式。</p>
+<p>使用以下快捷键进入插入模式：</p>
+<h3 id="当前行插入"><a href="#当前行插入" class="headerlink" title="当前行插入"></a>当前行插入</h3><table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>i</code></td>
+<td>Switch to insert mode <strong>on current character</strong></td>
+</tr>
+<tr>
+<td><code>a</code></td>
+<td>Switch to insert mode <strong>after current character</strong></td>
+</tr>
+<tr>
+<td><code>I</code></td>
+<td>Switch to insert mode <strong>on first visible character of the current line</strong></td>
+</tr>
+<tr>
+<td><code>A</code></td>
+<td>Switch to insert mode <strong>on last visible character of the current line</strong></td>
+</tr>
+</tbody></table>
+<h3 id="另起一行插入"><a href="#另起一行插入" class="headerlink" title="另起一行插入"></a>另起一行插入</h3><table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>o</code></td>
+<td>Switch to insert mode <strong>after current line</strong></td>
+</tr>
+<tr>
+<td><code>O</code></td>
+<td>Switch to insert mode <strong>before current line</strong></td>
+</tr>
+</tbody></table>
+<h2 id="可视模式（VISUAL-MODE）"><a href="#可视模式（VISUAL-MODE）" class="headerlink" title="可视模式（VISUAL MODE）"></a>可视模式（VISUAL MODE）</h2><p>这个模式与普通模式比较相似。但是移动命令会扩大高亮的文本区域。高亮区域可以是字符、行或者是一块文本。当执行一个非移动命令（例如复制、删除）时，命令会被执行到这块高亮的区域上。</p>
+<p>使用以下快捷键进入可视模式：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Ctrl + v</code></td>
+<td>Switch to visual block mode</td>
+</tr>
+<tr>
+<td><code>v</code></td>
+<td>Switch to visual character mode</td>
+</tr>
+<tr>
+<td><code>V</code></td>
+<td>Switch to visual line mode</td>
+</tr>
+</tbody></table>
+<h2 id="命令行模式（COMMAND-MODE）"><a href="#命令行模式（COMMAND-MODE）" class="headerlink" title="命令行模式（COMMAND MODE）"></a>命令行模式（COMMAND MODE）</h2><p>在命令行模式中可以输入命令。在命令执行完后，Vim 返回到命令行模式之前的模式，通常是普通模式。</p>
+<p>使用以下快捷键进入命令行模式：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>:</code></td>
+<td>执行命令： <br/> <code>:h</code> 帮助文档，例如查看 <code>s</code>文本替换命令（substitude）的帮助：<code>:h s</code></td>
+</tr>
+<tr>
+<td><code>!</code></td>
+<td>过滤命令</td>
+</tr>
+<tr>
+<td><code>/</code> 或 <code>?</code></td>
+<td>搜索字符串</td>
+</tr>
+</tbody></table>
+<h3 id="range-参数"><a href="#range-参数" class="headerlink" title="[range] 参数"></a>[range] 参数</h3><p><code>[range]</code> 有以下一些表示方法，例如常用的 <code>%</code> 表示替换所有行，等价于 <code>1,$</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">不写range   ：  默认为光标所在的行。</span><br><span class="line">.           ：  光标所在的行。</span><br><span class="line">1           ：  第一行。</span><br><span class="line">$           ：  最后一行。</span><br><span class="line">33          ：  第33行。</span><br><span class="line">&#39;a          ：  标记a所在的行（之前要使用ma做过标记）。</span><br><span class="line">.+1         ：  当前光标所在行的下面一行。</span><br><span class="line">$-1         ：  倒数第二行。（这里说明我们可以对某一行加减某个数值来</span><br><span class="line">                取得相对的行）。</span><br><span class="line">22,33       ：  第22～33行。</span><br><span class="line">1,$         ：  第1行 到 最后一行。</span><br><span class="line">1,.         ：  第1行 到 当前行。</span><br><span class="line">.,$         ：  当前行 到 最后一行。</span><br><span class="line">&#39;a,&#39;b       ：  标记a所在的行 到 标记b所在的行。</span><br><span class="line"></span><br><span class="line">%           ：  所有行（与 1,$ 等价）。</span><br><span class="line"></span><br><span class="line">?chapter?   ：  从当前位置向上搜索，找到的第一个chapter所在的行。（</span><br><span class="line">                其中chapter可以是任何字符串或者正则表达式。</span><br><span class="line">&#x2F;chapter&#x2F;   ：  从当前位置向下搜索，找到的第一个chapter所在的行。（</span><br><span class="line">                其中chapter可以是任何字符串或者正则表达式。</span><br><span class="line"></span><br><span class="line">注意，上面的所有用于range的表示方法都可以通过 +、- 操作来设置相对偏</span><br><span class="line">移量。</span><br></pre></td></tr></table></figure>
+
+<h3 id="Deleting-text"><a href="#Deleting-text" class="headerlink" title="Deleting text"></a>Deleting text</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>:[range]d[elete] [x]</code></td>
+<td>Delete <code>[range]</code> lines (default: current line) [into register <code>x</code>].</td>
+</tr>
+<tr>
+<td><code>:[range]d[elete] [x] {count}</code></td>
+<td>Delete <code>{count}</code> lines, starting with <code>[range]</code>(default: current line) [into register <code>x</code>].</td>
+</tr>
+<tr>
+<td><code>:[range]j[oin][!] [flags]</code></td>
+<td>Join <code>[range]</code> lines.</td>
+</tr>
+<tr>
+<td><code>:[range]j[oin][!] {count} [flags]</code></td>
+<td>Join <code>{count}</code> lines, starting with <code>[range]</code> (default: current line).</td>
+</tr>
+</tbody></table>
+<p>例子：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 刪除 1-10 行</span></span><br><span class="line">:1,10d</span><br></pre></td></tr></table></figure>
+
+<h3 id="Copying-and-moving-text"><a href="#Copying-and-moving-text" class="headerlink" title="Copying and moving text"></a>Copying and moving text</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>:[range]y[ank] [x]</code></td>
+<td>Yank <code>[range]</code> lines [into register <code>x</code>].</td>
+</tr>
+<tr>
+<td><code>:[range]y[ank] [x] {count}</code></td>
+<td>Yank {count} lines, starting with last line number in [range] (default: current line), [into register <code>x</code>].</td>
+</tr>
+<tr>
+<td><code>:[range]co[py] {address}</code></td>
+<td>Copy the lines given by <code>[range]</code> to below the line given by <code>{address}</code>.</td>
+</tr>
+<tr>
+<td><code>:[range]m[ove] {address}</code></td>
+<td>Move the lines given by <code>[range]</code> to below the line given by <code>{address}</code>.</td>
+</tr>
+</tbody></table>
+<h3 id="Formatting-text"><a href="#Formatting-text" class="headerlink" title="Formatting text"></a>Formatting text</h3><p>Shifting lines left or right: </p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>:[range]&lt;</code></td>
+<td>Shift <code>[range]</code> lines one <code>&#39;shiftwidth&#39;</code> left.  Repeat <code>&#39;&lt;&#39;</code> for shifting multiple <code>&#39;shiftwidth&#39;</code>s.</td>
+</tr>
+<tr>
+<td><code>:[range]&lt; {count}</code></td>
+<td>Shift <code>{count}</code> lines one <code>&#39;shiftwidth&#39;</code> left, starting with <code>[range]</code> (default current line). Repeat ‘&lt;’ for shifting multiple <code>&#39;shiftwidth&#39;</code>s.</td>
+</tr>
+<tr>
+<td><code>:[range]&gt; [flags]</code></td>
+<td>Shift <code>{count}</code> <code>[range]</code> lines one <code>&#39;shiftwidth&#39;</code> right. Repeat <code>&#39;&gt;&#39;</code> for shifting multiple <code>&#39;shiftwidth&#39;</code>s.</td>
+</tr>
+<tr>
+<td><code>:[range]&gt; {count} [flags]</code></td>
+<td>Shift <code>{count}</code> lines one <code>&#39;shiftwidth&#39;</code> right, starting with <code>[range]</code> (default current line). Repeat <code>&#39;&gt;&#39;</code> for shifting multiple <code>&#39;shiftwidth&#39;</code>s.</td>
+</tr>
+</tbody></table>
+<p>Left-align, right-align lines or center lines: </p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>:[range]le[ft] [indent]</code></td>
+<td>Left-align lines in <code>[range]</code>.  Sets the indent in the lines to <code>[indent]</code> (default <code>0</code>).</td>
+</tr>
+<tr>
+<td><code>:[range]ri[ght] [width]</code></td>
+<td>Right-align lines in <code>[range]</code> at <code>[width]</code> columns<br/>(default <code>&#39;textwidth&#39;</code> or <code>80</code> when <code>&#39;textwidth&#39;</code> is <code>0</code>).</td>
+</tr>
+<tr>
+<td><code>:[range]ce[nter] [width]</code></td>
+<td>Center lines in <code>[range]</code> between <code>[width]</code> columns<br/>(default <code>&#39;textwidth&#39;</code> or <code>80</code> when <code>&#39;textwidth&#39;</code> is <code>0</code>).</td>
+</tr>
+</tbody></table>
+<h3 id="Sorting-text"><a href="#Sorting-text" class="headerlink" title="Sorting text"></a>Sorting text</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>:[range]sor[t][!] [b][f][i][n][o][r][u][x] [/{pattern}/]</code></td>
+<td>Sort lines in <code>[range]</code>.  When no range is given all lines are sorted.<br/>With <code>[!]</code> the order is reversed.<br/>With <code>[i]</code> case is ignored.<br/>…</td>
+</tr>
+</tbody></table>
+<h3 id="Substitute-Text"><a href="#Substitute-Text" class="headerlink" title="Substitute Text"></a>Substitute Text</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>:[range]s[ubstitute]/{pattern}/{string}/[flags] [count]</code></td>
+<td>For each line in <code>[range]</code> replace a match of <code>{pattern}</code> with <code>{string}</code>.</td>
+</tr>
+</tbody></table>
+<p>详细命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">4.2 Substitute                                          *:substitute*</span><br><span class="line">                                                        *:s* *:su*</span><br><span class="line">:[range]s[ubstitute]&#x2F;&#123;pattern&#125;&#x2F;&#123;string&#125;&#x2F;[flags] [count]</span><br><span class="line">                        For each line in [range] replace a match of &#123;pattern&#125; with &#123;string&#125;.</span><br><span class="line">                        For the &#123;pattern&#125; see |pattern|.</span><br><span class="line">                        &#123;string&#125; can be a literal string, or something special; see |sub-replace-special|.</span><br><span class="line">                        When [range] and [count] are omitted, replace in the current line only.</span><br><span class="line">                        When [count] is given, replace in [count] lines, starting with the last line in [range].</span><br><span class="line">                        When [range] is omitted start in the current line.</span><br><span class="line">                        Also see |cmdline-ranges|.</span><br><span class="line">                        See |:s_flags| for [flags].</span><br></pre></td></tr></table></figure>
+
+<p><code>[flags]</code> 有以下一些表示方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">无      ：  只对指定范围内的第一个匹配项进行替换。</span><br><span class="line">g       ：  对指定范围内的所有匹配项进行替换。</span><br><span class="line">c       ：  在替换前请求用户确认。</span><br><span class="line">e       ：  忽略执行过程中的错误。</span><br><span class="line">i       :   Ignore case for the pattern.</span><br><span class="line">I       :   Don&#39;t ignore case for the pattern.</span><br><span class="line"></span><br><span class="line">注意：上面的所有flags都可以组合起来使用，比如 gc 表示对指定范围内的所有匹配项进行替换，并且在每一次替换之前都会请用户确认。</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">1.  替换当前行中的内容：    :s&#x2F;from&#x2F;to&#x2F;    （s即substitude）</span><br><span class="line">    :s&#x2F;from&#x2F;to&#x2F;     ：  将当前行中的第一个from，替换成to。如果当前行含有多个</span><br><span class="line">                        from，则只会替换其中的第一个。</span><br><span class="line">    :s&#x2F;from&#x2F;to&#x2F;g    ：  将当前行中的所有from都替换成to。</span><br><span class="line">    :s&#x2F;from&#x2F;to&#x2F;gc   ：  将当前行中的所有from都替换成to，但是每一次替换之前都</span><br><span class="line">                        会询问请求用户确认此操作。</span><br><span class="line"></span><br><span class="line">    注意：这里的from和to都可以是任何字符串，其中from还可以是正则表达式。</span><br><span class="line"></span><br><span class="line">2.  替换某一行的内容：      :33s&#x2F;from&#x2F;to&#x2F;g</span><br><span class="line">    :.s&#x2F;from&#x2F;to&#x2F;g   ：  在当前行进行替换操作。</span><br><span class="line">    :33s&#x2F;from&#x2F;to&#x2F;g  ：  在第33行进行替换操作。</span><br><span class="line">    :$s&#x2F;from&#x2F;to&#x2F;g   ：  在最后一行进行替换操作。</span><br><span class="line"></span><br><span class="line">3.  替换某些行的内容：      :10,20s&#x2F;from&#x2F;to&#x2F;g</span><br><span class="line">    :10,20s&#x2F;from&#x2F;to&#x2F;g   ：  对第10行到第20行的内容进行替换。</span><br><span class="line">    :1,$s&#x2F;from&#x2F;to&#x2F;g     ：  对第一行到最后一行的内容进行替换（即全部文本）。</span><br><span class="line">    :1,.s&#x2F;from&#x2F;to&#x2F;g     ：  对第一行到当前行的内容进行替换。</span><br><span class="line">    :.,$s&#x2F;from&#x2F;to&#x2F;g     ：  对当前行到最后一行的内容进行替换。</span><br><span class="line">    :&#39;a,&#39;bs&#x2F;from&#x2F;to&#x2F;g   ：  对标记a和b之间的行（含a和b所在的行）进行替换。</span><br><span class="line">                            其中a和b是之前用m命令所做的标记。</span><br><span class="line"></span><br><span class="line">4.  替换所有行的内容：      :%s&#x2F;from&#x2F;to&#x2F;g</span><br><span class="line">    :%s&#x2F;from&#x2F;to&#x2F;g   ：  对所有行的内容进行替换。</span><br></pre></td></tr></table></figure>
+
+<p>例子，批量替换所有空格：</p>
+<ul>
+<li><code>:</code> 进入命令行模式</li>
+<li><code>%</code> 表示所有行（与 <code>1,$</code> 等价）</li>
+<li><code>s</code> 表示文本替换命令</li>
+<li><code>\s</code> 表示空格</li>
+<li><code>g</code> 表示对指定范围内的所有匹配项进行替换</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:%s&#x2F;\s&#x2F;&#x2F;g</span><br></pre></td></tr></table></figure>
+
+<h3 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># JSON 格式化</span></span><br><span class="line"><span class="comment"># : 进入命令行模式</span></span><br><span class="line"><span class="comment"># % [range] 参数，指定所有行</span></span><br><span class="line"><span class="comment"># ! 执行具体的命令，这里使用 python</span></span><br><span class="line"><span class="comment"># -m json.tool 调用python里json.tool这个模块</span></span><br><span class="line">:%!python -m json.tool</span><br></pre></td></tr></table></figure>
+
+<p>可以将该常用命令放到 <code>~/.vimrc</code> 配置文件中，方便使用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">" F3 快捷键 JSON 格式化当前行</span></span><br><span class="line"><span class="string">map &lt;F3&gt; :.!python -m json.tool&lt;CR&gt;</span></span><br><span class="line"><span class="string">"</span> F4 快捷键 JSON 格式化全文</span><br><span class="line">map &lt;F4&gt; :%!python -m json.tool&lt;CR&gt;</span><br><span class="line"></span><br><span class="line"><span class="string">" :JsonFormat 命令格式化全文</span></span><br><span class="line"><span class="string">command! JsonFormat :execute '%!python -m json.tool'</span></span><br><span class="line"><span class="string">"</span> :JsonFormat 命令格式化全文，并解决汉字以 unicode 码显示问题，参考：http://qiita.com/tomoemon/items/cc29b414a63e08cd4f89</span><br><span class="line"><span class="built_in">command</span>! JsonFormat :execute <span class="string">'%!python -m json.tool'</span></span><br><span class="line">  \ | :execute <span class="string">'%!python -c "import re,sys;chr=__builtins__.__dict__.get(\"unichr\", chr);sys.stdout.write(re.sub(r\"\\u[0-9a-f]&#123;4&#125;\", lambda x: chr(int(\"0x\" + x.group(0)[2:], 16)).encode(\"utf-8\"), sys.stdin.read()))"'</span></span><br><span class="line">  \ | :<span class="built_in">set</span> ft=javascript</span><br><span class="line">  \ | :1</span><br></pre></td></tr></table></figure>
+
+<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><p>使用 Vim 年月较久后总会定制一套个性化的 Vim 配置，例如截取一段常用的 <code>~/.vimrc</code> 配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">set number                  &quot; 显示行号</span><br><span class="line">set cursorline              &quot; 突出显示当前行</span><br><span class="line">set ruler                   &quot; 打开状态栏标尺</span><br><span class="line">set shiftwidth&#x3D;4            &quot; 设定 &lt;&lt; 和 &gt;&gt; 命令缩进时的宽度为 4</span><br><span class="line">set softtabstop&#x3D;4           &quot; 使得按退格键时可以一次删掉 4 个空格</span><br><span class="line">set tabstop&#x3D;4               &quot; 设定 tab 长度为 4</span><br><span class="line">set nowrapscan              &quot; 禁止在搜索到文件两端时重新搜索</span><br><span class="line">set incsearch               &quot; 输入搜索内容时就显示搜索结果</span><br><span class="line">set hlsearch                &quot; 高亮显示搜索结果</span><br><span class="line">syntax on                   &quot; 程序语法开关</span><br><span class="line">inoremap jj &lt;ESC&gt;           &quot; 重映射 ESCAPE 键</span><br><span class="line">&quot; 定义缩写：ab [缩写] [要替换的文字]</span><br><span class="line">ab asap as soon as possible</span><br></pre></td></tr></table></figure>
+
+<p>另外注意，Vim 的操作记录会写入 <code>~/.viminfo</code> 。</p>
+<h2 id="设置键盘映射"><a href="#设置键盘映射" class="headerlink" title="设置键盘映射"></a>设置键盘映射</h2><p><a href="https://blog.csdn.net/lym152898/article/details/52171494" target="_blank" rel="noopener">https://blog.csdn.net/lym152898/article/details/52171494</a></p>
+<h1 id="GVim"><a href="#GVim" class="headerlink" title="GVim"></a>GVim</h1><p><a href="http://www.vim.org" target="_blank" rel="noopener">GVim</a> 是 Windows 版的 Vim，因为有了标准的 Windows 风格的图形界面，所以叫 G(Graphical)Vim。</p>
+<p>GVim 的多标签切换：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>:tabnew</code></td>
+<td>新建标签页</td>
+</tr>
+<tr>
+<td><code>:tabs</code></td>
+<td>显示已打开标签页的列表</td>
+</tr>
+<tr>
+<td><code>:tabc</code></td>
+<td>关闭当前标签页</td>
+</tr>
+<tr>
+<td><code>:tabn</code></td>
+<td>移动到下一个标签页</td>
+</tr>
+<tr>
+<td><code>:tabp</code></td>
+<td>移动到上一个标签页</td>
+</tr>
+<tr>
+<td><code>:tabfirst</code></td>
+<td>移动到第一个标签页</td>
+</tr>
+<tr>
+<td><code>:tablast</code></td>
+<td>移动到最后一个标签页</td>
+</tr>
+</tbody></table>
+<p>字符集配置参考 <a href="http://sunchuanzhen.blog.51cto.com/3076506/670193" target="_blank" rel="noopener">这里</a>，其它小技巧参考 <a href="http://www.cnblogs.com/alphaqiu/archive/2012/04/12/2444147.html" target="_blank" rel="noopener">这里</a> 。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《<a href="https://zh.wikipedia.org/wiki/Vim" target="_blank" rel="noopener">Vim - wikipedia</a>》</li>
+<li>《<a href="http://coolshell.cn/articles/5426.html" target="_blank" rel="noopener">简明 Vim 练级攻略</a>》</li>
+<li>《<a href="http://coolshell.cn/articles/894.html" target="_blank" rel="noopener">如何在 Vim 中得到你最喜爱的 IDE 特性</a>》</li>
+<li>《<a href="http://www.oschina.net/news/28608/vim-direction-keys" target="_blank" rel="noopener">为什么 Vim 使用 HJKL 键作为方向键</a>》</li>
+<li>《<a href="https://www.cnblogs.com/wind-wang/p/5768000.html" target="_blank" rel="noopener">vim文本替换命令</a>》</li>
+<li>《<a href="https://mp.weixin.qq.com/s?__biz=MzU3NTgyODQ1Nw==&mid=2247499367&idx=2&sn=bfd12789b31b0a6c7810769ec24ba842&chksm=fd1f86e1ca680ff7c7d212139b022ebeefa77f848513fe913359eee5297e8825b0c98ad27e61" target="_blank" rel="noopener">5分钟学会 Vim 分屏操作方方面面</a>》</li>
+<li>VIM 插件：<a href="https://vimawesome.com/plugin/json-vim" target="_blank" rel="noopener">https://vimawesome.com/plugin/json-vim</a></li>
+</ul>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/08/27/git-mergetool/" class="post-title-link">Git 实战系列（九）git mergetool 工具解决冲突</a></h2><div class="post-info">2015-08-27<a href="/tags/Git/" title="Git" class="post-demo">Git</a></div><div class="post-content"><p>续<a href="/2015/08/25/git-resolving-conflicts/">上文</a>。</p>
+<p>有时候合并操作并不会如此顺利。如果在不同的分支中都修改了同一个文件的同一部分，Git 就无法干净地把两者合到一起。这种问题只能由人来裁决，解决冲突的办法无非是从冲突中二者选其一或者由你亲自整合到一起。</p>
+<p>你完全可以手工编辑处理冲突，或者推荐使用图形化的外部合并与比较工具（mergetool）。</p>
+<h1 id="mergetool-是什么？"><a href="#mergetool-是什么？" class="headerlink" title="mergetool 是什么？"></a>mergetool 是什么？</h1><blockquote>
+<p>Merge tool is a GUI that steps you through each conflict, and you get to choose how to merge. Sometimes it requires a bit of hand editing afterwards, but usually it’s enough by itself. It is much better than doing the whole thing by hand certainly.</p>
+</blockquote>
+<h1 id="mergetool-如何选择？"><a href="#mergetool-如何选择？" class="headerlink" title="mergetool 如何选择？"></a>mergetool 如何选择？</h1><p><strong>mergetool 需自行选择安装。</strong>选择很多，例如：meld, opendiff, kdiff3, tkdiff, xxdiff, tortoisemerge, gvimdiff, diffuse, ecmerge, p4merge, araxis, vimdiff, emerge …</p>
+<p>推荐使用 <a href="http://meldmerge.org/" target="_blank" rel="noopener">meld</a>，一款优秀的可视化 diff 和代码合并工具（merge tool），支持特性如下：</p>
+<ul>
+<li>跨平台，支持 Linux/Unix、 OS X、Windows，多种便捷的安装方式</li>
+<li>跨工具，支持多种版本控制系统（VCS），如 Git、SVN、Mercurial …</li>
+<li>支持双方或三方文件、目录对比</li>
+<li>GUI 界面好看 :)</li>
+</ul>
+<h1 id="meld-如何使用？"><a href="#meld-如何使用？" class="headerlink" title="meld 如何使用？"></a>meld 如何使用？</h1><p>安装好 meld ，还需进行如下配置：</p>
+<h2 id="用于-git-diff"><a href="#用于-git-diff" class="headerlink" title="用于 git diff"></a>用于 git diff</h2><p>首先配置好 git ：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global diff.external ~/meld.sh</span><br></pre></td></tr></table></figure>
+
+<p>然后准备编写 <code>meld.sh</code> 包装脚本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim ~/meld.sh</span><br></pre></td></tr></table></figure>
+
+<p>默认情况下， <code>git diff</code> 会传递 7 个参数给该包装脚本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">path old-file old-hex old-mode new-file new-hex new-mode</span><br></pre></td></tr></table></figure>
+
+<p>但我们仅仅只需要 <code>old-file</code> 和 <code>new-file</code> 参数，因此需要用包装脚本来传递它们。脚本内容如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line">meld <span class="variable">$2</span> <span class="variable">$5</span></span><br></pre></td></tr></table></figure>
+
+<p>如果对涉及到的参数感兴趣，可以在脚本补充一段 <code>echo $0 $*</code>。</p>
+<p>最后对于 Linux/Unix、OS X，还需要增加脚本的可执行权限：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ chmod +x ~/meld.sh</span><br></pre></td></tr></table></figure>
+
+<p>以上配置好后，就可以调用图形化工具愉快的使用 <code>git diff</code> 了。</p>
+<h2 id="用于-git-mergetool"><a href="#用于-git-mergetool" class="headerlink" title="用于 git mergetool"></a>用于 git mergetool</h2><p>首先配置好 git ：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global merge.tool meld</span><br></pre></td></tr></table></figure>
+
+<p>如果合并的时候出现如下冲突：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CONFLICT (content): Merge conflict <span class="keyword">in</span> index.html Automatic merge failed; fix conflicts and <span class="keyword">then</span> commit the result.</span><br></pre></td></tr></table></figure>
+
+<p>使用如下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git mergetool</span><br></pre></td></tr></table></figure>
+
+<p>就可以调用图形化工具愉快的解决冲突了。</p>
+<p>在解决了所有文件的所有冲突后，运行 <code>git add</code> 将把它们标记为已解决状态即可（一旦暂存，就表示冲突已经解决）。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《<a href="http://stackoverflow.com/questions/161813/fix-merge-conflicts-in-git" target="_blank" rel="noopener">How do I fix merge conflicts in Git?</a>》</li>
+<li>《<a href="http://www.gitguys.com/topics/merging-with-a-gui/" target="_blank" rel="noopener">Git Mergetool – Merging With a GUI</a>》</li>
+<li>《<a href="http://git-scm.com/book/zh/v1/%E8%87%AA%E5%AE%9A%E4%B9%89-Git-%E9%85%8D%E7%BD%AE-Git#外部的合并与比较工具" target="_blank" rel="noopener">外部的合并与比较工具</a>》</li>
+</ul>
+</div></article></li></ul><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div class="recent"><h4>最近文章</h4><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2021/02/26/cpp-io-library/">C/C++ 语言系列（十一）I/O 库总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/25/cpp-oop-inheritance-and-polymorphism/">C/C++ 语言系列（十）面向对象编程之继承与多态</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/20/cpp-oop-class/">C/C++ 语言系列（九）面向对象编程之类、类模板、类指针</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/18/cpp-type-aliases/">C/C++ 语言系列（八）复合数据类型之类型别名</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/16/cpp-struct/">C/C++ 语言系列（七）复合数据类型之结构体</a></li></ul></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/page/14/" class="prev">PREV</a><a href="/page/16/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

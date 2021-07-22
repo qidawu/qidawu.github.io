@@ -1,0 +1,100 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> MySQL 主键与外键总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="MySQL 主键与外键总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">MySQL 主键与外键总结</h1><div class="post-info">2020-01-03<a href="/tags/MySQL/" title="MySQL" class="post-demo">MySQL</a></div><div class="post-content"><h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><p>MySQL 原生支持外键（即允许跨表交叉引用相关数据）和外键约束（用于保持<strong>数据一致性</strong>！）。</p>
+<p>外键关系涉及包含初值的父表，以及引用父表值的子表。而外键约束就定义在子表之上。</p>
+<blockquote>
+<p>A foreign key relationship involves a <strong>parent table</strong> that holds the initial column values, and a <strong>child table</strong> with column values that reference the parent column values. A foreign key constraint is defined on the child table.</p>
+</blockquote>
+<h1 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h1><p>在 <code>CREATE TABLE</code> 或 <code>ALTER TABLE</code> 语句中定义外键约束的基本语法如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[CONSTRAINT [fk_symbol]] FOREIGN KEY</span><br><span class="line">    [index_name] (col_name, ...)</span><br><span class="line">    REFERENCES tbl_name (col_name,...)</span><br><span class="line">    [ON <span class="keyword">DELETE</span> reference_option]</span><br><span class="line">    [<span class="keyword">ON</span> <span class="keyword">UPDATE</span> reference_option]</span><br><span class="line"></span><br><span class="line">reference_option:</span><br><span class="line">    RESTRICT | <span class="keyword">CASCADE</span> | <span class="keyword">SET</span> <span class="literal">NULL</span> | <span class="keyword">NO</span> <span class="keyword">ACTION</span> | <span class="keyword">SET</span> <span class="keyword">DEFAULT</span></span><br></pre></td></tr></table></figure>
+
+<p>删除外键约束：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> tbl_name <span class="keyword">DROP</span> <span class="keyword">FOREIGN</span> <span class="keyword">KEY</span> fk_symbol;</span><br></pre></td></tr></table></figure>
+
+<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建父表</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`t_parent`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">10</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8mb4 <span class="keyword">COLLATE</span>=utf8mb4_unicode_ci <span class="keyword">COMMENT</span>=<span class="string">'父表'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建子表</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`t_child`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">10</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  <span class="string">`parent_id`</span> <span class="built_in">int</span>(<span class="number">10</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>),</span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`fk_parent_id`</span> (<span class="string">`parent_id`</span>),</span><br><span class="line">  <span class="keyword">CONSTRAINT</span> <span class="string">`fk_parent_id`</span> <span class="keyword">FOREIGN</span> <span class="keyword">KEY</span> (<span class="string">`parent_id`</span>) <span class="keyword">REFERENCES</span> <span class="string">`t_parent`</span> (<span class="string">`id`</span>) <span class="keyword">ON</span> <span class="keyword">DELETE</span> <span class="keyword">CASCADE</span> <span class="keyword">ON</span> <span class="keyword">UPDATE</span> <span class="keyword">CASCADE</span></span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8mb4 <span class="keyword">COLLATE</span>=utf8mb4_unicode_ci <span class="keyword">COMMENT</span>=<span class="string">'子表'</span>;</span><br></pre></td></tr></table></figure>
+
+<p>可视化界面如下：</p>
+<p><img src="/img/mysql/foreign_key_constraint.png" alt="foreign_key_constraint"></p>
+<p>注意：</p>
+<ul>
+<li><p>创建外键约束时，如果主外键之间的数据类型不一致（例如长度、无符号），会报错：<code>1215 - Cannot add the foreign key constraint</code>。</p>
+</li>
+<li><p>创建外键约束后，MySQL 会为子表自动创建普通索引 <code>fk_parent_id</code>，以提升 <code>join</code> 查询性能。</p>
+</li>
+<li><p>创建外键不一定只能引用父表的主键，也能引用普通列。如果引用普通列，MySQL 则会在父表和子表同时为该列创建普通索引。如果删除该索引会报错：<code>1553 - Cannot drop index &#39;...&#39;: needed in a foreign key constraint</code>。</p>
+</li>
+<li><p><code>reference_option</code> 的几种情况总结如下：</p>
+<ul>
+<li><p>操作父表：</p>
+<ul>
+<li><code>RESTRICT</code> 在 <code>UPDATE</code> 或者 <code>DELETE</code> 父表记录时，对子表进行<strong>一致性检查</strong>。</li>
+<li><code>CASCADE</code> 在 <code>UPDATE</code> 或者 <code>DELETE</code> 父表记录时，对子表进行<strong>级联操作</strong>。</li>
+<li><code>SET NULL</code> 在 <code>UPDATE</code> 或者 <code>DELETE</code> 父表记录时，对子表进行 <strong>SET NULL 操作</strong>。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><code>RESTRICT</code> (<code>NO ACTION</code>)</th>
+<th><code>CASCADE</code></th>
+<th><code>SET NULL</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INSERT</code></td>
+<td>正常插入</td>
+<td>正常插入</td>
+<td>正常插入</td>
+</tr>
+<tr>
+<td><code>UPDATE</code></td>
+<td>更新父表值，会报错 <code>1451 - Cannot delete or update a parent row: a foreign key constraint fails</code></td>
+<td>更新父表值，子表值级联更新</td>
+<td>更新父表值，子表值 SET NULL</td>
+</tr>
+<tr>
+<td><code>DELETE</code></td>
+<td>删除父表行，会报错 <code>1451 - Cannot delete or update a parent row: a foreign key constraint fails</code></td>
+<td>删除父表行，子表行级联删除</td>
+<td>删除父表行，子表值 SET NULL</td>
+</tr>
+</tbody></table>
+</li>
+<li><p>操作子表：</p>
+<ul>
+<li><code>INSERT</code>、<code>UPDATE</code> 触发一致性检查。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><code>RESTRICT</code> (<code>NO ACTION</code>)</th>
+<th><code>CASCADE</code></th>
+<th><code>SET NULL</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INSERT</code></td>
+<td>无论哪个 option，插入子表行为父表不存在的值，都会报错 <code>1452 - Cannot add or update a child row: a foreign key constraint fails</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>UPDATE</code></td>
+<td>同上</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>DELETE</code></td>
+<td>无论哪个 option，删除子表行都 ok</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p><img src="/img/mysql/primary_key_and_foreign_key.png" alt="primary_key_and_foreign_key"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://dev.mysql.com/doc/refman/5.7/en/create-table-foreign-keys.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/create-table-foreign-keys.html</a></p>
+<p><a href="https://mp.weixin.qq.com/s/jOF1rohb6OvA3Pb5rL6Ilg" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/jOF1rohb6OvA3Pb5rL6Ilg</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2020/01/15/mysql-innodb-features/" class="prev">PREV</a><a href="/2019/12/02/oauth2/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

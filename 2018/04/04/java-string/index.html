@@ -1,0 +1,55 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Java 常用类型系列（三）字符串类型总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Java 常用类型系列（三）字符串类型总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Java 常用类型系列（三）字符串类型总结</h1><div class="post-info">2018-04-04<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><h1 id="继承结构"><a href="#继承结构" class="headerlink" title="继承结构"></a>继承结构</h1><p><img src="/img/java/string/methods_of_CharSequence.png" alt="methods_of_CharSequence"></p>
+<p><img src="/img/java/string/Appendable.png" alt="Appendable"></p>
+<p><img src="/img/java/string/CharSequence.png" alt="CharSequence"></p>
+<h1 id="字符串的实现"><a href="#字符串的实现" class="headerlink" title="字符串的实现"></a>字符串的实现</h1><p><img src="/img/java/string/history_of_String.jpg" alt="history_of_String"></p>
+<h1 id="字符串的创建方式"><a href="#字符串的创建方式" class="headerlink" title="字符串的创建方式"></a>字符串的创建方式</h1><h2 id="通过字符串常量创建"><a href="#通过字符串常量创建" class="headerlink" title="通过字符串常量创建"></a>通过字符串常量创建</h2><h2 id="通过构造方法创建"><a href="#通过构造方法创建" class="headerlink" title="通过构造方法创建"></a>通过构造方法创建</h2><h2 id="intern-方法"><a href="#intern-方法" class="headerlink" title="intern() 方法"></a><code>intern()</code> 方法</h2><h1 id="字符串的特性"><a href="#字符串的特性" class="headerlink" title="字符串的特性"></a>字符串的特性</h1><p>三种常用字符串类的区别如下：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>since</th>
+<th>immutable ?</th>
+<th>thread-safe ?</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>java.lang.String</code></td>
+<td>Java SE 1.0</td>
+<td>immutable</td>
+<td>no thread-safe</td>
+</tr>
+<tr>
+<td><code>java.lang.StringBuffer</code></td>
+<td>Java SE 1.0</td>
+<td>mutable</td>
+<td>thread-safe</td>
+</tr>
+<tr>
+<td><code>java.lang.StringBuilder</code></td>
+<td>Java SE 1.5</td>
+<td>mutable</td>
+<td>no thread-safe</td>
+</tr>
+</tbody></table>
+<h2 id="字符串拼接-字节码分析"><a href="#字符串拼接-字节码分析" class="headerlink" title="字符串拼接-字节码分析"></a>字符串拼接-字节码分析</h2><p><a href="https://lingcoder.github.io/OnJava8/#/book/18-Strings?id=-%e7%9a%84%e9%87%8d%e8%bd%bd%e4%b8%8e-stringbuilder" target="_blank" rel="noopener">+ 的重载与 StringBuilder</a></p>
+<h1 id="工具类"><a href="#工具类" class="headerlink" title="工具类"></a>工具类</h1><h2 id="java-util-Formatter"><a href="#java-util-Formatter" class="headerlink" title="java.util.Formatter"></a>java.util.Formatter</h2><p>C 语言 <code>printf</code> 风格的字符串格式化解释器。用法参考<a href="https://blog.csdn.net/quinnnorris/article/details/54614446" target="_blank" rel="noopener">这里</a>。</p>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html</a></p>
+<p><img src="/img/java/string/Formatter.png" alt="Formatter"></p>
+<h2 id="java-util-StringJoiner"><a href="#java-util-StringJoiner" class="headerlink" title="java.util.StringJoiner"></a>java.util.StringJoiner</h2><p>对于字符串拼接，除了使用 <code>StringBuilder</code> 之外， Java SE 8 还提供了新的 API <code>java.util.StringJoiner</code>，它是<code>String.join</code> 和 <code>java.util.stream.Collectors#joining(...)</code> 的底层实现。结合 Stream API 使用如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// [a,b,c,d,e,f,g]</span></span><br><span class="line">Arrays.asList(<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>, <span class="string">"d"</span>, <span class="string">"e"</span>, <span class="string">"f"</span>, <span class="string">"g"</span>).stream()</span><br><span class="line">                .collect(Collectors.joining(<span class="string">","</span>, <span class="string">"["</span>, <span class="string">"]"</span>));</span><br></pre></td></tr></table></figure>
+
+<h2 id="org-apache-commons-lang3-StringUtils"><a href="#org-apache-commons-lang3-StringUtils" class="headerlink" title="org.apache.commons.lang3.StringUtils"></a>org.apache.commons.lang3.StringUtils</h2><p>Apache Commons Lang 为字符串操作提供了 <code>StringUtils</code> 工具类，使用方式参考<a href="/2017/12/25/apache-commons-lang/">这里</a>。</p>
+<p><img src="/img/java/commons/commons-lang/StringUtils.png" alt="StringUtils"></p>
+<h2 id="org-apache-commons-lang3-StringEscapeUtils"><a href="#org-apache-commons-lang3-StringEscapeUtils" class="headerlink" title="org.apache.commons.lang3.StringEscapeUtils"></a>org.apache.commons.lang3.StringEscapeUtils</h2><p>Apache Commons Lang 提供了字符串转义和反转义工具类 <code>StringEscapeUtils</code>，用于 Java、JavaScript、JSON、HTML、XML、CSV 等字符串：</p>
+<p><img src="/img/java/string/StringEscapeUtils.png" alt="StringEscapeUtils"></p>
+<p>例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// &amp;lt;span&amp;gt;hello world&amp;lt;/span&amp;gt;</span></span><br><span class="line">StringEscapeUtils.escapeHtml4(<span class="string">"&lt;span&gt;hello world&lt;/span&gt;"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// &#123;hello: "world"&#125;</span></span><br><span class="line">StringEscapeUtils.unescapeJson(<span class="string">"&#123;hello: \"world\"&#125;"</span>);</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a href="https://lingcoder.github.io/OnJava8/#/book/18-Strings" target="_blank" rel="noopener">On Java 8 - 第十八章 字符串</a>》</p>
+<p>《<a href="https://cloud.tencent.com/developer/article/1511298" target="_blank" rel="noopener">Java String 对象，你真的了解了吗？</a>》</p>
+<p>《<a href="https://blog.csdn.net/tyyking/article/details/82496901" target="_blank" rel="noopener">几张图轻松理解 <code>String.intern()</code></a>》</p>
+<p>《<a href="https://blog.csdn.net/weixin_40304387/article/details/81071816" target="_blank" rel="noopener">字符串常量池深入解析</a>》</p>
+<p>《<a href="https://www.cnblogs.com/natian-ws/p/10749164.html" target="_blank" rel="noopener">JVM 常量池、运行时常量池、字符串常量池</a>》</p>
+<p>《<a href="https://segmentfault.com/a/1190000007835105" target="_blank" rel="noopener">Java8 对字符串连接的改进</a>》</p>
+<p>《<a href="http://www.w3school.com.cn/html/html_entities.asp" target="_blank" rel="noopener">HTML 字符实体</a>》</p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2018/04/05/java8-time/" class="prev">PREV</a><a href="/2018/04/01/java-wrapper-types/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

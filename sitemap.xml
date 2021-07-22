@@ -1,0 +1,1408 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/10/01/mysql-explain/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/10/20/mysql-index/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2020/01/15/mysql-innodb-features/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/11/09/mysql-join/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/02/22/mysql-locking-and-index/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/02/20/mysql-locking-read/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/10/25/mysql-order-by/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2020/01/03/mysql-primary-key-and-foreign-key/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/02/02/mysql-select-syntax/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/03/27/mysql-transaction-autocommit/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/03/26/mysql-transaction-characteristics/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/03/20/mysql-transaction-model/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/05/06/nginx-proxy/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/05/07/nginx-ssl/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/05/13/nginx-upstream/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/08/29/npm/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/12/02/oauth2/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2016/05/08/optimizing-hexo-speed-with-coding-pages/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/05/17/optimizing-hexo-speed/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2014/01/13/packing/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/06/05/redis-cmd/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2020/04/25/relational-data-model/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2014/05/01/secret-of-great-management/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/10/16/security/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2014/03/14/self-coaching/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/07/10/spring-aop/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/06/01/spring-application-context/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/06/03/spring-bean-lifecycle/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/06/04/spring-bean-wiring/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/08/01/spring-boot-getting-started/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/09/05/spring-conditional-bean/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/05/29/spring-dependency-injection/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/08/20/spring-factories/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/06/15/spring-factory-bean/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/02/20/spring-jdbc/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2016/06/25/spring-mvc/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/02/27/spring-transaction/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2016/10/06/ssh/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2020/02/28/unix-timestamp/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/09/17/vim/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/01/14/webapp-development/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/03/01/what-is-shell/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2020/05/01/java-concurrency-package/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2020/05/03/java-concurrency-threadpool/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/06/01/java-cryptography-api/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/05/03/java-el/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/04/08/java-enum/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/07/29/java-idea/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/02/10/java-jackson/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/02/06/java-jdbc-api/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/02/03/java-jdbc-driver/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/02/08/java-jdbc-mapping-sql-and-java-types/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/12/01/java-jdk-proxy/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/05/01/java-jsp/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/05/02/java-jstl/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2021/01/03/java-logging/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2020/08/01/java-reactive-programming/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2020/08/25/java-reactor-api/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2020/08/08/java-reactor-startup/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/11/14/java-reflection-annotation/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/11/07/java-reflection-api/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/11/21/java-reflection-generic-type/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/11/05/java-spi/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/04/04/java-string/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/04/01/java-wrapper-types/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2020/09/15/java/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/05/07/java8-lambda/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/05/14/java8-optional/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/05/21/java8-stream-api/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/04/06/java8-time-zone/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/04/05/java8-time/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2016/02/18/javascript-array/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2016/03/10/javascript-best-practice/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2016/02/19/javascript-data-types-determine/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2016/04/30/javascript-dynamic-scripts/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2016/05/08/javascript-event-binding/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2016/05/22/javascript-event-delegation/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2016/12/05/javascript-gulpjs/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2016/02/10/javascript-intro/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2016/02/17/javascript-object/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2016/02/11/javascript-primitive-types/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2016/07/05/javascript-requirejs/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2016/03/09/javascript-style-guideline/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/09/10/jvm-gc/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/08/29/jvm-impl/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/09/01/jvm-runtime-data-areas/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/09/16/jvm-tools/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/05/28/law-and-regulations/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/05/28/maven-archetype/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/04/26/maven-bom/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/05/01/maven-build-lifecycle/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/04/15/maven-dependencies/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/04/21/maven-inheritance/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/05/19/maven-plugins/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/04/08/maven-pom-basics/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/01/01/more-joel-on-software/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/03/27/mybatis-advanced-result-maps/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/03/24/mybatis/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/03/02/mycli/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/01/03/mysql-charset/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/01/03/mysql-cli/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/03/23/mysql-consistent-nonlocking-reads-with-mvcc/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/01/05/mysql-data-types/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/01/26/mysql-datetime/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/02/25/mysql-deadlock/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/11/26/mysql-deferred-join/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/12/25/apache-commons-lang/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/04/06/broswer-kernel/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/09/30/cdn-gslb-dns/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/02/18/concurrency-control/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2021/02/10/cpp-array/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2021/02/02/cpp-basics/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2021/02/12/cpp-character-sequences/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2021/02/04/cpp-function/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2021/02/01/cpp-ide/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2021/02/26/cpp-io-library/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2021/02/20/cpp-oop-class/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2021/02/25/cpp-oop-inheritance-and-polymorphism/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2021/02/06/cpp-pointer-and-reference/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2021/02/16/cpp-struct/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2021/02/18/cpp-type-aliases/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/06/02/data-structure/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2020/03/24/distributed-id-generator/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/04/26/dnspod/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/04/03/docker-installation-problem/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/11/15/dubbo-config/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/11/24/dubbo-protocol/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/04/19/eclipse-customize-key-assist/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/04/21/eclipse-default-key-assist/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/11/22/fhs/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/02/07/fiddler/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/08/08/financial-asset-management/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/08/31/financial-funds/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/08/05/financial-market/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/01/01/frontend-roadmap/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/08/15/git-checkout/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/08/21/git-cherry-pick/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2016/04/01/git-diff/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/08/17/git-merge/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2016/04/04/git-permissions/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/08/20/git-rebase/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/08/09/git-reset/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/08/25/git-resolving-conflicts/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/03/21/git-startup/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/03/15/git-transfer-project/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/04/01/gnu-bash-prompting/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/03/15/gnu-bash-shell-builtin-commands/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/03/12/gnu-bash-shell-commands/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/03/16/gnu-bash-shell-expansions/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/03/05/gnu-bash-shell-invocation/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/03/10/gnu-bash-shell-quoting-and-params/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/04/19/gnu-bash-shortcut-keys/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/11/10/gnu-coreutils/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/07/08/gnu-findutils/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/11/15/gnu-text-utilities/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/04/12/godaddy-cname-without-www/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/01/07/h5-storage/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/07/06/hexo-with-img/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2019/05/26/hexo-with-travis-ci/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/09/23/high-output-management/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2017/09/11/how-to-run-a-meeting/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2020/10/03/jakarta-annotations/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2020/10/05/jakarta-bean-validation/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2020/10/01/jakarta-web/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2020/10/10/jakarta-xml-binding/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/11/04/java-classloader/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/05/10/java-collections-comparator/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/04/21/java-collections-framework-concurrent-impl/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/04/28/java-collections-framework-enhancements/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/04/14/java-collections-framework-features/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/04/10/java-collections-framework/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/05/16/java-collections-hashmap/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/05/01/java-collections-iterator/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2018/05/20/java-collections-linkedhashmap/</loc>
+    
+    <lastmod>2021-07-22</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2016/04/05/git-branch-in-action/</loc>
+    
+    <lastmod>2017-04-20</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2016/04/03/git-branch/</loc>
+    
+    <lastmod>2016-04-03</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/09/24/dns/</loc>
+    
+    <lastmod>2015-10-11</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/08/04/git-log/</loc>
+    
+    <lastmod>2015-09-15</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/08/03/git-setup/</loc>
+    
+    <lastmod>2015-09-12</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/2015/08/27/git-mergetool/</loc>
+    
+    <lastmod>2015-09-11</lastmod>
+    
+  </url>
+  
+
+  <url>
+    <loc>https://qidawu.github.io/</loc>
+    <lastmod>2021-07-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/GNU-Linux/</loc>
+    <lastmod>2021-07-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/Java/</loc>
+    <lastmod>2021-07-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/%E5%89%8D%E7%AB%AF/</loc>
+    <lastmod>2021-07-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/MySQL/</loc>
+    <lastmod>2021-07-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/DNS/</loc>
+    <lastmod>2021-07-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/</loc>
+    <lastmod>2021-07-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/C-C/</loc>
+    <lastmod>2021-07-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/Redis/</loc>
+    <lastmod>2021-07-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/%E5%BB%BA%E7%AB%99/</loc>
+    <lastmod>2021-07-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/Docker/</loc>
+    <lastmod>2021-07-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/%E9%87%91%E8%9E%8D/</loc>
+    <lastmod>2021-07-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</loc>
+    <lastmod>2021-07-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/Git/</loc>
+    <lastmod>2021-07-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/%E7%AE%A1%E7%90%86/</loc>
+    <lastmod>2021-07-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/%E5%AE%89%E5%85%A8/</loc>
+    <lastmod>2021-07-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/</loc>
+    <lastmod>2021-07-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/</loc>
+    <lastmod>2021-07-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/Nginx/</loc>
+    <lastmod>2021-07-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/Spring/</loc>
+    <lastmod>2021-07-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+
+  
+</urlset>

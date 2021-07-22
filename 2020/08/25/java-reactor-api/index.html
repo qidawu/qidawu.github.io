@@ -1,0 +1,382 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> 响应式编程系列（三）Reactor Operator API 总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="响应式编程系列（三）Reactor Operator API 总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">响应式编程系列（三）Reactor Operator API 总结</h1><div class="post-info">2020-08-25<a href="/tags/Java/" title="Java" class="post-demo">Java</a><a href="/tags/响应式编程/" title="响应式编程" class="post-demo">响应式编程</a></div><div class="post-content"><p>Reactive Streams 规范并未提供任何运算符（Operators），而 Reactor 框架的核心价值之一就是提供了丰富的运算符。从简单的转换、过滤到复杂的编排和错误处理，涉及方方面面。</p>
+<p>推荐通过参考文档而不是 JavaDoc 来学习 Mono/Flux API 和 Operator 操作符。参考：<a href="https://projectreactor.io/docs/core/release/reference/docs/index.html#which-operator" target="_blank" rel="noopener">“which operator do I need?” appendix</a></p>
+<h1 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h1><p>使用 Reactor API 时，有以下几个注意点：</p>
+<p>一、每个 Operator API 都会返回新实例</p>
+<blockquote>
+<p>在 Reactor 中，操作符（Operators）好比流水线中的工作站。 每个操作符都会向 <code>Publisher</code> 添加行为，并将上一步的 <code>Publisher</code>  包装成<strong>新实例</strong>。因而，整个链就被串起来，数据从第一个  <code>Publisher</code>   开始，沿着链向下移动，通过每个链接进行转换。最终，<code>Subscriber</code> 结束该流程。 注意，直到 <code>Subscriber</code> 订阅 <code>Publisher</code> 为止，什么都不会发生。</p>
+<p>理解操作符会创建新实例这一行为，有助于避免一些常见错误，详见：<a href="https://projectreactor.io/docs/core/release/reference/#faq.chain" target="_blank" rel="noopener">I Used an Operator on my Flux but it Doesn’t Seem to Apply. What Gives?</a></p>
+</blockquote>
+<p>二、Nothing Happens Until You <code>subscribe()</code></p>
+<blockquote>
+<p>Reactor 中，当您编写 <code>Publisher</code> 链时，仅用于描述异步处理的抽象过程，默认情况下数据不会开始处理。只有通过订阅，将 <code>Publisher</code> 与 <code>Subscriber</code> 绑定在一起时，才能触发整个链中的数据流处理。这是由其内部实现方式决定的：<code>Subscriber</code> 发出<strong>请求信号</strong>并向上传播，直到源 <code>Publisher</code>。</p>
+</blockquote>
+<p><img src="/img/java/reactive-stream/reactive-stream/org.reactivestream_api.png" alt="org.reactivestream_api"></p>
+<p>详见：<a href="https://projectreactor.io/docs/core/release/reference/index.html#faq.chain" target="_blank" rel="noopener">C.2. I Used an Operator on my <code>Flux</code> but it Doesn’t Seem to Apply. What Gives?</a></p>
+<p>三、使用背压（Backpressure）进行流量控制</p>
+<blockquote>
+<p>Propagating signals upstream is also used to implement <strong>backpressure</strong>, which we described in the assembly line analogy as a feedback signal sent up the line when a workstation processes more slowly than an upstream workstation.</p>
+<p>The real mechanism defined by the Reactive Streams specification is pretty close to the analogy: A subscriber can work in <em>unbounded</em> mode and let the source push all the data at its fastest achievable rate or it can use the <code>request</code> mechanism to signal the source that it is ready to process at most <code>n</code> elements.</p>
+<p>Intermediate operators can also change the request in-transit. Imagine a <code>buffer</code> operator that groups elements in batches of ten. If the subscriber requests one buffer, it is acceptable for the source to produce ten elements. Some operators also implement <strong>prefetching</strong> strategies, which avoid <code>request(1)</code> round-trips and is beneficial if producing the elements before they are requested is not too costly.</p>
+<p>This transforms the push model into a <strong>push-pull hybrid</strong>, where the downstream can pull n elements from upstream if they are readily available. But if the elements are not ready, they get pushed by the upstream whenever they are produced.</p>
+</blockquote>
+<h1 id="Mono"><a href="#Mono" class="headerlink" title="Mono"></a>Mono</h1><p><a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html" target="_blank" rel="noopener">https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html</a></p>
+<blockquote>
+<p>for [0|1] elements</p>
+</blockquote>
+<p><img src="/img/java/reactive-stream/reactor/mono/mono.svg" alt="mono"></p>
+<h2 id="创建-Mono-流"><a href="#创建-Mono-流" class="headerlink" title="创建 Mono 流"></a>创建 Mono 流</h2><p><img src="/img/java/reactive-stream/reactor/mono/mono_create.png" alt="mono_create"></p>
+<h2 id="中间操作"><a href="#中间操作" class="headerlink" title="中间操作"></a>中间操作</h2><blockquote>
+<p>Each operator adds behavior to a <code>Publisher</code> and wraps the previous step’s <code>Publisher</code> into a new instance. The whole chain is thus linked, such that data originates from the first <code>Publisher</code> and moves down the chain, transformed by each link. Eventually, a <code>Subscriber</code> finishes the process. Remember that nothing happens until a <code>Subscriber</code> subscribes to a <code>Publisher</code>.</p>
+<p>While the Reactive Streams specification does not specify operators at all, one of the best added values of reactive libraries, such as Reactor, <strong>is the rich vocabulary of operators</strong> that they provide. These cover a lot of ground, from simple transformation and filtering to complex orchestration and error handling.</p>
+</blockquote>
+<h3 id="转换"><a href="#转换" class="headerlink" title="转换"></a>转换</h3><p>常用的如下：</p>
+<ul>
+<li><p>I want to transform existing data:</p>
+<ul>
+<li><p>on a 1-to-1 basis (eg. strings to their length): <code>map</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#map-java.util.function.Function-" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#map-java.util.function.Function-" target="_blank" rel="noopener">Mono</a>)</p>
+<ul>
+<li>…by just casting it: <code>cast</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#cast-java.lang.Class-" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#cast-java.lang.Class-" target="_blank" rel="noopener">Mono</a>)</li>
+<li>…in order to materialize each source value’s index: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#index--" target="_blank" rel="noopener">Flux#index</a></li>
+</ul>
+</li>
+<li><p>on a 1-to-n basis (eg. strings to their characters): <code>flatMap</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#flatMap-java.util.function.Function-" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#flatMap-java.util.function.Function-" target="_blank" rel="noopener">Mono</a>) + use a factory method</p>
+</li>
+<li><p>running an asynchronous task for each source item (eg. urls to http request): <code>flatMap</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#flatMap-java.util.function.Function-" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#flatMap-java.util.function.Function-" target="_blank" rel="noopener">Mono</a>) + an async <a href="https://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" target="_blank" rel="noopener">Publisher</a>-returning method</p>
+<ul>
+<li><p>…ignoring some data: conditionally return a <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#empty--" target="_blank" rel="noopener">Mono.empty()</a> in the flatMap lambda</p>
+</li>
+<li><p>…retaining the original sequence order: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#flatMapSequential-java.util.function.Function-" target="_blank" rel="noopener">Flux#flatMapSequential</a> (this triggers the async processes immediately but reorders the results)</p>
+</li>
+<li><p>…where the async task can return multiple values, from a <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html" target="_blank" rel="noopener">Mono</a> source: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#flatMapMany-java.util.function.Function-" target="_blank" rel="noopener">Mono#flatMapMany</a></p>
+<ul>
+<li><pre><code class="java"><span class="comment">// Mono 转 Flux</span>
+<span class="comment">// Create a Flux that emits the items contained in the provided Iterable. A new iterator will be created for each subscriber.</span>
+Mono#flatMapMany(Flux::fromIterable)</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>I want to add pre-set elements to an existing sequence:</p>
+<ul>
+<li>at the start: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#startWith-T...-" target="_blank" rel="noopener">Flux#startWith(T…)</a></li>
+<li>at the end: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#concatWithValues-T...-" target="_blank" rel="noopener">Flux#concatWithValues(T…)</a></li>
+</ul>
+</li>
+<li><p>I want to aggregate a <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html" target="_blank" rel="noopener">Flux</a>: (the <code>Flux#</code> prefix is assumed below)</p>
+<ul>
+<li><p>into a List: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#collectList--" target="_blank" rel="noopener">collectList</a>, <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#collectSortedList--" target="_blank" rel="noopener">collectSortedList</a></p>
+</li>
+<li><p>into a Map: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#collectMap-java.util.function.Function-" target="_blank" rel="noopener">collectMap</a>, <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#collectMultimap-java.util.function.Function-" target="_blank" rel="noopener">collectMultiMap</a></p>
+</li>
+<li><p>into an arbitrary container: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#collect-java.util.stream.Collector-" target="_blank" rel="noopener">collect</a></p>
+</li>
+<li><p>into the size of the sequence: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#count--" target="_blank" rel="noopener">count</a></p>
+</li>
+<li><p>by applying a function between each element (eg. running sum): <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#reduce-A-java.util.function.BiFunction-" target="_blank" rel="noopener">reduce</a></p>
+<ul>
+<li><pre><code class="java">Flux.range(<span class="number">0</span>, <span class="number">5</span>)
+  .reduce(Integer::sum)  <span class="comment">// 两两相加</span>
+  .map(Objects::toString)
+  .subscribe(log::info);</code></pre>
+</li>
+<li><p>…but emitting each intermediary value: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#scan-A-java.util.function.BiFunction-" target="_blank" rel="noopener">scan</a></p>
+</li>
+</ul>
+</li>
+<li><p>into a boolean value from a predicate:</p>
+<ul>
+<li>applied to all values (AND): <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#all-java.util.function.Predicate-" target="_blank" rel="noopener">all</a></li>
+<li>applied to at least one value (OR): <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#any-java.util.function.Predicate-" target="_blank" rel="noopener">any</a></li>
+<li>testing the presence of any value: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#hasElements--" target="_blank" rel="noopener">hasElements</a> <em>(there is a <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html" target="_blank" rel="noopener">Mono</a> equivalent in <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#hasElement--" target="_blank" rel="noopener">hasElement</a>)</em></li>
+<li>testing the presence of a specific value: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#hasElement-T-" target="_blank" rel="noopener">hasElement(T)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>I want to combine publishers…</p>
+<ul>
+<li>…</li>
+</ul>
+</li>
+<li><p>I want to repeat an existing sequence: <code>repeat</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#repeat--" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#repeat--" target="_blank" rel="noopener">Mono</a>)</p>
+<ul>
+<li>…</li>
+</ul>
+</li>
+<li><p>I have an empty sequence but…</p>
+<ul>
+<li><p>I want a value instead: <code>defaultIfEmpty</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#defaultIfEmpty-T-" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#defaultIfEmpty-T-" target="_blank" rel="noopener">Mono</a>)</p>
+</li>
+<li><p>I want another sequence instead: <code>switchIfEmpty</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#switchIfEmpty-org.reactivestreams.Publisher-" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#switchIfEmpty-reactor.core.publisher.Mono-" target="_blank" rel="noopener">Mono</a>)</p>
+<ul>
+<li><pre><code class="java">Flux.just(<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)
+  .filter(i -&gt; i &lt; <span class="number">0</span>)
+  .next()
+  .doOnNext(i -&gt; log.info(<span class="string">"Exist a item: {}"</span>, i))
+  .switchIfEmpty(Mono.just(-<span class="number">1</span>))
+  .map(Objects::toString)
+  .subscribe(log::info);
+
+</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>I have a sequence but I am not interested in values: <code>ignoreElements</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#ignoreElements--" target="_blank" rel="noopener">Flux.ignoreElements()</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#ignoreElement--" target="_blank" rel="noopener">Mono.ignoreElement()</a>)</p>
+<ul>
+<li>…and I want the completion represented as a <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html" target="_blank" rel="noopener">Mono</a>: <code>then</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#then--" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#then--" target="_blank" rel="noopener">Mono</a>)</li>
+<li>…and I want to wait for another task to complete at the end: <code>thenEmpty</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#thenEmpty-org.reactivestreams.Publisher-" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#thenEmpty-org.reactivestreams.Publisher-" target="_blank" rel="noopener">Mono</a>)</li>
+<li>…and I want to switch to another <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html" target="_blank" rel="noopener">Mono</a> at the end: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#then-reactor.core.publisher.Mono-" target="_blank" rel="noopener">Mono#then(mono)</a></li>
+<li>…and I want to emit a single value at the end: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#thenReturn-V-" target="_blank" rel="noopener">Mono#thenReturn(T)</a></li>
+<li>…and I want to switch to a <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html" target="_blank" rel="noopener">Flux</a> at the end: <code>thenMany</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#thenMany-org.reactivestreams.Publisher-" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#thenMany-org.reactivestreams.Publisher-" target="_blank" rel="noopener">Mono</a>)</li>
+</ul>
+</li>
+<li><p>…</p>
+</li>
+</ul>
+<h3 id="过滤"><a href="#过滤" class="headerlink" title="过滤"></a>过滤</h3><ul>
+<li>I want to filter a sequence:<ul>
+<li>based on an arbitrary criteria: <code>filter</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#filter-java.util.function.Predicate-" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#filter-java.util.function.Predicate-" target="_blank" rel="noopener">Mono</a>)<ul>
+<li>…that is asynchronously computed: <code>filterWhen</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#filterWhen-java.util.function.Function-" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#filterWhen-java.util.function.Function-" target="_blank" rel="noopener">Mono</a>)</li>
+</ul>
+</li>
+<li>restricting on the type of the emitted objects: <code>ofType</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#ofType-java.lang.Class-" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#ofType-java.lang.Class-" target="_blank" rel="noopener">Mono</a>)</li>
+<li>by ignoring the values altogether: <code>ignoreElements</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#ignoreElements--" target="_blank" rel="noopener">Flux.ignoreElements()</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#ignoreElement--" target="_blank" rel="noopener">Mono.ignoreElement()</a>)</li>
+<li>by ignoring duplicates:<ul>
+<li>in the whole sequence (logical set): <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#distinct--" target="_blank" rel="noopener">Flux#distinct</a></li>
+<li>between subsequently emitted items (deduplication): <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#distinctUntilChanged--" target="_blank" rel="noopener">Flux#distinctUntilChanged</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>I want to keep only a subset of the sequence:<ul>
+<li>by taking N elements:<ul>
+<li>at the beginning of the sequence: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#take-long-boolean-" target="_blank" rel="noopener">Flux#take(long, true)</a><ul>
+<li>…requesting an unbounded amount from upstream: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#take-long-boolean-" target="_blank" rel="noopener">Flux#take(long, false)</a></li>
+<li>…based on a duration: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#take-java.time.Duration-" target="_blank" rel="noopener">Flux#take(Duration)</a></li>
+<li>…only the first element, as a <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html" target="_blank" rel="noopener">Mono</a>: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#next--" target="_blank" rel="noopener">Flux#next()</a></li>
+<li>…using <a href="https://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html#request(long)" target="_blank" rel="noopener">request(N)</a> rather than cancellation: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#limitRequest-long-" target="_blank" rel="noopener">Flux#limitRequest(long)</a></li>
+</ul>
+</li>
+<li>at the end of the sequence: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#takeLast-int-" target="_blank" rel="noopener">Flux#takeLast</a></li>
+<li>until a criteria is met (inclusive): <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#takeUntil-java.util.function.Predicate-" target="_blank" rel="noopener">Flux#takeUntil</a> (predicate-based), <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#takeUntilOther-org.reactivestreams.Publisher-" target="_blank" rel="noopener">Flux#takeUntilOther</a> (companion publisher-based)</li>
+<li>while a criteria is met (exclusive): <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#takeWhile-java.util.function.Predicate-" target="_blank" rel="noopener">Flux#takeWhile</a></li>
+</ul>
+</li>
+<li>by taking at most 1 element:<ul>
+<li>at a specific position: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#elementAt-int-" target="_blank" rel="noopener">Flux#elementAt</a></li>
+<li>at the end: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#takeLast-int-" target="_blank" rel="noopener">.takeLast(1)</a><ul>
+<li>…and emit an error if empty: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#last--" target="_blank" rel="noopener">Flux#last()</a></li>
+<li>…and emit a default value if empty: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#last-T-" target="_blank" rel="noopener">Flux#last(T)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>by skipping elements:<ul>
+<li>at the beginning of the sequence: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#skip-long-" target="_blank" rel="noopener">Flux#skip(long)</a><ul>
+<li>…based on a duration: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#skip-java.time.Duration-" target="_blank" rel="noopener">Flux#skip(Duration)</a></li>
+</ul>
+</li>
+<li>at the end of the sequence: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#skipLast-int-" target="_blank" rel="noopener">Flux#skipLast</a></li>
+<li>until a criteria is met (inclusive): <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#skipUntil-java.util.function.Predicate-" target="_blank" rel="noopener">Flux#skipUntil</a> (predicate-based), <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#skipUntilOther-org.reactivestreams.Publisher-" target="_blank" rel="noopener">Flux#skipUntilOther</a> (companion publisher-based)</li>
+<li>while a criteria is met (exclusive): <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#skipWhile-java.util.function.Predicate-" target="_blank" rel="noopener">Flux#skipWhile</a></li>
+</ul>
+</li>
+<li>by sampling items:<ul>
+<li>by duration: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#sample-java.time.Duration-" target="_blank" rel="noopener">Flux#sample(Duration)</a><ul>
+<li>but keeping the first element in the sampling window instead of the last: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#sampleFirst-java.time.Duration-" target="_blank" rel="noopener">sampleFirst</a></li>
+</ul>
+</li>
+<li>by a publisher-based window: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#sample-org.reactivestreams.Publisher-" target="_blank" rel="noopener">Flux#sample(Publisher)</a></li>
+<li>based on a publisher “timing out”: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#sampleTimeout-java.util.function.Function-" target="_blank" rel="noopener">Flux#sampleTimeout</a> (each element triggers a publisher, and is emitted if that publisher does not overlap with the next)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>I expect at most 1 element (error if more than one)…<ul>
+<li>and I want an error if the sequence is empty: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#single--" target="_blank" rel="noopener">Flux#single()</a></li>
+<li>and I want a default value if the sequence is empty: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#single-T-" target="_blank" rel="noopener">Flux#single(T)</a></li>
+<li>and I accept an empty sequence as well: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#singleOrEmpty--" target="_blank" rel="noopener">Flux#singleOrEmpty</a></li>
+</ul>
+</li>
+</ul>
+<h3 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h3><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>注释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>doOnNext</code></td>
+<td>Add behavior triggered when the <code>Mono</code> emits a data successfully.</td>
+</tr>
+<tr>
+<td><code>doOnSuccess</code></td>
+<td>Add behavior triggered when the <code>Mono</code> completes successfully.<br/>* <code>null</code> : completed without data<br/>* <code>T</code>: completed with data</td>
+</tr>
+<tr>
+<td><code>doOnError</code></td>
+<td>Add behavior triggered when the <code>Mono</code> completes with an error.</td>
+</tr>
+<tr>
+<td><code>doAfterSuccessOrError</code></td>
+<td>Add behavior triggered after the <code>Mono</code> terminates, either by completing downstream successfully or with an error. The arguments will be null depending on success, success with data and error:<br/>* <code>null</code>, <code>null</code> : completed without data<br/>* <code>T</code>, <code>null</code> : completed with data<br/>* <code>null</code>, <code>Throwable</code> : failed with/without data</td>
+</tr>
+<tr>
+<td><code>doOnSubscribe</code></td>
+<td>Add behavior triggered when the <code>Mono</code> is subscribed.</td>
+</tr>
+<tr>
+<td><code>doOnCancel</code></td>
+<td>Add behavior triggered when the <code>Mono</code> is cancelled.</td>
+</tr>
+<tr>
+<td><code>doOnRequest</code></td>
+<td>Add behavior triggering a <code>LongConsumer</code> when the Mono receives any request.</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>注释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>log</code></td>
+<td>Observe all Reactive Streams signals and trace them using <code>Logger</code> support. Default will use <code>Level.INFO</code> and java.util.logging. If <strong>SLF4J</strong> is available, it will be used instead.</td>
+</tr>
+<tr>
+<td><code>timestamp</code></td>
+<td>If this <code>Mono</code> is valued, emit a <code>Tuple2</code> pair of T1 the current clock time in millis (as a <code>Long</code> measured by the parallel Scheduler) and T2 the emitted data (as a T).</td>
+</tr>
+<tr>
+<td><code>elapsed</code></td>
+<td></td>
+</tr>
+</tbody></table>
+<p><img src="/img/java/reactive-stream/reactor/mono/mono_do.png" alt="mono_od"></p>
+<h3 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h3><p>Two ways to recover from errors:</p>
+<ul>
+<li>by falling back</li>
+<li>by retrying</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>注释</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>error</code></td>
+<td>Create a <code>Mono</code> that terminates with the specified error immediately after being subscribed to.</td>
+<td>创建异常流。</td>
+</tr>
+<tr>
+<td><code>onErrorReturn</code></td>
+<td>Simply emit a captured fallback value when <u>any error</u> is observed on this <code>Mono</code>.<br/>Simply emit a captured fallback value when <u>an error of the specified type</u> is observed on this <code>Mono</code>.<br/>Simply emit a captured fallback value when <u>an error matching the given predicate</u> is observed on this <code>Mono</code>.</td>
+<td>catching an exception and falling back to a default value</td>
+</tr>
+<tr>
+<td><code>onErrorResume</code></td>
+<td>Subscribe to a fallback publisher when <u>any error</u> occurs, using a function to choose the fallback depending on the error.<br/>Subscribe to a fallback publisher when <u>an error matching the given type</u> occurs.<br/>Subscribe to a fallback publisher when <u>an error matching a given predicate</u> occurs.</td>
+<td>catching an exception and falling back to another <code>Mono</code></td>
+</tr>
+<tr>
+<td><code>onErrorContinue</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>onErrorMap</code></td>
+<td>Transform any error emitted by this <code>Mono</code> by synchronously applying a function to it.<br/>Transform an error emitted by this <code>Mono</code> by synchronously applying a function to it <u>if the error matches the given type.</u> Otherwise let the error pass through.<br/>Transform an error emitted by this <code>Mono</code> by synchronously applying a function to it <u>if the error matches the given predicate.</u> Otherwise let the error pass through.</td>
+<td>catching an exception and wrapping and re-throwing</td>
+</tr>
+<tr>
+<td><code>retry()</code><br/><code>retry(long)</code></td>
+<td>Re-subscribes to this <code>Mono</code> sequence if it signals any error, indefinitely.<br/>Re-subscribes to this <code>Mono</code> sequence if it signals any error, for a fixed number of times.</td>
+<td>retrying with a simple policy (max number of attempts)</td>
+</tr>
+<tr>
+<td><code>retryWhen</code></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p><img src="/img/java/reactive-stream/reactor/mono/mono_error.png" alt="mono_error"></p>
+<h2 id="终结操作"><a href="#终结操作" class="headerlink" title="终结操作"></a>终结操作</h2><h3 id="订阅"><a href="#订阅" class="headerlink" title="订阅"></a>订阅</h3><h3 id="阻塞返回结果"><a href="#阻塞返回结果" class="headerlink" title="阻塞返回结果"></a>阻塞返回结果</h3><p><img src="/img/java/reactive-stream/reactor/mono/mono_block.png" alt="mono_block"></p>
+<h1 id="Flux"><a href="#Flux" class="headerlink" title="Flux"></a>Flux</h1><p><a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html" target="_blank" rel="noopener">https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html</a></p>
+<blockquote>
+<p>for [N] elements</p>
+</blockquote>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux.svg" alt="flux"></p>
+<h2 id="创建-Flux-流"><a href="#创建-Flux-流" class="headerlink" title="创建 Flux 流"></a>创建 Flux 流</h2><p>普通创建：</p>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux_create.png" alt="flux_create"></p>
+<p>遍历创建：</p>
+<p>定时创建：</p>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux_create_interval.png" alt="flux_create_interval"></p>
+<p>合并创建：</p>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux_create_combine.png" alt="flux_create_combine"></p>
+<p>编程式创建：</p>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux_create_2.png" alt="flux_create_2"></p>
+<p>其它：</p>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux_create_switchOnNext.png" alt="flux_create_switchOnNext"></p>
+<h2 id="中间操作-1"><a href="#中间操作-1" class="headerlink" title="中间操作"></a>中间操作</h2><h3 id="转换操作"><a href="#转换操作" class="headerlink" title="转换操作"></a>转换操作</h3><p>Flux 转 Mono：</p>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux_to_mono.png" alt="flux_to_mono"></p>
+<p><code>map</code>、<code>flatMap</code>：</p>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux_map.png" alt="flux_map"></p>
+<p>转成并行流：</p>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux_parallel.png" alt="flux_parallel"></p>
+<h3 id="空值处理"><a href="#空值处理" class="headerlink" title="空值处理"></a>空值处理</h3><p><img src="/img/java/reactive-stream/reactor/flux/flux_ifempty.png" alt="flux_ifempty"></p>
+<h3 id="计数"><a href="#计数" class="headerlink" title="计数"></a>计数</h3><p><code>count</code></p>
+<h3 id="排序"><a href="#排序" class="headerlink" title="排序"></a>排序</h3><p><img src="/img/java/reactive-stream/reactor/flux/flux_sort.png" alt="flux_sort"></p>
+<h3 id="去重"><a href="#去重" class="headerlink" title="去重"></a>去重</h3><p><img src="/img/java/reactive-stream/reactor/flux/flux_distinct.png" alt="flux_distinct"></p>
+<h3 id="分组"><a href="#分组" class="headerlink" title="分组"></a>分组</h3><p><img src="/img/java/reactive-stream/reactor/flux/flux_window.png" alt="flux_window"></p>
+<h3 id="合并"><a href="#合并" class="headerlink" title="合并"></a>合并</h3><p><img src="/img/java/reactive-stream/reactor/flux/flux_concat.png" alt="flux_concat"></p>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux_merge.png" alt="flux_merge"></p>
+<h3 id="压缩"><a href="#压缩" class="headerlink" title="压缩"></a>压缩</h3><p><img src="/img/java/reactive-stream/reactor/flux/flux_zip.png" alt="flux_zip"></p>
+<h3 id="获取元素"><a href="#获取元素" class="headerlink" title="获取元素"></a>获取元素</h3><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>注释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>take(long n)</code></td>
+<td>Take only the first N values from this <code>Flux</code>, if available.</td>
+</tr>
+<tr>
+<td><code>takeLast(long n)</code></td>
+<td>Emit the last N values this <code>Flux</code> emitted before its completion.</td>
+</tr>
+<tr>
+<td><code>last()</code></td>
+<td>Emit the last element observed before complete signal as a <code>Mono</code>, or emit <code>NoSuchElementException</code> error if the source was empty.</td>
+</tr>
+<tr>
+<td><code>last(T defaultValue)</code></td>
+<td>Emit the last element observed before complete signal as a <code>Mono</code>, or emit the <strong>defaultValue</strong> if the source was empty.</td>
+</tr>
+</tbody></table>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux_take.png" alt="flux_take"></p>
+<h3 id="延迟处理"><a href="#延迟处理" class="headerlink" title="延迟处理"></a>延迟处理</h3><p><img src="/img/java/reactive-stream/reactor/flux/flux_delay.png" alt="flux_delay"></p>
+<h3 id="缓冲"><a href="#缓冲" class="headerlink" title="缓冲"></a>缓冲</h3><p><img src="/img/java/reactive-stream/reactor/flux/flux_buffer.png" alt="flux_buffer"></p>
+<h3 id="执行操作"><a href="#执行操作" class="headerlink" title="执行操作"></a>执行操作</h3><p><img src="/img/java/reactive-stream/reactor/flux/flux_do.png" alt="flux_do"></p>
+<h3 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h3><p><img src="/img/java/reactive-stream/reactor/flux/flux_error.png" alt="flux_error"></p>
+<h2 id="终结操作-1"><a href="#终结操作-1" class="headerlink" title="终结操作"></a>终结操作</h2><h3 id="订阅-1"><a href="#订阅-1" class="headerlink" title="订阅"></a>订阅</h3><p>订阅后可以使用 <code>Disposable</code> API 停止 FLux 流。</p>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux_subscribe.png" alt="flux_subscribe"></p>
+<h3 id="阻塞返回结果-1"><a href="#阻塞返回结果-1" class="headerlink" title="阻塞返回结果"></a>阻塞返回结果</h3><p><img src="/img/java/reactive-stream/reactor/flux/flux_block.png" alt="flux_block"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://projectreactor.io/" target="_blank" rel="noopener">Reactor 框架</a>，实现 Reactive Streams 规范，并扩展大量特性</p>
+<p><a href="https://projectreactor.io/docs/core/release/reference/docs/index.html#which-operator" target="_blank" rel="noopener">Appendix A: Which operator do I need?</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/35964846" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/35964846</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2020/09/15/java/" class="prev">PREV</a><a href="/2020/08/08/java-reactor-startup/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Spring Boot 入门总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Spring Boot 入门总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Spring Boot 入门总结</h1><div class="post-info">2017-08-01<a href="/tags/Java/" title="Java" class="post-demo">Java</a><a href="/tags/Spring/" title="Spring" class="post-demo">Spring</a></div><div class="post-content"><h1 id="搭建项目"><a href="#搭建项目" class="headerlink" title="搭建项目"></a>搭建项目</h1><p>有几种方式可以搭建基于 Spring Boot 的项目：</p>
+<ol>
+<li><p><a href="https://start.spring.io/" target="_blank" rel="noopener">Spring Initializr</a> 在线生成项目</p>
+<blockquote>
+<p>Spring Initializr 从本质上来说就是一个Web应用程序，它能为你生成 Spring Boot 项目结构。虽然不能生成应用程序代码，但它能为你提供一个基本的项目结构，以及一个用于构建代码的 Maven 或 Gradle 构建说明文件。你只需要写应用程序的代码就好了。</p>
+</blockquote>
+</li>
+<li><p><a href="https://docs.spring.io/spring-boot/docs/current/reference/html/cli.html" target="_blank" rel="noopener">Spring Boot CLI</a> 命令行工具，下载地址<a href="http://repo.spring.io/release/org/springframework/boot/spring-boot-cli/" target="_blank" rel="noopener">点我</a>，命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ spring init -dweb,data-jpa,h2,thymeleaf --build gradle readingList</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><a href="https://spring.io/tools/sts" target="_blank" rel="noopener">Spring Tool Suite</a>，一个官方基于 Eclipse 定制的 IDE，用法参考：《<a href="http://blog.csdn.net/linabc123000/article/details/68954236" target="_blank" rel="noopener">STS 创建第一个 Spring Boot 项目</a>》</p>
+</li>
+<li><p>IntelliJ IDEA</p>
+<ol>
+<li>社区版：离线安装 <a href="http://plugins.jetbrains.com/plugin/10229-spring-assistant" target="_blank" rel="noopener">Spring Assistant</a> 插件（在线安装方式被墙）</li>
+<li>收费版：直接使用 Spring Initializr 插件</li>
+</ol>
+</li>
+</ol>
+<h1 id="项目组成"><a href="#项目组成" class="headerlink" title="项目组成"></a>项目组成</h1><p>Spring Boot 的<a href="https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project" target="_blank" rel="noopener">各个子项目</a>组成及结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">spring-boot-dependencies (Parent pom)</span><br><span class="line">  spring-boot-parent (Parent pom)</span><br><span class="line">    spring-boot</span><br><span class="line">    spring-boot-autoconfigure</span><br><span class="line">    spring-boot-starters (Parent module)</span><br><span class="line">      spring-boot-starter (Core starter, including auto-configuration support, logging and YAML)</span><br><span class="line">      spring-boot-starter-parent (Parent pom providing dependency and plugin management for applications</span><br><span class="line">		built with Maven)</span><br><span class="line">      spring-boot-starter-web</span><br><span class="line">      ...</span><br><span class="line">    spring-boot-test</span><br><span class="line">    spring-boot-test-autoconfigure</span><br><span class="line">    spring-boot-actuator</span><br><span class="line">    spring-boot-actuator-autoconfigure</span><br><span class="line">    spring-boot-devtools</span><br><span class="line">    spring-boot-cli</span><br><span class="line">    spring-boot-docs</span><br><span class="line">    spring-boot-tools (Parent module)</span><br><span class="line">      spring-boot-autoconfigure-processor</span><br><span class="line">      spring-boot-configuration-processor</span><br><span class="line">      spring-boot-maven-plugin</span><br><span class="line">      spring-boot-gradle-plugin</span><br><span class="line">      ...</span><br></pre></td></tr></table></figure>
+
+<h2 id="项目管理"><a href="#项目管理" class="headerlink" title="项目管理"></a>项目管理</h2><ul>
+<li><code>spring-boot-dependencies</code><ul>
+<li>用于定义和统一管理 Sprint Boot 的各个依赖版本号，继承自 <code>spring-boot-build</code>。可通过 <code>dependencyManagement</code> 引入该依赖可以解决<strong>单继承问题</strong>。</li>
+</ul>
+</li>
+<li><code>spring-boot-parent</code><ul>
+<li>Spring Boot 各个依赖的父 POM，用于构建配置。继承自 <code>spring-boot-dependencies</code>。</li>
+</ul>
+</li>
+</ul>
+<h2 id="核心依赖"><a href="#核心依赖" class="headerlink" title="核心依赖"></a>核心依赖</h2><ul>
+<li><code>spring-boot</code> Spring Boot 的核心工程。</li>
+<li><code>spring-boot-autoconfigure</code> 实现 Spring Boot 自动配置的关键，常用的包含：<ul>
+<li>自动配置总开关 <code>@EnableAutoConfiguration</code></li>
+<li>各种自动配置类 <code>*AutoConfiguration</code></li>
+<li>各种外部化配置属性类 <code>*Properties</code></li>
+<li>各种条件化注解类 <code>@ConditionOn*</code></li>
+</ul>
+</li>
+<li><code>spring-boot-starters</code> 起步依赖的父 POM<ul>
+<li>Spring Boot 提供的众多起步依赖，用于降低项目依赖的复杂度，清单详见：<a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter" target="_blank" rel="noopener">Starters</a>，例如：<ul>
+<li><code>spring-boot-starter</code> 核心起步依赖，包括自动配置支持、日志、YAML 依赖</li>
+<li><code>spring-boot-starter-parent</code> 业务项目的<strong>父 POM</strong>，继承自 <code>spring-boot-dependencies</code></li>
+<li><code>spring-boot-starter-web</code> WEB 开发相关起步依赖</li>
+<li><code>spring-boot-starter-test</code> 测试相关起步依赖</li>
+<li>…</li>
+</ul>
+</li>
+<li>起步依赖本质上就是特殊的 Maven 依赖和 Gradle 依赖，利用了<strong>传递依赖</strong>解析，把常用库聚合在一起，组成了几个为特定功能而定制的依赖。</li>
+<li>比起减少依赖数量，起步依赖还引入了一些微妙的变化。向项目中添加了某个起步依赖，实际上指定了应用程序所需的<strong>一类功能</strong>。</li>
+<li>起步依赖引入的库的版本兼容性都是<strong>经过测试</strong>的，可以放心使用。</li>
+</ul>
+</li>
+</ul>
+<h2 id="工具或插件"><a href="#工具或插件" class="headerlink" title="工具或插件"></a>工具或插件</h2><ul>
+<li><code>spring-boot-test</code>、<code>spring-boot-test-autoconfigure</code><ul>
+<li>提供一系列测试支持，常用的如：<code>@SpringBootTest</code>、mock、web 支持。</li>
+</ul>
+</li>
+<li><code>spring-boot-actuator</code>、<code>spring-boot-actuator-autoconfigure</code><ul>
+<li>包含许多额外的特性，以帮助你通过 HTTP 或 JMX 端点来监控和管理生产环境的应用程序。包括以下特性（详见<a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready" target="_blank" rel="noopener">用户手册</a>）：<ul>
+<li><strong>Endpoints</strong> Actuator endpoints allow you to monitor and interact with your application. Spring Boot includes a number of built-in endpoints and you can also add your own. For example the <code>health</code> endpoint provides basic application health information. Run up a basic application and look at <code>/actuator/health</code>.</li>
+<li><strong>Metrics</strong> Spring Boot Actuator provides dimensional metrics by integrating with <a href="https://micrometer.io/" target="_blank" rel="noopener">Micrometer</a>.</li>
+<li><strong>Audit</strong> Spring Boot Actuator has a flexible audit framework that will publish events to an <code>AuditEventRepository</code>. Once Spring Security is in play it automatically publishes authentication events by default. This can be very useful for reporting, and also to implement a lock-out policy based on authentication failures.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>spring-boot-devtools</code><ul>
+<li>热部署、静态资源 livereload 等等。</li>
+</ul>
+</li>
+<li><code>spring-boot-tools</code> 工具集的父 POM。为 Spring Boot 开发者提供的常用工具集。例如：<ul>
+<li><code>spring-boot-maven-plugin</code> 插件</li>
+<li><code>spring-boot-gradle-plugin</code> 插件</li>
+</ul>
+</li>
+<li><code>spring-boot-cli</code><ul>
+<li>命令行工具。</li>
+</ul>
+</li>
+</ul>
+<h1 id="POM-配置"><a href="#POM-配置" class="headerlink" title="POM 配置"></a>POM 配置</h1><ul>
+<li>方式一：继承 <code>spring-boot-starter-parent</code></li>
+<li>方式二：如果已经有父项目，组合 <code>spring-boot-dependencies</code></li>
+</ul>
+<p>参考：<a href="https://docs.spring.io/spring-boot/docs/current/reference/html/using-boot-build-systems.html#using-boot-maven" target="_blank" rel="noopener">Build Systems - Maven</a></p>
+<h2 id="继承方式"><a href="#继承方式" class="headerlink" title="继承方式"></a>继承方式</h2><p>Maven 用户可以继承 <code>spring-boot-starter-parent</code> POM 项目以获得合理的默认配置：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Inherit defaults from Spring Boot --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.0.1.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>你只需要指定 parent 的 <code>&lt;version&gt;</code> 版本号。之后如果你需要引入其它起步依赖，你可以安全的省略起步依赖的 <code>&lt;version&gt;</code> 版本号，parent 会统一管理。</p>
+<p>父项目还提供了以下功能：</p>
+<ul>
+<li>Java 1.8 作为默认的编译器级别</li>
+<li>UTF-8 源码编码</li>
+<li>提供统一的依赖版本管理（继承自 Maven POM <code>spring-boot-dependencies</code>），可以让你在自己的 pom 中引入依赖时省略版本号定义，保障依赖间的兼容性</li>
+<li>An execution of the <a href="https://docs.spring.io/spring-boot/docs/2.1.0.RELEASE/maven-plugin/repackage-mojo.html" target="_blank" rel="noopener"><code>repackage</code> goal</a> with a <code>repackage</code> execution id.</li>
+<li>合理的 <a href="https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html" target="_blank" rel="noopener">resource filtering</a> 配置（<code>application.properties</code> and <code>application.yml</code> including profile-specific files）</li>
+<li>合理的 plugin configuration 配置</li>
+</ul>
+<h2 id="组合方式"><a href="#组合方式" class="headerlink" title="组合方式"></a>组合方式</h2><p>不是每个人都喜欢继承 <code>spring-boot-starter-parent</code> POM 项目。每个公司可能都拥有自己的标准父项目，或者你更愿意明确声明所有 Maven 配置。</p>
+<p>即使如此，你仍然可以通过以组合方式使用 <code>scope=import</code>  的 <code>spring-boot-dependencies</code> 依赖来享受依赖管理的好处，如下所示：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencyManagement</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- Import dependency management from Spring Boot --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-dependencies<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.0.1.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">type</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">type</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>import<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencyManagement</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这种组合方式能解决 Maven 单继承问题。</p>
+<h1 id="Maven-插件"><a href="#Maven-插件" class="headerlink" title="Maven 插件"></a>Maven 插件</h1><p><code>spring-boot-maven-plugin</code> 插件内置<a href="https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals" target="_blank" rel="noopener">几个 goal</a>，如下：</p>
+<table>
+<thead>
+<tr>
+<th align="left">Goal</th>
+<th align="left">Description</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><a href="https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-build-image" target="_blank" rel="noopener">spring-boot:build-image</a></td>
+<td align="left">Package an application into a OCI image using a buildpack.</td>
+<td></td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-build-info" target="_blank" rel="noopener">spring-boot:build-info</a></td>
+<td align="left">Generate a <code>build-info.properties</code> file based on the content of the current <code>MavenProject</code>.</td>
+<td></td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-help" target="_blank" rel="noopener">spring-boot:help</a></td>
+<td align="left">Display help information on spring-boot-maven-plugin. Call <code>mvn spring-boot:help -Ddetail=true -Dgoal=&lt;goal-name&gt;</code> to display parameter details.</td>
+<td></td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-repackage" target="_blank" rel="noopener">spring-boot:repackage</a></td>
+<td align="left">Repackage existing JAR and WAR archives so that they can be executed from the command line using <code>java -jar</code>. With <code>layout=NONE</code> can also be used simply to package a JAR with nested dependencies (and no main class, so not executable).</td>
+<td>常用</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-run" target="_blank" rel="noopener">spring-boot:run</a></td>
+<td align="left">Run an application in place.</td>
+<td>常用</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-start" target="_blank" rel="noopener">spring-boot:start</a></td>
+<td align="left">Start a spring application. Contrary to the <code>run</code> goal, this does not block and allows other goals to operate on the application. This goal is typically used in integration test scenario where the application is started before a test suite and stopped after.</td>
+<td></td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-stop" target="_blank" rel="noopener">spring-boot:stop</a></td>
+<td align="left">Stop an application that has been started by the “start” goal. Typically invoked once a test suite has completed.</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>参考：</p>
+<ul>
+<li><a href="https://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins-maven-plugin.html" target="_blank" rel="noopener">Spring Boot Maven Plugin</a></li>
+<li><a href="https://docs.spring.io/spring-boot/docs/current/maven-plugin/" target="_blank" rel="noopener">https://docs.spring.io/spring-boot/docs/current/maven-plugin/</a></li>
+</ul>
+<h2 id="项目运行方式一"><a href="#项目运行方式一" class="headerlink" title="项目运行方式一"></a>项目运行方式一</h2><p>使用 <code>spring-boot-maven-plugin</code> 插件自带的命令 <code>mvn spring-boot:run</code>，快速编译并运行。</p>
+<h2 id="项目运行方式二"><a href="#项目运行方式二" class="headerlink" title="项目运行方式二"></a>项目运行方式二</h2><p>先将项目打包成一个可执行的 jar/war 包，使用命令：<code>mvn package spring-boot:repackage</code>。</p>
+<p>使用插件打包好的 jar 包内会内嵌一个容器，你可以像运行任何其它应用程序一样运行它：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ java -jar target/myapplication-0.0.1-SNAPSHOT.jar</span><br></pre></td></tr></table></figure>
+
+<p>也可以指定运行参数，例如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ java -jar -spring.profiles.active=prod target/myapplication-0.0.1-SNAPSHOT.jar</span><br></pre></td></tr></table></figure>
+
+<h2 id="项目运行方式三"><a href="#项目运行方式三" class="headerlink" title="项目运行方式三"></a>项目运行方式三</h2><blockquote>
+<p>In addition to running Spring Boot applications by using <code>java -jar</code>, it is also possible to make <strong>fully executable</strong> applications for Unix systems. A fully executable jar can be executed like any other executable binary or it can be <a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services" target="_blank" rel="noopener">registered with <code>init.d</code> or <code>systemd</code></a>. This helps when installing and managing Spring Boot applications in common production environments.</p>
+<p>Fully executable jars work by embedding an extra script at the front of the file. It is recommended that you make your jar or war fully executable only if you intend to execute it directly, rather than running it with <code>java -jar</code> or deploying it to a servlet container.</p>
+<p>To create a ‘fully executable’ jar with Maven, use the following plugin configuration:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">executable</span>&gt;</span>true<span class="tag">&lt;/<span class="name">executable</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>You can then run your application by typing <code>./my-application.jar</code> (where <code>my-application</code> is the name of your artifact). The directory containing the jar is used as your application’s working directory.</p>
+</blockquote>
+<p>更多信息参考：<a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing" target="_blank" rel="noopener">7.3 Installing Spring Boot Applications</a></p>
+<ul>
+<li>Unix/Linux Services<ul>
+<li>Installation as an <code>init.d</code> Service (System V)</li>
+<li>Installation as a <code>systemd</code> Service (<code>systemd</code> is the successor of the System V init system and is now being used by many modern Linux distributions.)</li>
+<li>Customizing the Startup Script</li>
+</ul>
+</li>
+</ul>
+<h3 id="在运行时自定义脚本项"><a href="#在运行时自定义脚本项" class="headerlink" title="在运行时自定义脚本项"></a>在运行时自定义脚本项</h3><blockquote>
+<p>For items of the script that need to be customized <em>after</em> the jar has been written, you can use environment variables or a <a href="https://docs.spring.io/spring-boot/docs/current/reference/html/deployment.html#deployment.installing.nix-services.script-customization.when-running.conf-file" target="_blank" rel="noopener">config file</a>.</p>
+<p>The <a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services.script-customization.when-running" target="_blank" rel="noopener">following environment properties</a> are supported with the default script.</p>
+</blockquote>
+<p>更多信息参考：<a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services.script-customization.when-running" target="_blank" rel="noopener">7.3.2 Unix/Linux Services - Customizing a Script When It Runs</a></p>
+<h1 id="外部配置"><a href="#外部配置" class="headerlink" title="外部配置"></a>外部配置</h1><p>更多信息参考：<a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#features.external-config" target="_blank" rel="noopener">5.2. Externalized Configuration</a></p>
+<p>Spring Boot 能从多种属性源获得属性，包括如下几处：</p>
+<ol>
+<li>命令行参数</li>
+<li><code>java:comp/env</code> 里的 JNDI 属性</li>
+<li>JVM 系统属性</li>
+<li>操作系统环境变量</li>
+<li>随机生成的带 <code>random.*</code> 前缀的属性（在设置其他属性时，可以引用它们，比如 <code>${random.long}</code>）</li>
+<li>应用程序以外的 <code>application.properties</code> 或者 <code>appliaction.yml</code> 文件</li>
+<li>打包在应用程序内的 <code>application.properties</code> 或者 <code>appliaction.yml</code> 文件</li>
+<li>通过 <code>@PropertySource</code> 标注的属性源</li>
+<li>默认属性</li>
+</ol>
+<p>这个列表按照优先级排序，也就是说，任何在高优先级属性源里设置的属性都会覆盖低优先级的相同属性。例如，命令行参数会覆盖其他属性源里的属性。</p>
+<p><code>application.properties</code> 和 <code>application.yml</code> 文件能放在以下四个位置：</p>
+<ol>
+<li>外置，在相对于应用程序运行目录的 <code>/config</code> 子目录里。</li>
+<li>外置，在应用程序运行的目录里。</li>
+<li>内置，在 <code>config</code> 包内。</li>
+<li>内置，在 <code>Classpath</code> 根目录。</li>
+</ol>
+<p>同样，这个列表按照优先级排序。也就是说，<code>/config</code> 子目录里的 <code>application.properties</code> 会覆盖应用程序 <code>Classpath</code> 里的 <code>application.properties</code> 中的相同属性。</p>
+<p>此外，如果你在同一优先级位置同时有 <code>application.properties</code> 和 <code>application.yml</code>，那么 <code>application.yml</code> 里的属性会覆盖 <code>application.properties</code> 里的属性。</p>
+<p>如果需要为自己的 Bean 加上外部配置注入，可以使用注解 <code>@ConfigurationProperties</code>。</p>
+<h2 id="配置嵌入式服务器"><a href="#配置嵌入式服务器" class="headerlink" title="配置嵌入式服务器"></a>配置嵌入式服务器</h2><p>Spring Boot 集成了 Tomcat、Jetty 和 Undertow，极大便利了项目部署。下面介绍一些常用配置：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">server.port</span>=<span class="string">8080 # Server HTTP port.</span></span><br><span class="line"><span class="meta">server.context-path</span>= <span class="string"># Context path</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Tomcat"><a href="#Tomcat" class="headerlink" title="Tomcat"></a>Tomcat</h3><p>URI 编码配置：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">server.tomcat.uri-encoding</span>=<span class="string">UTF-8 # Character encoding to use to decode the URI.</span></span><br></pre></td></tr></table></figure>
+
+<p>代理配置：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">server.tomcat.remote-ip-header</span>= <span class="string"># Name of the http header from which the remote ip is extracted. For instance `X-FORWARDED-FOR`</span></span><br><span class="line"><span class="meta">server.tomcat.protocol-header</span>= <span class="string"># Header that holds the incoming protocol, usually named "X-Forwarded-Proto".</span></span><br><span class="line"><span class="meta">server.tomcat.port-header</span>=<span class="string">X-Forwarded-Port # Name of the HTTP header used to override the original port value.</span></span><br></pre></td></tr></table></figure>
+
+<p>Socket 连接限制及等待超时时间：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">server.tomcat.max-connections</span>= <span class="string"># Maximum number of connections that the server will accept and process at any given time.</span></span><br><span class="line"><span class="meta">server.connection-timeout</span>= <span class="string"># Time in milliseconds that connectors will wait for another HTTP request before closing the connection. When not set, the connector's container-specific default will be used. Use a value of -1 to indicate no (i.e. infinite) timeout.</span></span><br></pre></td></tr></table></figure>
+
+<p>业务线程池调优：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">server.tomcat.max-threads</span>=<span class="string">0 # Maximum amount of worker threads. Default 200.</span></span><br><span class="line"><span class="meta">server.tomcat.min-spare-threads</span>=<span class="string">0 # Minimum amount of worker threads.</span></span><br><span class="line"><span class="meta">server.tomcat.accept-count</span>= <span class="string"># Maximum queue length for incoming connection requests when all possible request processing threads are in use.</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Undertow"><a href="#Undertow" class="headerlink" title="Undertow"></a>Undertow</h3><figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 设置IO线程数, 它主要执行非阻塞的任务,它们会负责多个连接, 默认设置每个CPU核心一个线程</span></span><br><span class="line"><span class="comment"># 不要设置过大，如果过大，启动项目会报错：打开文件数过多</span></span><br><span class="line"><span class="meta">server.undertow.io-threads</span>=<span class="string">16</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 阻塞任务线程池, 当执行类似servlet请求阻塞IO操作, undertow会从这个线程池中取得线程</span></span><br><span class="line"><span class="comment"># 它的值设置取决于系统线程执行任务的阻塞系数，默认值是IO线程数*8</span></span><br><span class="line"><span class="meta">server.undertow.worker-threads</span>=<span class="string">256</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 以下的配置会影响buffer,这些buffer会用于服务器连接的IO操作,有点类似netty的池化内存管理</span></span><br><span class="line"><span class="comment"># 每块buffer的空间大小,越小的空间被利用越充分，不要设置太大，以免影响其他应用，合适即可</span></span><br><span class="line"><span class="meta">server.undertow.buffer-size</span>=<span class="string">1024</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 每个区分配的buffer数量 , 所以pool的大小是buffer-size * buffers-per-region</span></span><br><span class="line"><span class="meta">server.undertow.buffers-per-region</span>=<span class="string">1024</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 是否分配的直接内存(NIO直接分配的堆外内存)</span></span><br><span class="line"><span class="meta">server.undertow.direct-buffers</span>=<span class="string">true</span></span><br></pre></td></tr></table></figure>
+
+<p><a href="https://www.cnblogs.com/duanxz/p/9337022.html" target="_blank" rel="noopener">https://www.cnblogs.com/duanxz/p/9337022.html</a></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《Spring Boot in Action》</p>
+<p><a href="https://github.com/spring-projects/spring-boot" target="_blank" rel="noopener">https://github.com/spring-projects/spring-boot</a></p>
+<p><a href="https://docs.spring.io/spring-boot/docs/current/" target="_blank" rel="noopener">https://docs.spring.io/spring-boot/docs/current/</a></p>
+<ul>
+<li><a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter" target="_blank" rel="noopener">4.1.5. Using Spring Boot Starters</a></li>
+<li><a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#features.external-config" target="_blank" rel="noopener">5.2. Externalized Configuration</a></li>
+<li><a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing" target="_blank" rel="noopener">7.3 Installing Spring Boot Applications</a><ul>
+<li><a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services.script-customization" target="_blank" rel="noopener">7.3.2 Unix/Linux Services - Customizing the Startup Script</a></li>
+</ul>
+</li>
+</ul>
+<p><a href="https://yq.aliyun.com/articles/619390" target="_blank" rel="noopener">Spring Boot Tomcat配置</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2017/08/20/spring-factories/" class="prev">PREV</a><a href="/2017/07/10/spring-aop/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

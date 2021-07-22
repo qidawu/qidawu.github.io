@@ -1,0 +1,314 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> IDEA 的一些使用总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="IDEA 的一些使用总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">IDEA 的一些使用总结</h1><div class="post-info">2018-07-29<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><p>年初也转投 IDEA 阵营了，相比 Eclipse 确实顺畅很多，尤其是多开项目的时候，已经有种回不去的感觉了。这里介绍一些两个 IDE 之间的区别。</p>
+<h1 id="版本选择"><a href="#版本选择" class="headerlink" title="版本选择"></a>版本选择</h1><p>首先是 IDEA 版本的选择，建议使用 Community 社区免费版即可，对比 Ultimate 收费版并无太大区别。都支持 Java、Maven、Git 等基本功能。但社区版会少了一些插件，例如 Spring Initializr。</p>
+<p>版本区别详见：<a href="https://www.jetbrains.com/idea/features/editions_comparison_matrix.html" target="_blank" rel="noopener">https://www.jetbrains.com/idea/features/editions_comparison_matrix.html</a></p>
+<h1 id="创建项目"><a href="#创建项目" class="headerlink" title="创建项目"></a>创建项目</h1><p>其次创建项目，需要了解 IDEA 的 Project 和 Module 两个概念：</p>
+<ul>
+<li>IntelliJ 系中的 Module 相当于 Eclipse 系中的 Project；</li>
+<li>IntelliJ 系中的 Project 相当于 Eclipse 系中的 Workspace。可以选择创建一个 Empty project without modules，之后再放入同一类型的 module 集合，此时只会生成一个 .idea 目录。也可以选择直接创建某一类型的 Project，如 Maven Project，此时需要添加 Maven 项目信息，完成后会生成 pom.xml、src 目录、*.iml。</li>
+</ul>
+<p>最后尝试新建一个 HelloWorld 示例项目，<code>.idea</code> 文件夹和 <code>HelloWorld.iml</code> 是 IDEA 帮助我们建立的辅助文件夹和文件，类似于 Eclipse 在我们的 Workspace 下建立的 <code>.settings</code> 文件夹和 <code>.classpath</code> 、<code>.project</code> 文件。 </p>
+<p><img src="/img/java/idea/hello_world.png" alt="IDEA Hello World"></p>
+<p>Project 作为工作空间可以自由切换、多开，从 File &gt; Open Recent 中选择即可。</p>
+<h1 id="配置-Tomcat"><a href="#配置-Tomcat" class="headerlink" title="配置 Tomcat"></a>配置 Tomcat</h1><p>1、下载 Tomcat</p>
+<p>2、IDEA 新建 Tomcat（Run &gt; Edit Configurations）</p>
+<p><img src="/img/java/idea/add_new_tomcat_server_config.png" alt="add_new_tomcat_server_config"></p>
+<p>3、新建完毕，配置本地 Tomcat 安装目录：</p>
+<p><img src="/img/java/idea/tomcat_server_config.png" alt="tomcat_server_config"></p>
+<p>4、配置端口号、必要的 VM options：</p>
+<p><img src="/img/java/idea/tomcat_server_config2.png" alt="tomcat_server_config2"></p>
+<p>5、配置运行项目，配置上下文：</p>
+<p><img src="/img/java/idea/deployment.png" alt="deployment"></p>
+<h1 id="创建-java-resource-目录"><a href="#创建-java-resource-目录" class="headerlink" title="创建 java/resource 目录"></a>创建 java/resource 目录</h1><p><code>Ctrl+Alt+Shift+S</code>，打开 Project Structure &gt; Modules：</p>
+<p><img src="/img/java/idea/project_structure_modules.png" alt="Project Structure &gt; Modules"></p>
+<h1 id="场景演示"><a href="#场景演示" class="headerlink" title="场景演示"></a>场景演示</h1><p>以特性开发与合版这个场景为例，看下如何利用 IDEA 完成整个流程：</p>
+<h2 id="特性开发"><a href="#特性开发" class="headerlink" title="特性开发"></a>特性开发</h2><p>第一步，本地建一个工作目录，以特性名称命名：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir feature-xxx</span><br></pre></td></tr></table></figure>
+
+<p>第二步，从远程仓库 <code>clone</code> 该特性涉及的所有模块到该工作目录：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> !$</span><br><span class="line">$ git <span class="built_in">clone</span> module1</span><br><span class="line">$ git <span class="built_in">clone</span> moduleN</span><br></pre></td></tr></table></figure>
+
+<p>第三步，新建 Project。打开 IDEA，File &gt; New &gt; Project from Existing Sources… &gt; 选择该工作目录，并按如下操作：</p>
+<p><img src="/img/java/idea/import_module.png" alt="Import Module"></p>
+<p><img src="/img/java/idea/import_module_search_for_projects_recursively.png" alt="Import Module"></p>
+<p>第四步，开始特性开发，批量从 master 分支 <code>checkout</code> 创建出特性分支 <code>feature-xxx</code>。并批量修改 <code>pom.xml</code> 的版本号：</p>
+<p><img src="/img/java/idea/new_branch.png" alt="new_branch"></p>
+<h2 id="特性合版"><a href="#特性合版" class="headerlink" title="特性合版"></a>特性合版</h2><p>第一步，项目管理员创建发布分支，根据本次发布周期涉及的所有特性，批量从 master 分支 <code>checkout</code> 创建出发布分支 <code>release-xxx</code>（操作同上）。该操作只能由项目管理员操作，因为 <code>release-*</code> 是受保护分支。</p>
+<p>第二步，升级 <code>pom.xml</code> 版本号并推送。</p>
+<p>第三步，批量 <code>merge</code> 特性分支：</p>
+<p><img src="/img/java/idea/merge_into_current.png" alt="merge_into_current"></p>
+<p>第四步，解决冲突（例如 <code>pom.xml</code> 版本号冲突、代码冲突，如有）：</p>
+<p><img src="/img/java/idea/conflicts.png" alt="conflicts"></p>
+<p><img src="/img/java/idea/version_control_local_changes.png" alt="version_control_local_changes"></p>
+<p>第五步，合版完毕，<code>Ctrl+K</code> 批量提交并推送到远程分支 <code>release-xxx</code> 即可。</p>
+<h1 id="全局配置"><a href="#全局配置" class="headerlink" title="全局配置"></a>全局配置</h1><p>File &gt; Other Setting &gt; Default Settings</p>
+<p>全局配置 IDE 的界面、编辑器、VCS、构建、终端等</p>
+<p>File &gt; Other Setting &gt; Default Project Structure</p>
+<p>全局配置项目的 SDK 版本、类库等。</p>
+<h2 id="JDK"><a href="#JDK" class="headerlink" title="JDK"></a>JDK</h2><p>File &gt; Other Setting &gt; Default Settings，<code>Projects SDK</code> 可控制全局版本，<code>Language Level</code> 可控制语言级别，方便使用其特性。配置后全部 project modules 都会生效。</p>
+<h2 id="Maven"><a href="#Maven" class="headerlink" title="Maven"></a>Maven</h2><p>File &gt; Other Setting &gt; Default Settings &gt; Build, Execution, Deployment &gt; Build Tools &gt; Maven</p>
+<ul>
+<li><p>可配置 <code>Maven home directory</code>、<code>User settings file</code> (自定义 setting.xml)、<code>Local repository</code> 本地仓库。</p>
+</li>
+<li><p>自动下载源码：Importing，找到<code>Automatically download</code> 并勾选 <code>Sources</code> 和 <code>Documentation</code>，然后 reimport 即可。</p>
+</li>
+</ul>
+<h2 id="Terminal"><a href="#Terminal" class="headerlink" title="Terminal"></a>Terminal</h2><p>File &gt; Other Setting &gt; Default Settings &gt; Terminal，修改 <code>Shell path</code> 为：<code>D:\Developer\PortableGit\bin\sh.exe</code>，可配置 Terminal 终端为 GitBash。</p>
+<h2 id="Layout"><a href="#Layout" class="headerlink" title="Layout"></a>Layout</h2><p>调整完当前窗口的布局之后，可以保存当前的窗口布局，以便全局生效：Window &gt; Store Current Layout as Default</p>
+<h2 id="Code-Template"><a href="#Code-Template" class="headerlink" title="Code Template"></a>Code Template</h2><p>File &gt; Other Setting &gt; Default Settings &gt; 搜索 File and Code Templates，打开 Includes &gt; File Header，配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * &lt;p&gt;</span><br><span class="line"> *</span><br><span class="line"> * &lt;&#x2F;p&gt;</span><br><span class="line"> *</span><br><span class="line"> * @author abc@xyz.com</span><br><span class="line"> * @since $&#123;DATE&#125;</span><br><span class="line"> **&#x2F;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Auto-Import"><a href="#Auto-Import" class="headerlink" title="Auto Import"></a>Auto Import</h2><p>File &gt; Settings &gt; Editor &gt; General &gt; Auto Import，然后勾选：</p>
+<p><code>Add unambiguous imports on the fly</code>：快速添加明确的导入。</p>
+<p><code>Optimize imports on the fly</code>：快速优化导入，优化的意思即自动帮助删除无用的导入。</p>
+<h2 id="Quick-documentation"><a href="#Quick-documentation" class="headerlink" title="Quick documentation"></a>Quick documentation</h2><p>File &gt; Settings &gt; Editor &gt; General &gt; 开启 <code>Show quick documentation on mouse move</code>，可用于鼠标放到类、方法、变量上时显示完整 java doc 注释</p>
+<h2 id="Show-tabs-in-one-row"><a href="#Show-tabs-in-one-row" class="headerlink" title="Show tabs in one row"></a>Show tabs in one row</h2><p>File &gt; Settings &gt; Editor &gt; General &gt; Editor Tabs，去掉勾选 <code>Show tabs in one row</code></p>
+<h1 id="字体"><a href="#字体" class="headerlink" title="字体"></a>字体</h1><p>老版本可以<a href="https://www.jetbrains.com/lp/mono/#how-to-install" target="_blank" rel="noopener">安装 JetBrains Mono 字体</a>，v2019.3 版本后自带。</p>
+<h1 id="插件"><a href="#插件" class="headerlink" title="插件"></a>插件</h1><p>官方插件（内置）：</p>
+<ul>
+<li>Maven Integration：官方 Maven 插件，参考：<a href="/2018/05/01/maven-build-lifecycle/">IDEA Maven 插件</a></li>
+<li>JUnit：快速创建、运行、查看单元测试，在单元测试和目标之间跳转。</li>
+</ul>
+<p>官方插件（需安装）：</p>
+<ul>
+<li>IdeaVim：Vim 程序员必装。</li>
+<li>NodeJS：运行前端项目、or 构建前端项目时都是需要的。</li>
+</ul>
+<p>规范类：</p>
+<ul>
+<li>Alibaba Java Coding Guidelines：阿里巴巴 Java 开发规范</li>
+<li>Git Commit Template：参考<ul>
+<li><a href="http://www.ruanyifeng.com/blog/2016/01/commit_message_change_log.html" target="_blank" rel="noopener">Git 代码提交规范</a></li>
+<li><a href="https://mp.weixin.qq.com/s?__biz=MzIzOTU0NTQ0MA==&mid=2247498589&idx=1&sn=c0419f08bd455de9147e47387778943e" target="_blank" rel="noopener">如何规范你的Git commit？</a></li>
+</ul>
+</li>
+</ul>
+<p>代码生成类：</p>
+<ul>
+<li>Lombok Plugin：用于精简冗余代码，必装。</li>
+<li><a href="https://plugins.jetbrains.com/plugin/6585-builder-generator" target="_blank" rel="noopener">Builder-Generator</a>：如果项目可以使用 Lombok，就不必装。</li>
+</ul>
+<p>MyBatis：</p>
+<ul>
+<li><del><a href="https://plugins.jetbrains.com/plugin/7293-mybatis-plugin" target="_blank" rel="noopener">MyBatis Plugin</a>：最强大的 MyBatis 插件，不过是收费版。</del></li>
+<li>Free MyBatis plugin：免费的 MyBatis 插件，提供了一些基本的跳转和代码生成功能。</li>
+<li>MyBatis Log Plugin：把 MyBatis 输出的 SQL 日志还原成完整的 SQL 语句。将日志输出的 SQL 语句中的问号 ? 替换成真正的参数值。</li>
+</ul>
+<p>辅助类：</p>
+<ul>
+<li>Maven Helper：方便查询依赖树及排除依赖</li>
+<li>Grep Console：Grep, tail, filter, highlight… everything you need for a console. Also can highlight the editor - nice for analyzing logs…</li>
+<li>SequenceDiagram for IntelliJ IDEA：查看类调用时序图</li>
+<li>Rainbow Brackets：彩色括号</li>
+<li>HighlightBracketPair：高亮提示括号的开始结尾</li>
+</ul>
+<p>其它：</p>
+<ul>
+<li><a href="https://plugins.jetbrains.com/plugin/8006-material-theme-ui" target="_blank" rel="noopener">Material Theme UI</a>：将默认外观改为 <a href="https://material.io/" target="_blank" rel="noopener">Material Design</a> 风格。</li>
+<li><a href="https://plugins.jetbrains.com/plugin/9492-smart-tomcat" target="_blank" rel="noopener">Smart Tomcat</a>：社区版没有提供该功能（<a href="https://stackoverflow.com/questions/22047860/tomcat-in-intellij-idea-community-edition" target="_blank" rel="noopener">点我</a>），可以用这个插件替代，参考<a href="https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247509848&idx=3&sn=bec775d8f6bf98027625511491ec74cf" target="_blank" rel="noopener">这篇</a>。</li>
+<li><a href="http://kidneyball.iteye.com/blog/1814028" target="_blank" rel="noopener">Ace Jump</a>：使用这个插件，直接使用键盘定位到你想去的地方 。</li>
+</ul>
+<p>IdeaVim 如果与原 IDEA 快捷键冲突，可以修改如下：</p>
+<p><img src="/img/java/idea/IdeaVim.png" alt="IdeaVim"></p>
+<p>如果被墙导致无法连接到 Marketplace 或插件无法下载，可以配置如下：</p>
+<p><img src="/img/java/idea/use_secure_connection.png" alt="IDEA 无法下载插件"></p>
+<h1 id="Git"><a href="#Git" class="headerlink" title="Git"></a>Git</h1><h2 id="分支管理"><a href="#分支管理" class="headerlink" title="分支管理"></a>分支管理</h2><p><img src="img/java/idea/git_branch_management.png" alt="git branch management"></p>
+<table>
+<thead>
+<tr>
+<th>分支操作</th>
+<th>对应命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Checkout</td>
+<td><code>git checkout [selected-branch]</code></td>
+</tr>
+<tr>
+<td>New Branch from Selected…</td>
+<td><code>git checkout -b [new-branch] [selected-branch]</code></td>
+</tr>
+<tr>
+<td>Checkout and Rebase onto Current</td>
+<td><code>git rebase HEAD [selected-branch]</code></td>
+</tr>
+<tr>
+<td>Rebase Current onto Selected</td>
+<td><code>git rebase [selected-branch]</code></td>
+</tr>
+<tr>
+<td>Merge into Current</td>
+<td><code>git merge [selected-branch]</code></td>
+</tr>
+<tr>
+<td>Delete</td>
+<td><code>git branch -d [selected-branch]</code></td>
+</tr>
+</tbody></table>
+<h1 id="快捷键"><a href="#快捷键" class="headerlink" title="快捷键"></a>快捷键</h1><h2 id="自定义-keymap"><a href="#自定义-keymap" class="headerlink" title="自定义 keymap"></a>自定义 keymap</h2><p>自定义快捷键，例如我配置了：</p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>快捷键</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Close</td>
+<td><code>Alt+W</code></td>
+</tr>
+<tr>
+<td>Hide All Tool Windows</td>
+<td><code>Alt+M</code></td>
+</tr>
+<tr>
+<td>Delete Line</td>
+<td><code>Alt+D</code></td>
+</tr>
+<tr>
+<td>Redo</td>
+<td><code>Ctrl+Y</code></td>
+</tr>
+<tr>
+<td>Rename</td>
+<td><code>Alt+R</code></td>
+</tr>
+<tr>
+<td>Completion</td>
+<td><code>Alt+/</code></td>
+</tr>
+</tbody></table>
+<h2 id="VCS"><a href="#VCS" class="headerlink" title="VCS"></a>VCS</h2><p>Git 自定义快捷键：</p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>快捷键</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Reset HEAD</td>
+<td><code>Ctrl+Alt+Q</code></td>
+</tr>
+<tr>
+<td>Annotate（git blame）</td>
+<td><code>Ctrl+Alt+1</code></td>
+</tr>
+<tr>
+<td>Compare with the Same Repository Version</td>
+<td><code>Ctrl+Alt+2</code></td>
+</tr>
+<tr>
+<td>Show History</td>
+<td><code>Ctrl+Alt+3</code></td>
+</tr>
+<tr>
+<td>Commit File</td>
+<td><code>Ctrl+Alt+4</code></td>
+</tr>
+<tr>
+<td>PULL</td>
+<td><code>Ctrl+Alt+5</code></td>
+</tr>
+</tbody></table>
+<p>Git 默认的其它命令：</p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>快捷键</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Add</td>
+<td><code>Ctrl+Alt+A</code></td>
+</tr>
+<tr>
+<td>Revert Changes 回退更改</td>
+<td><code>Ctrl+Alt+Z</code></td>
+</tr>
+<tr>
+<td>Commit Changes 提交更改</td>
+<td><code>Ctrl+K</code></td>
+</tr>
+<tr>
+<td>Push Commits 推送</td>
+<td><code>Ctrl+Shift+K</code></td>
+</tr>
+<tr>
+<td>Update Project（批量 git pull）</td>
+<td><code>Ctrl+T</code></td>
+</tr>
+</tbody></table>
+<h2 id="创建类"><a href="#创建类" class="headerlink" title="创建类"></a>创建类</h2><blockquote>
+<p>Alt + Insert 创造万物</p>
+</blockquote>
+<h2 id="查找-替换类"><a href="#查找-替换类" class="headerlink" title="查找/替换类"></a>查找/替换类</h2><blockquote>
+<p>Ctrl + F 在当前文件中查找（关键字）</p>
+<p>Ctrl + R 在当前文件中替换（关键字）</p>
+<p>Ctrl + Shift + F 在路径中查找（关键字）</p>
+<p>Ctrl + Shift + R 在路径中替换（关键字）</p>
+</blockquote>
+<h2 id="浏览类"><a href="#浏览类" class="headerlink" title="浏览类"></a>浏览类</h2><blockquote>
+<p>Ctrl+N 查找类</p>
+<p>Ctrl+Shift+N 查找文件</p>
+<p>Shift+Shift 查找所有（包括类、资源、配置项、方法等等）</p>
+</blockquote>
+<blockquote>
+<p>Ctrl+E 最近打开的文件</p>
+<p>Alt+F7 查找引用（Find Usage）</p>
+<p>Ctrl+Shift+Backspace 回到上次修改的地方</p>
+<p>Ctrl+Alt+Left/Right 返回/前进至上次浏览的位置</p>
+<p>Ctrl+鼠标左键：打开接口（Declaration）</p>
+<p>Ctrl+Alt+鼠标左键：打开实现（Implementation(s)）</p>
+</blockquote>
+<blockquote>
+<p>Ctrl+H 打开类层次窗口（继承关系）</p>
+<p>Ctrl+F12 查看当前类的所有方法</p>
+<p>Ctrl+Alt+U 类关系图、Maven关系图</p>
+</blockquote>
+<h2 id="编辑类"><a href="#编辑类" class="headerlink" title="编辑类"></a>编辑类</h2><blockquote>
+<p>Ctrl+D 复制行</p>
+<p>Ctrl+Y 删除行</p>
+<p>Alt+Shift+向上箭头 Move Line Up</p>
+<p>Alt+Shift+向下箭头 Move Line Down</p>
+<p>Ctrl+Shift+U 大小写转换</p>
+<p>Ctrl+Alt+L 格式化代码</p>
+<p>Ctrl+W、Ctrl+Shift+W 这个动作的实际操作是选中更上一层的语法结构。例如，如果你在一个字符串的一个单词中，按一下Ctrl+W，会选中光标所在单词。再按一下，会选中整个字符串的内容，不包括引号。再按一下，会选中包括引号的字符串。再按一下，会选中整个表达式（如果表达式含有括号，会逐层选中）。再按一下，会选中整个语句块。再按一下，会选中整个方法。再按一下，会选中整个类。</p>
+</blockquote>
+<h2 id="重构类"><a href="#重构类" class="headerlink" title="重构类"></a>重构类</h2><blockquote>
+<p>// Ctrl+Alt+Shift+T 重构菜单</p>
+<p>// Ctrl+f6 修改类\方法签名<br><a href="https://www.jetbrains.com/help/idea/change-class-signature.html" target="_blank" rel="noopener">https://www.jetbrains.com/help/idea/change-class-signature.html</a></p>
+<p>// F6 Move 类、方法、变量移动</p>
+<p>// Ctrl+Shift+f6 重构变量的类型</p>
+<p>// Shift+f6 重命类、方法、变量</p>
+<p>// Ctrl+Alt+C 提取常量<br>// Ctrl+Alt+V 提取变量<br>// Ctrl+Alt+F 提取成员变量<br>// Ctrl+Alt+P 提取方法入参</p>
+<p>// Refactor | Generify 泛型自动补全<br>// Refactor | Invert Boolean 布尔类型取反<br>// Refactor | Make Static 将类、方法设置成静态<br>// Refactor | Find and Replace Code Duplicates</p>
+<p>// Safe Delete 安全删除</p>
+<p>// Ctrl+Alt+M 方法提取<br>// Ctrl+alt+N 方法内联(变量\方法\构造函数)<br><a href="https://www.jetbrains.com/help/idea/inline.html" target="_blank" rel="noopener">https://www.jetbrains.com/help/idea/inline.html</a></p>
+<p>// Pull Members Up 将方法提升到父类<br>// Pull Members Down 将方法推迟到之类</p>
+</blockquote>
+<h2 id="调试类"><a href="#调试类" class="headerlink" title="调试类"></a>调试类</h2><blockquote>
+<p>调试：F7/F8/F9 分别对应 Step into，Step over，Continue。</p>
+<p>运行：Alt+Shift+F10 运行程序，Shift+F9 启动调试，Ctrl+F2 停止。</p>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><img src="/img/java/idea/keymap.png" alt="IDEA 快捷键"></p>
+<p>摘录 10 个最常用的快捷键：</p>
+<blockquote>
+<p>Top #10切来切去：Ctrl+Tab</p>
+<p>Top #9选你所想：Ctrl+W</p>
+<p>Top #8代码生成：Template/Postfix +Tab</p>
+<p>Top #7发号施令：Ctrl+Shift+A</p>
+<p>Top #6无处藏身：Shift+Shift</p>
+<p>Top #5自动完成：Ctrl+Shift+Enter</p>
+<p>Top #4创造万物：Alt+Insert</p>
+<p>Top #3智能补全：Ctrl+Shift+Space</p>
+<p>Top #2自我修复：Alt+Enter</p>
+<p>Top #1重构一切：Ctrl+Shift+Alt+T</p>
+</blockquote>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>下载地址：<br><a href="http://www.jetbrains.com/idea/download/#section=windows" target="_blank" rel="noopener">http://www.jetbrains.com/idea/download/#section=windows</a></p>
+<p>插件：<br><a href="https://plugins.jetbrains.com/idea" target="_blank" rel="noopener">https://plugins.jetbrains.com/idea</a></p>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MzI4Njc5NjM1NQ==&mid=2247488006&idx=1&sn=d5c66d84724b1deebac6604749d04bf5&chksm=ebd62d2adca1a43cb136b5740621e25854537054b9b3cac7451fd21ea55c0fc247e07a49d8cd&mpshare=1&scene=23&srcid=#rd" target="_blank" rel="noopener">常用插件推荐</a></p>
+<p>IDEA 重构官方文档：<br><a href="https://www.jetbrains.com/help/idea/refactoring-source-code.html" target="_blank" rel="noopener">https://www.jetbrains.com/help/idea/refactoring-source-code.html</a></p>
+<p>IDEA 高级调试技巧：</p>
+<p><a href="http://www.mamicode.com/info-detail-1761996.html" target="_blank" rel="noopener">http://www.mamicode.com/info-detail-1761996.html</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2018/08/05/financial-market/" class="prev">PREV</a><a href="/2018/06/01/java-cryptography-api/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

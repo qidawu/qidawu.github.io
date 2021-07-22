@@ -1,0 +1,103 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> 响应式编程系列（一）Java 响应式编程总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="响应式编程系列（一）Java 响应式编程总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">响应式编程系列（一）Java 响应式编程总结</h1><div class="post-info">2020-08-01<a href="/tags/Java/" title="Java" class="post-demo">Java</a><a href="/tags/响应式编程/" title="响应式编程" class="post-demo">响应式编程</a></div><div class="post-content"><h1 id="历史"><a href="#历史" class="headerlink" title="历史"></a>历史</h1><p>响应式编程（Reactive Programming）概念最早于上世纪九十年代被提出，微软为 .NET 生态开发了 Reactive Extensions (Rx) 库用于支持响应式编程，后来 Netflix 开发了 RxJava，为 JVM 生态实现了响应式编程。随着时间的推移，2015 年 <a href="https://www.reactive-streams.org/" target="_blank" rel="noopener">Reactive Stream</a>（响应式流）规范诞生，为 JVM 上的响应式编程定义了一组接口和交互规则。<a href="https://github.com/ReactiveX/RxJava" target="_blank" rel="noopener">RxJava</a> 从 RxJava 2 开始实现 Reactive Stream 规范。同时 MongoDB、<a href="https://projectreactor.io/" target="_blank" rel="noopener">Reactor</a>、Slick 等也相继实现了 Reactive Stream 规范。</p>
+<p>Spring Framework 5 推出了<a href="https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html" target="_blank" rel="noopener">响应式 Web 框架</a>。</p>
+<p>Java 9 引入了<a href="http://openjdk.java.net/jeps/266" target="_blank" rel="noopener">响应式编程的 API</a>，将 Reactive Stream 规范定义的四个接口集成到了 <a href="https://docs.oracle.com/javase/9/docs/api/java/util/concurrent/Flow.html" target="_blank" rel="noopener"><code>java.util.concurrent.Flow</code></a> 类中。Java 9 提供了 <code>SubmissionPublisher</code> 和 <code>ConsumerSubscriber</code> 两个默认实现。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">+--------------------------+     +-------------+     +------------------+     +-------------------------------+</span><br><span class="line">| Reactive Extensions (Rx) |     | RxJava 1.x  |     | Reactive Streams |     | RxJava 2                      |</span><br><span class="line">| by Microsoft             +-----&gt; by Netflix  +-----&gt; Specification    +-----&gt; (Supporting Reactive Streams) |</span><br><span class="line">| for .NET                 |     | for Java 6+ |     | for JVM          |     | for Java 6+                   |</span><br><span class="line">+--------------------------+     +-------------+     +------------------+     +-------------------------------+</span><br><span class="line">                                                                                              |</span><br><span class="line">                                                                                              |</span><br><span class="line">                                                                                              |</span><br><span class="line">                     +-----------------------+     +--------------------+     +---------------v---------------+</span><br><span class="line">                     | Java 9 Standard       |     | Spring Framework 5 |     | Project Reactor              |</span><br><span class="line">                     | (JEP-266 by Doug Lea) &lt;-----+ Reactive Stack     &lt;-----+ (Supporting Reactive Streams) |</span><br><span class="line">                     |                       |     |                    |     | for Java 8+                   |</span><br><span class="line">                     +-----------------------+     +--------------------+     +-------------------------------+</span><br></pre></td></tr></table></figure>
+
+<h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><p>响应式编程（Reactive Programing）是一种基于数据流（data stream）和变化传递（propagation of change）的声明式（declarative）的编程范式。</p>
+<h1 id="设计思想"><a href="#设计思想" class="headerlink" title="设计思想"></a>设计思想</h1><p>响应式编程范式通常在面向对象语言中作为<strong>观察者模式</strong>的扩展出现。可以将其与大家熟知的<strong>迭代器模式</strong>作对比，主要区别在于：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>迭代器（Iterator）</th>
+<th>响应式流（Reactive Stream）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>设计模式</td>
+<td>迭代器模式</td>
+<td>观察者模式</td>
+</tr>
+<tr>
+<td>数据方向</td>
+<td>拉模式（PULL）</td>
+<td>推模式（PUSH）</td>
+</tr>
+<tr>
+<td>获取数据</td>
+<td><code>T next()</code></td>
+<td><code>onNext(T)</code></td>
+</tr>
+<tr>
+<td>处理完成</td>
+<td><code>hasNext()</code></td>
+<td><code>onCompleted()</code></td>
+</tr>
+<tr>
+<td>异常处理</td>
+<td><code>throws Exception</code></td>
+<td><code>onError(Exception)</code></td>
+</tr>
+</tbody></table>
+<p>Java 8 引入了 Stream 用于流的操作，Java 9 引入的 Flow 也是数据流的操作。相比之下：</p>
+<ul>
+<li>Stream 更侧重于流的过滤、映射、整合、收集，使用的是 <strong>PULL</strong> 模式。</li>
+<li>而 Flow/RxJava/Reactor 更侧重于流的产生与消费，使用的是 <strong>PUSH</strong> 模式 。</li>
+</ul>
+<h2 id="迭代器模式"><a href="#迭代器模式" class="headerlink" title="迭代器模式"></a>迭代器模式</h2><p>参考《<a href="/2018/05/01/java-collections-iterator/">Iterator API 总结</a>》</p>
+<h2 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h2><blockquote>
+<p>观察者模式是一种行为型设计模式，允许你定义一种订阅机制，可在对象事件发生时<strong>主动通知</strong>多个 “观察” 该对象的其它对象。</p>
+</blockquote>
+<p><img src="/img/java/design-pattern/Observer.png" alt="Observer"></p>
+<p>在响应式流中，上述操作由 <code>Publisher-Subscriber</code> 负责。由 <code>Publisher</code> 生产新值并推送给 <code>Subscriber</code>，这个“推送”就是响应式的关键，亦即“<strong>变化传递（propagation of change）</strong>”。另外，应用于被推送值的操作（Operator）是“<strong>声明式</strong>”而不是“命令式”的：开发者表达的是计算逻辑，而不是描述其具体的控制流程。</p>
+<p>流程如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">onNext x 0..N [onError | onComplete]</span><br></pre></td></tr></table></figure>
+
+<h1 id="Reactive-Streams-规范"><a href="#Reactive-Streams-规范" class="headerlink" title="Reactive Streams 规范"></a>Reactive Streams 规范</h1><h2 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h2><p>Reactive Stream（响应式流）规范的 Maven 依赖如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.reactivestreams/reactive-streams --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.reactivestreams<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>reactive-streams<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="核心接口"><a href="#核心接口" class="headerlink" title="核心接口"></a>核心接口</h2><p>整个依赖包中，仅仅定义了四个核心接口：</p>
+<ul>
+<li><code>org.reactivestreams.Subscription</code> 接口定义了连接发布者和订阅者的方法；</li>
+<li><code>org.reactivestreams.Publisher&lt;T&gt;</code> 接口定义了发布者的方法；</li>
+<li><code>org.reactivestreams.Subscriber&lt;T&gt;</code> 接口定义了订阅者的方法；</li>
+<li><code>org.reactivestreams.Processor&lt;T,R&gt;</code> 接口定义了处理器；</li>
+</ul>
+<p><img src="/img/java/reactive-stream/reactive-stream/org.reactivestreams.png" alt="org.reactivestreams"></p>
+<h2 id="接口交互流程"><a href="#接口交互流程" class="headerlink" title="接口交互流程"></a>接口交互流程</h2><p>简要交互如下：</p>
+<p><img src="/img/java/reactive-stream/reactive-stream/process_of_reactive_stream.jpg" alt="process_ofreactive_stream"></p>
+<p>API 交互如下：</p>
+<p><img src="/img/java/reactive-stream/reactive-stream/process_of_reactive_stream_2.png" alt="process_of_reactive_stream_2"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《Reactive Java Programming》</p>
+<p>Reactive Streams 规范</p>
+<ul>
+<li><a href="https://www.reactive-streams.org/" target="_blank" rel="noopener">https://www.reactive-streams.org/</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Reactive_Streams" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Reactive_Streams</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/41342507" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/41342507</a></li>
+</ul>
+<p><a href="http://openjdk.java.net/jeps/266" target="_blank" rel="noopener">http://openjdk.java.net/jeps/266</a></p>
+<p><a href="http://reactivex.io/" target="_blank" rel="noopener">http://reactivex.io/</a></p>
+<ul>
+<li>《Reactive Programming with RxJava》</li>
+</ul>
+<p><a href="https://projectreactor.io/" target="_blank" rel="noopener">Reactor 框架</a></p>
+<ul>
+<li>实现 Reactive Streams 规范，并扩展大量特性</li>
+</ul>
+<p><a href="https://spring.io/reactive" target="_blank" rel="noopener">https://spring.io/reactive</a></p>
+<p><a href="https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html" target="_blank" rel="noopener">Web on Reactive Stack - Spring</a></p>
+<ul>
+<li>基于 Reactor 框架实现</li>
+<li>默认基于 Netty 作为应用服务器</li>
+<li>好处：能够以固定的线程来处理高并发（充分发挥机器的性能）</li>
+<li>提供 API：<ul>
+<li>Spring WebFlux</li>
+<li>WebClient</li>
+<li>WebSockets</li>
+<li>Testing</li>
+<li>RSocket</li>
+<li>Reactive Libraries</li>
+</ul>
+</li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2020/08/08/java-reactor-startup/" class="prev">PREV</a><a href="/2020/05/03/java-concurrency-threadpool/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

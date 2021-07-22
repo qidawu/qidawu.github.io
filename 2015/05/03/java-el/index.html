@@ -1,0 +1,238 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> JSP EL 表达式总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="JSP EL 表达式总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">JSP EL 表达式总结</h1><div class="post-info">2015-05-03<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><p>在 JSP 标签中指定一个属性值 <code>value</code> 时，可以使用字符串：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;jsp:setProperty name&#x3D;&quot;box&quot; property&#x3D;&quot;perimeter&quot; value&#x3D;&quot;100&quot;&#x2F;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>也可以使用 EL 表达式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;jsp:setProperty name&#x3D;&quot;box&quot; property&#x3D;&quot;perimeter&quot; value&#x3D;&quot;$&#123;expr&#125;&quot;&#x2F;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>那么，EL 表达式 <code>${expr}</code> 中可以放些什么呢？</p>
+<h1 id="操作符"><a href="#操作符" class="headerlink" title="操作符"></a>操作符</h1><p>EL 表达式支持大部分 Java 所提供的算术和逻辑操作符：</p>
+<h2 id="基本操作符"><a href="#基本操作符" class="headerlink" title="基本操作符"></a>基本操作符</h2><table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>.</code></td>
+<td>访问一个 Bean 的属性或者一个映射条目</td>
+</tr>
+<tr>
+<td><code>[]</code></td>
+<td>访问一个数组或者链表的元素</td>
+</tr>
+<tr>
+<td><code>()</code></td>
+<td>组织一个子表达式以改变优先级</td>
+</tr>
+</tbody></table>
+<h2 id="算术操作符"><a href="#算术操作符" class="headerlink" title="算术操作符"></a>算术操作符</h2><table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>操作符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>+</code></td>
+<td></td>
+<td>加</td>
+</tr>
+<tr>
+<td><code>-</code></td>
+<td></td>
+<td>减或负</td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td></td>
+<td>乘</td>
+</tr>
+<tr>
+<td><code>/</code></td>
+<td><code>div</code></td>
+<td>除</td>
+</tr>
+<tr>
+<td><code>%</code></td>
+<td><code>mod</code></td>
+<td>取模</td>
+</tr>
+</tbody></table>
+<h2 id="逻辑操作符"><a href="#逻辑操作符" class="headerlink" title="逻辑操作符"></a>逻辑操作符</h2><table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>操作符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>==</code></td>
+<td><code>eq</code></td>
+<td>测试是否相等</td>
+</tr>
+<tr>
+<td><code>!=</code></td>
+<td><code>ne</code></td>
+<td>测试是否不等</td>
+</tr>
+<tr>
+<td><code>&lt;</code></td>
+<td><code>lt</code></td>
+<td>测试是否小于</td>
+</tr>
+<tr>
+<td><code>&gt;</code></td>
+<td><code>gt</code></td>
+<td>测试是否大于</td>
+</tr>
+<tr>
+<td><code>&lt;=</code></td>
+<td><code>le</code></td>
+<td>测试是否小于等于</td>
+</tr>
+<tr>
+<td><code>&gt;=</code></td>
+<td><code>ge</code></td>
+<td>测试是否大于等于</td>
+</tr>
+<tr>
+<td><code>&amp;&amp;</code></td>
+<td><code>and</code></td>
+<td>测试逻辑与</td>
+</tr>
+<tr>
+<td><code>&#124;&#124;</code></td>
+<td><code>or</code></td>
+<td>测试逻辑或</td>
+</tr>
+<tr>
+<td><code>!</code></td>
+<td><code>not</code></td>
+<td>测试取反</td>
+</tr>
+<tr>
+<td></td>
+<td><code>empty</code></td>
+<td>测试是否空值</td>
+</tr>
+</tbody></table>
+<h1 id="隐式对象"><a href="#隐式对象" class="headerlink" title="隐式对象"></a>隐式对象</h1><p>JSP 隐式对象（也称为预定义变量）是 JSP 容器为每个页面提供的 Java 对象，开发者可以直接使用它们而不用显式声明。</p>
+<h2 id="作用域"><a href="#作用域" class="headerlink" title="作用域"></a>作用域</h2><table>
+<thead>
+<tr>
+<th>对象</th>
+<th>等价物</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>pageScope</code></td>
+<td><code>this</code></td>
+<td>page 作用域</td>
+</tr>
+<tr>
+<td><code>requestScope</code></td>
+<td><code>javax.servlet.http.HttpServletRequest</code></td>
+<td>request 作用域</td>
+</tr>
+<tr>
+<td><code>sessionScope</code></td>
+<td><code>javax.servlet.http.HttpSession</code></td>
+<td>session 作用域</td>
+</tr>
+<tr>
+<td><code>applicationScope</code></td>
+<td><code>javax.servlet.ServletContext</code></td>
+<td>application 作用域</td>
+</tr>
+</tbody></table>
+<h2 id="HTTP-请求参数"><a href="#HTTP-请求参数" class="headerlink" title="HTTP 请求参数"></a>HTTP 请求参数</h2><table>
+<thead>
+<tr>
+<th>对象</th>
+<th>等价物</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>param</code></td>
+<td><code>request.getParameter(...)</code></td>
+<td>获取指定 HTTP 请求参数，字符串</td>
+</tr>
+<tr>
+<td><code>paramValues</code></td>
+<td><code>request.getParameterValues()</code></td>
+<td>获取所有 HTTP 请求参数，字符串数组</td>
+</tr>
+</tbody></table>
+<p>例如，要判断 HTTP 请求参数 <code>from</code> 是否为空，可以结合使用 JSTL <code>&lt;c:if&gt;</code> 和 EL 操作符 <code>not</code>、<code>empty</code>、EL 隐式对象 <code>param</code> 进行判断：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;c:if test&#x3D;&quot;$&#123;not empty param.from&#125;&quot;&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="HTTP-请求头"><a href="#HTTP-请求头" class="headerlink" title="HTTP 请求头"></a>HTTP 请求头</h2><table>
+<thead>
+<tr>
+<th>对象</th>
+<th>等价物</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>header</code></td>
+<td><code>request.getHeader(...)</code></td>
+<td>获取指定 HTTP 请求头，字符串</td>
+</tr>
+<tr>
+<td><code>headerValues</code></td>
+<td><code>request.getHeaders()</code></td>
+<td>获取所有 HTTP 请求头，字符串数组</td>
+</tr>
+</tbody></table>
+<p>例如，获取请求来源：<code>${header.Referer}</code>。</p>
+<h2 id="HTTP-Cookie"><a href="#HTTP-Cookie" class="headerlink" title="HTTP Cookie"></a>HTTP Cookie</h2><table>
+<thead>
+<tr>
+<th>对象</th>
+<th>等价物</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>cookie</code></td>
+<td><code>request.getCookies()</code></td>
+<td><code>javax.servlet.http.Cookie</code> 数组</td>
+</tr>
+</tbody></table>
+<p>例如，获取指定 <code>Cookie</code> 的值：<code>${cookie.key.value}</code>。这段 EL 表达式会被 JSP 容器解析成：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Cookie[] cookies = request.getCookies();</span><br><span class="line">Cookie current = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span>(Cookie cookie : cookies) &#123; </span><br><span class="line">    <span class="keyword">if</span>(cookie.getName().equals(<span class="string">"key"</span>)) &#123;</span><br><span class="line">        current = cookie;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(current != <span class="keyword">null</span>) &#123; </span><br><span class="line">    out.print(current.getValue());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="上下文"><a href="#上下文" class="headerlink" title="上下文"></a>上下文</h2><table>
+<thead>
+<tr>
+<th>对象</th>
+<th>等价物</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>initParam</code></td>
+<td></td>
+<td>上下文初始化参数，即 <code>web.xml</code> 的 <code>&lt;context-param&gt;</code></td>
+</tr>
+<tr>
+<td><code>pageContext</code></td>
+<td><code>javax.servlet.jsp.PageContext</code></td>
+<td>提供对 JSP 页面所有对象以及命名空间的访问</td>
+</tr>
+</tbody></table>
+<h1 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h1><p>EL 表达式支持使用函数，其使用语法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$&#123;ns:fn(param1, param2, ...)&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>ns</code> 指的是命名空间（namespace），<code>fn</code> 指的是函数的名称，<code>param1</code> 指的是第一个参数，<code>param2</code> 指的是第二个参数，以此类推。</p>
+<p>例如，要获取一个字符串的长度，可以使用 JSTL 的 <code>length</code> 函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$&#123;fn:length(&quot;Get my length&quot;)&#125;</span><br></pre></td></tr></table></figure>
+
+<p>更多 JSTL 函数，参考<a href="http://www.cnblog.me/2015/05/02/java-jstl/#函数标签库" target="_blank" rel="noopener">这里</a>。</p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2015/05/17/optimizing-hexo-speed/" class="prev">PREV</a><a href="/2015/05/02/java-jstl/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

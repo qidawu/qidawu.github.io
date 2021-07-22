@@ -1,0 +1,121 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> MySQL 事务实操总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="MySQL 事务实操总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">MySQL 事务实操总结</h1><div class="post-info">2019-03-26<a href="/tags/MySQL/" title="MySQL" class="post-demo">MySQL</a></div><div class="post-content"><p>前文总结了 MySQL 事务的一些概念，下面总结下如何进行实操。</p>
+<h1 id="开启事务、提交与回滚"><a href="#开启事务、提交与回滚" class="headerlink" title="开启事务、提交与回滚"></a>开启事务、提交与回滚</h1><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">START</span> <span class="keyword">TRANSACTION</span></span><br><span class="line">    [transaction_characteristic [, transaction_characteristic] ...]</span><br><span class="line"></span><br><span class="line">transaction_characteristic: &#123;</span><br><span class="line">    <span class="keyword">WITH</span> <span class="keyword">CONSISTENT</span> <span class="keyword">SNAPSHOT</span></span><br><span class="line">  | <span class="keyword">READ</span> WRITE</span><br><span class="line">  | <span class="keyword">READ</span> <span class="keyword">ONLY</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line"><span class="keyword">COMMIT</span></span><br><span class="line"><span class="keyword">ROLLBACK</span></span><br><span class="line"><span class="keyword">SET</span> autocommit = &#123;<span class="number">0</span> | <span class="number">1</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<p>主要语法作用如下：</p>
+<ul>
+<li><code>START TRANSACTION</code> 或 <code>BEGIN</code> 开启新的事务。</li>
+<li><code>COMMIT</code> 提交当前事务，使其更改持久化。</li>
+<li><code>ROLLBACK</code> 回滚当前事务，取消其更改。</li>
+<li><code>SET autocommit</code> 禁用或启用当前会话的默认自动提交模式。</li>
+</ul>
+<p><code>START TRANSACTION</code> 是标准的 SQL 语法，推荐使用。它支持以下 <code>BEGIN</code> 语法所不支持的修饰符：</p>
+<ul>
+<li><code>WITH CONSISTENT SNAPSHOT</code> 在事务开启同时创建快照（一致性视图），主要用于可重复读（RR）。</li>
+<li><code>READ WRITE</code> 读写模式，默认值。</li>
+<li><code>READ ONLY</code> 只读模式，有助于提升存储引擎的性能表现。</li>
+</ul>
+<h1 id="SET-TRANSACTION-语法"><a href="#SET-TRANSACTION-语法" class="headerlink" title="SET TRANSACTION 语法"></a>SET TRANSACTION 语法</h1><p>可以通过 <a href="https://dev.mysql.com/doc/refman/5.7/en/set-transaction.html" target="_blank" rel="noopener">SET TRANSACTION</a> 语句设置事务的特性，包括隔离级别和读写模式：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> [<span class="keyword">GLOBAL</span> | <span class="keyword">SESSION</span>] <span class="keyword">TRANSACTION</span></span><br><span class="line">    transaction_characteristic [, transaction_characteristic] ...</span><br><span class="line"></span><br><span class="line">transaction_characteristic: &#123;</span><br><span class="line">    <span class="keyword">ISOLATION</span> <span class="keyword">LEVEL</span> <span class="keyword">level</span></span><br><span class="line">  | access_mode</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">level</span>: &#123;</span><br><span class="line">     REPEATABLE <span class="keyword">READ</span></span><br><span class="line">   | <span class="keyword">READ</span> COMMITTED</span><br><span class="line">   | <span class="keyword">READ</span> UNCOMMITTED</span><br><span class="line">   | <span class="keyword">SERIALIZABLE</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">access_mode: &#123;</span><br><span class="line">     <span class="keyword">READ</span> WRITE</span><br><span class="line">   | <span class="keyword">READ</span> <span class="keyword">ONLY</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="事务特性范围（作用域）"><a href="#事务特性范围（作用域）" class="headerlink" title="事务特性范围（作用域）"></a>事务特性范围（作用域）</h2><p>您可以设置事务特性的作用域为全局、当前会话或仅针对下一个事务，其优先级为事务 &gt; 会话 &gt; 全局：</p>
+<ul>
+<li><p>使用 <code>GLOBAL</code> 关键字：</p>
+<ul>
+<li>全局应用于所有后续会话。</li>
+<li>现有会话不受影响。</li>
+<li>全局设置要求 <a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_super" target="_blank" rel="noopener">SUPER</a> 权限。</li>
+</ul>
+</li>
+<li><p>使用 <code>SESSION</code> 关键字：</p>
+<ul>
+<li>应用于当前会话中执行的所有后续事务。</li>
+<li>不影响正在进行的事务。</li>
+</ul>
+</li>
+<li><p>没有 <code>SESSION</code> 或  <code>GLOBAL</code> 关键字：</p>
+<ul>
+<li><p>仅应用于当前会话中执行的下一个事务。</p>
+</li>
+<li><p>后续事务将恢复为当前会话的默认值。</p>
+</li>
+<li><p>事务中不允许使用该语句：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">START</span> <span class="keyword">TRANSACTION</span>;</span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">TRANSACTION</span> <span class="keyword">ISOLATION</span> <span class="keyword">LEVEL</span> <span class="keyword">SERIALIZABLE</span>;</span><br><span class="line">ERROR 1568 (25001): Transaction characteristics can't be changed while a transaction is in progress</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+<p>语法总结如下：</p>
+<table>
+<thead>
+<tr>
+<th>语法</th>
+<th>作用域</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SET GLOBAL TRANSACTION <em>transaction_characteristic</em></td>
+<td>Global</td>
+</tr>
+<tr>
+<td>SET SESSION TRANSACTION <em>transaction_characteristic</em></td>
+<td>Session</td>
+</tr>
+<tr>
+<td>SET TRANSACTION <em>transaction_characteristic</em></td>
+<td>Next transaction only</td>
+</tr>
+</tbody></table>
+<h2 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h2><p>MySQL 能够识别所有的四个事务隔离级别，<code>InnoDB</code> 引擎也支持所有的隔离级别。可以使用 <code>ISOLATION LEVEL level</code> 子句进行设置：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> <span class="keyword">TRANSACTION</span> <span class="keyword">ISOLATION</span> <span class="keyword">LEVEL</span> <span class="keyword">READ</span> UNCOMMITTED; <span class="comment">--读未提交</span></span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">TRANSACTION</span> <span class="keyword">ISOLATION</span> <span class="keyword">LEVEL</span> <span class="keyword">READ</span> COMMITTED; <span class="comment">--读已提交</span></span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">TRANSACTION</span> <span class="keyword">ISOLATION</span> <span class="keyword">LEVEL</span> REPEATABLE <span class="keyword">READ</span>; <span class="comment">--可重复读</span></span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">TRANSACTION</span> <span class="keyword">ISOLATION</span> <span class="keyword">LEVEL</span> <span class="keyword">SERIALIZABLE</span>; <span class="comment">--串行化</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="事务读写模式"><a href="#事务读写模式" class="headerlink" title="事务读写模式"></a>事务读写模式</h2><p>MySQL 支持两种事务读写模式，其设置方式如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> <span class="keyword">TRANSACTION</span> <span class="keyword">READ</span> WRITE; <span class="comment">--读写模式，默认值</span></span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">TRANSACTION</span> <span class="keyword">READ</span> <span class="keyword">ONLY</span>; <span class="comment">--只读模式，有助于提升存储引擎的性能表现</span></span><br></pre></td></tr></table></figure>
+
+<p>如果要单独为某个事务指定读写模式，搭配 <code>START TRANSACTION</code> 使用。</p>
+<h1 id="SET-语法"><a href="#SET-语法" class="headerlink" title="SET 语法"></a>SET 语法</h1><p>也可以通过 <a href="https://dev.mysql.com/doc/refman/5.7/en/set-variable.html" target="_blank" rel="noopener"><code>SET</code></a> 语句直接进行各种变量赋值，语法总结如下：</p>
+<table>
+<thead>
+<tr>
+<th>语法</th>
+<th>作用域</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SET GLOBAL <em>var_name</em> = <em>value</em></td>
+<td>Global</td>
+</tr>
+<tr>
+<td>SET @@GLOBAL.<em>var_name</em> = <em>value</em></td>
+<td>Global</td>
+</tr>
+<tr>
+<td>SET SESSION <em>var_name</em> = <em>value</em></td>
+<td>Session</td>
+</tr>
+<tr>
+<td>SET @@SESSION.<em>var_name</em> = <em>value</em></td>
+<td>Session</td>
+</tr>
+<tr>
+<td>SET <em>var_name</em> = <em>value</em></td>
+<td>Session</td>
+</tr>
+<tr>
+<td>SET @@<em>var_name</em> = <em>value</em></td>
+<td>Next transaction only</td>
+</tr>
+</tbody></table>
+<p>变量的查询语法如下，例如 <a href="https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_transaction_isolation" target="_blank" rel="noopener"><code>transaction_isolation</code></a> 和 <a href="https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_transaction_read_only" target="_blank" rel="noopener"><code>transaction_read_only</code></a> ：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> @@GLOBAL.transaction_isolation, @@GLOBAL.transaction_read_only;</span><br><span class="line"><span class="keyword">SELECT</span> @@SESSION.transaction_isolation, @@SESSION.transaction_read_only;</span><br></pre></td></tr></table></figure>
+
+<h1 id="启动时设置"><a href="#启动时设置" class="headerlink" title="启动时设置"></a>启动时设置</h1><p>上面介绍的两种语法都是用于运行时设置，下面介绍两种方式用于在服务启动时设置：</p>
+<h2 id="命令行参数"><a href="#命令行参数" class="headerlink" title="命令行参数"></a>命令行参数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">--transaction-isolation&#x3D;REPEATABLE-READ</span><br><span class="line">--transaction-read-only&#x3D;OFF</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">transaction-isolation &#x3D; REPEATABLE-READ</span><br><span class="line">transaction-read-only &#x3D; OFF</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://dev.mysql.com/doc/refman/5.7/en/commit.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/commit.html</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/set-transaction.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/set-transaction.html</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/set-variable.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/set-variable.html</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-performance-ro-txn.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/innodb-performance-ro-txn.html</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/03/27/mysql-transaction-autocommit/" class="prev">PREV</a><a href="/2019/03/23/mysql-consistent-nonlocking-reads-with-mvcc/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

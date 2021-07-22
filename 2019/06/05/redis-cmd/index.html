@@ -1,0 +1,301 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Redis 实战系列（一）常用数据结构及使用场景总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Redis 实战系列（一）常用数据结构及使用场景总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Redis 实战系列（一）常用数据结构及使用场景总结</h1><div class="post-info">2019-06-05<a href="/tags/Redis/" title="Redis" class="post-demo">Redis</a></div><div class="post-content"><h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><h2 id="Strings"><a href="#Strings" class="headerlink" title="Strings"></a>Strings</h2><table>
+<thead>
+<tr>
+<th></th>
+<th>单个</th>
+<th>批量</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>获取</td>
+<td><code>GET</code> key<br/><code>STRLEN</code> key<br/><code>GETRANGE</code> key start end</td>
+<td><code>MGET</code> key [key …]</td>
+</tr>
+<tr>
+<td>设值</td>
+<td><code>SET</code> key value [EX seconds&#124;PX milliseconds] [NX&#124;XX] [KEEPTTL]<br/><code>SETNX</code> key value<br/><code>SETEX</code> key seconds value<br/><code>PSETEX</code> key milliseconds value<br/><code>GETSET</code> key value<br/><code>SETRANGE</code> key offset value</td>
+<td><code>MSET</code> key value [key value …]<br/><code>MSETNX</code> key value [key value …]</td>
+</tr>
+<tr>
+<td>原子递增、递减</td>
+<td><code>INCR</code> key<br/><code>INCRBY</code> key increment<br/><code>INCRBYFLOAT</code> key increment<br/><code>DECR</code> key<br/><code>DECRBY</code> key decrement</td>
+<td></td>
+</tr>
+<tr>
+<td>追加</td>
+<td><code>APPEND</code></td>
+<td></td>
+</tr>
+<tr>
+<td>位操作</td>
+<td><code>SETBIT</code> key offset value<br/><code>GETBIT</code> key offset<br/><code>BITCOUNT</code> key [start end]<br/><code>BITOP</code> operation destkey key [key …]<br/><code>BITFIELD</code> …<br/><code>BITPOS</code> key bit [start] [end]</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>使用场景：</p>
+<ul>
+<li><p>WEB 集群下的 Session 共享：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SET key value</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>分布式锁：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-- 返回 1 表示加锁成功，0 表示加锁失败</span><br><span class="line">SETNX key value</span><br><span class="line">SET key value NX</span><br><span class="line"></span><br><span class="line">-- 解锁</span><br><span class="line">DEL key</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>全局计数器：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">INCR key</span><br><span class="line">DECR key</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>分布式流水号：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">INCR key</span><br><span class="line">INCRBY key</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<p>分布式流水号 Java 伪代码如下，单机一次性取 1000 个 ID，以降低网络开销和 Redis 负载：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> id;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> maxId;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> INCR_BY = <span class="number">1000</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">int</span> <span class="title">nextId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (id == <span class="number">0</span> || id == maxId) &#123;</span><br><span class="line">    maxId = eval(incrby id INCR_BY);</span><br><span class="line">    id = maxId - INCR_BY + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">return</span> id;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> id++;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Hashes"><a href="#Hashes" class="headerlink" title="Hashes"></a>Hashes</h2><p>散列表，一种通过<strong>散列函数</strong>计算对应数组下标，并通过下标随机访问数据时，时间复杂度为 <code>O(1)</code> 的特性快速定位数据的数据结构。Redis 散列表使用这种数据结构来快速获取指定 field。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>单个</th>
+<th>批量</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>获取</td>
+<td><code>HGET</code> key field<br/><code>HSCAN</code> key cursor [MATCH pattern] [COUNT count]<br/><code>HSTRLEN</code> key field</td>
+<td><code>HMGET</code> key field [field …]</td>
+</tr>
+<tr>
+<td>获取所有 fields</td>
+<td><code>HKEYS</code> key</td>
+<td></td>
+</tr>
+<tr>
+<td>获取所有 values</td>
+<td><code>HVALS</code> key</td>
+<td></td>
+</tr>
+<tr>
+<td>获取所有 fields 和 values</td>
+<td><code>HGETALL</code> key</td>
+<td></td>
+</tr>
+<tr>
+<td>判断 field 是否存在</td>
+<td><code>HEXISTS</code> key field</td>
+<td></td>
+</tr>
+<tr>
+<td>获取 field 个数</td>
+<td><code>HLEN</code> key</td>
+<td></td>
+</tr>
+<tr>
+<td>设值</td>
+<td><code>HSET</code> key field value [field value …]<br/><code>HSETNX</code> key field value</td>
+<td><del><code>HMSET</code> key field value [field value …]</del></td>
+</tr>
+<tr>
+<td>原子递增、递减</td>
+<td><code>HINCRBY</code> key field increment<br/><code>HINCRBYFLOAT</code> key field increment</td>
+<td></td>
+</tr>
+<tr>
+<td>删除 fields</td>
+<td><code>HDEL</code> key field [field …]</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="Lists"><a href="#Lists" class="headerlink" title="Lists"></a>Lists</h2><p>双端队列。</p>
+<p><img src="/img/redis/redis_lists.png" alt="redis_lists"></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>左</th>
+<th>右</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>入队</td>
+<td><code>LPUSH</code> key element [element …]<br/><code>LPUSHX</code> key element [element …]</td>
+<td><code>RPUSH</code> key element [element …]<br/><code>RPUSHX</code> key element [element …]</td>
+</tr>
+<tr>
+<td>出队</td>
+<td><code>LPOP</code> key</td>
+<td><code>RPOP</code> key</td>
+</tr>
+<tr>
+<td>阻塞出队</td>
+<td><code>BLPOP</code> key [key …] timeout</td>
+<td><code>BRPOP</code> key [key …] timeout</td>
+</tr>
+<tr>
+<td>插队</td>
+<td><code>LINSERT</code> key BEFORE&#124;AFTER pivot element</td>
+<td></td>
+</tr>
+<tr>
+<td>获取指定索引的元素</td>
+<td><code>LINDEX</code> key index</td>
+<td></td>
+</tr>
+<tr>
+<td>获取指定范围的元素</td>
+<td><code>LRANGE</code> key start stop</td>
+<td></td>
+</tr>
+<tr>
+<td>获取列表长度</td>
+<td><code>LLEN</code> key</td>
+<td></td>
+</tr>
+<tr>
+<td>覆盖元素</td>
+<td><code>LSET</code> key index element</td>
+<td></td>
+</tr>
+<tr>
+<td>移除元素</td>
+<td><code>LREM</code> key count element</td>
+<td></td>
+</tr>
+<tr>
+<td>移除指定范围的元素</td>
+<td><code>LTRIM</code> key start stop</td>
+<td></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>非阻塞</th>
+<th>阻塞</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>出队并重新入队另一个队列</td>
+<td><code>RPOPLPUSH</code> source destination</td>
+<td><code>BRPOPLPUSH</code> source destination timeout</td>
+</tr>
+</tbody></table>
+<p>使用场景：</p>
+<ul>
+<li>Stack (FILO): <code>LPUSH</code> + <code>LPOP</code></li>
+<li>Queue (FIFO): <code>LPUSH</code> + <code>RPOP</code>，实现消息流</li>
+<li>Blocking Queue (FIFO): <code>LPUSH</code> + <code>BRPOP</code></li>
+</ul>
+<h2 id="Sets"><a href="#Sets" class="headerlink" title="Sets"></a>Sets</h2><p>无序集合。</p>
+<p>集合操作：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>添加元素</td>
+<td><code>SADD</code> key member [member …]</td>
+</tr>
+<tr>
+<td>移除元素</td>
+<td><code>SREM</code> key member [member …]</td>
+</tr>
+<tr>
+<td>判断指定元素是否存在</td>
+<td><code>SISMEMBER</code> key member</td>
+</tr>
+<tr>
+<td>获取所有元素</td>
+<td><code>SMEMBERS</code> key</td>
+</tr>
+<tr>
+<td>获取元素个数</td>
+<td><code>SCARD</code> key</td>
+</tr>
+<tr>
+<td>增量式遍历集合元素</td>
+<td><code>SSCAN</code> key cursor [MATCH pattern] [COUNT count]</td>
+</tr>
+<tr>
+<td>获取指定个数的<strong>随机元素</strong></td>
+<td><code>SRANDMEMBER</code> key [count]</td>
+</tr>
+<tr>
+<td>移除指定个数的<strong>随机元素</strong>，并返回</td>
+<td><code>SPOP</code> key [count]</td>
+</tr>
+</tbody></table>
+<p>集合运算：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>移动指定元素到另一个集合</td>
+<td><code>SMOVE</code> source destination member</td>
+</tr>
+<tr>
+<td>求交集</td>
+<td><code>SINTER</code> key [key …]</td>
+</tr>
+<tr>
+<td>求交集，并保存结果</td>
+<td><code>SINTERSTORE</code> destination key [key …]</td>
+</tr>
+<tr>
+<td>求并集</td>
+<td><code>SUNION</code> key [key …]</td>
+</tr>
+<tr>
+<td>求并集，并保存结果</td>
+<td><code>SUNIONSTORE</code> destination key [key …]</td>
+</tr>
+<tr>
+<td>求差集</td>
+<td><code>SDIFF</code> key [key …]</td>
+</tr>
+<tr>
+<td>求差集，并保存结果</td>
+<td><code>SDIFFSTORE</code> destination key [key …]</td>
+</tr>
+</tbody></table>
+<p>使用场景：</p>
+<ul>
+<li><p>抽奖：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-- 随机抽奖</span><br><span class="line">SRANDMEMBER key [count]</span><br><span class="line"></span><br><span class="line">-- 随机抽取一二三等奖</span><br><span class="line">SPOP key [count]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>社交应用的关注模型：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">-- 我关注的人</span><br><span class="line">SMEMBERS key</span><br><span class="line"></span><br><span class="line">-- 求共同关注</span><br><span class="line">SINTER key [key ...]</span><br><span class="line"></span><br><span class="line">-- 我关注的人也关注 ta</span><br><span class="line">foreach(member <span class="keyword">in</span> 我关注的人) &#123;</span><br><span class="line">  -- 我每个关注的人，他们关注的人中，是否有 ta</span><br><span class="line">  SISMEMBER ((SMEMBERS key) of member) ta</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">-- 我可能认识的人</span><br><span class="line">foreach(member <span class="keyword">in</span> 我关注的人) &#123;</span><br><span class="line">  -- 我每个关注的人，他们关注的人中，有我可能认识的人</span><br><span class="line">  SDIFF ((SMEMBERS key) of member) 我关注的人</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>商品筛选</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">-- 1、分类筛选维度，每个维度的每个值都为一个集合</span><br><span class="line">-- 2、将商品按维度按值加入对应集合</span><br><span class="line">-- 3、多选筛选条件，求交集</span><br><span class="line">SINTER key [key ...]</span><br><span class="line"></span><br><span class="line">-- 4、根据交集 member，获取商品详情（O(1) 时间复杂度）</span><br><span class="line">foreach member &#123;</span><br><span class="line">  -- 每个 field 为商品属性</span><br><span class="line">  HGETALL member</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="Sorted-Sets"><a href="#Sorted-Sets" class="headerlink" title="Sorted Sets"></a>Sorted Sets</h2><p>有序集合。</p>
+<h1 id="其它命令"><a href="#其它命令" class="headerlink" title="其它命令"></a>其它命令</h1><table>
+<thead>
+<tr>
+<th></th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>删除 key</td>
+<td><code>DEL</code></td>
+</tr>
+<tr>
+<td>设值 key 的过期时间（秒）</td>
+<td><code>EXPIRE</code></td>
+</tr>
+</tbody></table>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://redis.io/commands" target="_blank" rel="noopener">https://redis.io/commands</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/07/06/hexo-with-img/" class="prev">PREV</a><a href="/2019/06/02/data-structure/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> 使用 Fiddler 代理调试 APP 页面 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="使用 Fiddler 代理调试 APP 页面 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">使用 Fiddler 代理调试 APP 页面</h1><div class="post-info">2017-02-07<a href="/tags/前端/" title="前端" class="post-demo">前端</a></div><div class="post-content"><p>我们知道如何在电脑上通过 Chrome、Firefox 调试页面请求，但在手机端呢？我们可以使用 fiddler 来调试webapp。fiddler 是一个很好的调试、抓包工具。</p>
+<p>问题：在客户端打开页面有问题，但浏览器正常；（由于客户端特定的环境，我们无法在电脑端浏览器调试定位一些问题，线上环境，更不能修改代码来调试。怎么办？ 用Fiddler 代理本地文件来调试）</p>
+<p>解决办法： 使用Fiddler 代理调试APP页面；</p>
+<h1 id="PC-端设置"><a href="#PC-端设置" class="headerlink" title="PC 端设置"></a>PC 端设置</h1><h2 id="Fiddler-安装"><a href="#Fiddler-安装" class="headerlink" title="Fiddler 安装"></a>Fiddler 安装</h2><p><a href="https://www.telerik.com/download/fiddler" target="_blank" rel="noopener">https://www.telerik.com/download/fiddler</a></p>
+<h2 id="Fiddler-设置"><a href="#Fiddler-设置" class="headerlink" title="Fiddler 设置"></a>Fiddler 设置</h2><p>首先打开Fiddler-&gt;Tools-&gt;Fiddler Options 进行配置，配置完成后重启 Fiddler，如下图：</p>
+<p><img src="/img/fiddler/fiddler_setting.png" alt="Fiddler 设置"></p>
+<h2 id="关闭防火墙"><a href="#关闭防火墙" class="headerlink" title="关闭防火墙"></a>关闭防火墙</h2><p>关闭本机防火墙，避免手机无法 ping 通。</p>
+<h1 id="iPhone-手机端调试"><a href="#iPhone-手机端调试" class="headerlink" title="iPhone 手机端调试"></a>iPhone 手机端调试</h1><p>参考：<a href="http://blog.csdn.net/asmcvc/article/details/51566569" target="_blank" rel="noopener">http://blog.csdn.net/asmcvc/article/details/51566569</a></p>
+<h2 id="安装-Fiddler-证书"><a href="#安装-Fiddler-证书" class="headerlink" title="安装 Fiddler 证书"></a>安装 Fiddler 证书</h2><p>手机浏览器访问 172.22.31.43:8888 ，点击安装证书：</p>
+<p><img src="/img/fiddler/fiddler_certificate_install_1.png" alt="安装 Fiddler 证书"></p>
+<p>提示警告，继续安装：</p>
+<p><img src="/img/fiddler/fiddler_certificate_install_2.png" alt="安装 Fiddler 证书"></p>
+<p>安装完毕：</p>
+<p><img src="/img/fiddler/fiddler_certificate_install_3.png" alt="安装 Fiddler 证书"></p>
+<h2 id="证书信任设置"><a href="#证书信任设置" class="headerlink" title="证书信任设置"></a>证书信任设置</h2><p>iOS 10 需要设置：通用 - 关于本机 - 证书信任设置 - 针对根证书启用完全信任：</p>
+<p><img src="/img/fiddler/fiddler_certificate_install_4.png" alt="证书信任设置"></p>
+<h2 id="WIFI-代理设置"><a href="#WIFI-代理设置" class="headerlink" title="WIFI 代理设置"></a>WIFI 代理设置</h2><p><img src="/img/fiddler/fiddler_wifi_setting.png" alt="WIFI 代理设置"></p>
+<h1 id="开始抓包调试"><a href="#开始抓包调试" class="headerlink" title="开始抓包调试"></a>开始抓包调试</h1><h2 id="嗅探所有请求、响应"><a href="#嗅探所有请求、响应" class="headerlink" title="嗅探所有请求、响应"></a>嗅探所有请求、响应</h2><p>打开APP页面，可以嗅探被过滤的请求：</p>
+<p><img src="/img/fiddler/fiddler_inspect.png" alt="嗅探器"></p>
+<h2 id="解码-URL-请求参数"><a href="#解码-URL-请求参数" class="headerlink" title="解码 URL 请求参数"></a>解码 URL 请求参数</h2><p>普通表单的显示如下：</p>
+<p><img src="/img/fiddler/fiddler_inspect_webforms.png" alt="解码 URL 请求参数"></p>
+<p>可以使用 Send to TextWizard 进一步解码：</p>
+<p><img src="/img/fiddler/fiddler_inspect_webforms_2.png" alt="解码 URL 请求参数"></p>
+<h2 id="设置断点，修改请求、响应"><a href="#设置断点，修改请求、响应" class="headerlink" title="设置断点，修改请求、响应"></a>设置断点，修改请求、响应</h2><p>Fiddler 最强大的功能莫过于设置断点了，设置好断点后，你可以修改请求头（如 cookie）、请求体、响应头、响应体。</p>
+<p><img src="/img/fiddler/break_request.png" alt="断点原理"></p>
+<p>设置断点有两种方法：</p>
+<p>第一种：设置全局断点</p>
+<p>打开 Fiddler 点击 Rules-&gt; Automatic Breakpoint -&gt; Before Requests，可修改请求；After Responses，可修改响应。</p>
+<p>如何消除全局断点呢？ 点击Rules-&gt; Automatic Breakpoint -&gt;Disabled</p>
+<p><img src="/img/fiddler/break_request_1.png" alt="设置全局断点"></p>
+<p>第二种：设置指定断点</p>
+<p>在命令行中输入命令: bpu <a href="http://www.baidu.com" target="_blank" rel="noopener">www.baidu.com</a> (这种方法只会中断 <a href="http://www.baidu.com" target="_blank" rel="noopener">www.baidu.com</a>)</p>
+<p>如何消除命令呢？ 在命令行中输入命令 bpu</p>
+<p>断点效果如下：</p>
+<p><img src="/img/fiddler/break_request_2.png" alt="设置指定断点"></p>
+<p><img src="/img/fiddler/break_request_3.png" alt="设置指定断点"></p>
+<h2 id="自动响应"><a href="#自动响应" class="headerlink" title="自动响应"></a>自动响应</h2><p>有时候，线上客户端环境下打开的页面有bug无法用浏览器调试，则可以用fiddler代理本地文件来进行调试，非常方便。例如：</p>
+<p><img src="/img/fiddler/auto_response.png" alt="设置自动响应"></p>
+<p>我们将线上JS文件代理为本地文件，我们可以修改本地文件，就能用客户端打开看到修改结果，非常方便，当然我们可以同时代理 引入 vconsole  来在手机端打印错误日志。</p>
+<p>也可以将一个接口代理下来，然后新建一个json文件，和代理js文件是同样的方法，就可以修改接口的请求了。</p>
+<p>PS：代理接口时可能会出现跨域问题，解决方法<a href="http://www.choujindeputao.com/fiddler-cross-origin/" target="_blank" rel="noopener">点这里</a>。</p>
+<h2 id="显示-IP"><a href="#显示-IP" class="headerlink" title="显示 IP"></a>显示 IP</h2><p>如何显示 IP？只需配置一行代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FiddlerObject.UI.lvSessions.AddBoundColumn(&quot;IP&quot;, 120, &quot;X-HostIP&quot;);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/img/fiddler/show_ip.png" alt="显示 IP"></p>
+<h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><ol>
+<li>多级代理相互影响（数据库连接vpn_ssl、蓝灯、xx-net等）</li>
+<li>代理缓存</li>
+<li>左下角的“Captuing”仅用于控制电脑端抓包，不影响手机端，可以关掉，避免影响电脑端的正常上网（例如网易云音乐听歌，印象笔记同步）。</li>
+<li>开启代理后，响应体不会被 gzip，也没有响应头：Content-Encoding: gzip。可以自行用 Chrome 和 IE 对比测试。</li>
+</ol>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2017/02/10/java-jackson/" class="prev">PREV</a><a href="/2017/01/14/webapp-development/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

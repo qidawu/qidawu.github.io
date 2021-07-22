@@ -1,0 +1,130 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> MySQL 多版本并发控制（MVCC）总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="MySQL 多版本并发控制（MVCC）总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">MySQL 多版本并发控制（MVCC）总结</h1><div class="post-info">2019-03-23<a href="/tags/MySQL/" title="MySQL" class="post-demo">MySQL</a></div><div class="post-content"><h1 id="本文大纲"><a href="#本文大纲" class="headerlink" title="本文大纲"></a>本文大纲</h1><p><img src="/img/mysql/tx_isolation.png" alt="Transaction Isolation"></p>
+<h1 id="事务的隔离性"><a href="#事务的隔离性" class="headerlink" title="事务的隔离性"></a>事务的隔离性</h1><p>上文提到，数据库的事务隔离性，主要解决以下问题：</p>
+<ul>
+<li>防止多个事务并发执行时由于交叉执行而导致的数据不一致问题。</li>
+<li>解决同一事务内的多次相同查询，数据不一致问题。</li>
+</ul>
+<p>有哪些数据不一致的情况？</p>
+<ul>
+<li>脏读</li>
+<li>不可重复读</li>
+<li>幻读</li>
+</ul>
+<p>为了数据不一致问题，引入了四个隔离级别，随着隔离级别的提升，可以解决上述更多情况。它们所使用的 <code>SELECT</code> 模式分别如下：</p>
+<table>
+<thead>
+<tr>
+<th>隔离级别</th>
+<th>SELECT 默认模式</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>读未提交<br/><code>READ UNCOMMITTED</code></td>
+<td>/</td>
+<td></td>
+</tr>
+<tr>
+<td>读已提交<br/><code>READ COMMITTED</code></td>
+<td>使用一致性非加锁读（Consistent Non-locking Reads）<br/>总是使用<strong>最新快照</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>可重复读<br/><code>REPEATABLE READ</code></td>
+<td>使用一致性非加锁读（Consistent Non-locking Reads）<br/>同一事务内总是使用<strong>首次快照</strong>，确保可重复读。</td>
+<td>一致性读取不会在它访问的数据上加任何锁，因此其它事务可以自由地同时修改那些数据，同一份数据在 undo log 会存在<strong>多份历史版本</strong>。（即通过多版本并发控制（MVCC）实现可重复读）</td>
+</tr>
+<tr>
+<td>串行化<br/><code>SERIALIZABLE</code></td>
+<td>加共享锁读<br/>（S-Locking reads）</td>
+<td>加锁读会给数据加共享锁，其它事务读取时可以继续加共享锁，但修改会阻塞等待以获取排它锁，保证读写的串行化，因此同一份数据只存在<strong>一份当前版本</strong>。（即通过读写锁实现可重复读）</td>
+</tr>
+</tbody></table>
+<h1 id="InnoDB-可重复读实现"><a href="#InnoDB-可重复读实现" class="headerlink" title="InnoDB 可重复读实现"></a>InnoDB 可重复读实现</h1><p>下面重点看下 MySQL InnoDB 如何实现可重复读这个隔离级别。它使用了一致性非加锁读（Consistent Non-locking Reads）实现多版本并发控制（MVCC），这种方法不会在它访问的数据上设置任何锁，因此其它事务可以自由地同时修改那些表，并发性能高。</p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>下图展示了两个事务并发执行时，最终会出现的五种情况：</p>
+<p><img src="/img/mysql/consistent-read-examples.png" alt="consistent read examples"></p>
+<p>即：</p>
+<blockquote>
+<p>事务的可重复读的能力是怎么实现的？</p>
+<p>可重复读的核心就是一致性读（consistent read）；而事务更新数据的时候，只能用当前读（current read）。如果当前的记录的行锁被其他事务占用的话，就需要进入锁等待。</p>
+</blockquote>
+<h2 id="Current-Read"><a href="#Current-Read" class="headerlink" title="Current Read"></a>Current Read</h2><p>数据库快照适用于同一事务内的 <code>SELECT</code> 语句，而不一定适用于 DML 语句。不同事务间的增删改操作还是会相互影响的，因为 DML 与 SELECT 语句不同，使用的是 <em>current read</em>。例如：</p>
+<ul>
+<li><p>尽管事务 A 创建一致性视图时查不到 <code>xyz</code> 记录，但如果此后其它事务插入了 <code>xyz</code> 记录并提交事务，事务 A 仍然可以将它们删除：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(c1) <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> c1 = <span class="string">'xyz'</span>;</span><br><span class="line"><span class="comment">-- Returns 0: no rows match.</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> c1 = <span class="string">'xyz'</span>;</span><br><span class="line"><span class="comment">-- Deletes several rows recently committed by other transaction.</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>尽管事务 A 创建一致性视图时查不到 <code>abc</code> 记录，但如果此后其它事务插入了 <code>abc</code> 记录并提交事务，事务 A 仍然可以修改这些记录，并看到本事务内的修改：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(c2) <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> c2 = <span class="string">'abc'</span>;</span><br><span class="line"><span class="comment">-- Returns 0: no rows match.</span></span><br><span class="line"><span class="keyword">UPDATE</span> t1 <span class="keyword">SET</span> c2 = <span class="string">'cba'</span> <span class="keyword">WHERE</span> c2 = <span class="string">'abc'</span>;</span><br><span class="line"><span class="comment">-- Affects 10 rows: another txn just committed 10 rows with 'abc' values.</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(c2) <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> c2 = <span class="string">'cba'</span>;</span><br><span class="line"><span class="comment">-- Returns 10: this txn can now see the rows it just updated.</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="Consistent-Read-实现原理"><a href="#Consistent-Read-实现原理" class="headerlink" title="Consistent Read 实现原理"></a>Consistent Read 实现原理</h2><p>Consistent Read 实现依赖于 Undo Log 和 Consistent Read-View。</p>
+<h3 id="Undo-Log-是什么？"><a href="#Undo-Log-是什么？" class="headerlink" title="Undo Log 是什么？"></a>Undo Log 是什么？</h3><blockquote>
+<p>A storage area that holds copies of data modified by active <strong>transactions</strong>. If another transaction needs to see the original data (as part of a <strong>consistent read</strong> operation), the unmodified data is retrieved from this storage area.</p>
+<p>In MySQL 5.6 and MySQL 5.7, you can use the <a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-parameters.html#sysvar_innodb_undo_tablespaces" target="_blank" rel="noopener"><code>innodb_undo_tablespaces</code></a> variable have undo logs reside in <strong>undo tablespaces</strong>, which can be placed on another storage device such as an <strong>SSD</strong>. In MySQL 8.0, undo logs reside in two default undo tablespaces that are created when MySQL is initialized, and additional undo tablespaces can be created using <a href="https://dev.mysql.com/doc/refman/5.7/en/create-tablespace.html" target="_blank" rel="noopener"><code>CREATE UNDO TABLESPACE</code></a> syntax.</p>
+<p>The undo log is split into separate portions, the <strong>insert undo buffer</strong> and the <strong>update undo buffer</strong>.</p>
+</blockquote>
+<h3 id="Consistent-Read-View-是什么？"><a href="#Consistent-Read-View-是什么？" class="headerlink" title="Consistent Read-View 是什么？"></a>Consistent Read-View 是什么？</h3><blockquote>
+<p>在实现上， InnoDB 为每个事务构造了一个数组，用来保存这个事务启动瞬间，当前正在“活跃”的所有事务 ID。“活跃”指的就是，启动了但还没提交。</p>
+<p>数组里面事务 ID 的最小值记为低水位，当前系统里面已经创建过的事务 ID 的最大值加 1 记为高水位。</p>
+<p>这个视图数组和高水位，就组成了当前事务的一致性视图（consistent read-view）。</p>
+<p>这个视图数组把所有的 row trx_id 分成了几种不同的情况。如下图：</p>
+</blockquote>
+<p><img src="/img/mysql/consistent-read-view.png" alt="consistent-read-view"></p>
+<p>以下表事务为例，对于当前事务 105 来说，一致性视图为：<code>[100,103,104,105],106</code>，其中低水位为 <code>100</code>，高水位为 <code>106</code>。这些事务分布如上图。</p>
+<table>
+<thead>
+<tr>
+<th>row trx_id</th>
+<th>committed?</th>
+<th>remark</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>100</td>
+<td>N</td>
+<td></td>
+</tr>
+<tr>
+<td>101</td>
+<td>Y</td>
+<td></td>
+</tr>
+<tr>
+<td>102</td>
+<td>Y</td>
+<td></td>
+</tr>
+<tr>
+<td>103</td>
+<td>N</td>
+<td></td>
+</tr>
+<tr>
+<td>104</td>
+<td>N</td>
+<td></td>
+</tr>
+<tr>
+<td>105</td>
+<td>N</td>
+<td>current trx</td>
+</tr>
+</tbody></table>
+<p>对于当前事务 ID <code>105</code>，根据以下流程图，就只能看到已提交事务 <code>1-99</code>, <code>101</code>, <code>102</code></p>
+<p><img src="/img/mysql/consistent-read-process.png" alt="consistent read process"></p>
+<p><strong>数据版本的可见性规则，就是基于数据的 row trx_id 和这个一致性视图的对比结果得到的。</strong>假如事务 ID <code>100-104</code> 依次修改了同一份数据（如上图右），虽然数据当前版本为 <code>104</code>，但对于当前事务 ID <code>105</code> 来说，也只能看到版本链上事务 ID <code>102</code> 提交的数据版本。</p>
+<h2 id="如何查看最新快照"><a href="#如何查看最新快照" class="headerlink" title="如何查看最新快照"></a>如何查看最新快照</h2><p>如果要查看最新快照，可以通过以下三个方法：</p>
+<ul>
+<li>使用 <code>READ COMMITTED</code> 隔离级别</li>
+<li>提交当前事务并发起新查询，刷新时间点</li>
+<li>使用加锁读（读锁或写锁）</li>
+</ul>
+<p>下例展示了第二种方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">             Session A              Session B</span><br><span class="line"></span><br><span class="line">           START TRANSACTION;     START TRANSACTION;</span><br><span class="line">time</span><br><span class="line">|          SELECT * FROM t;</span><br><span class="line">|          empty set</span><br><span class="line">|                                 INSERT INTO t VALUES (1, 2);</span><br><span class="line">|</span><br><span class="line">v          SELECT * FROM t;</span><br><span class="line">           empty set</span><br><span class="line">                                  COMMIT;</span><br><span class="line"></span><br><span class="line">           SELECT * FROM t;</span><br><span class="line">           empty set</span><br><span class="line"></span><br><span class="line">           COMMIT;</span><br><span class="line"></span><br><span class="line">           SELECT * FROM t;</span><br><span class="line">           ---------------------</span><br><span class="line">           |    1    |    2    |</span><br><span class="line">           ---------------------</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《高性能 MySQL》</p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-multi-versioning.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/innodb-multi-versioning.html</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-consistent-read.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/innodb-consistent-read.html</a></p>
+<p><a href="https://time.geekbang.org/column/article/70562" target="_blank" rel="noopener">https://time.geekbang.org/column/article/70562</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/03/26/mysql-transaction-characteristics/" class="prev">PREV</a><a href="/2019/03/20/mysql-transaction-model/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

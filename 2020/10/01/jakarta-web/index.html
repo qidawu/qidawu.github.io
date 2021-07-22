@@ -1,0 +1,72 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Jakarta EE 系列（一）Web 技术的相关规范总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Jakarta EE 系列（一）Web 技术的相关规范总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Jakarta EE 系列（一）Web 技术的相关规范总结</h1><div class="post-info">2020-10-01<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><table>
+<thead>
+<tr>
+<th>Specifications</th>
+<th>Description</th>
+<th>Compatible Implementations</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://jakarta.ee/specifications/servlet/" target="_blank" rel="noopener">Jakarta Servlet</a></td>
+<td>A server-side API for handling HTTP requests and responses</td>
+<td><a href="https://eclipse-ee4j.github.io/glassfish/" target="_blank" rel="noopener">Eclipse GlassFish</a></td>
+</tr>
+<tr>
+<td><a href="https://jakarta.ee/specifications/pages/" target="_blank" rel="noopener">Jakarta Server Pages (JSP)</a></td>
+<td>Defines a template engine for web applications</td>
+<td><a href="https://eclipse-ee4j.github.io/glassfish/" target="_blank" rel="noopener">Eclipse GlassFish</a></td>
+</tr>
+<tr>
+<td><a href="https://jakarta.ee/specifications/tags/" target="_blank" rel="noopener">Jakarta Standard Tag Library (JSTL)</a></td>
+<td>Provides a set of tags to simplify the JSP development</td>
+<td><a href="https://eclipse-ee4j.github.io/glassfish/" target="_blank" rel="noopener">Eclipse GlassFish</a></td>
+</tr>
+<tr>
+<td><a href="https://jakarta.ee/specifications/expression-language/" target="_blank" rel="noopener">Jakarta Expression Language (EL)</a></td>
+<td>Defines an expression language for Java applications</td>
+<td><a href="https://eclipse-ee4j.github.io/el-ri/" target="_blank" rel="noopener">Eclipse Expression Language</a></td>
+</tr>
+<tr>
+<td><a href="https://jakarta.ee/specifications/faces/" target="_blank" rel="noopener">Jakarta Server Faces (JSF)</a></td>
+<td>MVC framework for building user interfaces for web apps</td>
+<td><a href="https://eclipse-ee4j.github.io/mojarra/" target="_blank" rel="noopener">Eclipse Mojarra</a></td>
+</tr>
+<tr>
+<td><a href="https://jakarta.ee/specifications/mvc/" target="_blank" rel="noopener">Jakarta MVC</a></td>
+<td>Standardizes the action-based model-view-controller pattern</td>
+<td><a href="https://eclipse-ee4j.github.io/krazo/" target="_blank" rel="noopener">Eclipse Krazo</a></td>
+</tr>
+<tr>
+<td><a href="https://jakarta.ee/specifications/restful-ws/" target="_blank" rel="noopener">Jakarta RESTful Web Services (JAX-RS)</a></td>
+<td>API to develop web services following the REST pattern</td>
+<td><a href="https://eclipse-ee4j.github.io/jersey/" target="_blank" rel="noopener">Eclipse Jersey</a></td>
+</tr>
+<tr>
+<td><a href="https://jakarta.ee/specifications/enterprise-ws/" target="_blank" rel="noopener">Jakarta Enterprise Web Services</a></td>
+<td>Web Services for Jakarta EE architecture</td>
+<td><a href="https://eclipse-ee4j.github.io/glassfish/" target="_blank" rel="noopener">Eclipse GlassFish</a></td>
+</tr>
+<tr>
+<td><a href="https://jakarta.ee/specifications/websocket/" target="_blank" rel="noopener">Jakarta WebSocket</a></td>
+<td>API for Server and Client Endpoints for WebSocket protocol</td>
+<td><a href="https://eclipse-ee4j.github.io/tyrus/" target="_blank" rel="noopener">Eclipse Tyrus</a></td>
+</tr>
+<tr>
+<td>……</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>一点关于 EL 的历史：</p>
+<blockquote>
+<p>Expression Language (EL) 最初受到 ECMAScript 和 XPath 表达式语言的启发。在其成立之初，参与的专家非常不愿意设计另一种表达语言，并试图使用这些语言中的每一种，但他们在不同的领域都有所欠缺。</p>
+<p>因此，JSP Standard Tag Library (JSTL) version 1.0 (based on JSP 1.2) 首先引入了一种表达式语言，使前端页面开发者可以轻松访问和操作应用程序数据，而无需掌握如 Java、JavaScript 等编程语言相关的复杂性。</p>
+<p>鉴于其成功，EL 随后被移入 JSP 规范（JSP 2.0/JSTL 1.1），使其在 JSP 页面中普遍可用（而不仅仅用于 JSTL 标记库的属性）。</p>
+<p>JavaServer Faces 1.0 定义了用于构建用户界面组件的标准框架，并且构建在 JSP 1.2 技术之上。由于 JSP 1.2 技术没有集成的表达语言，并且 JSP 2.0 EL 不能满足 Faces 的所有需求，因此为 Faces 1.0 开发了一个 EL 变体。Faces 专家组试图使该语言尽可能与 JSP 2.0 兼容，但是还是有一些区别。</p>
+<p>显然需要一种单一、统一的表达语言来满足各种 Web 层技术的需求。因此，Faces 和 JSP 专家组共同制定了统一表达式语言的规范，该规范在 JSR 245 中定义，并在 JSP 2.1 和 Faces 1.2 版本中生效。</p>
+<p>JSP/JSTL/Faces 专家组也意识到 EL 的用处超出了他们自己的规范。3.0 规范是第一个将表达式语言定义为独立规范的 JSR，不依赖于其它技术。</p>
+</blockquote>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="/2015/05/01/java-jsp/">JSP 标签总结</a></p>
+<p><a href="/2015/05/02/java-jstl/">JSP 标准标签库（JSTL）总结</a></p>
+<p><a href="/2015/05/03/java-el/">JSP EL 表达式总结</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2020/10/03/jakarta-annotations/" class="prev">PREV</a><a href="/2020/09/15/java/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

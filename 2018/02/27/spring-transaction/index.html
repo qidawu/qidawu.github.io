@@ -1,0 +1,195 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Java 数据持久化系列（五）Spring 事务管理总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Java 数据持久化系列（五）Spring 事务管理总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Java 数据持久化系列（五）Spring 事务管理总结</h1><div class="post-info">2018-02-27<a href="/tags/Java/" title="Java" class="post-demo">Java</a><a href="/tags/Spring/" title="Spring" class="post-demo">Spring</a></div><div class="post-content"><p>本文梳理 Spring 事务管理的方方面面，总览如下：</p>
+<p><img src="/img/spring/transaction/transaction_management.png" alt=""></p>
+<h1 id="Spring-框架的事务支持模型的优点"><a href="#Spring-框架的事务支持模型的优点" class="headerlink" title="Spring 框架的事务支持模型的优点"></a>Spring 框架的事务支持模型的优点</h1><p>全面的事务支持是使用 Spring 框架的最有说服力的理由之一。Spring 框架为事务管理提供了一致的抽象层，并具有以下优势：</p>
+<ul>
+<li>跨不同事务 API 的一致编程模型，如 JTA (Java Transaction API)、JPA (Java Persistence API)、JDBC、Hibernate、MyBatis。</li>
+<li>支持<a href="https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/data-access.html#transaction-declarative" target="_blank" rel="noopener">声明式事务管理</a>，可通过 XML 或注解进行配置。</li>
+<li>比复杂的事务 API（如 JTA）更简单的<a href="https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/data-access.html#transaction-programmatic" target="_blank" rel="noopener">编程式事务管理 API</a>。</li>
+<li>与 Spring 框架的数据访问抽象层集成。</li>
+</ul>
+<h1 id="声明式事务管理"><a href="#声明式事务管理" class="headerlink" title="声明式事务管理"></a>声明式事务管理</h1><h2 id="理解声明式事务实现"><a href="#理解声明式事务实现" class="headerlink" title="理解声明式事务实现"></a>理解声明式事务实现</h2><p>关于 Spring 框架的声明式事务支持，最重要的概念是掌握其通过 <a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#aop-understanding-aop-proxies" target="_blank" rel="noopener">AOP 代理</a>来启用此支持，并且事务 advice 由元数据（基于 XML 或注释 <code>@Transactional</code>）驱动。AOP 与事务元数据的组合产生 AOP 代理，该代理使用 <code>TransactionInterceptor</code> 搭配合适的 <code>PlatformTransactionManager</code> 实现来驱动围绕方法调用的事务代理。</p>
+<p><code>TransactionInterceptor</code> 的结构如下：</p>
+<p><img src="/img/spring/transaction/TransactionInterceptor.png" alt="TransactionInterceptor"></p>
+<p>下图展示了调用事务代理方法的过程：</p>
+<p><img src="/img/spring/transaction/tx.png" alt="事务代理调用"></p>
+<h2 id="基于-XML-方式配置事务管理"><a href="#基于-XML-方式配置事务管理" class="headerlink" title="基于 XML 方式配置事务管理"></a>基于 XML 方式配置事务管理</h2><p>使用 <code>&lt;tx:advice/&gt;</code> 创建事务 advice，并创建切面通过 <code>&lt;aop:advisor/&gt;</code> 指定该事务 advice 须应用到哪些切点之上：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- the transactional advice (what 'happens'; see the &lt;aop:advisor/&gt; bean below) --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:advice</span> <span class="attr">id</span>=<span class="string">"txAdvice"</span> <span class="attr">transaction-manager</span>=<span class="string">"txManager"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- the transactional semantics... --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tx:attributes</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- all methods starting with 'get' are read-only --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">"get*"</span> <span class="attr">read-only</span>=<span class="string">"true"</span>/&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- other methods use the default transaction settings (see below) --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">"*"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tx:attributes</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">tx:advice</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- ensure that the above transactional advice runs for any execution</span></span><br><span class="line"><span class="comment">        of an operation defined by the FooService interface --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">aop:config</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">aop:pointcut</span> <span class="attr">id</span>=<span class="string">"fooServiceOperation"</span> <span class="attr">expression</span>=<span class="string">"execution(* x.y.service.FooService.*(..))"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">aop:advisor</span> <span class="attr">advice-ref</span>=<span class="string">"txAdvice"</span> <span class="attr">pointcut-ref</span>=<span class="string">"fooServiceOperation"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">aop:config</span>&gt;</span></span><br><span class="line"></span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+
+<p>事务配置可通过修改 <code>&lt;tx:method/&gt;</code> 的属性，详见脑图。</p>
+<h2 id="基于注解方式配置事务管理"><a href="#基于注解方式配置事务管理" class="headerlink" title="基于注解方式配置事务管理"></a>基于注解方式配置事务管理</h2><p>除了使用基于 XML 的方式（<code>&lt;tx:advice/&gt;</code>）声明事务配置之外，您还可以使用基于注解的方式（<code>@Transactional</code> ）。直接在 Java 源代码中声明事务语义会使声明更靠近受影响的代码，易于配置和修改。这样之所以不存在过度耦合的原因是因为，无论如何，用于事务处理的代码几乎总是以事务的方式进行部署。</p>
+<p>您可以将 <code>@Transactional</code> 注解应用于：</p>
+<ul>
+<li>接口定义（interface）</li>
+<li>接口上的方法</li>
+<li>类定义（class）</li>
+<li>类上的公有方法（public method on class）</li>
+</ul>
+<p><code>@Transactional</code> 提供的配置属性如下：</p>
+<p><img src="/img/spring/transaction/spring_annotation_transactional.png" alt="@Transactional"></p>
+<h3 id="开启事务支持"><a href="#开启事务支持" class="headerlink" title="开启事务支持"></a>开启事务支持</h3><p>但是，仅仅使用 <code>@Transactional</code> 注解并不足以激活事务行为，还需要开启事务支持，可以使用以下方式：</p>
+<ul>
+<li><code>&lt;tx:annotation-driven/&gt;</code></li>
+<li><code>@EnableTransactionManagement</code></li>
+</ul>
+<p>配置参数如下：</p>
+<table>
+<thead>
+<tr>
+<th>XML 属性</th>
+<th>注解属性</th>
+<th>默认</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>transaction-manager</code></td>
+<td>N/A (see <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/annotation/TransactionManagementConfigurer.html" target="_blank" rel="noopener"><code>TransactionManagementConfigurer</code></a> javadoc)</td>
+<td><code>transactionManager</code></td>
+<td>要使用的事务管理器的名称。仅在事务管理器的名称不是  <code>transactionManager</code> 时才需要设置。</td>
+</tr>
+<tr>
+<td><code>mode</code></td>
+<td><code>mode</code></td>
+<td><code>proxy</code></td>
+<td>默认为代理模式（<code>proxy</code>），使用 Spring AOP 框架处理被 <code>@Transactional</code> 注解的 bean，仅适用于通过代理进入的方法调用。<br/>相反，替代模式（<code>aspectj</code>）使用Spring AspectJ 事务切面织入到受影响的类，修改目标类的字节码以应用于任何类型的方法调用（支持任意访问修饰符、支持自调用）。AspectJ 织入需要在类路径中包含 <code>spring-aspects.jar</code> 以及开启类加载期织入（load-time weaving）或编译期织入（compile-time weaving）。（参阅 <a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#aop-aj-ltw-spring" target="_blank" rel="noopener">Spring 配置</a>）</td>
+</tr>
+<tr>
+<td><code>proxy-target-class</code></td>
+<td><code>proxyTargetClass</code></td>
+<td><code>false</code></td>
+<td>仅适用于 <code>proxy</code> 模式。控制为使用 <code>@Transactional</code> 注解的类所创建的事务代理类型。如果 <code>proxy-target-class</code> 属性设置为 <code>true</code>，则创建基于类的代理（CGLib Proxy）。如果为 <code>false</code> 或者省略该属性，则创建基于标准 JDK 接口的代理（JDK Proxy）。（参阅<a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#aop-proxying" target="_blank" rel="noopener">代理机制</a>）</td>
+</tr>
+<tr>
+<td><code>order</code></td>
+<td><code>order</code></td>
+<td><code>Ordered.LOWEST_PRECEDENCE</code></td>
+<td>参阅 <a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#aop-ataspectj-advice-ordering" target="_blank" rel="noopener">Advice 排序</a>。</td>
+</tr>
+</tbody></table>
+<p>更多注意点，详见官方文档：</p>
+<blockquote>
+<p>The default advice mode for processing <code>@Transactional</code> annotations is <code>proxy</code>, which allows for interception of calls through the proxy only. Local calls within the same class cannot get intercepted that way. For a more advanced mode of interception, consider switching to <code>aspectj</code> mode in combination with compile-time or load-time weaving.</p>
+</blockquote>
+<blockquote>
+<p>In proxy mode (which is the default), only external method calls coming in through the proxy are intercepted. This means that self-invocation (in effect, a method within the target object calling another method of the target object) does not lead to an actual transaction at runtime even if the invoked method is marked with <code>@Transactional</code>.</p>
+</blockquote>
+<blockquote>
+<p>The <code>proxy-target-class</code> attribute controls what type of transactional proxies are created for classes annotated with the <code>@Transactional</code> annotation. If <code>proxy-target-class</code> is set to <code>true</code>, class-based proxies are created. If<code>proxy-target-class</code> is <code>false</code> or if the attribute is omitted, standard JDK interface-based proxies are created. (See <a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/data-access.html#aop-proxying" target="_blank" rel="noopener">[aop-proxying]</a> for a discussion of the different proxy types.)</p>
+</blockquote>
+<blockquote>
+<p>The Spring team recommends that you annotate only concrete classes (and methods of concrete classes) with the <code>@Transactional</code> annotation, as opposed to annotating interfaces. You certainly can place the <code>@Transactional</code> annotation on an interface (or an interface method), but this works only as you would expect it to if you use interface-based proxies. The fact that Java annotations are not inherited from interfaces means that, if you use class-based proxies (<code>proxy-target-class=&quot;true&quot;</code>) or the weaving-based aspect (<code>mode=&quot;aspectj&quot;</code>), the transaction settings are not recognized by the proxying and weaving infrastructure, and the object is not wrapped in a transactional proxy.</p>
+</blockquote>
+<blockquote>
+<p>When you use proxies, you should apply the <code>@Transactional</code> annotation only to methods with public visibility. If you do annotate protected, private or package-visible methods with the <code>@Transactional</code> annotation, no error is raised, but the annotated method does not exhibit the configured transactional settings. If you need to annotate non-public methods, consider using AspectJ.</p>
+</blockquote>
+<p><code>@EnableTransactionManagement</code> 注解主要用于导入 <code>TransactionManagementConfigurationSelector</code>，其判断 <code>mode</code> 属性：</p>
+<ul>
+<li><code>mode</code> 为 <code>AdviceMode.PROXY</code>，返回配置  <code>org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration</code>，该 Java Config 用于配置以下 bean：<ul>
+<li><code>TransactionInterceptor</code> 最关键的类</li>
+<li><code>TransactionAttributeSource</code></li>
+<li><code>BeanFactoryTransactionAttributeSourceAdvisor</code></li>
+</ul>
+</li>
+<li><code>mode</code> 为 <code>AdviceMode.ASPECTJ</code>，默认返回配置 <code>org.springframework.transaction.aspectj.AspectJTransactionManagementConfiguration</code></li>
+</ul>
+<h2 id="事务的传播行为"><a href="#事务的传播行为" class="headerlink" title="事务的传播行为"></a>事务的传播行为</h2><p>其中事务的传播行为需要留意下，是 Spring 特有的概念，与数据库无关。它是为了解决业务层方法之间互相调用的事务问题而引入的。当事务方法被另一个事务方法调用时，必须指定事务应该如何传播。例如：方法可能继续在现有事务中运行，也可能开启一个新事务，并在自己的事务中运行。有以下几种方式：</p>
+<table>
+<thead>
+<tr>
+<th>传播行为</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>REQUIRED</code></td>
+<td>支持当前事务，如果不存在，就新建一个。默认配置。</td>
+</tr>
+<tr>
+<td><code>SUPPORTS</code></td>
+<td><del>支持当前事务，如果不存在，就以非事务方式执行。</del></td>
+</tr>
+<tr>
+<td><code>MANDATORY</code></td>
+<td><del>支持当前事务，如果不存在，就抛出异常。</del></td>
+</tr>
+<tr>
+<td><code>REQUIRES_NEW</code></td>
+<td>如果当前存在事务，挂起当前事务，创建一个新事务。</td>
+</tr>
+<tr>
+<td><code>NOT_SUPPORTED</code></td>
+<td><del>以非事务方式执行，如果当前存在事务，则挂起当前事务。</del></td>
+</tr>
+<tr>
+<td><code>NEVER</code></td>
+<td><del>以非事务方式执行，如果当前存在事务，则抛出异常。</del></td>
+</tr>
+<tr>
+<td><code>NESTED</code></td>
+<td>如果当前存在事务，则在嵌套事务内执行。如果当前没有事务，则执行与 <code>REQUIRED</code> 类似的操作。</td>
+</tr>
+</tbody></table>
+<p>强烈不建议使用非事务方式执行，因此上述标注删除线的传播行为不建议使用。</p>
+<p>在 Spring 管理的事务中，请注意物理事务和逻辑事务之间的区别，以及传播行为应用于两者之上时的区别。</p>
+<h3 id="REQUIRED"><a href="#REQUIRED" class="headerlink" title="REQUIRED"></a>REQUIRED</h3><p><img src="/img/spring/transaction/tx_prop_required.png" alt="REQUIRED"></p>
+<h3 id="REQUIRED-NEW"><a href="#REQUIRED-NEW" class="headerlink" title="REQUIRED_NEW"></a>REQUIRED_NEW</h3><p><img src="/img/spring/transaction/tx_prop_requires_new.png" alt="REQUIRED_NEW"></p>
+<h1 id="编程式事务管理"><a href="#编程式事务管理" class="headerlink" title="编程式事务管理"></a>编程式事务管理</h1><p>Spring 框架提供了两种编程式事务管理方法：</p>
+<ul>
+<li>直接使用 Spring 框架最底层的 <code>PlatformTransactionManager</code>  的实现类；</li>
+<li>更建议使用 Spring 框架封装过的 <code>TransactionTemplate</code> 事务模板类。</li>
+</ul>
+<h2 id="使用-PlatformTransactionManager"><a href="#使用-PlatformTransactionManager" class="headerlink" title="使用 PlatformTransactionManager"></a>使用 <code>PlatformTransactionManager</code></h2><p>Spring 事务抽象的关键在于事务策略的概念。事务策略由<code>org.springframework.transaction.PlatformTransactionManager</code>接口定义 ，如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">PlatformTransactionManager</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function">TransactionStatus <span class="title">getTransaction</span><span class="params">(TransactionDefinition definition)</span> <span class="keyword">throws</span> TransactionException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">commit</span><span class="params">(TransactionStatus status)</span> <span class="keyword">throws</span> TransactionException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">rollback</span><span class="params">(TransactionStatus status)</span> <span class="keyword">throws</span> TransactionException</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于 <code>PlatformTransactionManager</code> 是一个接口，因此很容易按需 mock 或 stub。它与查找策略无关，例如JNDI。<code>PlatformTransactionManager</code> 的实现就像其它对象或 bean 一样在 Spring 框架的 IoC 容器中定义。仅此优势就让 Spring 框架事务成为一种有价值的抽象，即便是使用 JTA。与直接使用 JTA 相比，您可以更轻松地测试事务代码。</p>
+<p>同时，为了与 Spring 的理念保持一致，<code>PlatformTransactionManager</code> 接口的所有方法抛出的  <code>TransactionException</code> 异常都是非受检的（即继承自 <code>java.lang.RuntimeException</code> 类）。事务基础设施故障几乎都是致命性的。只有极少数情况下，应用程序能够从事务故障中恢复过来。开发人员仍然可以选择 try catch <code>TransactionException</code>，但重点是开发人员不会<strong>被迫</strong>这样做。</p>
+<p><code>getTransaction(..)</code> 方法根据 <code>TransactionDefinition</code> 参数返回一个 <code>TransactionStatus</code> 对象 。<code>TransactionStatus</code> 表示一个新事务，但如果当前调用堆栈中存在匹配事务，则表示该已有事务，即 <code>TransactionStatus</code> 是与执行的线程相关联的。</p>
+<p><code>TransactionDefinition</code> 接口可以控制事务的传播行为、隔离级别、超时时间、只读状态，其结构如下：</p>
+<p><img src="/img/spring/transaction/TransactionDefinition.png" alt="TransactionDefinition"></p>
+<p><code>TransactionStatus</code> 接口为事务代码提供了一种简单的方法来控制事务执行和查询事务状态，其结构如下：</p>
+<p><img src="/img/spring/transaction/TransactionStatus.png" alt="TransactionDefinition"></p>
+<p>在 Spring 中无论选择使用声明式还是编程式事务管理，定义正确的 <code>PlatformTransactionManager</code> 实现都是绝对必要的。Spring 提供了下面几种实现：</p>
+<table>
+<thead>
+<tr>
+<th>实现类</th>
+<th>包</th>
+<th>工作环境</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>DataSourceTransactionManager</code></td>
+<td>spring-jdbc</td>
+<td>JDBC、Mybatis</td>
+</tr>
+<tr>
+<td><code>HibernateTransactionManager</code></td>
+<td>spring-orm</td>
+<td>Hibernate</td>
+</tr>
+<tr>
+<td><code>JpaTransactionManager</code></td>
+<td>spring-orm</td>
+<td>JPA</td>
+</tr>
+<tr>
+<td><code>JtaTransactionManager</code></td>
+<td>spring-tx</td>
+<td>JTA</td>
+</tr>
+</tbody></table>
+<p>其继承关系如下：</p>
+<p><img src="/img/spring/transaction/PlatformTransactionManager.png" alt="PlatformTransactionManager 实现"></p>
+<p>以最常用的 <code>DataSourceTransactionManager</code> 为例，重点看下都提供了哪些方法：</p>
+<p><img src="/img/spring/transaction/DataSourceTransactionManager.png" alt="DataSourceTransactionManager"></p>
+<h2 id="使用-TransactionTemplate"><a href="#使用-TransactionTemplate" class="headerlink" title="使用 TransactionTemplate"></a>使用 <code>TransactionTemplate</code></h2><p>和 Spring 框架的其它模板类一样，<code>TransactionTemplate</code> 也采用了回调方法来减少样板代码。相比起直接使用 <code>PlatformTransactionManager</code> 接口，<code>TransactionTemplate</code> 可以让开发人员无须重复编写获取与释放事务资源的代码，从而更聚焦于业务代码。</p>
+<p><img src="/img/spring/transaction/TransactionTemplate.png" alt="TransactionTemplate"></p>
+<p>你需要编写一个 <code>TransactionCallback</code> 实现（通常为匿名内部类），其中包含需要在事务上下文中执行的代码。然后传递给 <code>TransactionTemplate</code> 的 <code>execute(..)</code> 方法去执行：</p>
+<p><img src="/img/spring/transaction/TransactionCallback.png" alt="TransactionCallback"></p>
+<p>由于 <code>TransactionTemplate</code> 继承自 <code>DefaultTransactionDefinition</code>，因此可以直接修改其属性进行事务配置（如传播行为、隔离级别、超时时间等）。<code>TransactionTemplate</code> 类的实例是线程安全的，实例并不维护任何会话状态，但是却会维护配置状态。因此，当多个类共享使用同一个 <code>TransactionTemplate</code> 类的实例时，如果其中一个需要使用不同的配置（例如不同的隔离级别），你需要创建两个不同的 <code>TransactionTemplate</code> 类的实例。</p>
+<h1 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestDbService</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> TestDAO testDAO;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> PlatformTransactionManager transactionManager;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> TransactionTemplate transactionTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 要使用底层 `PlatformTransactionManager` 接口直接管理事务，请先注入所需的实现类。</span></span><br><span class="line"><span class="comment">     * 然后，通过 `TransactionDefinition` 和 `TransactionStatus` 对象启动、回滚和提交事务。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">save</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        DefaultTransactionDefinition def = <span class="keyword">new</span> DefaultTransactionDefinition();</span><br><span class="line">        <span class="comment">// explicitly setting the transaction name is something that can be done only programmatically</span></span><br><span class="line">        def.setName(<span class="string">"SomeTxName"</span>);</span><br><span class="line">        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);</span><br><span class="line">        </span><br><span class="line">        TransactionStatus status = transactionManager.getTransaction(def);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Integer result = insert();</span><br><span class="line">            transactionManager.commit(status);</span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            log.error(e.getMessage(), e);</span><br><span class="line">            transactionManager.rollback(status);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * TransactionTemplate 采用了回调方法来减少样板代码。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">save1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> transactionTemplate.execute(status -&gt; &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> insert();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                log.error(e.getMessage(), e);</span><br><span class="line">                status.setRollbackOnly();</span><br><span class="line">                <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 使用注解方式配置事务，是最简单最推荐的方式。事务的参数配置详见脑图。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Transactional</span>(rollbackFor = Exception<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">    <span class="title">public</span> <span class="title">Integer</span> <span class="title">save3</span>() </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> insert();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/data-access.html#transaction" target="_blank" rel="noopener">https://docs.spring.io/spring/docs/current/spring-framework-reference/data-access.html#transaction</a></p>
+<p><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/annotation/Transactional.html" target="_blank" rel="noopener">https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/annotation/Transactional.html</a></p>
+<p><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/annotation/Propagation.html" target="_blank" rel="noopener">https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/annotation/Propagation.html</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2018/03/24/mybatis/" class="prev">PREV</a><a href="/2018/02/20/spring-jdbc/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

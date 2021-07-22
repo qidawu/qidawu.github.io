@@ -1,0 +1,181 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> 并发编程系列（二）Java 并发包总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="并发编程系列（二）Java 并发包总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">并发编程系列（二）Java 并发包总结</h1><div class="post-info">2020-05-01<a href="/tags/Java/" title="Java" class="post-demo">Java</a><a href="/tags/并发编程/" title="并发编程" class="post-demo">并发编程</a></div><div class="post-content"><p>工作中常用到一些并发编程类，这里做一些总结。</p>
+<p>JDK 中涉及到线程的包如下：</p>
+<h1 id="java-lang"><a href="#java-lang" class="headerlink" title="java.lang"></a>java.lang</h1><blockquote>
+<p>内含基础并发类。</p>
+</blockquote>
+<h2 id="Runnable"><a href="#Runnable" class="headerlink" title="Runnable"></a>Runnable</h2><p>无返回结果的异步任务。</p>
+<h2 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h2><p>程序中的执行线程。</p>
+<h3 id="属性"><a href="#属性" class="headerlink" title="属性"></a>属性</h3><p><code>Thread</code> 对象中保存了一些<strong>属性</strong>能够帮助我们来辨别每一个线程，知道它的状态，调整控制其优先级等：</p>
+<p><code>ID</code></p>
+<blockquote>
+<p>每个线程的独特标识。</p>
+</blockquote>
+<p><code>Name</code></p>
+<blockquote>
+<p>线程的名称。</p>
+</blockquote>
+<p><code>Priority</code></p>
+<blockquote>
+<p>线程对象的优先级。优先级别在 1-10 之间，1 是最低级，10 是最高级。不建议改变它们的优先级。</p>
+</blockquote>
+<p><code>Daemon</code></p>
+<blockquote>
+<p>是否为守护线程。</p>
+<p>Java 有一种特别的线程叫做守护线程。这种线程的<strong>优先级非常低</strong>，通常在程序里没有其他线程运行时才会执行它。当守护线程是程序里唯一在运行的线程时，JVM 会结束守护线程并终止程序。</p>
+<p>根据这些特点，守护线程通常用于在同一程序里给普通线程（也叫使用者线程）提供服务。它们通常无限循环的等待服务请求或执行线程任务。它们不能做重要的任务，因为我们不知道什么时候会被分配到 CPU 时间片，并且只要没有其他线程在运行，它们可能随时被终止。<strong>JAVA中最典型的这种类型代表就是垃圾回收器 GC</strong>。</p>
+<p>只能在 start() 方法之前可以调用 setDaemon() 方法。一旦线程运行了，就不能修改守护状态。</p>
+<p>可以使用 isDaemon() 方法来检查线程是否是守护线程。</p>
+</blockquote>
+<p><code>Thread.UncaughtExceptionHandler</code></p>
+<blockquote>
+<p>用于捕获和处理线程对象抛出的 Unchecked Exception 来避免程序终结。</p>
+</blockquote>
+<p><code>Thread.State</code></p>
+<blockquote>
+<p>线程的状态，共六种：<br>NEW<br>RUNNABLE<br>BLOCKED<br>WAITING<br>TIME_WAITING<br>TERMINATED</p>
+</blockquote>
+<h3 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h3><p><code>Thread</code> 类提供了以下几类<strong>方法</strong>：</p>
+<ul>
+<li>线程睡眠 <code>Thread.sleep(...)</code></li>
+<li>线程中断 <code>Thread.interrupt()</code></li>
+<li>线程让步 <code>Thread.yield()</code></li>
+<li>线程合并 <code>Thread.join(...)</code></li>
+<li>……</li>
+</ul>
+<p><code>Object</code> 提供了一组线程协作方法：</p>
+<ul>
+<li>线程协作 <code>Object.wait/notify</code></li>
+</ul>
+<h2 id="ThreadLocal"><a href="#ThreadLocal" class="headerlink" title="ThreadLocal"></a>ThreadLocal<T></h2><p><code>ThreadLocal</code> 存放的值是线程内共享的，线程间互斥的，主要用于在线程内共享一些数据。</p>
+<p>可以通过实现 <code>AutoCloseable</code> 以使用 try-with-resources 语法简化 <code>ThreadLocal</code> 资源清理：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (ChannelContext ctx = <span class="keyword">new</span> ChannelContext(channel)) &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ChannelContext</span> <span class="keyword">implements</span> <span class="title">AutoCloseable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;Channel&gt; CTX = <span class="keyword">new</span> ThreadLocal&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ChannelContext</span><span class="params">(FundChannelDTO dto)</span> </span>&#123;</span><br><span class="line">        Channel channel = Channel.builder()</span><br><span class="line">                .appId(dto.getAppId().toString())</span><br><span class="line">                .build();</span><br><span class="line">        CTX.set(channel);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ChannelContext</span><span class="params">(Channel channel)</span> </span>&#123;</span><br><span class="line">        CTX.set(channel);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Channel <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> CTX.get();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            CTX.remove();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            log.error(e.getMessage(), e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Getter</span></span><br><span class="line">    <span class="meta">@Builder</span></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Channel</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> String appId;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ThreadGroup"><a href="#ThreadGroup" class="headerlink" title="ThreadGroup"></a>ThreadGroup</h2><h1 id="java-util"><a href="#java-util" class="headerlink" title="java.util"></a>java.util</h1><h2 id="TimerTask"><a href="#TimerTask" class="headerlink" title="TimerTask"></a>TimerTask</h2><p><code>Timer</code> 是 JDK 中提供的一个定时器工具类，使用的时候会在主线程之外起一个单独的线程执行指定的定时任务 <code>TimerTask</code>，可以指定执行一次或者反复执行多次。</p>
+<p><code>TimerTask</code> 是一个实现了 <code>Runnable</code> 接口的抽象类，代表一个可以被 <code>Timer</code> 执行的任务。</p>
+<p><img src="/img/java/concurrent/TimerTask.png" alt="TimerTask"></p>
+<h1 id="java-util-concurrent"><a href="#java-util-concurrent" class="headerlink" title="java.util.concurrent"></a>java.util.concurrent</h1><blockquote>
+<p>JDK 5 引入的 Executor Framework ，用于取代传统的并发编程。</p>
+</blockquote>
+<p><img src="/img/java/concurrent/package_concurrent.png" alt="Package concurrent"></p>
+<h2 id="ThreadFactory"><a href="#ThreadFactory" class="headerlink" title="ThreadFactory"></a>ThreadFactory</h2><p>通过提供不同的 <code>ThreadFactory</code> 接口实现，可以改变被创建线程 <code>Thread</code> 的<strong>属性</strong>。<code>ThreadFactory</code> 有几种创建方式：</p>
+<p>1、完全自定义方式。缺点是需要在 <code>newThread</code> 方法中实现的代码较多：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ThreadFactory threadFactory = runnable -&gt; &#123;</span><br><span class="line">    Thread thread = <span class="keyword">new</span> Thread(runnable);</span><br><span class="line">    thread.setName(<span class="string">"..."</span>);</span><br><span class="line">    <span class="keyword">return</span> thread;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>2、使用 <code>Executors</code> 工具类，这也是 <code>Executors</code> 工具类中提供的几种默认线程池所使用的方式。</p>
+<p>缺点是只能使用默认属性，无法修改：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ThreadFactory threadFactory = Executors.defaultThreadFactory();</span><br></pre></td></tr></table></figure>
+
+<p>优点是实现了基本的线程名称自增，该实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * The default thread factory</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">DefaultThreadFactory</span> <span class="keyword">implements</span> <span class="title">ThreadFactory</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> AtomicInteger poolNumber = <span class="keyword">new</span> AtomicInteger(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ThreadGroup group;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> AtomicInteger threadNumber = <span class="keyword">new</span> AtomicInteger(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String namePrefix;</span><br><span class="line"></span><br><span class="line">    DefaultThreadFactory() &#123;</span><br><span class="line">        SecurityManager s = System.getSecurityManager();</span><br><span class="line">        group = (s != <span class="keyword">null</span>) ? s.getThreadGroup() :</span><br><span class="line">                              Thread.currentThread().getThreadGroup();</span><br><span class="line">        namePrefix = <span class="string">"pool-"</span> +</span><br><span class="line">                      poolNumber.getAndIncrement() +</span><br><span class="line">                     <span class="string">"-thread-"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Thread <span class="title">newThread</span><span class="params">(Runnable r)</span> </span>&#123;</span><br><span class="line">        Thread t = <span class="keyword">new</span> Thread(group, r,</span><br><span class="line">                              namePrefix + threadNumber.getAndIncrement(),</span><br><span class="line">                              <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">if</span> (t.isDaemon())</span><br><span class="line">            t.setDaemon(<span class="keyword">false</span>);</span><br><span class="line">        <span class="keyword">if</span> (t.getPriority() != Thread.NORM_PRIORITY)</span><br><span class="line">            t.setPriority(Thread.NORM_PRIORITY);</span><br><span class="line">        <span class="keyword">return</span> t;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>3、通过 Guava 提供的 <code>ThreadFactoryBuilder</code>。优点是可以轻易自定义任何属性：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ThreadFactory threadFactory = <span class="keyword">new</span> ThreadFactoryBuilder().setNameFormat(<span class="string">"wechat-notify-%d"</span>).build()</span><br></pre></td></tr></table></figure>
+
+<p>该实现如下，如果未提供自定义的 <code>ThreadFactory</code>，将使用 <code>Executors</code> 工具类提供的默认 <code>ThreadFactory</code> 并进行二次修改：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> ThreadFactory <span class="title">build</span><span class="params">(ThreadFactoryBuilder builder)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">final</span> String nameFormat = builder.nameFormat;</span><br><span class="line">  <span class="keyword">final</span> Boolean daemon = builder.daemon;</span><br><span class="line">  <span class="keyword">final</span> Integer priority = builder.priority;</span><br><span class="line">  <span class="keyword">final</span> UncaughtExceptionHandler uncaughtExceptionHandler = builder.uncaughtExceptionHandler;</span><br><span class="line">  <span class="keyword">final</span> ThreadFactory backingThreadFactory = (builder.backingThreadFactory != <span class="keyword">null</span>)</span><br><span class="line">          ? builder.backingThreadFactory</span><br><span class="line">          : Executors.defaultThreadFactory();</span><br><span class="line">  <span class="keyword">final</span> AtomicLong count = (nameFormat != <span class="keyword">null</span>) ? <span class="keyword">new</span> AtomicLong(<span class="number">0</span>) : <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> ThreadFactory() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Thread <span class="title">newThread</span><span class="params">(Runnable runnable)</span> </span>&#123;</span><br><span class="line">      Thread thread = backingThreadFactory.newThread(runnable);</span><br><span class="line">      <span class="keyword">if</span> (nameFormat != <span class="keyword">null</span>) &#123;</span><br><span class="line">        thread.setName(format(nameFormat, count.getAndIncrement()));</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (daemon != <span class="keyword">null</span>) &#123;</span><br><span class="line">        thread.setDaemon(daemon);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (priority != <span class="keyword">null</span>) &#123;</span><br><span class="line">        thread.setPriority(priority);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (uncaughtExceptionHandler != <span class="keyword">null</span>) &#123;</span><br><span class="line">        thread.setUncaughtExceptionHandler(uncaughtExceptionHandler);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> thread;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Callable"><a href="#Callable" class="headerlink" title="Callable"></a>Callable</h2><p>有返回结果的异步任务。Executor Framework 的一个重要优点是提供了 <code>java.util.concurrent.Callable&lt;V&gt;</code> 接口用于返回异步任务的结果。它的用法跟 <code>Runnable</code> 接口很相似，但它提供了两种改进：</p>
+<ul>
+<li>这个接口中主要的方法叫 <code>call()</code> ，可以返回结果。</li>
+<li>当你提交 <code>Callable</code> 对象到 <code>Executor</code> 执行者，你可以获取一个实现 <code>Future</code> 接口的对象，你可以用这个对象来控制和获取 <code>Callable</code> 对象的状态和结果。</li>
+</ul>
+<h2 id="工具类"><a href="#工具类" class="headerlink" title="工具类"></a>工具类</h2><p><code>CountDownLatch</code></p>
+<p><code>CyclicBarrier</code></p>
+<p><code>Phaser</code></p>
+<p><code>CompletableFuture</code></p>
+<p><code>Semaphore</code></p>
+<p><code>Exchanger</code></p>
+<p><code>Executors</code></p>
+<h2 id="线程池"><a href="#线程池" class="headerlink" title="线程池"></a>线程池</h2><p>参考另一篇《Java 并发编程系列（二）线程池总结》。</p>
+<h2 id="并发集合"><a href="#并发集合" class="headerlink" title="并发集合"></a>并发集合</h2><p>详见另一个篇《Java 集合框架系列（三）并发实现总结》。</p>
+<h2 id="显式锁"><a href="#显式锁" class="headerlink" title="显式锁"></a>显式锁</h2><p>java.util.concurrent.locks</p>
+<blockquote>
+<p>用于实现线程安全与通信。</p>
+</blockquote>
+<p><img src="/img/java/concurrent/package_locks.png" alt="Package locks"></p>
+<h2 id="原子类"><a href="#原子类" class="headerlink" title="原子类"></a>原子类</h2><p>java.util.concurrent.atomic</p>
+<blockquote>
+<p>使用这些数据结构可以避免在并发程序中使用同步代码块（synchronized 或 Lock）。</p>
+</blockquote>
+<p><img src="/img/java/concurrent/package_atomic.png" alt="Package atomic"></p>
+<p>JDK 5 新增的原子类，底层基于魔术类 <code>Unsafe</code> 进行 CAS 无锁操作。实现类按功能分组如下：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Integer</th>
+<th>Long</th>
+<th>Boolean</th>
+<th>引用类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>基本类</td>
+<td><code>AtomicInteger</code></td>
+<td><code>AtomicLong</code></td>
+<td><code>AtomicBoolean</code></td>
+<td></td>
+</tr>
+<tr>
+<td>引用类型</td>
+<td></td>
+<td></td>
+<td></td>
+<td><code>AtomicReference</code><br/><code>AtomicStampedReference</code><br/><code>AtomicMarkableReference</code></td>
+</tr>
+<tr>
+<td>数组类型</td>
+<td><code>AtomicIntegerArray</code></td>
+<td><code>AtomicLongArray</code></td>
+<td></td>
+<td><code>AtomicReferenceArray</code></td>
+</tr>
+<tr>
+<td>属性原子修改器</td>
+<td><code>AtomicIntegerFieldUpdater</code></td>
+<td><code>AtomicLongFieldUpdater</code></td>
+<td></td>
+<td><code>AtomicReferenceFieldUpdater</code></td>
+</tr>
+</tbody></table>
+<p>JDK 8 新增 <code>Striped64</code> 累加计数器这个并发组件，64 指的是计数 64 bit 的数，即 <code>Long</code> 和 <code>Double</code> 类型。其实现类如下：</p>
+<table>
+<thead>
+<tr>
+<th>Long</th>
+<th>Double</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>LongAdder</code></td>
+<td><code>DoubleAdder</code></td>
+</tr>
+<tr>
+<td><code>LongAccumulator</code></td>
+<td><code>DoubleAccumulator</code></td>
+</tr>
+</tbody></table>
+<p>性能对比参考：<a href="http://www.manongjc.com/article/105666.html" target="_blank" rel="noopener">http://www.manongjc.com/article/105666.html</a></p>
+<h1 id="Spring-包简介"><a href="#Spring-包简介" class="headerlink" title="Spring 包简介"></a>Spring 包简介</h1><h2 id="org-springframework-scheduling"><a href="#org-springframework-scheduling" class="headerlink" title="org.springframework.scheduling"></a>org.springframework.scheduling</h2><p>Spring Framework 中并发编程相关的类主要位于 <code>spring-context</code> 下的 <code>org.springframework.scheduling</code>，例如其子包 <code>concurrent</code>：</p>
+<p><img src="/img/java/concurrent/package_spring_concurrent.png" alt="org.springframework.scheduling.concurrent"></p>
+<p>其中，顶层的 <code>org.springframework.scheduling.concurrent.CustomizableThreadFactory</code> 结构如下：</p>
+<p><img src="/img/java/concurrent/CustomizableThreadFactory.png" alt="org.springframework.util.CustomizableThreadFactory"></p>
+<ul>
+<li><p><code>CustomizableThreadFactory</code> 实现了 <code>java.util.concurrent.ThreadFactory</code> 线程工厂接口，源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Executors.defaultThreadFactory 方法提供了一个实用的简单实现，为新线程设置了上下文，详见源码</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ThreadFactory</span> </span>&#123;</span><br><span class="line">    <span class="function">Thread <span class="title">newThread</span><span class="params">(Runnable r)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>CustomizableThreadFactory</code> 继承了 <code>org.springframework.util.CustomizableThreadCreator</code> 类，用于创建新线程，并提供各种线程属性自定义配置（如线程名前缀、线程优先级等）。</p>
+</li>
+</ul>
+<p>然后重点看下最常用的 <code>org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor</code> 类，提供的方法列表如下：</p>
+<p><img src="/img/java/concurrent/ThreadPoolTaskExecutor.png" alt="ThreadPoolTaskExecutor 方法列表"></p>
+<p>当我们在实例化 <code>ThreadPoolTaskExecutor</code> 类的时候，其调用堆栈如下：</p>
+<p><img src="/img/java/concurrent/ThreadPoolTaskExecutor_threads.png" alt=""></p>
+<p>可见，实际上是先调用了抽象父类 <code>ExecutorConfigurationSupport</code> 的 <code>afterPropertiesSet()</code> 和 <code>initialize()</code> 方法，最后再调用 <code>ThreadPoolTaskExecutor#initializeExecutor(...)</code>，该方法源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> ExecutorService <span class="title">initializeExecutor</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        ThreadFactory threadFactory, RejectedExecutionHandler rejectedExecutionHandler)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    BlockingQueue&lt;Runnable&gt; queue = createQueue(<span class="keyword">this</span>.queueCapacity);</span><br><span class="line"></span><br><span class="line">    ThreadPoolExecutor executor;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.taskDecorator != <span class="keyword">null</span>) &#123;</span><br><span class="line">        executor = <span class="keyword">new</span> ThreadPoolExecutor(</span><br><span class="line">                <span class="keyword">this</span>.corePoolSize, <span class="keyword">this</span>.maxPoolSize, <span class="keyword">this</span>.keepAliveSeconds, TimeUnit.SECONDS,</span><br><span class="line">                queue, threadFactory, rejectedExecutionHandler) &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable command)</span> </span>&#123;</span><br><span class="line">                <span class="keyword">super</span>.execute(taskDecorator.decorate(command));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        executor = <span class="keyword">new</span> ThreadPoolExecutor(</span><br><span class="line">                <span class="keyword">this</span>.corePoolSize, <span class="keyword">this</span>.maxPoolSize, <span class="keyword">this</span>.keepAliveSeconds, TimeUnit.SECONDS,</span><br><span class="line">                queue, threadFactory, rejectedExecutionHandler);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.allowCoreThreadTimeOut) &#123;</span><br><span class="line">        executor.allowCoreThreadTimeOut(<span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">this</span>.threadPoolExecutor = executor;</span><br><span class="line">    <span class="keyword">return</span> executor;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实际上就是通过构造方法实例化 <code>java.util.concurrent.ThreadPoolExecutor</code> 对象，并设置相应参数。</p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2020/05/03/java-concurrency-threadpool/" class="prev">PREV</a><a href="/2020/04/25/relational-data-model/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> GUN/Bash 系列（三）Shell 引用与参数总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="GUN/Bash 系列（三）Shell 引用与参数总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">GUN/Bash 系列（三）Shell 引用与参数总结</h1><div class="post-info">2015-03-10<a href="/tags/GNU-Linux/" title="GNU/Linux" class="post-demo">GNU/Linux</a></div><div class="post-content"><h1 id="Shell-语法"><a href="#Shell-语法" class="headerlink" title="Shell 语法"></a>Shell 语法</h1><h2 id="引用（Quoting）"><a href="#引用（Quoting）" class="headerlink" title="引用（Quoting）"></a>引用（Quoting）</h2><p>引用用于：</p>
+<ul>
+<li>阻止对特殊字符的处理。</li>
+<li>阻止保留字被识别。</li>
+<li>阻止参数的扩展。</li>
+</ul>
+<p>三种引用机制：</p>
+<table>
+<thead>
+<tr>
+<th>引用符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>转义字符 <code>\</code></td>
+<td>保留其后下一个字符的字面意义</td>
+</tr>
+<tr>
+<td>单引号 <code>&#39;&#39;</code></td>
+<td>保留引用中所有字符的字面意义</td>
+</tr>
+<tr>
+<td>双引号 <code>&quot;&quot;</code></td>
+<td>保留引用中所有字符的字面意义，例外的情况是 $, `, 和 \</td>
+</tr>
+</tbody></table>
+<p>单引号与双引号的使用区别：</p>
+<p><img src="/img/gnu-linux/bash_quoting.png" alt="quoting"></p>
+<p>注意，反引号 <code>`</code> 与单引号 <code>&#39;&#39;</code> 和双引号 <code>&quot;&quot;</code> 作用不同，是用于命令替换（Command Substitution），详见《Shell 常用扩展总结》。</p>
+<h2 id="注释（Comments）"><a href="#注释（Comments）" class="headerlink" title="注释（Comments）"></a>注释（Comments）</h2><p>以 <code>#</code> 起始的词使得这个词和所有同一行上所有剩余的字符都被忽略。</p>
+<h1 id="Shell-参数（Shell-Parameters）"><a href="#Shell-参数（Shell-Parameters）" class="headerlink" title="Shell 参数（Shell Parameters）"></a>Shell 参数（Shell Parameters）</h1><p><em>参数（Parameter）</em>是存储值的实体。它可以是以下三类：</p>
+<ul>
+<li>变量</li>
+<li>位置参数</li>
+<li>特殊参数</li>
+</ul>
+<h2 id="变量（Varialbe）"><a href="#变量（Varialbe）" class="headerlink" title="变量（Varialbe）"></a>变量（Varialbe）</h2><p>变量，即用<em>名称（name）</em>表示的参数，其具有<em>值（value）</em>以及零或多个<em>属性（attributes）</em>。</p>
+<ul>
+<li><p>通过 <code>$name</code> 引用，在双引号 <code>&quot;&quot;</code> 中可以被引用。</p>
+</li>
+<li><p>通过以下语句为变量赋值：<code>name=[value]</code>。如果变量未赋值，默认值为 <code>null</code> 字符串。</p>
+</li>
+<li><p>通过内建命令 <code>unset</code> 为取消变量。</p>
+</li>
+<li><p>通过内建命令 <code>declare</code> 为变量分配<em>属性（attributes）</em>。</p>
+</li>
+</ul>
+<p>所有值都接受以下扩展：</p>
+<ul>
+<li>tilde expansion</li>
+<li>parameter and variable expansion</li>
+<li>command substitution</li>
+<li>arithmetic expansion</li>
+<li>quote removal</li>
+</ul>
+<h2 id="位置参数（Positional-Parameters）"><a href="#位置参数（Positional-Parameters）" class="headerlink" title="位置参数（Positional Parameters）"></a>位置参数（Positional Parameters）</h2><p><code>$n</code>：<code>$1</code> 表示第一个参数，<code>$2</code> 表示第二个参数，以此类推。</p>
+<h2 id="特殊参数（Special-Parameters）"><a href="#特殊参数（Special-Parameters）" class="headerlink" title="特殊参数（Special Parameters）"></a>特殊参数（Special Parameters）</h2><p><code>$0</code>：表示脚本文件名</p>
+<p><code>$#</code>：表示命令行参数的个数</p>
+<p><code>$?</code>：前一个命令或函数的返回码，<code>0</code> 为成功，非 <code>0</code> 为错误/失败</p>
+<p><code>$*</code>：以”参数1 参数2 … “ 的形式保存所有参数</p>
+<p><code>$@</code>：以”参数1” “参数2” … 的形式保存所有参数</p>
+<p><code>$$</code>：本程序的 PID（进程 ID 号）</p>
+<p><code>$!</code>：最近执行的后台（即异步）命令的 PID</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://www.gnu.org/software/bash/manual/html_node/Quoting.html" target="_blank" rel="noopener">https://www.gnu.org/software/bash/manual/html_node/Quoting.html</a></p>
+<p><a href="https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Shell-Parameters" target="_blank" rel="noopener">https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Shell-Parameters</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2015/03/12/gnu-bash-shell-commands/" class="prev">PREV</a><a href="/2015/03/05/gnu-bash-shell-invocation/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

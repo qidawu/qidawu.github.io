@@ -1,0 +1,118 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Dubbo 配置小结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Dubbo 配置小结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Dubbo 配置小结</h1><div class="post-info">2017-11-15<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><p>本文主要总结 Dubbo 日常使用时的一些常用配置。</p>
+<h1 id="配置之间的关系"><a href="#配置之间的关系" class="headerlink" title="配置之间的关系"></a>配置之间的关系</h1><p><img src="/img/dubbo/dubbo-config.jpg" alt="配置之间的关系"></p>
+<table>
+<thead>
+<tr>
+<th>XML 配置</th>
+<th>Java Config 配置</th>
+<th>配置</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;dubbo:application/&gt;</code></td>
+<td><code>com.alibaba.dubbo.config.ApplicationConfig</code></td>
+<td>应用配置</td>
+<td>用于配置当前应用信息，不管该应用是提供者还是消费者</td>
+</tr>
+<tr>
+<td><code>&lt;dubbo:registry/&gt;</code></td>
+<td><code>com.alibaba.dubbo.config.RegistryConfig</code></td>
+<td>注册中心配置</td>
+<td>用于配置连接注册中心相关信息</td>
+</tr>
+<tr>
+<td><code>&lt;dubbo:monitor/&gt;</code></td>
+<td><code>com.alibaba.dubbo.config.MonitorConfig</code></td>
+<td>监控中心配置</td>
+<td>用于配置连接监控中心相关信息，可选</td>
+</tr>
+<tr>
+<td><code>&lt;dubbo:protocol/&gt;</code></td>
+<td><code>com.alibaba.dubbo.config.ProtocolConfig</code></td>
+<td>协议配置</td>
+<td>用于配置提供服务的协议信息，协议由提供方指定，消费方<strong>被动接受</strong></td>
+</tr>
+<tr>
+<td><code>&lt;dubbo:provider/&gt;</code></td>
+<td><code>com.alibaba.dubbo.config.ProviderConfig</code></td>
+<td>提供方配置</td>
+<td>当 <code>ProtocolConfig</code> 和 <code>ServiceConfig</code> 某属性没有配置时，采用此缺省值，可选</td>
+</tr>
+<tr>
+<td><code>&lt;dubbo:service/&gt;</code></td>
+<td><code>com.alibaba.dubbo.config.ServiceConfig</code></td>
+<td>服务配置</td>
+<td>用于暴露一个服务，定义服务的元信息，一个服务可以用多个协议暴露，一个服务也可以注册到多个注册中心。对应注解：<code>@Service</code></td>
+</tr>
+<tr>
+<td><code>&lt;dubbo:consumer/&gt;</code></td>
+<td><code>com.alibaba.dubbo.config.ConsumerConfig</code></td>
+<td>消费方配置</td>
+<td>当 <code>ReferenceConfig</code> 某属性没有配置时，采用此缺省值，可选</td>
+</tr>
+<tr>
+<td><code>&lt;dubbo:reference/&gt;</code></td>
+<td><code>com.alibaba.dubbo.config.ReferenceConfig</code></td>
+<td>引用配置</td>
+<td>用于创建一个远程服务代理，一个引用可以指向多个注册中心。对应注解：<code>@Reference</code></td>
+</tr>
+<tr>
+<td><code>&lt;dubbo:method/&gt;</code></td>
+<td><code>com.alibaba.dubbo.config.MethodConfig</code></td>
+<td>方法配置</td>
+<td>用于 <code>ServiceConfig</code> 和 <code>ReferenceConfig</code> 指定方法级的配置信息</td>
+</tr>
+<tr>
+<td><code>&lt;dubbo:argument/&gt;</code></td>
+<td><code>com.alibaba.dubbo.config.ArgumentConfig</code></td>
+<td>参数配置</td>
+<td>用于指定方法参数配置</td>
+</tr>
+<tr>
+<td><code>&lt;dubbo:module/&gt;</code></td>
+<td><code>com.alibaba.dubbo.config.ModuleConfig</code></td>
+<td>模块配置</td>
+<td>用于配置当前模块信息，可选</td>
+</tr>
+</tbody></table>
+<p>下面是一些 dubbo 配置的总结：</p>
+<h2 id="协议"><a href="#协议" class="headerlink" title="协议"></a>协议</h2><p><img src="/img/dubbo/dubbo_protocol.png" alt=""></p>
+<h2 id="服务提供者"><a href="#服务提供者" class="headerlink" title="服务提供者"></a>服务提供者</h2><p><img src="/img/dubbo/provider.png" alt=""></p>
+<h2 id="服务消费者"><a href="#服务消费者" class="headerlink" title="服务消费者"></a>服务消费者</h2><p><img src="/img/dubbo/consumer.png" alt=""></p>
+<h1 id="配置覆盖关系"><a href="#配置覆盖关系" class="headerlink" title="配置覆盖关系"></a>配置覆盖关系</h1><p>配置覆盖关系：</p>
+<ul>
+<li>方法级优先，接口级次之，全局配置再次之。</li>
+<li>如果级别一样，则消费方优先，提供方次之。</li>
+</ul>
+<p>规则二是指，所有配置最终都将转换为 URL 表示，并由服务提供方生成，经注册中心传递给消费方。其 URL 格式如下：<code>protocol://username:password@host:port/path?key=value&amp;key=value</code></p>
+<p><img src="/img/dubbo/dubbo-config-override.jpg" alt="dubbo 配置覆盖关系"></p>
+<p>参考：<a href="http://dubbo.apache.org/zh-cn/docs/user/configuration/xml.html" target="_blank" rel="noopener">XML 配置</a>。</p>
+<h1 id="属性配置关系"><a href="#属性配置关系" class="headerlink" title="属性配置关系"></a>属性配置关系</h1><p><img src="/img/dubbo/dubbo-properties-override.jpg" alt="dubbo 属性覆盖关系"></p>
+<p>参考：<a href="http://dubbo.apache.org/zh-cn/docs/user/configuration/properties.html" target="_blank" rel="noopener">属性配置</a></p>
+<h1 id="注解配置实践"><a href="#注解配置实践" class="headerlink" title="注解配置实践"></a>注解配置实践</h1><p>如果想用现代的 Java Config 替代传统的 XML 配置方式，配置如下：</p>
+<h2 id="声明组件"><a href="#声明组件" class="headerlink" title="声明组件"></a>声明组件</h2><ul>
+<li><p>服务提供方使用 <code>@Service</code> 注解暴露服务</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.alibaba.dubbo.config.annotation.Service;</span><br><span class="line"> </span><br><span class="line"><span class="meta">@Service</span>(timeout = <span class="number">5000</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AnnotateServiceImpl</span> <span class="keyword">implements</span> <span class="title">AnnotateService</span> </span>&#123; </span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>服务消费方使用 <code>@Reference</code> 注解引用服务</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.alibaba.dubbo.config.annotation.Reference;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AnnotationConsumeService</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Reference</span></span><br><span class="line">    <span class="keyword">public</span> AnnotateService annotateService;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="开启组件扫描"><a href="#开启组件扫描" class="headerlink" title="开启组件扫描"></a>开启组件扫描</h2><ul>
+<li>2.5.7 (Nov, 2017) 以上版本，使用 <code>@DubboComponentScan</code> 指定 dubbo 组件扫描路径</li>
+<li>老版本或 Dubbox，使用：<code>&lt;dubbo:annotation package=&quot;com.alibaba.dubbo.test.service&quot; /&gt;</code></li>
+</ul>
+<h2 id="Java-Config-配置"><a href="#Java-Config-配置" class="headerlink" title="Java Config 配置"></a>Java Config 配置</h2><ul>
+<li>使用 <code>@Configuration</code> 注解开启 Java Config 并使用 <code>@Bean</code> 进行公共模块的 bean 配置，参考：<a href="http://dubbo.apache.org/zh-cn/docs/user/configuration/api.html" target="_blank" rel="noopener">API配置</a>。</li>
+</ul>
+<h2 id="自动化配置"><a href="#自动化配置" class="headerlink" title="自动化配置"></a>自动化配置</h2><ul>
+<li>最后开启 <code>@EnableDubboConfig</code></li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a href="http://dubbo.apache.org/zh-cn/blog/dubbo-annotation.html" target="_blank" rel="noopener">在 Dubbo 中使用注解</a>》</p>
+<p><a href="https://www.oschina.net/news/92687/dubbo-spring-boot-starter-1-0-0" target="_blank" rel="noopener">https://www.oschina.net/news/92687/dubbo-spring-boot-starter-1-0-0</a></p>
+<p><a href="https://mvnrepository.com/artifact/com.alibaba.boot/dubbo-spring-boot-starter" target="_blank" rel="noopener">https://mvnrepository.com/artifact/com.alibaba.boot/dubbo-spring-boot-starter</a></p>
+<p><a href="https://mvnrepository.com/artifact/com.alibaba/dubbo" target="_blank" rel="noopener">https://mvnrepository.com/artifact/com.alibaba/dubbo</a></p>
+<p><a href="https://github.com/apache/incubator-dubbo" target="_blank" rel="noopener">https://github.com/apache/incubator-dubbo</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2017/11/24/dubbo-protocol/" class="prev">PREV</a><a href="/2017/10/16/security/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

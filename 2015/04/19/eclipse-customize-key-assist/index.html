@@ -1,0 +1,174 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Eclipse 系列之自定义高效快捷键 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Eclipse 系列之自定义高效快捷键 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Eclipse 系列之自定义高效快捷键</h1><div class="post-info">2015-04-19<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><blockquote>
+<p>好的快捷键可以提高编码的效率。</p>
+</blockquote>
+<h1 id="第三方解决方案"><a href="#第三方解决方案" class="headerlink" title="第三方解决方案"></a>第三方解决方案</h1><p>曾经使用过 Eclipse 的 Vim 插件 <a href="http://www.viplugin.com/" target="_blank" rel="noopener">viplugin</a> 提升光标移动和文本编辑的效率，但终因一些热键冲突问题而放弃使用了，有兴趣的同学可以参考 《<a href="http://viplugin.com/files/User_Manual_viPlugin.pdf" target="_blank" rel="noopener">viplugin 用户手册</a>》，付费破解参考<a href="http://blog.163.com/thomaskjh@126/blog/static/37082998201231810718341/" target="_blank" rel="noopener">这里</a>。</p>
+<p>其它解决方案还有 <a href="http://vrapper.sourceforge.net/" target="_blank" rel="noopener">vrapper</a>、<a href="http://eclim.org/" target="_blank" rel="noopener">eclim</a> ，可以自行体验。</p>
+<h1 id="我的方案"><a href="#我的方案" class="headerlink" title="我的方案"></a>我的方案</h1><p>经过权衡，还是决定自定义一套属于自己的快捷键。键位主要参考 Vim 和 Bash ，并主要利用闲置的 <code>Alt</code> 键避免冲突，配置总结如下：</p>
+<h2 id="移动光标类"><a href="#移动光标类" class="headerlink" title="移动光标类"></a>移动光标类</h2><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Binding</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Line Up</td>
+<td><code>Alt + K</code></td>
+<td>↑</td>
+</tr>
+<tr>
+<td>Line Down</td>
+<td><code>Alt + J</code></td>
+<td>↓</td>
+</tr>
+<tr>
+<td>Previous Column</td>
+<td><code>Alt + H</code></td>
+<td>←</td>
+</tr>
+<tr>
+<td>Next Column</td>
+<td><code>Alt + L</code></td>
+<td>→</td>
+</tr>
+<tr>
+<td>Line Start</td>
+<td><code>Alt + A</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Line End</td>
+<td><code>Alt + E</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Previous Word</td>
+<td><code>Alt + B</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Next Word</td>
+<td><code>Alt + F</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Go to Next Member</td>
+<td><code>Alt + G</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Go to Previous Member</td>
+<td><code>Alt + Shift + G</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Open Implementation</td>
+<td><code>Alt + Q</code></td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="通用类"><a href="#通用类" class="headerlink" title="通用类"></a>通用类</h2><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Binding</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Delete</td>
+<td><code>Alt + D</code></td>
+</tr>
+<tr>
+<td>Select Enclosing Element</td>
+<td><code>Alt + S</code></td>
+</tr>
+<tr>
+<td>File Search</td>
+<td><code>Ctrl + H</code></td>
+</tr>
+<tr>
+<td>Next View</td>
+<td><code>Alt + V</code></td>
+</tr>
+<tr>
+<td>Rerun JUnit Test</td>
+<td><code>Alt + R</code></td>
+</tr>
+<tr>
+<td>Run Maven Clean</td>
+<td><code>Alt + Shift + X, C</code></td>
+</tr>
+</tbody></table>
+<h2 id="Git-类"><a href="#Git-类" class="headerlink" title="Git 类"></a>Git 类</h2><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Binding</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Pull</td>
+<td><code>Alt + 1</code></td>
+</tr>
+<tr>
+<td>Commit</td>
+<td><code>Alt + 2</code></td>
+</tr>
+<tr>
+<td>Show in History</td>
+<td><code>Alt + 3</code></td>
+</tr>
+<tr>
+<td>Compare with HEAD Revision</td>
+<td><code>Alt + 4</code></td>
+</tr>
+<tr>
+<td>Replace with HEAD Revision</td>
+<td><code>Alt + 5</code></td>
+</tr>
+<tr>
+<td>Show In (Git Repositories)</td>
+<td><code>Alt + 6</code></td>
+</tr>
+</tbody></table>
+<h2 id="SVN-类"><a href="#SVN-类" class="headerlink" title="SVN 类"></a>SVN 类</h2><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Binding</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>更新</td>
+<td><code>Alt + 1</code></td>
+</tr>
+<tr>
+<td>提交</td>
+<td><code>Alt + 2</code></td>
+</tr>
+<tr>
+<td>Show History</td>
+<td><code>Alt + 3</code></td>
+</tr>
+<tr>
+<td>Compare with Local Base Revision</td>
+<td><code>Alt + 4</code></td>
+</tr>
+<tr>
+<td>复原</td>
+<td><code>Alt + 5</code></td>
+</tr>
+</tbody></table>
+<p>注意，Eclipse 有 Bug 在配置完以上 SVN 快捷键之后，快捷键是无法使用的，需要为当前的视图（Perspective）添加一个 SVN 的工具。配置如下：</p>
+<blockquote>
+<p>Window &gt; Customize Perspective… &gt; Tool Bar Visibility</p>
+</blockquote>
+<p>勾选 SVN 即可。</p>
+<h1 id="另辟蹊径的方案"><a href="#另辟蹊径的方案" class="headerlink" title="另辟蹊径的方案"></a>另辟蹊径的方案</h1><p>其实也可以不必局限于 Eclipse 这款 IDE ，热爱 Vim 快捷键的同学可以考虑使用其它 IDE ，如 <a href="http://www.sublimetext.com/" target="_blank" rel="noopener">Sublime Text</a> ，可以原生完美支持 Vim 快捷键，配置如下：</p>
+<blockquote>
+<p>Preferences - Settings - User - “ignored_packages”: []</p>
+</blockquote>
+<p>去掉 [] 里面的 “Vintage” 即可。</p>
+<p>在写 Python 代码时就感觉体验很好，值得一试。</p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2015/04/21/eclipse-default-key-assist/" class="prev">PREV</a><a href="/2015/04/19/gnu-bash-shortcut-keys/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

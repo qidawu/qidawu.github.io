@@ -1,0 +1,216 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> 函数式编程系列（一）Java 8 Lambda 表达式总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="函数式编程系列（一）Java 8 Lambda 表达式总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">函数式编程系列（一）Java 8 Lambda 表达式总结</h1><div class="post-info">2019-05-07<a href="/tags/Java/" title="Java" class="post-demo">Java</a><a href="/tags/函数式编程/" title="函数式编程" class="post-demo">函数式编程</a></div><div class="post-content"><h1 id="Lambda-表达式"><a href="#Lambda-表达式" class="headerlink" title="Lambda 表达式"></a>Lambda 表达式</h1><p>Lambda 表达式总结：</p>
+<p><img src="/img/java/lambda/lambda.png" alt="lambda"></p>
+<p>Java 8 为函数式编程新增的重点 API：</p>
+<p><img src="/img/java/lambda/api.png" alt="api"></p>
+<h1 id="函数式接口"><a href="#函数式接口" class="headerlink" title="函数式接口"></a>函数式接口</h1><p>函数式接口是只有一个抽象方法的接口，作为 Lambda 表达式和方法引用的<a href="http://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html#target-typing" target="_blank" rel="noopener">目标类型</a>。</p>
+<p>JDK 8 新增了 9 组共 43 个通用型函数式接口，位于 <code>java.util.function</code> 包下，用来支持 Java 的函数式编程。接口如此之多的原因有二：</p>
+<ul>
+<li><p>为了支持不同的参数个数。如 <code>UnaryOperator&lt;T&gt;</code> 仅支持一个参数，而 <code>BinaryOperator&lt;T&gt;</code> 支持两个参数。这一点从接口命名及函数签名也能看出：</p>
+<ul>
+<li><code>Unary</code> 一元</li>
+<li><code>Binary</code> 二元</li>
+<li><code>Ternary</code> 三元</li>
+<li><code>Quaternary</code> 四元</li>
+<li>……</li>
+</ul>
+</li>
+<li><p>泛型不支持原始数据类型。而在面对大数据量的流式 API 运算时，为了解决包装类在自动拆装箱的性能消耗，引入了 <code>int</code>、<code>long</code>、<code>Double</code> 原始数据类型的函数式接口。</p>
+<blockquote>
+<p>千万不要用带包装类型的基础函数接口来代替基本类型的函数接口。虽然可行，但它破坏了第 61 条的规则“基本类型优于装箱基本类型”。使用装箱基本类型进行批量操作处理，最终会导致致命的性能问题。——《Effective Java》</p>
+</blockquote>
+</li>
+</ul>
+<p>这些接口统计如下：</p>
+<table>
+<thead>
+<tr>
+<th>接口</th>
+<th>函数签名</th>
+<th>范例</th>
+<th>范例</th>
+<th>基本类型特化</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Predicate&lt;T&gt;</code></td>
+<td><code>boolean test(T t)</code></td>
+<td><code>String::isEmpty</code></td>
+<td>符合某个条件吗？</td>
+<td><code>IntPredicate</code><br/><code>LongPredicate</code><br/><code>DoublePredicate</code></td>
+</tr>
+<tr>
+<td><code>BiPredicate&lt;T, U&gt;</code></td>
+<td><code>boolean test(T t, U u)</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Supplier&lt;T&gt;</code></td>
+<td><code>T get()</code></td>
+<td><code>Instant::now</code></td>
+<td>无参的工厂方法</td>
+<td><code>BooleanSupplier</code><br/><code>IntSupplier</code><br/><code>LongSupplier</code><br/><code>DoubleSupplier</code></td>
+</tr>
+<tr>
+<td><code>Consumer&lt;T&gt;</code></td>
+<td><code>void accept(T t)</code></td>
+<td><code>System.out::println</code></td>
+<td>输出一个值</td>
+<td><code>IntConsumer</code><br/><code>LongConsumer</code><br/><code>DoubleConsumer</code></td>
+</tr>
+<tr>
+<td><code>BiConsumer&lt;T, U&gt;</code></td>
+<td><code>void accept(T t, U u)</code></td>
+<td></td>
+<td></td>
+<td><code>ObjIntConsumer&lt;T&gt;</code><br/><code>ObjLongConsumer&lt;T&gt;</code><br/><code>ObjDoubleConsumer&lt;T&gt;</code></td>
+</tr>
+<tr>
+<td><code>Function&lt;T, R&gt;</code></td>
+<td><code>R apply(T t)</code></td>
+<td><code>Arrays::asList</code></td>
+<td>类型转换</td>
+<td><code>IntFunction&lt;R&gt;</code><br/><code>IntToLongFunction</code><br/><code>IntToDoubleFunction</code><br/><code>LongFunction&lt;R&gt;</code><br/><code>LongToIntFunction</code><br/><code>LongToDoubleFunction</code><br/><code>DoubleFunction&lt;R&gt;</code><br/><code>DoubleToIntFunction</code><br/><code>DoubleToLongFunction</code><br/><code>ToIntFunction&lt;T&gt;</code><br/><code>ToLongFunction&lt;T&gt;</code><br/><code>ToDoubleFunction&lt;T&gt;</code></td>
+</tr>
+<tr>
+<td><code>BiFunction&lt;T, U, R&gt;</code></td>
+<td><code>R apply(T t, U u)</code></td>
+<td></td>
+<td></td>
+<td><code>ToIntBiFunction&lt;T, U&gt;</code><br/><code>ToLongBiFunction&lt;T, U&gt;</code><br/><code>ToDoubleBiFunction&lt;T, U&gt;</code></td>
+</tr>
+<tr>
+<td><code>UnaryOperator&lt;T&gt;</code></td>
+<td><code>T apply(T t)</code></td>
+<td><code>String::toUpperCase</code></td>
+<td>格式转换</td>
+<td><code>IntUnaryOperator</code><br/><code>LongUnaryOperator</code><br/><code>DoubleUnaryOperator</code></td>
+</tr>
+<tr>
+<td><code>BinaryOperator&lt;T&gt;</code></td>
+<td><code>T apply(T t1, T t2)</code></td>
+<td><code>BigInteger::add</code></td>
+<td>求两个数的加减乘除</td>
+<td><code>IntBinaryOperator</code><br/><code>LongBinaryOperator</code><br/><code>DoubleBinaryOperator</code></td>
+</tr>
+</tbody></table>
+<p>以上接口都标注了 <code>@FunctionalInterface</code>。这是 Java 8 为函数式接口引入的一个新注解，有两个目的：</p>
+<ul>
+<li>告诉这个接口及其文档的读者，这个接口是针对 Lambda 设计的；</li>
+<li>用于编译级错误检查。加上该注解，当你写的接口不符合函数式接口定义的时候，编译器会报错。该注解会强制 <code>javac</code> 检查一个接口是否符合函数式接口的标准。如果该注释添加给一个枚举类型、类或另一个注解，<strong>或者接口包含不止一个抽象方法</strong>，<code>javac</code> 就会报错。重构代码时，使用它能很容易发现问题，因此建议必须始终用 <code>@FunctionalInterface</code> 注解对自己编写的函数式接口进行标注。</li>
+</ul>
+<p>此外，函数式接口允许：</p>
+<ul>
+<li>函数式接口里允许定义默认方法，因为默认方法不是抽象方法，其有一个默认实现，所以是符合函数式接口的定义的。</li>
+<li>函数式接口里允许定义静态方法，因为静态方法不能是抽象方法，是一个已经实现了的方法，所以是符合函数式接口的定义的。</li>
+<li>函数式接口里允许定义 <code>java.lang.Object</code> 里的 <code>public</code> 方法。</li>
+</ul>
+<h1 id="方法引用"><a href="#方法引用" class="headerlink" title="方法引用"></a>方法引用</h1><p>方法引用通过方法的名字来指向一个方法，可以使语言的构造更紧凑简洁，进一步减少冗余代码，尤其是 Lambda 表达式。</p>
+<p>方法引用使用一对冒号 <code>::</code>。</p>
+<p>下面对比下方法引用简化 Lambda 表达式的例子：</p>
+<table>
+<thead>
+<tr>
+<th>方法引用类型</th>
+<th>方法引用范例</th>
+<th>Lambda 表达式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>静态</td>
+<td><code>Integer::parseInt</code></td>
+<td><code>str -&gt; Integer.parseInt(str)</code></td>
+</tr>
+<tr>
+<td>有限制</td>
+<td><code>Instant.now()::isAfter</code></td>
+<td><code>Instant then = Instant.now();</code><br/><code>t -&gt; then.isAfter(t)</code></td>
+</tr>
+<tr>
+<td>无限制</td>
+<td><code>String::toLowerCase</code></td>
+<td><code>str -&gt; str.toLowerCase()</code></td>
+</tr>
+<tr>
+<td>类构造器</td>
+<td><code>TreeMap&lt;K, V&gt;::new</code></td>
+<td><code>() -&gt; new TreeMap&lt;K, V&gt;</code></td>
+</tr>
+<tr>
+<td>数组构造器</td>
+<td><code>int[]::new</code></td>
+<td><code>len -&gt; new int[len]</code></td>
+</tr>
+</tbody></table>
+<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><p>这里对比 JavaScript 和 Java 两门语言的例子，方便对比学习。</p>
+<h2 id="JavaScript-箭头函数"><a href="#JavaScript-箭头函数" class="headerlink" title="JavaScript 箭头函数"></a>JavaScript 箭头函数</h2><p>在 JavaScript 语言中，<strong>函数是一等公民</strong>（参考<a href="[https://llh911001.gitbooks.io/mostly-adequate-guide-chinese/content/ch2.html#%E4%B8%BA%E4%BD%95%E9%92%9F%E7%88%B1%E4%B8%80%E7%AD%89%E5%85%AC%E6%B0%91](https://llh911001.gitbooks.io/mostly-adequate-guide-chinese/content/ch2.html#为何钟爱一等公民)">为何钟爱一等公民</a>、<a href="https://www.zhihu.com/question/67652709" target="_blank" rel="noopener">知乎</a>）。ES6 新特性允许使用“箭头”（<code>=&gt;</code>）定义函数，语法简洁，使用如下：</p>
+<p>没有参数，需要空括号：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> f = <span class="function"><span class="params">()</span> =&gt;</span> <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 等同于</span></span><br><span class="line"><span class="keyword">var</span> f = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123; <span class="keyword">return</span> <span class="number">5</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 5</span></span><br><span class="line"><span class="keyword">var</span> result = f();</span><br></pre></td></tr></table></figure>
+
+<p>一个参数，无需括号：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> f = <span class="function"><span class="params">v</span> =&gt;</span> v;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 等同于</span></span><br><span class="line"><span class="keyword">var</span> f = <span class="function"><span class="keyword">function</span> (<span class="params">v</span>) </span>&#123; <span class="keyword">return</span> v; &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 10</span></span><br><span class="line"><span class="keyword">var</span> result = f(<span class="number">10</span>);</span><br></pre></td></tr></table></figure>
+
+<p>多个参数，需要括号：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> sum = <span class="function">(<span class="params">num1, num2</span>) =&gt;</span> num1 + num2;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 等同于</span></span><br><span class="line"><span class="keyword">var</span> sum = <span class="function"><span class="keyword">function</span>(<span class="params">num1, num2</span>) </span>&#123; <span class="keyword">return</span> num1 + num2; &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 20</span></span><br><span class="line"><span class="keyword">var</span> result = sum(<span class="number">10</span>, <span class="number">10</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+<p>箭头函数的一个用处是<strong>简化回调函数</strong>：</p>
+<p>例子 1：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 正常函数写法</span></span><br><span class="line">[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>].forEach(<span class="function"><span class="keyword">function</span> (<span class="params">x</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(x);</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 箭头函数写法，结果 1 2 3</span></span><br><span class="line">[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>].forEach(<span class="function"><span class="params">x</span> =&gt;</span> <span class="built_in">console</span>.log(x));</span><br></pre></td></tr></table></figure>
+
+<p>例子 2：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 正常函数写法</span></span><br><span class="line"><span class="keyword">var</span> result = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>].map(<span class="function"><span class="keyword">function</span> (<span class="params">x</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> x * x;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 箭头函数写法，结果 [1, 4, 9]</span></span><br><span class="line"><span class="keyword">var</span> result = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>].map(<span class="function"><span class="params">x</span> =&gt;</span> x * x);</span><br></pre></td></tr></table></figure>
+
+<p>例子 3：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 正常函数写法</span></span><br><span class="line"><span class="keyword">var</span> result = [<span class="number">2</span>, <span class="number">3</span>, <span class="number">1</span>].sort(<span class="function"><span class="keyword">function</span> (<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> a - b;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 箭头函数写法，结果 [1, 2, 3]</span></span><br><span class="line"><span class="keyword">var</span> result = [<span class="number">2</span>, <span class="number">3</span>, <span class="number">1</span>].sort(<span class="function">(<span class="params">a, b</span>) =&gt;</span> a - b);</span><br></pre></td></tr></table></figure>
+
+<p>例子 4：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 正常函数写法</span></span><br><span class="line"><span class="keyword">var</span> result = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>].filter(<span class="function"><span class="keyword">function</span> (<span class="params">x</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> x &gt; <span class="number">1</span>;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 箭头函数写法，结果 [2, 3]</span></span><br><span class="line"><span class="keyword">var</span> result = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>].filter(<span class="function"><span class="params">x</span> =&gt;</span> x &gt; <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Java-Lambda-表达式"><a href="#Java-Lambda-表达式" class="headerlink" title="Java Lambda 表达式"></a>Java Lambda 表达式</h2><p>然而在 Java 语言中，函数并非一等公民。但可以利用 Lambda 表达式 + 函数式接口来模拟 JavaScript 类似的语法，对比如下：</p>
+<p>没有参数，需要空括号：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">IntSupplier f = () -&gt; <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 5</span></span><br><span class="line"><span class="keyword">int</span> result = f.getAsInt();</span><br></pre></td></tr></table></figure>
+
+<p>一个参数，无需括号：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ToIntFunction&lt;Integer&gt; f = i -&gt; i;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 10</span></span><br><span class="line"><span class="keyword">int</span> result = f.applyAsInt(<span class="number">10</span>);</span><br></pre></td></tr></table></figure>
+
+<p>多个参数，需要括号：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">IntBinaryOperator sum = (num1, num2) -&gt; num1 + num2;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用方法引用进一步简化语法</span></span><br><span class="line"><span class="comment">// IntBinaryOperator sum = Integer::sum;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 20</span></span><br><span class="line"><span class="keyword">int</span> result = sum.applyAsInt(<span class="number">10</span>, <span class="number">10</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+<p>Lambda 表达式同样可以<strong>简化回调函数</strong>：</p>
+<p>例子 1：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1 2 3</span></span><br><span class="line">IntStream.of(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>).forEach(x -&gt; System.out.println(x));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用方法引用进一步简化语法</span></span><br><span class="line"><span class="comment">// IntStream.of(1, 2, 3).forEach(System.out::println);</span></span><br></pre></td></tr></table></figure>
+
+<p>例子 2：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// [1, 4, 9]</span></span><br><span class="line"><span class="keyword">int</span>[] result = IntStream.of(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>).map(x -&gt; x * x).toArray();</span><br></pre></td></tr></table></figure>
+
+<p>例子 3：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// [1, 2, 3]</span></span><br><span class="line"><span class="keyword">int</span>[] result = Stream.of(<span class="number">2</span>, <span class="number">3</span>, <span class="number">1</span>)</span><br><span class="line">    .sorted((a, b) -&gt; a - b)</span><br><span class="line">    .mapToInt(Integer::intValue)</span><br><span class="line">    .toArray();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用方法引用进一步简化语法</span></span><br><span class="line"><span class="comment">// int[] result = Stream.of(2, 3, 1)</span></span><br><span class="line"><span class="comment">//     .sorted(Comparator.naturalOrder())</span></span><br><span class="line"><span class="comment">//     .mapToInt(Integer::intValue)</span></span><br><span class="line"><span class="comment">//     .toArray();</span></span><br></pre></td></tr></table></figure>
+
+<p>例子 4：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// [2, 3]</span></span><br><span class="line"><span class="keyword">int</span>[] result = IntStream.of(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>).filter(x -&gt; x &gt; <span class="number">1</span>).toArray();</span><br></pre></td></tr></table></figure>
+
+<h1 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h1><ul>
+<li>Java 8 引入了 <code>Optional</code> 类用于解决臭名昭著的空指针异常。它本质上是一个可以为 <code>null</code> 的容器对象，并提供了很多有用的方法，以函数式编程的风格简化 <code>null</code> 处理。</li>
+<li>Stream API 是一种基于函数式编程的模型，用于增强集合处理。</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html</a></p>
+<p><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html</a></p>
+<p><a href="https://docs.oracle.com/javase/tutorial/collections/streams/index.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/tutorial/collections/streams/index.html</a></p>
+<p>《Effective Java 第三版》：</p>
+<ul>
+<li>第 42 条：Lambda 优先于匿名类</li>
+<li>第 43 条：方法引用优先于 Lambda</li>
+<li>第 44 条：坚持使用标准的函数式接口（包括基本数据类型的函数式接口）</li>
+<li>第 45 条：谨慎使用 Stream（必要时也需要使用 <code>Iterator</code> 外部迭代器）</li>
+<li>第 46 条：优先选择 Stream 中无副作用的函数（使用收集器 <code>Collectors</code> 而不是 <code>forEach</code>）</li>
+<li>第 47 条：Stream 要优先用 Collection 作为返回类型</li>
+<li>第 48 条：谨慎使用 Stream 并行</li>
+</ul>
+<p>《Java 8 函数式编程》</p>
+<p>《Java 8 实战》</p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/05/14/java8-optional/" class="prev">PREV</a><a href="/2019/03/27/mysql-transaction-autocommit/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

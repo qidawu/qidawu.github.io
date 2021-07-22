@@ -1,0 +1,89 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> 前端技术栈演进之路 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="前端技术栈演进之路 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">前端技术栈演进之路</h1><div class="post-info">2018-01-01<a href="/tags/前端/" title="前端" class="post-demo">前端</a></div><div class="post-content"><p>在随手科技这几年，兼任了金融前端团队的负责人，将团队从只有 1 名前端开始，扩展到了 10 多人的前端团队，推动了整个金融前端技术栈的建设及发展，是一段挑战自己未知领域的有趣之旅。</p>
+<p>我总结了一下，这几年团队共经历了这样几个阶段：</p>
+<ul>
+<li>单块项目（服务端渲染） &gt; 项目分层（前后端分离） &gt; 项目拆分（按业务拆分）</li>
+<li>前端模块化 &gt; 组件化 &gt; 工程化</li>
+<li>事件驱动 &gt; 数据驱动</li>
+<li>后台选型：JSP 服务端渲染 + EasyUI &gt; 前后端分离 + <a href="http://element.eleme.io/" target="_blank" rel="noopener">Element</a></li>
+<li>浏览器 &gt; 服务端</li>
+</ul>
+<p>下面分几个阶段总结下。</p>
+<h1 id="阶段1-服务端渲染"><a href="#阶段1-服务端渲染" class="headerlink" title="阶段1 服务端渲染"></a>阶段1 服务端渲染</h1><p>2016 年之前，由于团队和项目规模所限，人员构成以后端开发为主、前端开发为辅（就一个前端开发），只能通过最基础的技术栈，以后端人员最熟悉的技术着手进行业务开发并快速上线，因此技术选型都是偏向服务端的：前端只需按照设计师要求切图并输出静态页面（HTML + CSS），加上一些基础的 ES5 实现所需的动画效果和基础交互效果，后端套成 JSP （或 freemarker velocity thymeleaf）进行服务端渲染。后端开发一般会这样解决问题：</p>
+<ul>
+<li>通过 SiteMesh 等框架在 JSP 中将网页内容和页面结构分离，以达到页面结构共享的目的；</li>
+<li>通过 tld 文件自定义标签，给 JSP 页面提供一些便捷工具（如货币、时间、字符串格式化）；</li>
+<li>对于一些复杂的页面交互逻辑，在 JSP 页面上通过 <code>&lt;script&gt;</code> 标签直接引用所需的 JavaScript 文件。</li>
+</ul>
+<p>作为后端开发人员会觉得：这么写代码也没什么问题啊，毕竟身边的同事都是这么写的，项目也跑得好好的。但问题在于，后端开发写 JS 都是很业余的，而且随着功能越做越多，业务越做越深，前端脚本开始变得难以扩展与维护：</p>
+<ul>
+<li>脚本间依赖关系脆弱，加载顺序需要手工维护，一不小心顺序乱了就 JS 报错；</li>
+<li>脚本中潜藏着各种全局变量（函数），导致命名冲突、作用域污染，没有合理的进行前端模块化；</li>
+<li>各页面没有主入口脚本，代码不知从何看起…… </li>
+</ul>
+<h1 id="阶段2-前端模块化"><a href="#阶段2-前端模块化" class="headerlink" title="阶段2 前端模块化"></a>阶段2 前端模块化</h1><p>2016 年初，我着手重构前端的第一件事就是将前端模块化。</p>
+<p>JavaScript 这门语言（或者说老版本 ES5），最为糟糕的地方就是基于全局变量的编程模型（<a href="/2016/03/10/javascript-best-practice/#避免使用全局变量">如何避免使用全局变量？</a>），并且由于不支持“类”与“模块”，使得稍具规模的应用都难以扩展。</p>
+<p>一番对比和调研 AMD 和 CMD 规范的相关框架之后，第二阶段决定引入 Require.js（<a href="http://www.requirejs.org/" target="_blank" rel="noopener">英文</a>、<a href="http://www.requirejs.cn/" target="_blank" rel="noopener">中文</a>）这个前端框架。Require.js 以模块化的方式组织前端脚本，通过 AMD 规范定义的两个关键函数 <code>define()</code> 和 <code>require()</code> ，我们可以很轻松的在老版本 ES5 上实现模块化功能，解决模块依赖、全局变量与命名冲突的问题，并提供了统一的脚本主入口。</p>
+<p>Require.js 入门教程参考<a href="/2016/07/05/javascript-requirejs/">此前博文</a>。</p>
+<h1 id="阶段3-项目分层（前后端分离）"><a href="#阶段3-项目分层（前后端分离）" class="headerlink" title="阶段3  项目分层（前后端分离）"></a>阶段3  项目分层（前后端分离）</h1><p>前端模块化虽然提升了项目的可维护性，但由于此阶段前后端项目仍然强耦合，项目和团队仍存在以下问题：</p>
+<ul>
+<li>前端完成的 HTML 页面需交付给后端转换为 JSP 页面，多一道无谓的工序。更重要的是，后续前端任何页面修改，都需要通知后端进行同步修改，操作繁琐且易出错；</li>
+<li>由于 JSP 页面由后端编写，后端开发如果觉悟不够或者贪图方便，在 JSP 页面中各种 JavaScript 代码信手拈来、Java 变量和 JS 变量混用，导致前后端难以解耦、代码后续难以维护；</li>
+<li>后端开发无法专注于业务开发，大量精力浪费于编写前端样式及脚本，分工不明确、不专业。</li>
+</ul>
+<p>更为重要的是，当下前端领域日新月异，ES 新版本、层出不穷的新框架，SPA 单页技术、CSS 预处理语言、前端性能优化、自动化构建…… 受限于项目结构、迫于后端人员能力，新技术无法推广落地，前端人员能力也无法完全施展。</p>
+<p>2016 年中，我开始渐进式的推动前后端分离，为了不让步子太大扯着蛋，前端主体技术栈仍采用 HTML + Require.js + Zepto，后台采用 EasyUI，并重点解决下面两类问题：</p>
+<h2 id="引入自动化构建工具"><a href="#引入自动化构建工具" class="headerlink" title="引入自动化构建工具"></a>引入自动化构建工具</h2><p>传统的前端是无需构建的：前端开发编写的 HTML、JS、CSS 可以直接运行在浏览器中，代码所见即所得。但这种传统方式也带来了以下问题：</p>
+<ul>
+<li>无法根据不同环境构建代码，解决各环境间的差异。例如不同环境下资源引用路径是不同的，生产往往会使用 CDN 域名；</li>
+<li>HTML 页面之间各种代码重复，例如一些全局 rem 设置、全局变量、事件，公共样式、脚本、页面布局，提升了维护成本；</li>
+<li>JS 脚本没被检查（如静态语法分析），团队协作时代码规范程度无法保证；没有单元测试，潜藏缺陷容易直接流到生产环境；</li>
+<li>CSS 样式无法扩展、浏览器兼容性问题处理复杂（如需手工添加厂商前缀）；</li>
+<li>静态资源没被合并、压缩，体积大、数量多，导致用户请求慢；</li>
+<li>静态资源没被 hash，带来版本管理和缓存问题，更新困难；</li>
+<li>静态资源需手工打包上传，操作繁琐；</li>
+</ul>
+<p>为了解决这些问题，这个阶段我引入了自动化构建工具 <a href="https://www.gulpjs.com.cn/" target="_blank" rel="noopener">Gulp.js</a>，一些使用实践请参考<a href="/2016/12/05/javascript-gulpjs/">此前博文</a>。对于一个前端新手来说，这是一个很大的思维转变，自动化构建极大提升前端项目的工程能力，“构建”阶段能够实现很多之前无法实现的效果。</p>
+<h2 id="引入-CSS-预处理语言"><a href="#引入-CSS-预处理语言" class="headerlink" title="引入 CSS 预处理语言"></a>引入 CSS 预处理语言</h2><p>前后端分离后，由于引入构建工具，前端开发能够自由发挥的空间更多了，这个阶段我们还引入了 less，一门 CSS 预处理语言，提升了编写前端样式的效率。</p>
+<h2 id="API-接口设计"><a href="#API-接口设计" class="headerlink" title="API 接口设计"></a>API 接口设计</h2><p>前后端分离的另一个重点，在于数据与页面交互方式的改变——服务端渲染 &gt; 前端渲染。因此定义一套统一的 API 接口规范尤其重要。这个阶段我解决掉的问题：</p>
+<ul>
+<li>跨域方案选型：代理、JSONP、CORS，平衡了浏览器兼容性和开发便利性最终采用 CORS 方案；</li>
+<li>接口规范：编写后端 API 网关层框架，大一统全公司项目的接口入参、出参规范及处理流程；</li>
+<li>文档管理：前期手工编写 Markdown 文档 &gt; 后期使用 SwaggerUI 自动生成文档；</li>
+<li>搭建 API Mock Server，前期 <a href="https://github.com/sanyueyu/gulp-mock-server" target="_blank" rel="noopener">gulp-mock-server</a> &gt; 后期 <a href="http://rapapi.org/org/index.do" target="_blank" rel="noopener">RAP Mock Server</a> ，大大提升前后端并行开发效率。</li>
+</ul>
+<h1 id="阶段4-项目拆分"><a href="#阶段4-项目拆分" class="headerlink" title="阶段4 项目拆分"></a>阶段4 项目拆分</h1><p>2017 年开始，随着业务做大（新业务越做越多，每周还搞各种运营活动）、人员增多，原来的一两个前端项目已经不能满足快速增长的需求了。这个阶段浮现出来的新问题：</p>
+<ul>
+<li>人员多、特性多，由于只有几个前端项目，并行开发时 git 分支难以管理，代码合版时容易发生冲突；</li>
+<li>测试环境当时只有两套，测试时容易发生代码被覆盖的问题，特性间不好并行测试；</li>
+<li>生产发版风险较大，出问题时只能整体回滚，粒度太大，影响前端项目内的其它正常特性。</li>
+</ul>
+<p>为了解决上述问题，2017 年我们按业务、活动两个维度进行了项目分拆：</p>
+<ul>
+<li>业务<ul>
+<li>帐户项目</li>
+<li>非标项目</li>
+<li>基金项目</li>
+<li>XX 项目 …</li>
+</ul>
+</li>
+<li>活动<ul>
+<li>首投活动</li>
+<li>邀请活动</li>
+<li>XX 活动 …</li>
+</ul>
+</li>
+</ul>
+<p>各业务、各项目分而治之，由专门的前端组长统筹、排期、开发、发版，满足各业务的个性化需求及节奏差异。</p>
+<p>为了进一步提升开发效率，解决模块及组件的复用问题，这个阶段还：</p>
+<ul>
+<li>引入了新版 ES6 + Babel 编译器提升 JavaScript 开发效率；</li>
+<li>引入了 MV* 库 Vue.js + 自动化构建工具 Webpack，解决之前的 DOM 节点操作 + 事件驱动机制的开发效率低的问题。</li>
+<li>引入了 NPM 包管理器，搭建团队专属的仓库（控件库 + 组件库），提升代码复用性。</li>
+</ul>
+<h1 id="阶段5-重回服务端渲染"><a href="#阶段5-重回服务端渲染" class="headerlink" title="阶段5 重回服务端渲染"></a>阶段5 重回服务端渲染</h1><p>前端技术近年来日新月异，目前 Node.js 的应用已经铺天盖地，Node.js 中间层的出现改变了前后端的合作模式，各大公司前端都把 Node.js 作为前后端分离的新手段，并且在测试、监控等方面沉淀了大量内容。</p>
+<p>2018 年起，前端团队也开始在预研 Node.js 技术、搭建各类基础库并尝试在生产中投入使用。以史为鉴，展望未来，只要我们有不断突破自我的勇气，一定能克服困难，让新技术在公司中落地开花，进一步提升团队的开发效率，为公司创造更大的价值。</p>
+<p>待续。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://segmentfault.com/a/1190000002413526" target="_blank" rel="noopener">Web前后端分离开发思路</a></p>
+<p><a href="http://www.cnblogs.com/whitewolf/p/4686154.html" target="_blank" rel="noopener">前后端分离后的契约</a></p>
+<p><a href="https://segmentfault.com/q/1010000008376827/a-1020000008379228" target="_blank" rel="noopener">什么是基于数据驱动的前端框架？</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2018/01/03/mysql-cli/" class="prev">PREV</a><a href="/2017/12/25/apache-commons-lang/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> C/C++ 语言系列（二）基础语法入门 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="C/C++ 语言系列（二）基础语法入门 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">C/C++ 语言系列（二）基础语法入门</h1><div class="post-info">2021-02-02<a href="/tags/C-C/" title="C/C++" class="post-demo">C/C++</a></div><div class="post-content"><h1 id="一、预处理器"><a href="#一、预处理器" class="headerlink" title="一、预处理器"></a>一、预处理器</h1><table>
+<thead>
+<tr>
+<th align="left">指令</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>#include</code></td>
+<td align="left">包含一个源代码文件（<a href="https://www.runoob.com/cprogramming/c-header-files.html" target="_blank" rel="noopener">扩展名为 <code>.h</code> 的头文件</a>）</td>
+</tr>
+<tr>
+<td align="left"><code>#define</code><br/><code>#undef</code></td>
+<td align="left">定义宏<br/>取消已定义的宏</td>
+</tr>
+<tr>
+<td align="left"><code>#if</code><br/><code>#else</code><br/><code>#elif</code><br/><code>#endif</code></td>
+<td align="left">条件编译</td>
+</tr>
+</tbody></table>
+<p>参考：</p>
+<ul>
+<li><a href="https://www.runoob.com/cprogramming/c-preprocessors.html" target="_blank" rel="noopener">C 预处理器</a></li>
+<li><a href="http://www.cplusplus.com/doc/tutorial/preprocessor/" target="_blank" rel="noopener">Preprocessor directives</a></li>
+</ul>
+<h1 id="二、基础语法"><a href="#二、基础语法" class="headerlink" title="二、基础语法"></a>二、基础语法</h1><h2 id="1、标识符（identifier）"><a href="#1、标识符（identifier）" class="headerlink" title="1、标识符（identifier）"></a>1、标识符（identifier）</h2><p>是用来标识<strong>变量、函数、类、模块</strong>，或任何其他用户<strong>自定义项目</strong>的名称。</p>
+<p>一个标识符只能以：</p>
+<ul>
+<li>字母 <code>A-Z</code> 或 <code>a-z</code> 或下划线 <code>_</code> 开始；</li>
+<li>后跟零个或多个字母、下划线和数字（<code>0-9</code>）。</li>
+</ul>
+<h2 id="2、保留字（关键字）"><a href="#2、保留字（关键字）" class="headerlink" title="2、保留字（关键字）"></a>2、保留字（关键字）</h2><h2 id="3、注释"><a href="#3、注释" class="headerlink" title="3、注释"></a>3、注释</h2><p>单行注释（行注释）：<code>//</code></p>
+<p>多行注释（块注释）：<code>/* ... */</code></p>
+<h2 id="4、变量与常量"><a href="#4、变量与常量" class="headerlink" title="4、变量与常量"></a>4、变量与常量</h2><p><a href="https://www.runoob.com/cplusplus/cpp-variable-types.html" target="_blank" rel="noopener">C++ 变量类型</a></p>
+<p><a href="https://www.runoob.com/cplusplus/cpp-data-types.html" target="_blank" rel="noopener">C++ 数据类型</a></p>
+<p><a href="https://www.runoob.com/cplusplus/cpp-modifier-types.html" target="_blank" rel="noopener">C++ 修饰符类型</a></p>
+<p><a href="https://www.runoob.com/cplusplus/cpp-variable-scope.html" target="_blank" rel="noopener">C++ 变量作用域</a></p>
+<h3 id="4-1、基本数据类型"><a href="#4-1、基本数据类型" class="headerlink" title="4.1、基本数据类型"></a>4.1、基本数据类型</h3><p>C/C++ 基本数据类型：</p>
+<ul>
+<li>一种<strong>布尔类型</strong></li>
+<li>一种<strong>字符类型</strong></li>
+<li>一种<strong>整数型</strong></li>
+<li>两种<strong>浮点型</strong></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="left">类型</th>
+<th align="left">关键字</th>
+<th>存储大小</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">布尔型</td>
+<td align="left"><code>bool</code></td>
+<td><code>sizeof(bool)</code> = <code>1</code> 字节</td>
+<td></td>
+</tr>
+<tr>
+<td align="left">字符型</td>
+<td align="left"><code>char</code></td>
+<td><code>sizeof(char)</code> = <code>1</code> 字节</td>
+<td></td>
+</tr>
+<tr>
+<td align="left">整型</td>
+<td align="left"><code>int</code></td>
+<td><code>sizeof(int)</code> = <code>4</code> 字节</td>
+<td></td>
+</tr>
+<tr>
+<td align="left">浮点型</td>
+<td align="left"><code>float</code></td>
+<td><code>sizeof(float)</code> = <code>4</code> 字节</td>
+<td>C++ 中，小数默认为浮点型。</td>
+</tr>
+<tr>
+<td align="left">双浮点型</td>
+<td align="left"><code>double</code></td>
+<td><code>sizeof(double)</code> = <code>8</code> 字节</td>
+<td></td>
+</tr>
+</tbody></table>
+<p><img src="/img/cpp/data_type.png" alt="基本数据类型"></p>
+<h3 id="4-2、修饰符"><a href="#4-2、修饰符" class="headerlink" title="4.2、修饰符"></a>4.2、修饰符</h3><p>C++ 允许在 <code>char</code>、<code>int</code> 和 <code>double</code> 数据类型前放置修饰符。修饰符用于改变基本类型的含义，所以它更能满足各种情境的需求。</p>
+<table>
+<thead>
+<tr>
+<th>修饰符</th>
+<th><code>int</code></th>
+<th><code>double</code></th>
+<th><code>char</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>signed</code></td>
+<td>Y</td>
+<td></td>
+<td>Y</td>
+</tr>
+<tr>
+<td><code>unsigned</code></td>
+<td>Y</td>
+<td></td>
+<td>Y</td>
+</tr>
+<tr>
+<td><code>long</code></td>
+<td>Y</td>
+<td>Y</td>
+<td></td>
+</tr>
+<tr>
+<td><code>short</code></td>
+<td>Y</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h3 id="4-3、作用域"><a href="#4-3、作用域" class="headerlink" title="4.3、作用域"></a>4.3、作用域</h3><ul>
+<li>作用域可分为：<ul>
+<li>全局作用域</li>
+<li>局部作用域</li>
+<li>语句作用域</li>
+</ul>
+</li>
+<li>作用域优先级：范围越小，优先级越高</li>
+<li>如果希望在局部作用域中使用同名的全局变量，可以在该变量前使用：<strong>作用域运算符</strong> <code>::</code></li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 全局变量</span></span><br><span class="line"><span class="keyword">int</span> x = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="comment">// 局部变量</span></span><br><span class="line">  <span class="keyword">int</span> x = <span class="number">100</span>;</span><br><span class="line">  <span class="built_in">cout</span> &lt;&lt; x &lt;&lt; <span class="built_in">endl</span>; <span class="comment">// 100</span></span><br><span class="line">  <span class="built_in">cout</span> &lt;&lt; ::x &lt;&lt; <span class="built_in">endl</span>; <span class="comment">// 10</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-4、常量定义"><a href="#4-4、常量定义" class="headerlink" title="4.4、常量定义"></a>4.4、常量定义</h3><p>在 C++ 中，有两种简单的定义 <a href="https://www.runoob.com/cplusplus/cpp-constants-literals.html" target="_blank" rel="noopener">C++ 常量</a>的方式：</p>
+<ul>
+<li>使用 <code>#define</code> 预处理器进行<strong>宏定义</strong>。</li>
+<li>使用 <code>const</code> 关键字。</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义常量（使用预处理器）</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LENGTH 10   </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> WIDTH  5</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> NEWLINE <span class="meta-string">'\n'</span></span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="comment">// 定义常量（使用 const 关键字）</span></span><br><span class="line">  <span class="keyword">const</span> <span class="keyword">int</span>  LENGTH = <span class="number">10</span>;</span><br><span class="line">  <span class="keyword">const</span> <span class="keyword">int</span>  WIDTH  = <span class="number">5</span>;</span><br><span class="line">  <span class="keyword">const</span> <span class="keyword">char</span> NEWLINE = <span class="string">'\n'</span>;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="5、运算符"><a href="#5、运算符" class="headerlink" title="5、运算符"></a>5、运算符</h2><h3 id="5-1、位运算符"><a href="#5-1、位运算符" class="headerlink" title="5.1、位运算符"></a>5.1、位运算符</h3><h3 id="5-2、算术运算符"><a href="#5-2、算术运算符" class="headerlink" title="5.2、算术运算符"></a>5.2、算术运算符</h3><table>
+<thead>
+<tr>
+<th align="left">运算符</th>
+<th align="left">描述</th>
+<th align="left">实例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>+</code></td>
+<td align="left">把两个操作数相加</td>
+<td align="left">A + B 将得到 30</td>
+</tr>
+<tr>
+<td align="left"><code>-</code></td>
+<td align="left">从第一个操作数中减去第二个操作数</td>
+<td align="left">A - B 将得到 -10</td>
+</tr>
+<tr>
+<td align="left"><code>*</code></td>
+<td align="left">把两个操作数相乘</td>
+<td align="left">A * B 将得到 200</td>
+</tr>
+<tr>
+<td align="left"><code>/</code></td>
+<td align="left">分子除以分母</td>
+<td align="left">B / A 将得到 2</td>
+</tr>
+<tr>
+<td align="left"><code>%</code></td>
+<td align="left">取模运算符，整除后的余数</td>
+<td align="left">B % A 将得到 0</td>
+</tr>
+<tr>
+<td align="left"><code>++</code></td>
+<td align="left"><a href="https://www.runoob.com/cplusplus/cpp-increment-decrement-operators.html" target="_blank" rel="noopener">自增运算符</a>，整数值增加 1</td>
+<td align="left">A++ 将得到 11</td>
+</tr>
+<tr>
+<td align="left"><code>--</code></td>
+<td align="left"><a href="https://www.runoob.com/cplusplus/cpp-increment-decrement-operators.html" target="_blank" rel="noopener">自减运算符</a>，整数值减少 1</td>
+<td align="left">A– 将得到 9</td>
+</tr>
+</tbody></table>
+<h3 id="5-3、赋值运算符"><a href="#5-3、赋值运算符" class="headerlink" title="5.3、赋值运算符"></a>5.3、赋值运算符</h3><table>
+<thead>
+<tr>
+<th align="left">运算符</th>
+<th align="left">描述</th>
+<th align="left">实例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>=</code></td>
+<td align="left">简单的赋值运算符，把右边操作数的值赋给左边操作数</td>
+<td align="left">C = A + B 将把 A + B 的值赋给 C</td>
+</tr>
+<tr>
+<td align="left"><code>+=</code></td>
+<td align="left">加且赋值运算符，把右边操作数加上左边操作数的结果赋值给左边操作数</td>
+<td align="left">C += A 相当于 C = C + A</td>
+</tr>
+<tr>
+<td align="left"><code>-=</code></td>
+<td align="left">减且赋值运算符，把左边操作数减去右边操作数的结果赋值给左边操作数</td>
+<td align="left">C -= A 相当于 C = C - A</td>
+</tr>
+<tr>
+<td align="left"><code>*=</code></td>
+<td align="left">乘且赋值运算符，把右边操作数乘以左边操作数的结果赋值给左边操作数</td>
+<td align="left">C *= A 相当于 C = C * A</td>
+</tr>
+<tr>
+<td align="left"><code>/=</code></td>
+<td align="left">除且赋值运算符，把左边操作数除以右边操作数的结果赋值给左边操作数</td>
+<td align="left">C /= A 相当于 C = C / A</td>
+</tr>
+<tr>
+<td align="left"><code>%=</code></td>
+<td align="left">求模且赋值运算符，求两个操作数的模赋值给左边操作数</td>
+<td align="left">C %= A 相当于 C = C % A</td>
+</tr>
+<tr>
+<td align="left"><code>&lt;&lt;=</code></td>
+<td align="left">左移且赋值运算符</td>
+<td align="left">C &lt;&lt;= 2 等同于 C = C &lt;&lt; 2</td>
+</tr>
+<tr>
+<td align="left"><code>&gt;&gt;=</code></td>
+<td align="left">右移且赋值运算符</td>
+<td align="left">C &gt;&gt;= 2 等同于 C = C &gt;&gt; 2</td>
+</tr>
+<tr>
+<td align="left"><code>&amp;=</code></td>
+<td align="left">按位与且赋值运算符</td>
+<td align="left">C &amp;= 2 等同于 C = C &amp; 2</td>
+</tr>
+<tr>
+<td align="left"><code>^=</code></td>
+<td align="left">按位异或且赋值运算符</td>
+<td align="left">C ^= 2 等同于 C = C ^ 2</td>
+</tr>
+<tr>
+<td align="left"><code>|=</code></td>
+<td align="left">按位或且赋值运算符</td>
+<td align="left">C |= 2 等同于 C = C | 2</td>
+</tr>
+</tbody></table>
+<h3 id="5-4、关系运算符"><a href="#5-4、关系运算符" class="headerlink" title="5.4、关系运算符"></a>5.4、关系运算符</h3><table>
+<thead>
+<tr>
+<th align="left">运算符</th>
+<th align="left">描述</th>
+<th align="left">实例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>==</code></td>
+<td align="left">检查两个操作数的值是否相等，如果相等则条件为真。</td>
+<td align="left">(A == B) 不为真。</td>
+</tr>
+<tr>
+<td align="left"><code>!=</code></td>
+<td align="left">检查两个操作数的值是否相等，如果不相等则条件为真。</td>
+<td align="left">(A != B) 为真。</td>
+</tr>
+<tr>
+<td align="left"><code>&gt;</code></td>
+<td align="left">检查左操作数的值是否大于右操作数的值，如果是则条件为真。</td>
+<td align="left">(A &gt; B) 不为真。</td>
+</tr>
+<tr>
+<td align="left"><code>&lt;</code></td>
+<td align="left">检查左操作数的值是否小于右操作数的值，如果是则条件为真。</td>
+<td align="left">(A &lt; B) 为真。</td>
+</tr>
+<tr>
+<td align="left"><code>&gt;=</code></td>
+<td align="left">检查左操作数的值是否大于或等于右操作数的值，如果是则条件为真。</td>
+<td align="left">(A &gt;= B) 不为真。</td>
+</tr>
+<tr>
+<td align="left"><code>&lt;=</code></td>
+<td align="left">检查左操作数的值是否小于或等于右操作数的值，如果是则条件为真。</td>
+<td align="left">(A &lt;= B) 为真。</td>
+</tr>
+</tbody></table>
+<h3 id="5-5、逻辑运算符"><a href="#5-5、逻辑运算符" class="headerlink" title="5.5、逻辑运算符"></a>5.5、逻辑运算符</h3><table>
+<thead>
+<tr>
+<th align="left">运算符</th>
+<th align="left">描述</th>
+<th align="left">实例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>&amp;&amp;</code></td>
+<td align="left">称为逻辑与运算符。如果两个操作数都 true，则条件为 true。</td>
+<td align="left">(A &amp;&amp; B) 为 false。</td>
+</tr>
+<tr>
+<td align="left"><code>||</code></td>
+<td align="left">称为逻辑或运算符。如果两个操作数中有任意一个 true，则条件为 true。</td>
+<td align="left">(A || B) 为 true。</td>
+</tr>
+<tr>
+<td align="left"><code>!</code></td>
+<td align="left">称为逻辑非运算符。用来逆转操作数的逻辑状态，如果条件为 true 则逻辑非运算符将使其为 false。</td>
+<td align="left">!(A &amp;&amp; B) 为 true。</td>
+</tr>
+</tbody></table>
+<h3 id="5-6、其它运算符"><a href="#5-6、其它运算符" class="headerlink" title="5.6、其它运算符"></a>5.6、其它运算符</h3><table>
+<thead>
+<tr>
+<th align="left">运算符</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>::</code></td>
+<td align="left">作用域运算符 Scope operator，用于引用全局变量 <code>::code</code>、引用某个命名空间的函数或变量 <code>namespace::code</code> 等等。</td>
+</tr>
+<tr>
+<td align="left"><code>&amp;</code></td>
+<td align="left"><a href="https://www.runoob.com/cplusplus/cpp-pointer-operators.html" target="_blank" rel="noopener">取地址运算符 Address-of operator (&amp;)</a> 返回变量的地址。例如 <code>&amp;a</code> 将给出变量的实际内存地址。</td>
+</tr>
+<tr>
+<td align="left"><code>*</code></td>
+<td align="left"><a href="https://www.runoob.com/cplusplus/cpp-pointer-operators.html" target="_blank" rel="noopener">间接寻址运算符 Dereference operator (*)</a> 指向一个变量。例如，<code>*var</code> 返回操作数所指定地址的变量的值。</td>
+</tr>
+<tr>
+<td align="left"><code>.</code>（点）和 <code>-&gt;</code>（箭头）</td>
+<td align="left"><a href="https://www.runoob.com/cplusplus/cpp-member-operators.html" target="_blank" rel="noopener">成员运算符</a>用于引用<strong>类</strong>、<strong>结构体</strong>和<strong>共用体</strong>的成员。</td>
+</tr>
+<tr>
+<td align="left"><code>sizeof</code></td>
+<td align="left"><a href="https://www.runoob.com/cplusplus/cpp-sizeof-operator.html" target="_blank" rel="noopener">sizeof 运算符</a>返回变量的存储大小。例如，<code>sizeof(int)</code> 返回 <code>4</code> 个字节。</td>
+</tr>
+<tr>
+<td align="left"><code>Cast</code></td>
+<td align="left"><a href="https://www.runoob.com/cplusplus/cpp-casting-operators.html" target="_blank" rel="noopener">强制转换运算符</a>把一种数据类型转换为另一种数据类型。例如，<code>int(2.2000)</code> 将返回 2。</td>
+</tr>
+<tr>
+<td align="left"><code>new</code></td>
+<td align="left">在堆上动态内存分配。参考：<a href="http://www.cplusplus.com/doc/tutorial/dynamic/" target="_blank" rel="noopener">Dynamic memory</a></td>
+</tr>
+<tr>
+<td align="left"><code>delete</code></td>
+<td align="left">在堆上进行内存回收。</td>
+</tr>
+</tbody></table>
+<p>提取运算符 <code>&gt;&gt;</code></p>
+<p>插入运算符 <code>&lt;&lt;</code></p>
+<h2 id="6、控制语句"><a href="#6、控制语句" class="headerlink" title="6、控制语句"></a>6、控制语句</h2><p>C 语言有九种控制语句。 可分成以下三类：</p>
+<h3 id="6-1、选择语句"><a href="#6-1、选择语句" class="headerlink" title="6.1、选择语句"></a>6.1、选择语句</h3><ul>
+<li><code>if</code>、<code>else</code> 语句</li>
+<li><code>switch</code> 语句</li>
+</ul>
+<h3 id="6-2、循环语句"><a href="#6-2、循环语句" class="headerlink" title="6.2、循环语句"></a>6.2、循环语句</h3><ul>
+<li><code>while</code> 语句</li>
+<li><code>do while</code> 语句</li>
+<li><code>for</code> 语句</li>
+</ul>
+<h3 id="6-3、跳转语句"><a href="#6-3、跳转语句" class="headerlink" title="6.3、跳转语句"></a>6.3、跳转语句</h3><ul>
+<li><code>break</code> 语句</li>
+<li><code>continue</code> 语句</li>
+<li><code>goto</code>语句（此语句尽量少用，因为这不利<strong>结构化程序设计</strong>，滥用它会使程序流程无规律、可读性差）</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://www.cplusplus.com/doc/tutorial/" target="_blank" rel="noopener">https://www.cplusplus.com/doc/tutorial/</a></p>
+<p><a href="https://www.cplusplus.com/doc/tutorial/variables/" target="_blank" rel="noopener">https://www.cplusplus.com/doc/tutorial/variables/</a></p>
+<p><a href="https://www.cplusplus.com/doc/tutorial/namespaces/" target="_blank" rel="noopener">https://www.cplusplus.com/doc/tutorial/namespaces/</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2021/02/04/cpp-function/" class="prev">PREV</a><a href="/2021/02/01/cpp-ide/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

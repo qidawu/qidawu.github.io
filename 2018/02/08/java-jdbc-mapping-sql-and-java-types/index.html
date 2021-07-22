@@ -1,0 +1,148 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Java 数据持久化系列（三）JDBC SQL 和 Java 数据类型映射总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Java 数据持久化系列（三）JDBC SQL 和 Java 数据类型映射总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Java 数据持久化系列（三）JDBC SQL 和 Java 数据类型映射总结</h1><div class="post-info">2018-02-08<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><h1 id="映射概述"><a href="#映射概述" class="headerlink" title="映射概述"></a>映射概述</h1><p>由于 SQL 中的数据类型和 Java 编程语言中的数据类型并不相同，因此需要使用某种机制在使用 Java 类型的应用程序和使用 SQL 类型的数据库之间传输数据。</p>
+<h1 id="SQL-类型映射成-JDBC-类型"><a href="#SQL-类型映射成-JDBC-类型" class="headerlink" title="SQL 类型映射成 JDBC 类型"></a>SQL 类型映射成 JDBC 类型</h1><p>不同数据库产品支持的 SQL 类型之间存在显着差异。即使不同的数据库支持具有相同语义的 SQL 类型，它们也可能为这些类型提供了不同的名称。例如，大多数主要数据库都支持 large binary 这种 SQL 类型，但是：</p>
+<ul>
+<li>MySQL 的命名为 <code>BINARY</code>、<code>VARBINARY</code>（详见：<a href="https://dev.mysql.com/doc/refman/8.0/en/binary-varbinary.html" target="_blank" rel="noopener">The BINARY and VARBINARY Types</a>）</li>
+<li>Oracle 的命名为 <code>LONG RAW</code></li>
+<li>Sybase 的命名为 <code>IMAGE</code></li>
+<li>Informix 的命名为 <code>BYTE</code></li>
+<li>DB2 的命名为 <code>LONG VARCHAR FOR BIT DATA</code></li>
+</ul>
+<p>幸运的是，JDBC 开发通常不需要关心目标数据库使用的实际 SQL 类型名称。大多数情况下，JDBC 开发将针对现有数据库表进行编程，并不需要关心用于创建这些表的确切 SQL 类型名称。</p>
+<p>JDBC API 在 <code>java.sql.Types</code> 类中定义了一组通用 SQL 类型标识符，旨在表达最常用的 SQL 类型。在使用 JDBC API 进行编程时，程序员通常可以使用这些 JDBC 类型来引用通用 SQL 类型，而无需关心目标数据库使用的确切 SQL 类型名称。</p>
+<p>下表提供了 MySQL 类型与  JDBC 类型、Java 类型的映射关系：</p>
+<p><img src="/img/java/jdbc/mysql-types.png" alt="JDBC Types Mapped to Database-specific SQL Types"></p>
+<h2 id="基本-JDBC-类型"><a href="#基本-JDBC-类型" class="headerlink" title="基本 JDBC 类型"></a>基本 JDBC 类型</h2><table>
+<thead>
+<tr>
+<th>Java 类型</th>
+<th>SQL 数据类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>byte[]</code></td>
+<td><code>BINARY</code>、<code>VARBINARY</code>、<code>LONGVARBINARY</code></td>
+</tr>
+<tr>
+<td><code>String</code></td>
+<td><code>CHAR</code>，<code>VARCHAR</code>、<code>LONGVARCHAR</code></td>
+</tr>
+<tr>
+<td><code>boolean</code></td>
+<td><code>BIT</code></td>
+</tr>
+<tr>
+<td><code>byte</code></td>
+<td><code>TINYINT</code></td>
+</tr>
+<tr>
+<td><code>short</code></td>
+<td><code>SMALLINT</code></td>
+</tr>
+<tr>
+<td><code>int</code></td>
+<td><code>INTEGER</code></td>
+</tr>
+<tr>
+<td><code>long</code></td>
+<td><code>BIGINT</code></td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td><code>REAL</code></td>
+</tr>
+<tr>
+<td><code>double</code></td>
+<td><code>FLOAT</code>、<code>DOUBLE</code></td>
+</tr>
+<tr>
+<td><code>java.math.BigDecimal</code></td>
+<td><code>NUMERIC</code>、<code>DECIMAL</code></td>
+</tr>
+<tr>
+<td><code>java.sql.Date</code></td>
+<td><code>DATE</code></td>
+</tr>
+<tr>
+<td><code>java.sql.Time</code></td>
+<td><code>TIME</code></td>
+</tr>
+<tr>
+<td><code>java.sql.Timestamp</code></td>
+<td><code>TIMESTAMP</code></td>
+</tr>
+</tbody></table>
+<h2 id="高级-JDBC-类型"><a href="#高级-JDBC-类型" class="headerlink" title="高级 JDBC 类型"></a>高级 JDBC 类型</h2><p>SQL 标准后续引入的数据类型，包括 <code>BLOB</code>， <code>CLOB</code>，<code>ARRAY</code>，<code>REF</code> 等等：</p>
+<table>
+<thead>
+<tr>
+<th>Java 类型</th>
+<th>SQL 数据类型</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>java.sql.Array</code></td>
+<td><code>ARRAY</code></td>
+<td>JDBC API 1.2 引入</td>
+</tr>
+<tr>
+<td><code>java.sql.Blob</code></td>
+<td><code>BLOB</code></td>
+<td>JDBC API 1.2 引入</td>
+</tr>
+<tr>
+<td><code>java.sql.Clob</code></td>
+<td><code>CLOB</code></td>
+<td>JDBC API 1.2 引入</td>
+</tr>
+<tr>
+<td><code>java.sql.NClob</code></td>
+<td><code>NCLOB</code></td>
+<td>JDBC API 1.6 引入</td>
+</tr>
+<tr>
+<td><code>java.sql.Ref</code></td>
+<td><code>REF</code></td>
+<td>JDBC API 1.2 引入</td>
+</tr>
+<tr>
+<td><code>java.sql.RowId</code></td>
+<td><code>ROWID</code></td>
+<td>JDBC API 1.6 引入</td>
+</tr>
+<tr>
+<td><code>java.sql.Struct</code></td>
+<td><code>STRUCT</code></td>
+<td>JDBC API 1.2 引入</td>
+</tr>
+<tr>
+<td><code>java.sql.SQLXML</code></td>
+<td><code>XML</code></td>
+<td>JDBC API 1.6 引入</td>
+</tr>
+</tbody></table>
+<h1 id="数据访问-API"><a href="#数据访问-API" class="headerlink" title="数据访问 API"></a>数据访问 API</h1><p>为了在数据库和 Java 应用程序之间传输数据，JDBC API 提供了三组方法：</p>
+<ul>
+<li><code>ResultSet</code> 类提供的用于将 <code>SELECT</code> 检索结果转换为 Java 类型的方法；</li>
+<li><code>PreparedStatement</code> 类提供的用于将 Java 类型作为 SQL 语句参数发送的方法；</li>
+<li><code>CallableStatement</code>类提供的用于将 <code>OUT</code> 参数转换为 Java 类型的方法。</li>
+</ul>
+<h2 id="静态数据访问"><a href="#静态数据访问" class="headerlink" title="静态数据访问"></a>静态数据访问</h2><h3 id="标准映射"><a href="#标准映射" class="headerlink" title="标准映射"></a>标准映射</h3><p>Java 程序从数据库中检索数据时，都必然会有某种形式的数据映射和数据转换。大多数情况下，JDBC 开发是知道目标数据库的 schema 的，例如表结构及其每列的数据类型。因此，JDBC 开发可以使用 <code>ResultSet</code>、<code>PreparedStatement</code>、<code>CallableStatement</code> 接口的强类型访问方法进行类型转换，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// PreparedStatement 接口</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setBoolean</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">boolean</span>)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setByte</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">byte</span>)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setShort</span><span class="params">(<span class="keyword">int</span> <span class="keyword">short</span>)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setInt</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setLong</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">long</span>)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setFloat</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">float</span>)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setDouble</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">double</span>)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setBigDecimal</span><span class="params">(<span class="keyword">int</span>, BigDecimal)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setString</span><span class="params">(<span class="keyword">int</span>, String)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setBytes</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">byte</span>[])</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setDate</span><span class="params">(<span class="keyword">int</span>, Date)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setTime</span><span class="params">(<span class="keyword">int</span>, Time)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setTimestamp</span><span class="params">(<span class="keyword">int</span>, Timestamp)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setBinaryStream</span><span class="params">(<span class="keyword">int</span>, InputStream)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setCharacterStream</span><span class="params">(<span class="keyword">int</span>, Reader)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setRef</span><span class="params">(<span class="keyword">int</span>, Ref)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setBlob</span><span class="params">(<span class="keyword">int</span>, Blob)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setClob</span><span class="params">(<span class="keyword">int</span>, Clob)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setArray</span><span class="params">(<span class="keyword">int</span>, Array)</span></span></span><br><span class="line"><span class="function">...</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="comment">// ResultSet 接口</span></span></span><br><span class="line"><span class="function">Object <span class="title">getObject</span><span class="params">(<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">getBoolean</span><span class="params">(<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function"><span class="keyword">byte</span> <span class="title">getByte</span><span class="params">(<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function"><span class="keyword">short</span> <span class="title">getShort</span><span class="params">(<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">getInt</span><span class="params">(<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">getLong</span><span class="params">(<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">getFloat</span><span class="params">(<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">getDouble</span><span class="params">(<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function">BigDecimal <span class="title">getBigDecimal</span><span class="params">(<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function">String <span class="title">getString</span><span class="params">(<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function"><span class="keyword">byte</span>[] <span class="title">getBytes</span><span class="params">(<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function">Date <span class="title">getDate</span><span class="params">(<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function">Time <span class="title">getTime</span><span class="params">(<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function">Timestamp <span class="title">getTimestamp</span><span class="params">(<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function">InputStream <span class="title">getBinaryStream</span><span class="params">(<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function">Reader <span class="title">getCharacterStream</span><span class="params">(<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function">Ref <span class="title">getRef</span><span class="params">(<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function">Blob <span class="title">getBlob</span><span class="params">(<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function">Clob <span class="title">getClob</span><span class="params">(<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function">Array <span class="title">getArray</span><span class="params">(<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function">...</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="自定义映射"><a href="#自定义映射" class="headerlink" title="自定义映射"></a>自定义映射</h3><p>自定义映射（SQL user-defined type (UDT) 到 Java 类）使用如下接口：</p>
+<ul>
+<li><code>java.sql.SQLData</code> 接口</li>
+<li><code>java.sql.SQLInput</code> 接口</li>
+<li><code>java.sql.SQLOutput</code> 接口</li>
+</ul>
+<h2 id="动态数据访问"><a href="#动态数据访问" class="headerlink" title="动态数据访问"></a>动态数据访问</h2><p>在大多数情况下，用户都希望访问在编译期数据类型已知的结果或参数。但是某些情况下，应用程序在编译期无法获知它们访问的目标数据库的 schema。因此，除了静态的数据类型访问之外，JDBC 还提供了对动态的数据类型访问的支持。</p>
+<p>有三种方法可以方便地访问在编译期数据类型未知的值，使用所有 Java 对象的共同父类 <code>Object</code> 类型：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ResultSet.getObject</span><br><span class="line">PreparedStatement.setObject</span><br><span class="line">CallableStatement.getObject</span><br></pre></td></tr></table></figure>
+
+<p><code>boolean</code>, <code>char</code>, <code>byte</code>, <code>short</code>, <code>int</code>, <code>long</code>, <code>float</code>, <code>double</code> 八种基本数据类型将返回其对应的包装类型，其它的则返回对应的类型：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (Connection conn = DriverManager.getConnection(url)) &#123;</span><br><span class="line">    <span class="keyword">try</span> (PreparedStatement stmt = conn.prepareStatement(<span class="string">"SELECT * FROM test WHERE name = ?;"</span>)) &#123;</span><br><span class="line">        stmt.setObject(<span class="number">1</span>, <span class="string">"李四"</span>, JDBCType.VARCHAR);</span><br><span class="line">        <span class="keyword">try</span> (ResultSet rs = stmt.executeQuery()) &#123;</span><br><span class="line">            <span class="keyword">while</span> (rs.next()) &#123;</span><br><span class="line">                Object id = rs.getObject(<span class="string">"id"</span>);</span><br><span class="line">                String name = rs.getObject(<span class="string">"name"</span>, String<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">                log.info(<span class="string">"Result is &#123;&#125;, &#123;&#125;"</span>, id <span class="keyword">instanceof</span> Long, name);  <span class="comment">// Result is true, 李四</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://docs.oracle.com/javase/6/docs/technotes/guides/jdbc/getstart/mapping.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/6/docs/technotes/guides/jdbc/getstart/mapping.html</a></p>
+<p><a href="https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-reference-type-conversions.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-reference-type-conversions.html</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2018/02/20/spring-jdbc/" class="prev">PREV</a><a href="/2018/02/06/java-jdbc-api/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

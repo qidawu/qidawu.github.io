@@ -1,0 +1,230 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Java 虚拟机系列（四）性能监控、故障处理工具总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Java 虚拟机系列（四）性能监控、故障处理工具总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Java 虚拟机系列（四）性能监控、故障处理工具总结</h1><div class="post-info">2019-09-16<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><h1 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h1><h2 id="命令行工具"><a href="#命令行工具" class="headerlink" title="命令行工具"></a>命令行工具</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>全称</th>
+<th>作用</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>jps</code></td>
+<td>虚拟机进程状况工具（JVM Process Status Tool），</td>
+<td>显示正在运行的所有 HotSpot VM 进程。</td>
+<td></td>
+</tr>
+<tr>
+<td><code>jstat</code></td>
+<td>虚拟机统计信息监控工具（JVM Statistics Monitoring Tool）</td>
+<td>用于监视本地或远程 HotSpot VM 各方面的运行数据，例如类加载/卸载、运行时数据区、GC、JIT。</td>
+<td></td>
+</tr>
+<tr>
+<td><code>jinfo</code></td>
+<td>Java 配置信息工具（Configuration Info for Java）</td>
+<td>实时显示或修改虚拟机配置信息。例如 <code>jinfo -flag MetaspaceSize VMID</code></td>
+<td>在 JDK 9 中已集成到 <code>JHSDB</code></td>
+</tr>
+<tr>
+<td><code>jmap</code></td>
+<td>Memory Map for Java</td>
+<td>用于实时生成虚拟机的堆内存转储快照（heap dump/hprof 文件），或查看堆内存信息。其它转储方法：<br/><code>-XX:+HeapDumpOnOutOfMemoryError</code><br/><code>-XX:+HeapDumpOnCtrlBreak</code></td>
+<td>在 JDK 9 中已集成到 <code>JHSDB</code></td>
+</tr>
+<tr>
+<td><code>jhat</code></td>
+<td>JVM Heap Dump Browser</td>
+<td>用于分析 heap dump 文件，它会建立一个 HTTP/HTML 服务器，让用户可以在浏览器上查看分析结果。分析结果默认以包为单位进行分组显示，分析内存泄漏问题主要会使用到其中的 Heap Histogram（与 <code>jmap -histo</code> 功能一样）与 OQL 页签功能，前者可以找到内存中总容量最大的对象，后者是标准的对象查询语言，使用类似 SQL 的语法堆内存中的对象进行查询统计。</td>
+<td>在 JDK 9 中已被  <code>JHSDB</code> 替代</td>
+</tr>
+<tr>
+<td><code>jstack</code></td>
+<td>Stack Trace for Java</td>
+<td>显示虚拟机当前时刻的线程快照（thread dump/javacore 文件）。线程快照就是当前虚拟机内每一条线程正在执行的方法堆栈的集合，生成堆栈快照的目的通常是定位线程出现长时间停顿的原因，如线程间死锁、死循环、请求外部资源导致的长时间挂起等，都是导致线程长时间停顿的常见原因。</td>
+<td>在 JDK 9 中已集成到 <code>JHSDB</code></td>
+</tr>
+</tbody></table>
+<h2 id="可视化工具"><a href="#可视化工具" class="headerlink" title="可视化工具"></a>可视化工具</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>名称</th>
+<th>基于</th>
+<th>作用</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>jconsole</code></td>
+<td>Java Console</td>
+<td>JMX</td>
+<td>一款基于 JMX (Java Management Extensions) 的可视化监视、管理工具。它的主要功能是通过 JMX  的 MBean (Managed Bean) 对系统进行信息收集和参数动态调整。</td>
+<td>JDK 5 起免费提供</td>
+</tr>
+<tr>
+<td><code>jvisualvm</code></td>
+<td>Java VisualVM</td>
+<td>无需特殊 Agent</td>
+<td>拥有丰富的插件扩展。目前已经从 Oracle JDK 中分离出来，成为一个独立发展的开源项目：<a href="https://visualvm.github.io/" target="_blank" rel="noopener">https://visualvm.github.io/</a></td>
+<td>JDK 6 起免费提供</td>
+</tr>
+<tr>
+<td><code>jmc</code></td>
+<td>Java Mission Control</td>
+<td>Java Flight Recorder, JFR</td>
+<td>曾经是 BEA 公司的图形化诊断工具，随着 BEA 公司被 Oracle 收购而融合进 Oracle JDK。从 JDK 11 开始已被移除出 JDK。2018 年开源并交付给 Open JDK 组织管理。需要与 HotSpot 内部的 JFR 配合才能工作。</td>
+<td>JDK 7 起付费提供</td>
+</tr>
+<tr>
+<td><code>jhsdb</code></td>
+<td>Java HotSpot Debugger</td>
+<td>Serviceability Agent</td>
+<td>一个基于 Serviceability Agent 的 HotSpot 进程调试器。</td>
+<td>JDK 9 起免费提供</td>
+</tr>
+</tbody></table>
+<h2 id="反汇编工具"><a href="#反汇编工具" class="headerlink" title="反汇编工具"></a>反汇编工具</h2><blockquote>
+<p>大多数情况下，通过诸如javap等反编译工具来查看源码的字节码已经能够满足我们的日常需求，但是不排除在有些特定场景下，我们需要通过反汇编来查看相应的汇编指令。本文我们就来介绍两个很好用的工具——HSDIS、JITWatch</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>HSDIS (HotSpot disassembler)</td>
+<td>一款 HotSpot 虚拟机 JIT 编译代码的反汇编插件。</td>
+</tr>
+<tr>
+<td>JITWatch</td>
+<td>用于可视化分析。</td>
+</tr>
+</tbody></table>
+<p><a href="https://zhuanlan.zhihu.com/p/158168592?from_voters_page=true" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/158168592?from_voters_page=true</a></p>
+<h1 id="命令行工具-1"><a href="#命令行工具-1" class="headerlink" title="命令行工具"></a>命令行工具</h1><h2 id="jps"><a href="#jps" class="headerlink" title="jps"></a>jps</h2><p><code>jps</code> 命令的功能与 <code>ps</code> 类似，用于列出正在运行的 JVM 进程状态。</p>
+<p>常用参数：</p>
+<ul>
+<li><code>-q</code> 只输出 LVMID，省略主类的名称。</li>
+<li><code>-l</code> 输出主类的全名，如果进程执行的是 JAR 包，则输出 JAR 路径。</li>
+<li><code>-m</code> 输出虚拟机进程启动时传递给主类 <code>main()</code> 函数的参数。</li>
+<li><code>-v</code> 输出虚拟机进程启动时的 JVM 参数。</li>
+</ul>
+<h2 id="jstat"><a href="#jstat" class="headerlink" title="jstat"></a>jstat</h2><p><code>jstat</code> 命令用于监视当前 JVM 的各种运行状态信息。在用户体验上也许不如 JMC、VisualVM 等可视化监控工具以图表形式展示那样直观，但在实际生产环境中不一定可以使用 GUI 图形界面，因此在没有 GUI、只提供命令行界面的服务器上，仍是<strong>运行期</strong>定位虚拟机性能问题的常用工具。</p>
+<p>命令格式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ jstat options vmid [interval[s|ms] [count]]</span><br></pre></td></tr></table></figure>
+
+<p>常用参数：</p>
+<ul>
+<li>options，要查询的虚拟机信息，主要分为三类：<ul>
+<li>类加载<ul>
+<li><code>-class</code> 监视类加载、卸载数量、总空间以及类加载所耗费的时间</li>
+</ul>
+</li>
+<li>运行时数据区、GC<ul>
+<li><code>-gccapacity</code> 查看 GC 情况和 JVM 各区的<strong>容量</strong>（字节）</li>
+<li><code>-gc</code> 查看 GC 情况和 JVM 各区的<strong>容量</strong>和<strong>使用量</strong>（字节）</li>
+<li><code>-gcutil</code> 查看 GC 情况和 JVM 各区的<strong>使用率</strong>（%）</li>
+<li>…</li>
+</ul>
+</li>
+<li>JIT<ul>
+<li><code>-compiler</code> 输出即时编译器编译过的方法、耗时等信息</li>
+<li><code>-printcompilation</code> 输出已经被即时编译的方法</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>vmid，如果是本地虚拟机进程，VMID 与 LVMID 一致；如果是远程虚拟机进程，则 VMID 的格式为：<code>[protocol:][//]lvmid[@hostname[:port]/servername]</code></li>
+<li>interval，间隔时间，单位为秒或者毫秒</li>
+<li>count，打印次数，如果缺省则打印无数次</li>
+</ul>
+<p>示例展示：</p>
+<p>此示例连接到 lvmid 21891，并以 250 毫秒的间隔获取 7 个样本，每 6 行显示一次标题（<code>[-h&lt;lines&gt;]</code>），并显示由 <code>-gcutil</code> 选项指定的输出：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$ jstat -gcutil -h6 21891 250 7</span><br><span class="line"></span><br><span class="line">  S0     S1     E      O      P     YGC    YGCT    FGC    FGCT     GCT</span><br><span class="line"></span><br><span class="line"> 12.44   0.00  27.20   9.49  96.70    78    0.176     5    0.495    0.672</span><br><span class="line"></span><br><span class="line"> 12.44   0.00  62.16   9.49  96.70    78    0.176     5    0.495    0.672</span><br><span class="line"></span><br><span class="line"> 12.44   0.00  83.97   9.49  96.70    78    0.176     5    0.495    0.672</span><br><span class="line"></span><br><span class="line">  0.00   7.74   0.00   9.51  96.70    79    0.177     5    0.495    0.673</span><br><span class="line"></span><br><span class="line">  0.00   7.74  23.37   9.51  96.70    79    0.177     5    0.495    0.673</span><br><span class="line"></span><br><span class="line">  0.00   7.74  43.82   9.51  96.70    79    0.177     5    0.495    0.673</span><br><span class="line"></span><br><span class="line">  S0     S1     E      O      P     YGC    YGCT    FGC    FGCT     GCT</span><br><span class="line"></span><br><span class="line">  0.00   7.74  58.11   9.51  96.71    79    0.177     5    0.495    0.673</span><br></pre></td></tr></table></figure>
+
+<p>该示例结果显示，对象首先都在 Eden 区中创建，在第 3 和第 4 个样本之间由于 Eden 区装满，发生了 Young GC， gc 耗时 0.001 秒，并将对象从 Eden 区（E）提升到 Old 区（O），导致 Old 区的使用率从 9.49％ 增加到 9.51％。</p>
+<p> <code>-gcutil</code> 选项每列说明：</p>
+<table>
+<thead>
+<tr>
+<th>列名</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>S0</td>
+<td>Heap 上的 Survivor space 0 区（单位<strong>%</strong>）</td>
+</tr>
+<tr>
+<td>S1</td>
+<td>Heap 上的 Survivor space 1 区（单位<strong>%</strong>）</td>
+</tr>
+<tr>
+<td>E</td>
+<td>Heap 上的 Eden space 区（单位<strong>%</strong>）</td>
+</tr>
+<tr>
+<td>O</td>
+<td>Heap 上的 Old space 区（单位<strong>%</strong>）</td>
+</tr>
+<tr>
+<td>P</td>
+<td>Perm space 区（单位<strong>%</strong>）</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>列名</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>YGC</td>
+<td>从应用程序启动到采样时发生 Young GC 的次数，<strong>E 区满后触发</strong></td>
+</tr>
+<tr>
+<td>YGCT</td>
+<td>从应用程序启动到采样时 Young GC 所用的时间（单位秒）</td>
+</tr>
+<tr>
+<td>FGC</td>
+<td>从应用程序启动到采样时发生 Full GC 的次数， <strong>O 区满后触发</strong></td>
+</tr>
+<tr>
+<td>FGCT</td>
+<td>从应用程序启动到采样时 Full GC 所用的时间（单位秒）</td>
+</tr>
+<tr>
+<td>GCT</td>
+<td>从应用程序启动到采样时用于垃圾回收的<strong>总时间</strong>（单位秒）</td>
+</tr>
+</tbody></table>
+<h2 id="jmap"><a href="#jmap" class="headerlink" title="jmap"></a>jmap</h2><p><code>jmap</code> 命令用于生成虚拟机的内存转储快照（heap dump 文件），或查看堆内存信息。</p>
+<p>常用参数：</p>
+<ul>
+<li><code>-dump</code> 生成 Java 堆转储快照。格式为 <code>-dump:[live,]format=b,file=&lt;filename&gt;</code>，其中 <code>live</code> 子参数表示是否只 dump 出存活的对象。</li>
+<li><code>-histo</code> 显示堆中对象统计信息，包括类、实例数量、合计容量。</li>
+<li><code>-heap</code> 查看当前堆内存的详细信息，如配置信息 <code>Heap Configuration</code>、使用情况 <code>Heap Usage</code>。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">$ jmap -heap 21090</span><br><span class="line">Attaching to process ID 21090, please wait...</span><br><span class="line">Debugger attached successfully.</span><br><span class="line">Server compiler detected.</span><br><span class="line">JVM version is 24.79-b02</span><br><span class="line"></span><br><span class="line">using thread-local object allocation.</span><br><span class="line">Parallel GC with 4 thread(s)</span><br><span class="line"></span><br><span class="line">Heap Configuration:</span><br><span class="line">   MinHeapFreeRatio &#x3D; 0</span><br><span class="line">   MaxHeapFreeRatio &#x3D; 100</span><br><span class="line">   MaxHeapSize      &#x3D; 3145728000 (3000.0MB)</span><br><span class="line">   NewSize          &#x3D; 2097152000 (2000.0MB)</span><br><span class="line">   MaxNewSize       &#x3D; 2097152000 (2000.0MB)</span><br><span class="line">   OldSize          &#x3D; 5439488 (5.1875MB)</span><br><span class="line">   NewRatio         &#x3D; 2</span><br><span class="line">   SurvivorRatio    &#x3D; 8</span><br><span class="line">   PermSize         &#x3D; 268435456 (256.0MB)  &#x2F;&#x2F; JDK8+ MetaspaceSize</span><br><span class="line">   MaxPermSize      &#x3D; 268435456 (256.0MB)  &#x2F;&#x2F; JDK8+ MaxMetaspaceSize</span><br><span class="line">   G1HeapRegionSize &#x3D; 0 (0.0MB)</span><br><span class="line"></span><br><span class="line">Heap Usage:</span><br><span class="line">PS Young Generation</span><br><span class="line">Eden Space:</span><br><span class="line">   capacity &#x3D; 1762656256 (1681.0MB)</span><br><span class="line">   used     &#x3D; 1420607552 (1354.7969360351562MB)</span><br><span class="line">   free     &#x3D; 342048704 (326.20306396484375MB)</span><br><span class="line">   80.59470172725499% used</span><br><span class="line">From Space:</span><br><span class="line">   capacity &#x3D; 138412032 (132.0MB)</span><br><span class="line">   used     &#x3D; 0 (0.0MB)</span><br><span class="line">   free     &#x3D; 138412032 (132.0MB)</span><br><span class="line">   0.0% used</span><br><span class="line">To Space:</span><br><span class="line">   capacity &#x3D; 138412032 (132.0MB)</span><br><span class="line">   used     &#x3D; 0 (0.0MB)</span><br><span class="line">   free     &#x3D; 138412032 (132.0MB)</span><br><span class="line">   0.0% used</span><br><span class="line">PS Old Generation</span><br><span class="line">   capacity &#x3D; 1048576000 (1000.0MB)</span><br><span class="line">   used     &#x3D; 1048403072 (999.8350830078125MB)</span><br><span class="line">   free     &#x3D; 172928 (0.1649169921875MB)</span><br><span class="line">   99.98350830078125% used</span><br><span class="line">PS Perm Generation  &#x2F;&#x2F; JDK8+ 没有该区域</span><br><span class="line">   capacity &#x3D; 268435456 (256.0MB)</span><br><span class="line">   used     &#x3D; 67917928 (64.7715835571289MB)</span><br><span class="line">   free     &#x3D; 200517528 (191.2284164428711MB)</span><br><span class="line">   25.30139982700348% used</span><br></pre></td></tr></table></figure>
+
+<p>注意，由于此例中使用的 JDK 7 版本，因此 Heap 中包含 Perm Generation。如果使用的 JDK 8 以上版本，则 Heap 不再包含此区域，取而代之的是在 Heap 之外有一块 Metaspace。</p>
+<p>例如上述例子通过 <code>jmap -heap pid</code> 命令发现了某个服务 O 区内存被占满的问题：<code>Old Generation</code> 达到 99.98350830078125% used，O 区内存被占满，可以通过 <code>jstack</code> 继续排查 JVM 内存的<strong>动态使用情况</strong>。</p>
+<h2 id="jstack"><a href="#jstack" class="headerlink" title="jstack"></a>jstack</h2><p><code>jstack</code> 命令用于 dump 出当前线程堆栈快照，根据堆栈信息我们可以定位到具体代码，所以它在 JVM 性能调优中使用得非常多。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">$ jstack 21090 &gt; &#x2F;tmp&#x2F;threaddump</span><br><span class="line">$ less &#x2F;tmp&#x2F;localfile</span><br><span class="line"></span><br><span class="line">Full thread dump Java HotSpot(TM) 64-Bit Server VM (24.79-b02 mixed mode):</span><br><span class="line"></span><br><span class="line">&quot;Attach Listener&quot; daemon prio&#x3D;10 tid&#x3D;0x00007f67e03b4800 nid&#x3D;0x7bb9 waiting on condition [0x0000000000000000]</span><br><span class="line">   java.lang.Thread.State: RUNNABLE</span><br><span class="line"></span><br><span class="line">&quot;catalina-exec-8000&quot; daemon prio&#x3D;10 tid&#x3D;0x00007f67ba4a0000 nid&#x3D;0x795a waiting on condition [0x00007f6558c0a000]</span><br><span class="line">   java.lang.Thread.State: WAITING (parking)</span><br><span class="line">	at sun.misc.Unsafe.park(Native Method)</span><br><span class="line">	- parking to wait for  &lt;0x00000007886ab360&gt; (a java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject)</span><br><span class="line">	at java.util.concurrent.locks.LockSupport.park(LockSupport.java:186)</span><br><span class="line">	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2043)</span><br><span class="line">	at org.apache.http.pool.PoolEntryFuture.await(PoolEntryFuture.java:139)</span><br><span class="line">	at org.apache.http.pool.AbstractConnPool.getPoolEntryBlocking(AbstractConnPool.java:307)</span><br><span class="line">	at org.apache.http.pool.AbstractConnPool.access$000(AbstractConnPool.java:65)</span><br><span class="line">	at org.apache.http.pool.AbstractConnPool$2.getPoolEntry(AbstractConnPool.java:193)</span><br><span class="line">	at org.apache.http.pool.AbstractConnPool$2.getPoolEntry(AbstractConnPool.java:186)</span><br><span class="line">	at org.apache.http.pool.PoolEntryFuture.get(PoolEntryFuture.java:108)</span><br><span class="line">	at org.apache.http.impl.conn.PoolingClientConnectionManager.leaseConnection(PoolingClientConnectionManager.java:212)</span><br><span class="line">	at org.apache.http.impl.conn.PoolingClientConnectionManager$1.getConnection(PoolingClientConnectionManager.java:199)</span><br><span class="line">	at org.apache.http.impl.client.DefaultRequestDirector.execute(DefaultRequestDirector.java:424)</span><br><span class="line">	at org.apache.http.impl.client.AbstractHttpClient.doExecute(AbstractHttpClient.java:884)</span><br><span class="line">	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:82)</span><br><span class="line">	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:107)</span><br><span class="line">	at com.xxx.xxx.xxx.HttpClientService.doPost(HttpClientService.java:103)</span><br><span class="line">	......</span><br></pre></td></tr></table></figure>
+
+<p>由于导出的 <code>threaddump</code> 文件非常大，可以先统计下所有线程、或关注的线程分别处于什么状态：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ grep /tmp/threaddump | awk <span class="string">'&#123;print $2$3$4$5&#125;'</span> | sort | uniq -c | sort</span><br><span class="line"></span><br><span class="line">39  RUNNABLE</span><br><span class="line">21  TIMED_WAITING (onobjectmonitor)</span><br><span class="line">6   TIMED_WAITING (parking)</span><br><span class="line">51  TIMED_WAITING (sleeping)</span><br><span class="line">3   WAITING (onobjectmonitor)</span><br><span class="line">305 WAITING (parking)</span><br></pre></td></tr></table></figure>
+
+<p>发现有大量 <code>WAITING (parking)</code> 状态的线程。重新打开 <code>threaddump</code> 文件排查，根据堆栈可以定位到具体的问题代码，可以初步判断是 HTTP 连接耗尽资源导致的问题。</p>
+<h1 id="可视化工具-1"><a href="#可视化工具-1" class="headerlink" title="可视化工具"></a>可视化工具</h1><h2 id="VisualVM"><a href="#VisualVM" class="headerlink" title="VisualVM"></a>VisualVM</h2><p>VisualVM 拥有丰富的<a href="https://visualvm.github.io/plugins.html" target="_blank" rel="noopener">插件</a>扩展。目前已经从 Oracle JDK 中分离出来，成为一个独立发展的开源项目：<a href="https://visualvm.github.io/" target="_blank" rel="noopener">https://visualvm.github.io/</a></p>
+<p>例如：</p>
+<ul>
+<li><em>TDA</em> Plugin: Thread Dump Analyzer is a GUI for analyzing thread dumps generated by the Java VM.</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《深入理解 Java 虚拟机》</p>
+<p>《<a href="https://blog.csdn.net/u013970991/article/details/52036253" target="_blank" rel="noopener">使用 VisualVM 进行性能分析及调优</a>》</p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/10/01/mysql-explain/" class="prev">PREV</a><a href="/2019/09/10/jvm-gc/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

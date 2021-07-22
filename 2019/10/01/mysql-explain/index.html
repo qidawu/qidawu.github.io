@@ -1,0 +1,277 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> MySQL 执行计划总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="MySQL 执行计划总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">MySQL 执行计划总结</h1><div class="post-info">2019-10-01<a href="/tags/MySQL/" title="MySQL" class="post-demo">MySQL</a></div><div class="post-content"><p><code>EXPLAIN</code> 语句提供有关 MySQL 优化器如何执行语句的信息。能够用于 <code>SELECT</code>、<code>DELETE</code>、<code>INSERT</code>、<code>REPLACE</code>、<code>UPDATE</code> 语句。</p>
+<p><code>EXPLAIN</code> 为 <code>SELECT</code> 语句中使用到的每张表输出一行信息 。它按照 MySQL 在处理 <code>SELECT</code> 语句时的读取顺序来列出各张表。</p>
+<p>MySQL 使用嵌套循环连接算法（NLJ）来解析所有的表连接（MySQL resolves all joins using a nested-loop join method）。详见另一篇。</p>
+<p><code>EXPLAIN</code> 输出列如下：</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>JSON Name</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_id" target="_blank" rel="noopener"><code>id</code></a></td>
+<td><code>SELECT</code> 标识符</td>
+<td>The <code>SELECT</code> identifier</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_select_type" target="_blank" rel="noopener"><code>select_type</code></a></td>
+<td><code>SELECT</code> 类型</td>
+<td>The <code>SELECT</code> type</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_table" target="_blank" rel="noopener"><code>table</code></a></td>
+<td>引用的表名</td>
+<td>The table for the output row</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_partitions" target="_blank" rel="noopener"><code>partitions</code></a></td>
+<td>匹配的分区</td>
+<td>The matching partitions</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_type" target="_blank" rel="noopener"><code>type</code></a></td>
+<td>连接类型</td>
+<td>The join type</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_possible_keys" target="_blank" rel="noopener"><code>possible_keys</code></a></td>
+<td>可选的索引</td>
+<td>The possible indexes to choose</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_key" target="_blank" rel="noopener"><code>key</code></a></td>
+<td>实际选择的索引</td>
+<td>The index actually chosen</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_key_len" target="_blank" rel="noopener"><code>key_len</code></a></td>
+<td>实际所选 key 的长度</td>
+<td>The length of the chosen key</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_ref" target="_blank" rel="noopener"><code>ref</code></a></td>
+<td>与索引比较的列</td>
+<td>The columns compared to the index</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_rows" target="_blank" rel="noopener"><code>rows</code></a></td>
+<td>扫描行数</td>
+<td>Estimate of rows to be examined</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_filtered" target="_blank" rel="noopener"><code>filtered</code></a></td>
+<td>按表条件过滤的行百分比</td>
+<td>Percentage of rows filtered by table condition</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_extra" target="_blank" rel="noopener"><code>Extra</code></a></td>
+<td>附加信息</td>
+<td>Additional information</td>
+</tr>
+</tbody></table>
+<h1 id="id"><a href="#id" class="headerlink" title="id"></a>id</h1><p><code>id</code> 列的编号是 <code>SELECT</code> 的序列号，有几个 <code>SELECT</code> 就有几个 <code>id</code>。<code>id</code> 值越大执行优先级越高，<code>id</code> 值相同则从上往下执行，<code>id</code> 值为 <code>NULL</code> 则最后执行。</p>
+<h1 id="select-type"><a href="#select-type" class="headerlink" title="select_type"></a>select_type</h1><p>表示查询类型是简单查询还是复杂查询。常见 <code>SELECT</code> 类型如下：</p>
+<table>
+<thead>
+<tr>
+<th><code>select_type</code> Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>SIMPLE</code></td>
+<td>Simple <a href="https://dev.mysql.com/doc/refman/5.7/en/select.html" target="_blank" rel="noopener"><code>SELECT</code></a> (not using <a href="https://dev.mysql.com/doc/refman/5.7/en/union.html" target="_blank" rel="noopener"><code>UNION</code></a> or subqueries)</td>
+</tr>
+<tr>
+<td><code>PRIMARY</code></td>
+<td>Outermost <a href="https://dev.mysql.com/doc/refman/5.7/en/select.html" target="_blank" rel="noopener"><code>SELECT</code></a></td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/union.html" target="_blank" rel="noopener"><code>UNION</code></a></td>
+<td>Second or later <a href="https://dev.mysql.com/doc/refman/5.7/en/select.html" target="_blank" rel="noopener"><code>SELECT</code></a> statement in a <a href="https://dev.mysql.com/doc/refman/5.7/en/union.html" target="_blank" rel="noopener"><code>UNION</code></a></td>
+</tr>
+<tr>
+<td><code>UNION RESULT</code></td>
+<td>Result of a <a href="https://dev.mysql.com/doc/refman/5.7/en/union.html" target="_blank" rel="noopener"><code>UNION</code></a></td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/optimizer-hints.html#optimizer-hints-subquery" target="_blank" rel="noopener"><code>SUBQUERY</code></a></td>
+<td>First <a href="https://dev.mysql.com/doc/refman/5.7/en/select.html" target="_blank" rel="noopener"><code>SELECT</code></a> in subquery</td>
+</tr>
+<tr>
+<td><code>DERIVED</code></td>
+<td>Derived table</td>
+</tr>
+<tr>
+<td><code>MATERIALIZED</code></td>
+<td>Materialized subquery</td>
+</tr>
+</tbody></table>
+<h1 id="table"><a href="#table" class="headerlink" title="table"></a>table</h1><p>表示输出行所引用的表名，特殊情况如下：</p>
+<ul>
+<li>&lt;union<em>M</em>,<em>N</em>&gt;：该行指的是 <code>id</code> 值为 <em>M</em> 和 <em>N</em> 的并集。当有 <code>UNION</code> 时，<code>UNION RESULT</code> 的 <code>table</code> 列的值为 &lt;union<em>M</em>,<em>N</em>&gt;，表示参与并集的 <code>id</code> 查询编号为 <em>M</em> 和 <em>N</em>。</li>
+<li>&lt;derived<em>N</em>&gt;：当 <code>FROM</code> 子句中有子查询时， <code>table</code> 列为 &lt;derived<em>N</em>&gt;，表示当前查询依赖于 id=N 的查询结果，于是先执行 id=N 的查询。</li>
+<li>&lt;subquery<em>N</em>&gt;</li>
+</ul>
+<h1 id="type"><a href="#type" class="headerlink" title="type"></a>type</h1><p>单表查询的性能对比：<code>const</code> &gt; <code>ref</code> &gt; <code>range</code> &gt; <code>index</code> &gt; <code>ALL</code>。一般来说，得保证查询达到 <code>range</code> 级别，最好达到 <code>ref</code> 级别。</p>
+<h2 id="system"><a href="#system" class="headerlink" title="system"></a>system</h2><p>该表只有一行。是 <code>const</code> 连接类型的特例。</p>
+<h2 id="const"><a href="#const" class="headerlink" title="const"></a>const</h2><p>该表最多只有一个匹配行，该行在查询开始时读取。因为只有一行，所以优化器的其余部分可以将这一行中列的值视为常量。<code>const</code> 表非常快，因为它们只能读取一次。</p>
+<p>当主键索引（<code>PRIMARY KEY</code> ）或唯一索引（<code>UNIQUE KEY</code>）与常量值比较时使用 <code>const</code> 类型。如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> tbl_name <span class="keyword">WHERE</span> primary_key = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> tbl_name <span class="keyword">WHERE</span> primary_key_part1 = <span class="number">1</span> <span class="keyword">AND</span> primary_key_part2 = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> tbl_name <span class="keyword">WHERE</span> unique_key = <span class="string">'001'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> tbl_name <span class="keyword">WHERE</span> unique_key_part1 = <span class="string">'001'</span> <span class="keyword">AND</span> unique_key_part2 = <span class="string">'002'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> ref_table,other_table</span><br><span class="line">  <span class="keyword">WHERE</span> ref_table.unique_key_column = other_table.unique_key_column</span><br><span class="line">  <span class="keyword">AND</span> other_table.unique_key_column = <span class="string">'001'</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="eq-ref"><a href="#eq-ref" class="headerlink" title="eq_ref"></a>eq_ref</h2><p>对于 <code>other_table</code> 中的每行，仅从 <code>ref_table</code> 中读取唯一一行。<code>eq_ref</code> 类型用于主键索引（<code>PRIMARY KEY</code> ）或 <code>NOT NULL</code> 的唯一索引（<code>UNIQUE KEY</code>），且索引被表连接所使用时。除了 <code>system</code> 和 <code>const</code> 类型之外，这是最好的连接类型。<code>select_type=SIMPLE</code> 简单查询类型不会出现这种类型。</p>
+<p>例子：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> ref_table,other_table</span><br><span class="line">  <span class="keyword">WHERE</span> ref_table.unique_key_column = other_table.column;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> ref_table,other_table</span><br><span class="line">  <span class="keyword">WHERE</span> ref_table.unique_key_column_part1 = other_table.column</span><br><span class="line">  <span class="keyword">AND</span> ref_table.unique_key_column_part2 = <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ref"><a href="#ref" class="headerlink" title="ref"></a>ref</h2><p>对于 <code>other_table</code> 中的每行，从 <code>ref_table</code> 中读取所有匹配行。<code>ref</code> 类型用于普通索引或联合索引的最左前缀列（<code>leftmost prefix of the key</code>），即无法根据键值查询到唯一一行。如果使用的索引仅匹配几行结果，则也是一种很好的连接类型。</p>
+<p>例子：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> ref_table <span class="keyword">WHERE</span> key_column = expr;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> ref_table <span class="keyword">WHERE</span> key_column_part1 = expr;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> ref_table,other_table</span><br><span class="line">  <span class="keyword">WHERE</span> ref_table.key_column = other_table.column;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> ref_table,other_table</span><br><span class="line">  <span class="keyword">WHERE</span> ref_table.key_column_part1 = other_table.column</span><br><span class="line">  <span class="keyword">AND</span> ref_table.key_column_part2 = <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="range"><a href="#range" class="headerlink" title="range"></a>range</h2><p>使用索引进行范围查询时，例如：<code>=</code>, <code>&lt;&gt;</code>, <code>&gt;</code>, <code>&gt;=</code>, <code>&lt;</code>, <code>&lt;=</code>,  <code>&lt;=&gt;</code>, <code>IS NULL</code>, <code>BETWEEN</code>, <code>LIKE</code>, <code>IN()</code>。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> tbl_name</span><br><span class="line">  <span class="keyword">WHERE</span> key_column = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> tbl_name</span><br><span class="line">  <span class="keyword">WHERE</span> key_column <span class="keyword">BETWEEN</span> <span class="number">10</span> <span class="keyword">and</span> <span class="number">20</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> tbl_name</span><br><span class="line">  <span class="keyword">WHERE</span> key_column <span class="keyword">IN</span> (<span class="number">10</span>,<span class="number">20</span>,<span class="number">30</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> tbl_name</span><br><span class="line">  <span class="keyword">WHERE</span> key_part1 = <span class="number">10</span> <span class="keyword">AND</span> key_part2 <span class="keyword">IN</span> (<span class="number">10</span>,<span class="number">20</span>,<span class="number">30</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="index"><a href="#index" class="headerlink" title="index"></a>index</h2><p>索引扫描，类似于 <code>ALL</code> 全表扫描。以下情况发生：</p>
+<ul>
+<li><p>覆盖索引（<code>covering index</code>）。此时 <code>Extra</code> 列显示 <code>Using index</code>。覆盖索引扫描通常比全表扫描速度更快，因为其存储空间更小。例子：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> primary_key <span class="keyword">FROM</span> tbl_name;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> unique_key <span class="keyword">FROM</span> tbl_name;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(primary_key) <span class="keyword">FROM</span> tbl_name;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(unique_key) <span class="keyword">FROM</span> tbl_name;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="ALL"><a href="#ALL" class="headerlink" title="ALL"></a>ALL</h2><p><a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_full_table_scan" target="_blank" rel="noopener">全表扫描</a>。此时必须增加索引优化查询。</p>
+<p>全表扫描发生的情况如下：</p>
+<ul>
+<li>小表，此时全表扫描比二级索引扫描再回表的速度要快；</li>
+<li><code>ON</code> 或 <code>WHERE</code> 子句没有可用的索引；</li>
+<li>查询的字段虽然使用了索引，但查询条件覆盖的范围太大以至于还不如全表扫描。优化方式详见：<a href="https://dev.mysql.com/doc/refman/5.7/en/where-optimization.html" target="_blank" rel="noopener">Section 8.2.1.1, “WHERE Clause Optimization”</a></li>
+<li>使用了区分度（cardinality）低的索引，索引扫描范围太大以至于还不如全表扫描。如果是统计不准，可以用 <code>ANALYZE TABLE</code> 语句优化：<a href="https://dev.mysql.com/doc/refman/5.7/en/analyze-table.html" target="_blank" rel="noopener">Section 13.7.2.1, “ANALYZE TABLE Syntax”</a></li>
+</ul>
+<h1 id="possible-keys"><a href="#possible-keys" class="headerlink" title="possible_keys"></a>possible_keys</h1><p>表示 MySQL 可选的索引。</p>
+<p>如果此列为 <code>NULL</code>，表示 MySQL 没有可选的索引。此时，可以检查 <code>WHERE</code> 子句是否引用了某些适合建立索引的列，建立索引以提升查询性能。</p>
+<h1 id="key"><a href="#key" class="headerlink" title="key"></a>key</h1><p>表示 MySQL 实际选择的索引。</p>
+<ul>
+<li>如果此列为 <code>NULL</code>，表示 MySQL 没有找到可用于提高查询性能的索引。</li>
+<li>如果 <code>possible_keys NOT NULL</code>，但 <code>key NULL</code>，可能是因为表中数据不多，MySQL 认为索引对此查询帮助不大，选择了全表扫描。</li>
+</ul>
+<p>如需强制 MySQL 使用或忽略 <code>possible_keys</code> 中列出的索引，可以在查询中使用 <code>FORCE INDEX</code>、<code>USE INDEX</code> 或 <code>IGNORE INDEX</code>。详见：<a href="https://dev.mysql.com/doc/refman/5.7/en/index-hints.html" target="_blank" rel="noopener">索引提示</a>。</p>
+<h1 id="key-len"><a href="#key-len" class="headerlink" title="key_len"></a>key_len</h1><p>表示 MySQL 实际选择的索引长度。如果该索引为联合索引，可用于判断 MySQL 实际使用了联合索引中的多少个字段。如果 <code>key</code> 列为 <code>NULL</code>，<code>key_len</code> 列也为 <code>NULL</code>。</p>
+<p><code>key_len</code> 计算规则如下：</p>
+<ul>
+<li><p>使用 <code>NULL</code> 需要额外增加 1 Byte 记录是否为 <code>NULL</code>。并且进行比较和计算时要对 <code>NULL</code> 值做特别的处理，因此尽可能把所有列定义为 <code>NOT NULL</code>。</p>
+</li>
+<li><p>各个类型：</p>
+<ul>
+<li>整数类型<ul>
+<li><code>TINYINT</code> 1 Byte</li>
+<li><code>SMALLINT</code> 2 Bytes</li>
+<li><code>MEDIUMINT</code> 3 Bytes</li>
+<li><code>INT</code> 4 Bytes</li>
+<li><code>BIGINT</code> 8 Bytes</li>
+</ul>
+</li>
+<li>日期与时间类型<ul>
+<li><code>DATE</code> 3 Bytes</li>
+<li><code>TIMESTAMP</code> 4 Bytes</li>
+<li><code>DATETIME</code> 8 Bytes</li>
+</ul>
+</li>
+<li>字符串类型<ul>
+<li><code>char(n)</code>：如果字符集为 <code>utf8</code>，则长度为 3n Bytes</li>
+<li><code>varchar(n)</code>：如果字符集为 <code>utf8</code>，则长度为 3n + 2 Bytes。额外 2 Bytes 用于存储长度。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>各个字符集：</p>
+<ul>
+<li><code>latin1</code> 编码一个字符 1 Byte</li>
+<li><code>gbk</code> 编码一个字符 2 Bytes</li>
+<li><code>utf8</code> 编码一个字符 3 Bytes</li>
+<li><code>utf8mb4</code> 编码一个字符 4 Bytes</li>
+</ul>
+</li>
+<li><p>创建索引的时候可以指定索引的长度，例如：<code>alter table test add index idx_username (username(30));</code>。长度 30 指的是字符的个数。</p>
+</li>
+<li><p><code>InnoDB</code> 索引最大长度为 767 Bytes，引自<a href="https://dev.mysql.com/doc/refman/5.7/en/create-table.html" target="_blank" rel="noopener">官方文档</a>：</p>
+<blockquote>
+<p><em>key_part</em>:<br><em>col_name</em> [(<em>length</em>)] [ASC | DESC]</p>
+<p><em>index_type</em>:<br>USING {BTREE | HASH}</p>
+<blockquote>
+<p>Prefixes, defined by the <em>length</em> attribute, can be up to 767 bytes long for <code>InnoDB</code> tables or 3072 bytes if the <a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-parameters.html#sysvar_innodb_large_prefix" target="_blank" rel="noopener"><code>innodb_large_prefix</code></a> option is enabled. For <code>MyISAM</code> tables, the prefix length limit is 1000 bytes.</p>
+</blockquote>
+</blockquote>
+</li>
+</ul>
+<p>举个例子，在字符集为 <code>utf8</code> 的情况下，<code>n</code> 最大只能为 <code>(767 - 2 (存储长度)) / 3 = 765 / 3 = 255 个字符</code>。因此当字符串过长时，MySQL 最多会将开头 255 个字符串截取出来作为索引。一个例子：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`student`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`username`</span> <span class="built_in">varchar</span>(<span class="number">256</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`password`</span> <span class="built_in">varchar</span>(<span class="number">1</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>),</span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`idx_username`</span> (<span class="string">`username`</span>(<span class="number">255</span>)) <span class="keyword">USING</span> BTREE,</span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`idx_password`</span> (<span class="string">`password`</span>) <span class="keyword">USING</span> BTREE</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- key_len: 255 * 3 + 2 + 1 = 768 Bytes (额外增加 1 Byte 记录是否为 NULL)</span></span><br><span class="line">mysql&gt; explain select username from student where username = 'pete';</span><br><span class="line">+<span class="comment">----+-------------+---------+------+---------------+--------------+---------+-------+------+-------------+</span></span><br><span class="line">| id | select_type | table   | type | possible_keys | key          | key_len | ref   | rows | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+---------+------+---------------+--------------+---------+-------+------+-------------+</span></span><br><span class="line">|  1 | SIMPLE      | student | ref  | idx_username  | idx_username | 768     | const |    1 | Using where |</span><br><span class="line">+<span class="comment">----+-------------+---------+------+---------------+--------------+---------+-------+------+-------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- key_len: 1 * 3 + 2 + 1 = 6 Bytes</span></span><br><span class="line">mysql&gt; explain select password from student where password = 'pete';</span><br><span class="line">+<span class="comment">----+-------------+---------+------+---------------+--------------+---------+-------+------+--------------------------+</span></span><br><span class="line">| id | select_type | table   | type | possible_keys | key          | key_len | ref   | rows | Extra                    |</span><br><span class="line">+<span class="comment">----+-------------+---------+------+---------------+--------------+---------+-------+------+--------------------------+</span></span><br><span class="line">|  1 | SIMPLE      | student | ref  | idx_password  | idx_password | 6       | const |    1 | Using where; Using index |</span><br><span class="line">+<span class="comment">----+-------------+---------+------+---------------+--------------+---------+-------+------+--------------------------+</span></span><br></pre></td></tr></table></figure>
+
+<p>如果使用过长的索引，例如修改了字符串编码类型、增加联合索引列，则报错如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[Err] 1071 - Specified key was too long; max key length is 767 bytes</span><br></pre></td></tr></table></figure>
+
+<h1 id="ref-1"><a href="#ref-1" class="headerlink" title="ref"></a>ref</h1><p><code>ref</code> 显示与 <code>key</code> 列（实际选择的索引）比较的内容，可选值：</p>
+<ul>
+<li>列名</li>
+<li><code>const</code>：常量值</li>
+<li><code>func</code>：值为某些函数的结果</li>
+<li><code>NULL</code>：范围查询（<code>type=range</code>）</li>
+</ul>
+<p>例如联合索引如下，使用三个索引列查询时，执行计划如下（注意 <code>key_len</code> 和 <code>ref</code>）：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">`channel_task_no` varchar(60) NOT NULL,</span><br><span class="line">`reconciliation_code` tinyint(4) unsigned NOT NULL DEFAULT '0',</span><br><span class="line">`reconciliation_status` tinyint(4) unsigned NOT NULL DEFAULT '0',</span><br><span class="line">KEY `idx_taskno_rcode_rstatus` (`channel_task_no`,`reconciliation_code`,`reconciliation_status`) USING BTREE</span><br><span class="line"></span><br><span class="line">+<span class="comment">----+-------------+-------+------+--------------------------+--------------------------+---------+-------------------+------+-----------------------+</span></span><br><span class="line">| id | select_type | table | type | possible_keys            | key                      | key_len | ref               | rows | Extra                 |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+--------------------------+--------------------------+---------+-------------------+------+-----------------------+</span></span><br><span class="line">|  1 | SIMPLE      | t_xxx | ref  | idx_taskno_rcode_rstatus | idx_taskno_rcode_rstatus | 184     | const,const,const |    1 | Using index condition |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+--------------------------+--------------------------+---------+-------------------+------+-----------------------+</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="rows"><a href="#rows" class="headerlink" title="rows"></a>rows</h1><p>表示 MySQL 认为执行查询必须扫描的行数。</p>
+<p>对于 InnoDB 表，此数字是估计值，可能并不总是准确。</p>
+<p>当 <code>prossible_keys</code> 存在多个可选索引时，优化器会选择一个认为最优的执行方案，以最小的代价去执行语句。其中，这个扫描行数就是影响执行代价的因素之一。扫描的行数越少，意味着访问磁盘数据的 IO 次数越少，消耗的 CPU 资源也越少。</p>
+<p>当然，扫描行数并不是唯一的判断标准，优化器还会结合是否使用临时表、是否排序等因素进行综合判断。</p>
+<p>所以在实践中，如果你发现 explain 的结果预估的 <code>rows</code> 值跟实际情况差距比较大，可以采用执行 <code>analyze table</code> 重新统计信息。</p>
+<blockquote>
+<p>在数据库的慢查询日志中看到一个 rows_examined 的字段，表示这个语句执行过程中扫描了多少行。这个值就是在<strong>执行器每次调用引擎获取数据行</strong>的时候累加的。</p>
+<p>在有些场景下，执行器调用一次，在引擎内部则扫描了多行，因此引擎扫描行数跟 rows_examined 并不是完全相同的。</p>
+</blockquote>
+<h1 id="Extra"><a href="#Extra" class="headerlink" title="Extra"></a>Extra</h1><p>这一列显示的是额外信息。如果想要查询越快越好，需要特别留意 <code>Extra</code> 列是否出现以下情况：</p>
+<table>
+<thead>
+<tr>
+<th>Extra</th>
+<th>缓冲区</th>
+<th>大小配置</th>
+<th>数据结构</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Using filesort</code></td>
+<td><code>sort_buffer</code></td>
+<td><code>sort_buffer_size</code></td>
+<td>有序数组</td>
+<td>使用了“外部排序”（全字段排序或 rowid 排序）</td>
+</tr>
+<tr>
+<td><code>Using join buffer (Block Nested Loop)</code></td>
+<td><code>join_buffer</code></td>
+<td><code>join_buffer_size</code></td>
+<td>无序数组</td>
+<td>使用了“基于块的嵌套循环连接”算法（Block Nested-Loop Join（BNL））</td>
+</tr>
+<tr>
+<td><code>Using temporary</code></td>
+<td>临时表</td>
+<td>小于 <code>tmp_table_size</code> 为内存临时表，否则为磁盘临时表（可以使用 <code>SQL_BIG_RESULT</code> 直接指定）</td>
+<td>二维表结构（类似于 Map，Key-Value）</td>
+<td>如果执行逻辑需要用到二维表特性，就会优先考虑使用临时表。例如：<code>DISTINCT</code>、<code>GROUP BY</code>、<code>UNION</code></td>
+</tr>
+</tbody></table>
+<p>这三个数据结构都是用来存放 <code>SELECT</code> 语句执行过程中的中间数据，以辅助 SQL 语句的执行的。这些情况通常都能通过索引优化。</p>
+<p>各种常见的重要值如下：</p>
+<h2 id="Using-index"><a href="#Using-index" class="headerlink" title="Using index"></a>Using index</h2><p>使用了覆盖索引。</p>
+<h2 id="Using-where"><a href="#Using-where" class="headerlink" title="Using where"></a>Using where</h2><p>使用 <code>WHERE</code> 条件过滤结果，但查询的列未被索引覆盖。</p>
+<h2 id="Using-index-condition"><a href="#Using-index-condition" class="headerlink" title="Using index condition"></a>Using index condition</h2><p>查询的列不完全被索引覆盖。</p>
+<p>例如：<a href="https://dev.mysql.com/doc/refman/5.7/en/index-condition-pushdown-optimization.html" target="_blank" rel="noopener">索引下推优化（ICP）</a></p>
+<h2 id="Using-temporary"><a href="#Using-temporary" class="headerlink" title="Using temporary"></a>Using temporary</h2><p>MySQL 需要创建一张临时表来处理查询。通常发生于查询包含 <code>DISTINCT</code>、<code>GROUP BY</code> 或 <code>ORDER BY</code> 子句等需要数据去重的场景。出现这种情况一般是要进行优化的，首先想到的是用索引进行优化。</p>
+<h2 id="Using-join-buffer"><a href="#Using-join-buffer" class="headerlink" title="Using join buffer"></a>Using join buffer</h2><p>使用 BNL 算法进行表连接。这种情况下一般考虑使用索引对被驱动表的表连接字段进行优化，以使用更高效的 NLJ 算法。</p>
+<h2 id="Using-filesort"><a href="#Using-filesort" class="headerlink" title="Using filesort"></a>Using filesort</h2><p>将用外部排序而不是索引排序，数据较少时从内存排序，否则需要在磁盘完成排序。这种情况下一般考虑使用索引进行优化。</p>
+<p>优化参考：<a href="https://dev.mysql.com/doc/refman/5.7/en/order-by-optimization.html" target="_blank" rel="noopener">Section 8.2.1.14, “ORDER BY Optimization”</a></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://dev.mysql.com/doc/refman/5.7/en/execution-plan-information.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/execution-plan-information.html</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/analyze-table.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/analyze-table.html</a></p>
+<p><em>MySQL Workbench</em> has a Visual Explain capability that provides a visual representation of <a href="https://dev.mysql.com/doc/refman/5.7/en/explain.html" target="_blank" rel="noopener">EXPLAIN</a> output. See <a href="https://dev.mysql.com/doc/workbench/en/wb-tutorial-visual-explain-dbt3.html" target="_blank" rel="noopener">Tutorial: Using Explain to Improve Query Performance</a>.</p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/10/20/mysql-index/" class="prev">PREV</a><a href="/2019/09/16/jvm-tools/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> C/C++ 语言系列（十）面向对象编程之继承与多态 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="C/C++ 语言系列（十）面向对象编程之继承与多态 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">C/C++ 语言系列（十）面向对象编程之继承与多态</h1><div class="post-info">2021-02-25<a href="/tags/C-C/" title="C/C++" class="post-demo">C/C++</a></div><div class="post-content"><h1 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h1><p>C++ 继承的语法如下，支持单继承和多继承：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Single inheritance 单继承</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">derived_class</span>:</span> access_specifier base_class</span><br><span class="line"></span><br><span class="line"><span class="comment">// Multiple inheritance 多重继承，各个基类之间用逗号分隔</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">derived_class</span>:</span> access_specifier base_class_1, access_specifier base_class_2, ...</span><br></pre></td></tr></table></figure>
+
+<h2 id="继承类型"><a href="#继承类型" class="headerlink" title="继承类型"></a>继承类型</h2><p>继承类型通过访问修饰符 access_specifier 来指定：</p>
+<table>
+<thead>
+<tr>
+<th>继承类型</th>
+<th>基类的 <code>public</code> 成员</th>
+<th>基类的 <code>protected</code> 成员</th>
+<th>基类的 <code>private</code> 成员</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>公有继承（<code>public</code>）</td>
+<td>派生类的 <code>public</code> 成员</td>
+<td>派生类的 <code>protected</code> 成员</td>
+<td>无法继承</td>
+</tr>
+<tr>
+<td>保护继承（<code>protected</code>）</td>
+<td>派生类的 <code>protected</code> 成员</td>
+<td>派生类的 <code>protected</code> 成员</td>
+<td>无法继承</td>
+</tr>
+<tr>
+<td>私有继承（<code>private</code>）</td>
+<td>派生类的 <code>private</code> 成员</td>
+<td>派生类的 <code>private</code> 成员</td>
+<td>无法继承</td>
+</tr>
+</tbody></table>
+<p>通常使用 <code>public</code> 继承，几乎不使用 <code>protected</code> 或 <code>private</code> 继承。</p>
+<blockquote>
+<p>In principle, a publicly derived class inherits access to every member of a base class <strong>except</strong>:</p>
+<ul>
+<li>its constructors and its destructor</li>
+<li>its assignment operator members (operator=)</li>
+<li>its friends</li>
+<li>its private members</li>
+</ul>
+</blockquote>
+<h2 id="继承的访问控制属性"><a href="#继承的访问控制属性" class="headerlink" title="继承的访问控制属性"></a>继承的访问控制属性</h2><table>
+<thead>
+<tr>
+<th align="left">Access</th>
+<th align="left"><code>public</code></th>
+<th align="left"><code>protected</code></th>
+<th align="left"><code>private</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">members of the same class</td>
+<td align="left">yes</td>
+<td align="left">yes</td>
+<td align="left">yes</td>
+</tr>
+<tr>
+<td align="left">members of derived class</td>
+<td align="left">yes</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+</tr>
+<tr>
+<td align="left">not members</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">no</td>
+</tr>
+</tbody></table>
+<h2 id="构造、析构函数执行顺序"><a href="#构造、析构函数执行顺序" class="headerlink" title="构造、析构函数执行顺序"></a>构造、析构函数执行顺序</h2><blockquote>
+<p>Even though access to the constructors and destructor of the base class is not inherited, they are automatically called by the constructors and destructor of the derived class.</p>
+<p>Unless otherwise specified, the constructors of a derived class calls the default constructor of its base classes (i.e., the constructor taking no arguments).</p>
+</blockquote>
+<p>继承后，执行顺序如下：</p>
+<ul>
+<li>构造函数：先父后子</li>
+<li>析构函数：先子后父</li>
+</ul>
+<h2 id="子类调用父类方法"><a href="#子类调用父类方法" class="headerlink" title="子类调用父类方法"></a>子类调用父类方法</h2><p><code>BaseClass::Function()</code></p>
+<h1 id="多态"><a href="#多态" class="headerlink" title="多态"></a>多态</h1><blockquote>
+<p>One of the key features of class inheritance is that a pointer to a derived class is type-compatible with a pointer to its base class. <em>Polymorphism</em> is the art of taking advantage of this simple but powerful and versatile feature.</p>
+</blockquote>
+<p>类继承的关键特性之一，就是指向派生类的指针与指向其基类的指针在类型上兼容。 多态是利用这一简单但强大而通用的功能的艺术。</p>
+<p>下面使用指针来演示多态这一特性。</p>
+<p>UML 类图如下：</p>
+<p><img src="/img/cpp/class_inheritance.png" alt="UML 类图"></p>
+<p>类声明如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// pointers to base class</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Shape</span> &#123;</span></span><br><span class="line">  <span class="keyword">protected</span>:</span><br><span class="line">    <span class="keyword">int</span> <span class="built_in">width</span>, <span class="built_in">height</span>;</span><br><span class="line">  <span class="keyword">public</span>:</span><br><span class="line">    Shape(<span class="keyword">int</span> <span class="built_in">width</span>, <span class="keyword">int</span> <span class="built_in">height</span>) &#123;</span><br><span class="line">      <span class="keyword">this</span>-&gt;<span class="built_in">width</span> = <span class="built_in">width</span>;</span><br><span class="line">      <span class="keyword">this</span>-&gt;<span class="built_in">height</span> = <span class="built_in">height</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">area</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="number">0</span>; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Rectangle</span> :</span> <span class="keyword">public</span> Shape &#123;</span><br><span class="line">  <span class="keyword">public</span>:</span><br><span class="line">    Rectangle(<span class="keyword">int</span> x, <span class="keyword">int</span> y) : Shape(x, y) &#123;&#125;;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">area</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="built_in">width</span> * <span class="built_in">height</span>; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Triangle</span> :</span> <span class="keyword">public</span> Shape &#123;</span><br><span class="line">  <span class="keyword">public</span>:</span><br><span class="line">    Triangle(<span class="keyword">int</span> x, <span class="keyword">int</span> y) : Shape(x, y) &#123;&#125;;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">area</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="built_in">width</span> * <span class="built_in">height</span> / <span class="number">2</span>; &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>使用方式一：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="function">Rectangle <span class="title">rect</span><span class="params">(<span class="number">2</span>, <span class="number">3</span>)</span></span>;</span><br><span class="line">  <span class="function">Triangle <span class="title">trgl</span><span class="params">(<span class="number">2</span>, <span class="number">3</span>)</span></span>;</span><br><span class="line">  </span><br><span class="line">  Shape * p1 = &amp;<span class="built_in">rect</span>;</span><br><span class="line">  Shape * p2 = &amp;trgl;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">cout</span> &lt;&lt; <span class="string">"rectangle area is "</span> &lt;&lt; p1-&gt;area() &lt;&lt; <span class="built_in">endl</span>;  <span class="comment">// rectangle area is 6</span></span><br><span class="line">  <span class="built_in">cout</span> &lt;&lt; <span class="string">"triangle area is "</span> &lt;&lt; p2-&gt;area() &lt;&lt; <span class="built_in">endl</span>;   <span class="comment">// triangle area is 3</span></span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用方式二，参考：<a href="http://www.cplusplus.com/doc/tutorial/dynamic/" target="_blank" rel="noopener">Dynamic memory</a></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  Shape * p1 = <span class="keyword">new</span> Rectangle(<span class="number">2</span>, <span class="number">3</span>);</span><br><span class="line">  Shape * p2 = <span class="keyword">new</span> Triangle(<span class="number">2</span>, <span class="number">3</span>);</span><br><span class="line"></span><br><span class="line">  <span class="built_in">cout</span> &lt;&lt; <span class="string">"rectangle area is "</span> &lt;&lt; p1-&gt;area() &lt;&lt; <span class="built_in">endl</span>;  <span class="comment">// rectangle area is 6</span></span><br><span class="line">  <span class="built_in">cout</span> &lt;&lt; <span class="string">"triangle area is "</span> &lt;&lt; p2-&gt;area() &lt;&lt; <span class="built_in">endl</span>;   <span class="comment">// triangle area is 3</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">delete</span> p3;</span><br><span class="line">  <span class="keyword">delete</span> p4;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>描述如下：</p>
+<blockquote>
+<p>Function <code>main</code> declares two pointers to <code>Shape</code> (named <code>p1</code> and <code>p2</code>). These are assigned the addresses of <code>rect</code> and <code>trgl</code>, respectively, which are objects of type <code>Rectangle</code> and <code>Triangle</code>. Such assignments are valid, since both <code>Rectangle</code> and <code>Triangle</code> are classes derived from <code>Shape</code>.</p>
+<p>Dereferencing <code>p1</code> and <code>p2</code> (with <code>p1-&gt;</code> and <code>p2-&gt;</code>) is valid and allows us to access the members of their pointed objects. For example, the following two statements would be equivalent in the previous example:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">rect</span>.area();</span><br><span class="line">p1-&gt;area();</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h2 id="虚函数（virtual）"><a href="#虚函数（virtual）" class="headerlink" title="虚函数（virtual）"></a>虚函数（virtual）</h2><p>虚函数是在基类中使用 <code>virtual</code> 关键字声明的函数，是可以在派生类中<strong>重定义</strong>的成员函数。虚函数用于实现<strong>运行时多态</strong>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">+--------------------+</span><br><span class="line">| Base Class         |</span><br><span class="line">|   virtual function |</span><br><span class="line">+---------^----------+</span><br><span class="line">          |</span><br><span class="line">          |class inheritance</span><br><span class="line">          |</span><br><span class="line">+---------+----------+</span><br><span class="line">| Derived class      |</span><br><span class="line">|  redefined function|</span><br><span class="line">+--------------------+</span><br><span class="line"></span><br><span class="line">运行时多态的实现手段：虚函数 + 继承 + 函数重定义</span><br></pre></td></tr></table></figure>
+
+<p>派生类也可以重定义基类的非虚函数，但无法通过基类的引用来访问派生类的该函数。即：如果移除上述基类中 <code>area</code> 函数声明的 <code>virtual</code> 关键字，下面的函数调用将返回 0，因为实际调用的是基类的版本：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cout</span> &lt;&lt; <span class="string">"rectangle area is "</span> &lt;&lt; p1-&gt;area() &lt;&lt; <span class="built_in">endl</span>;  <span class="comment">// rectangle area is 0</span></span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; <span class="string">"triangle area is "</span> &lt;&lt; p2-&gt;area() &lt;&lt; <span class="built_in">endl</span>;   <span class="comment">// triangle area is 0</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Therefore, essentially, what the <code>virtual</code> keyword does is to allow a member of a derived class with the same name as one in the base class to be appropriately called from a pointer, and more precisely when the type of the pointer is a pointer to the base class that is pointing to an object of the derived class, as in the above example.</p>
+<p>A class that declares or inherits a virtual function is called a <em>polymorphic class</em>.</p>
+</blockquote>
+<p>注意，尽管成员之一是 <code>virtual</code> 的，但 <code>Sharp</code> 仍然是一个常规类，可以实例化对象。</p>
+<h2 id="纯虚函数（抽象类）"><a href="#纯虚函数（抽象类）" class="headerlink" title="纯虚函数（抽象类）"></a>纯虚函数（抽象类）</h2><p>Classes that contain at least one <em>pure virtual function</em> are known as <em>abstract base classes</em>. The syntax of <em>pure virtual function</em> is to replace their definition by <code>=0</code> (an equal sign and a zero):</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// abstract class CPolygon</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Shape</span> &#123;</span></span><br><span class="line">  <span class="keyword">protected</span>:</span><br><span class="line">    <span class="keyword">int</span> <span class="built_in">width</span>, <span class="built_in">height</span>;</span><br><span class="line">  <span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">area</span> <span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>Abstract base classes cannot be used to instantiate objects:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 不允许使用抽象类类型 "Shape" 的对象: -- 函数 "Shape::area" 是纯虚函数</span></span><br><span class="line"><span class="comment">// variable type 'Shape' is an abstract class</span></span><br><span class="line">Shape shape;</span><br></pre></td></tr></table></figure>
+
+<p>But an <em>abstract base class</em> is not totally useless. It can be used to create pointers to it, and take advantage of all its polymorphic abilities.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// the following pointer declarations would be valid</span></span><br><span class="line">Shape * p1 = &amp;<span class="built_in">rect</span>;</span><br><span class="line">Shape * p2 = &amp;trgl;</span><br></pre></td></tr></table></figure>
+
+<p>Virtual members and abstract classes grant C++ polymorphic characteristics, most useful for object-oriented projects.</p>
+<p>C++ 接口是使用<strong>抽象类</strong>来实现的。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://www.cplusplus.com/doc/tutorial/inheritance/" target="_blank" rel="noopener">http://www.cplusplus.com/doc/tutorial/inheritance/</a></p>
+<p><a href="http://www.cplusplus.com/doc/tutorial/polymorphism/" target="_blank" rel="noopener">http://www.cplusplus.com/doc/tutorial/polymorphism/</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2021/02/26/cpp-io-library/" class="prev">PREV</a><a href="/2021/02/20/cpp-oop-class/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

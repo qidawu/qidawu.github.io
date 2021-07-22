@@ -1,0 +1,83 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> GoDaddy 中配置无 www 前缀域名 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="GoDaddy 中配置无 www 前缀域名 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">GoDaddy 中配置无 www 前缀域名</h1><div class="post-info">2015-04-12<a href="/tags/DNS/" title="DNS" class="post-demo">DNS</a><a href="/tags/建站/" title="建站" class="post-demo">建站</a></div><div class="post-content"><p>搭好博客后，在权威域名服务商 GoDaddy 注册了一个新域名使用。当配置无 www 前缀域名时，却遇到了一些配置问题。</p>
+<h1 id="为什么要配置无-www-前缀的域名？"><a href="#为什么要配置无-www-前缀的域名？" class="headerlink" title="为什么要配置无 www 前缀的域名？"></a>为什么要配置无 www 前缀的域名？</h1><p>引述<a href="http://www.zhihu.com/question/20064691" target="_blank" rel="noopener">知乎</a>：</p>
+<blockquote>
+<p>www 是一个二级域名。无 www 才是一级域名。</p>
+<p>拿掉它的原因有两个：</p>
+<ol>
+<li>遵循 Google 的关于域名长度的建议。</li>
+<li>保证网站的某一个页面有且只有一个唯一的 URL 可以访问。</li>
+</ol>
+</blockquote>
+<h1 id="CNAME-配置问题"><a href="#CNAME-配置问题" class="headerlink" title="CNAME 配置问题"></a>CNAME 配置问题</h1><p>@ 记录指没有主机名的域名部份，如 foo.com 。于是想通过 GoDaddy 的 DNS ZONE FILE 配置一条 Host 为 @ 的 CNAME 记录：</p>
+<table>
+<thead>
+<tr>
+<th>Host</th>
+<th>Points To</th>
+<th>TTL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>www</td>
+<td>cynthia903.github.io</td>
+<td>1 Hour</td>
+</tr>
+<tr>
+<td>@</td>
+<td>cynthia903.github.io</td>
+<td>1 Hour</td>
+</tr>
+</tbody></table>
+<p>保存修改时，却报错了：</p>
+<blockquote>
+<p>THESE RECORDS WERE NOT PROCESSED DUE TO ERRORS:</p>
+<p>The specified record already exists.</p>
+<p>CNAME - @</p>
+</blockquote>
+<p>原来按 <a href="http://www.ietf.org/rfc/rfc1034.txt" target="_blank" rel="noopener">rfc1034</a> 规定，是不能对 @ 记录做 CNAME 的，只能做 A 记录。</p>
+<h1 id="301-重定向跳转"><a href="#301-重定向跳转" class="headerlink" title="301 重定向跳转"></a>301 重定向跳转</h1><p>经查询，常见做法是将 foo.com 做 301 重定向跳转到 <a href="http://www.foo.com" target="_blank" rel="noopener">www.foo.com</a> 。GoDaddy 的 Forwarding 配置可以实现该功能：</p>
+<p>CNBLOG.ME</p>
+<table>
+<thead>
+<tr>
+<th>Forward to</th>
+<th>Redirect</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="http://www.cnblog.me" target="_blank" rel="noopener">http://www.cnblog.me</a></td>
+<td>301 (Permanent)</td>
+<td>Forward only</td>
+</tr>
+</tbody></table>
+<h1 id="解析测试"><a href="#解析测试" class="headerlink" title="解析测试"></a>解析测试</h1><h2 id="301-重定向跳转测试"><a href="#301-重定向跳转测试" class="headerlink" title="301 重定向跳转测试"></a>301 重定向跳转测试</h2><p>使用 chrome 的开发者工具（F12 或 Ctrl+Shift+I 打开），访问 cnblog.me</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Method</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="http://cnblog.me/" target="_blank" rel="noopener">http://cnblog.me/</a></td>
+<td>GET</td>
+<td>301 Moved Permanently</td>
+</tr>
+<tr>
+<td><a href="http://www.cnblog.me/" target="_blank" rel="noopener">http://www.cnblog.me/</a></td>
+<td>GET</td>
+<td>200 OK</td>
+</tr>
+</tbody></table>
+<h2 id="DNS-解析测试"><a href="#DNS-解析测试" class="headerlink" title="DNS 解析测试"></a>DNS 解析测试</h2><h3 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h3><p>使用 dig 命令测试，可见 <a href="http://www.cnblog.me" target="_blank" rel="noopener">www.cnblog.me</a> 已经成功 CNAME 到 cynthia903.github.io 。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ dig -t cname www.cnblog.me</span><br><span class="line"></span><br><span class="line">;; QUESTION SECTION:</span><br><span class="line">;www.cnblog.me.                 IN      CNAME</span><br><span class="line"></span><br><span class="line">;; ANSWER SECTION:</span><br><span class="line">www.cnblog.me.          3277    IN      CNAME   cynthia903.github.io.</span><br></pre></td></tr></table></figure>
+
+<h3 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h3><p>使用 nslookup 命令测试：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ nslookup www.cnblog.me</span><br><span class="line">服务器:  cache-b.guangzhou.gd.cn</span><br><span class="line">Address:  202.96.128.166	&#x2F;&#x2F; 当前使用的 DNS 服务器。如果无法解析，可以换用谷歌的试试（nslookup www.cnblog.me 8.8.8.8）</span><br><span class="line"></span><br><span class="line">非权威应答:</span><br><span class="line">名称:    github.map.fastly.net</span><br><span class="line">Address:  199.27.78.133</span><br><span class="line">Aliases:  www.cnblog.me</span><br><span class="line">          cynthia903.github.io</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《<a href="http://serverfault.com/questions/486406/configuring-cname-record-in-godaddy-control-panel" target="_blank" rel="noopener">Configuring “@” CNAME record in GoDaddy control panel</a>》</li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2015/04/19/gnu-bash-shortcut-keys/" class="prev">PREV</a><a href="/2015/04/06/broswer-kernel/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

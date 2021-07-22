@@ -1,0 +1,458 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Vim 使用总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Vim 使用总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Vim 使用总结</h1><div class="post-info">2015-09-17<a href="/tags/GNU-Linux/" title="GNU/Linux" class="post-demo">GNU/Linux</a></div><div class="post-content"><p><img src="/img/vim/vim.png" alt="Vim"></p>
+<p>使用 <a href="http://www.vim.org/" target="_blank" rel="noopener">Vim</a> 也有好几年了，虽然这款“编辑器之神”的学习曲线非常陡峭，但一旦上手将会极大提高文本编辑效率，因此值得投入精力学习。</p>
+<p>本文我将会从三个方面总结 Vim 的知识。</p>
+<h1 id="模式"><a href="#模式" class="headerlink" title="模式"></a>模式</h1><p>Vim 效率之高的秘密，就在于它拥有多种“模式”。如果你已经习惯了 Windows 下的编辑器，这些模式在一开始会很违反你的使用直觉。因此学习 Vim 的第一件事，就是要习惯这些模式之间的切换。</p>
+<p>Vim 共具有 6 种基本模式和 5 种派生模式，下面只介绍最常用的 4 个基本模式：</p>
+<h2 id="普通模式（NORMAL-MODE）"><a href="#普通模式（NORMAL-MODE）" class="headerlink" title="普通模式（NORMAL MODE）"></a>普通模式（NORMAL MODE）</h2><p>Vim 启动后的默认模式。这正好和许多新用户期待的操作方式相反，因为大多数编辑器的默认模式为插入模式（就是一打开编辑器就可以开始码字）。</p>
+<p>Vim 强大的编辑能力中很大部分是来自于其普通模式的命令（及组合）。在普通模式下，用户可以执行一般的编辑器命令，比如移动光标，删除文本等等。如果进一步学习各种各样的文本间移动／跳转命令和其它编辑命令，并且能够<strong>灵活组合使用</strong>的话，能够比那些没有模式的编辑器更加高效的进行文本编辑。</p>
+<p>下面介绍普通模式下几类常用的快捷键：</p>
+<h3 id="移动命令"><a href="#移动命令" class="headerlink" title="移动命令"></a>移动命令</h3><p>跨行移动：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>hjkl</code></td>
+<td>VIM allows using the cursor keys in order to move around. However, for a pure VIM experience you should stick to using ‘h’, ‘j’, ‘k’ and ‘l’. It’s considered more efficient since you don’t have to move your hand from the home row when you’re typing.</td>
+</tr>
+<tr>
+<td><code>gg</code></td>
+<td>到第一行</td>
+</tr>
+<tr>
+<td><code>G</code></td>
+<td>到最后一行</td>
+</tr>
+<tr>
+<td><code>nG</code></td>
+<td>到第 n 行</td>
+</tr>
+<tr>
+<td><code>%</code></td>
+<td>匹配括号移动，包括 () {} []（需要先把光标先移到括号上）</td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td>匹配光标当前所在的单词（<code>#</code> 反向）</td>
+</tr>
+</tbody></table>
+<p>当前行移动：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>0</code></td>
+<td>到行头（<code>$</code> 反向）</td>
+</tr>
+<tr>
+<td><code>^</code></td>
+<td>到本行第一个非 blank 字符的位置（所谓 blank 字符就是空格、tab、换行、回车等）</td>
+</tr>
+<tr>
+<td><code>w</code></td>
+<td>到下一个单词的开头（<code>b</code> 反向）</td>
+</tr>
+<tr>
+<td><code>e</code></td>
+<td>到下一个单词的结尾</td>
+</tr>
+<tr>
+<td><code>f</code></td>
+<td>Find next character（<code>F</code> 反向） <br/> <code>fi</code> 到字符 i 处<br/> <code>4fi</code> 到第四个字符 i 处</td>
+</tr>
+<tr>
+<td><code>t</code></td>
+<td>Find before character（<code>T</code> 反向）</td>
+</tr>
+</tbody></table>
+<p><img src="/img/vim/vim_line_moves.jpg" alt="Vim 当前行移动"></p>
+<h3 id="编辑命令"><a href="#编辑命令" class="headerlink" title="编辑命令"></a>编辑命令</h3><p>文本替换：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>r</code></td>
+<td>Replace current character <br/> When you need to replace only one character under your cursor, <strong>without changing to insert mode</strong>, use <code>r</code>.</td>
+</tr>
+</tbody></table>
+<p>剪切/复制/粘贴：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>x</code></td>
+<td>Cut current character</td>
+</tr>
+<tr>
+<td><code>d</code></td>
+<td><code>dd</code> Cut current line <br/> <code>dt</code> Cut till …</td>
+</tr>
+<tr>
+<td><code>y</code></td>
+<td><code>yy</code> Copy current line (yank) <br/> <code>yt</code> Copy till …</td>
+</tr>
+<tr>
+<td><code>p</code></td>
+<td>Paste</td>
+</tr>
+</tbody></table>
+<p>缩进/补全：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;&lt;</code></td>
+<td>左缩进</td>
+</tr>
+<tr>
+<td><code>&gt;&gt;</code></td>
+<td>右缩进</td>
+</tr>
+<tr>
+<td><code>=</code></td>
+<td>自动缩进</td>
+</tr>
+<tr>
+<td><code>Ctrl + p</code></td>
+<td>在 Insert 模式下，自动补全…</td>
+</tr>
+</tbody></table>
+<p>从别的编辑器里粘贴到 vim 里的代码经常由于不正常的缩进变得格式混乱，可以使用如下命令：</p>
+<ul>
+<li><p>自动缩进当前行： <code>==</code></p>
+</li>
+<li><p>全文格式化：<code>gg=G</code> ，即：</p>
+<ol>
+<li>gg - Goto the beginning of the file</li>
+<li>= - apply indentation</li>
+<li>G - till end of file</li>
+</ol>
+</li>
+</ul>
+<h3 id="重复命令"><a href="#重复命令" class="headerlink" title="重复命令"></a>重复命令</h3><table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>.</code></td>
+<td>重复执行上一个命令</td>
+</tr>
+<tr>
+<td><code>n&lt;command&gt;</code></td>
+<td>重复执行某个命令 n 次</td>
+</tr>
+<tr>
+<td><code>&lt;start position&gt;&lt;command&gt;&lt;end position&gt;</code></td>
+<td>对某段起止文本执行某个命令，例如：<code>d</code>（删除）、<code>y</code>（复制）、<code>v</code>（选择）、<code>gU</code>（变大写）、<code>gu</code>（变小写）。例如：<code>gg=G</code></td>
+</tr>
+</tbody></table>
+<h2 id="插入模式（INSERT-MODE）"><a href="#插入模式（INSERT-MODE）" class="headerlink" title="插入模式（INSERT MODE）"></a>插入模式（INSERT MODE）</h2><p>在这个模式中，大多数按键都会向文本缓冲中插入文本。大多数新用户希望文本编辑器在编辑过程中一直保持这个模式。</p>
+<p>使用以下快捷键进入插入模式：</p>
+<h3 id="当前行插入"><a href="#当前行插入" class="headerlink" title="当前行插入"></a>当前行插入</h3><table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>i</code></td>
+<td>Switch to insert mode <strong>on current character</strong></td>
+</tr>
+<tr>
+<td><code>a</code></td>
+<td>Switch to insert mode <strong>after current character</strong></td>
+</tr>
+<tr>
+<td><code>I</code></td>
+<td>Switch to insert mode <strong>on first visible character of the current line</strong></td>
+</tr>
+<tr>
+<td><code>A</code></td>
+<td>Switch to insert mode <strong>on last visible character of the current line</strong></td>
+</tr>
+</tbody></table>
+<h3 id="另起一行插入"><a href="#另起一行插入" class="headerlink" title="另起一行插入"></a>另起一行插入</h3><table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>o</code></td>
+<td>Switch to insert mode <strong>after current line</strong></td>
+</tr>
+<tr>
+<td><code>O</code></td>
+<td>Switch to insert mode <strong>before current line</strong></td>
+</tr>
+</tbody></table>
+<h2 id="可视模式（VISUAL-MODE）"><a href="#可视模式（VISUAL-MODE）" class="headerlink" title="可视模式（VISUAL MODE）"></a>可视模式（VISUAL MODE）</h2><p>这个模式与普通模式比较相似。但是移动命令会扩大高亮的文本区域。高亮区域可以是字符、行或者是一块文本。当执行一个非移动命令（例如复制、删除）时，命令会被执行到这块高亮的区域上。</p>
+<p>使用以下快捷键进入可视模式：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Ctrl + v</code></td>
+<td>Switch to visual block mode</td>
+</tr>
+<tr>
+<td><code>v</code></td>
+<td>Switch to visual character mode</td>
+</tr>
+<tr>
+<td><code>V</code></td>
+<td>Switch to visual line mode</td>
+</tr>
+</tbody></table>
+<h2 id="命令行模式（COMMAND-MODE）"><a href="#命令行模式（COMMAND-MODE）" class="headerlink" title="命令行模式（COMMAND MODE）"></a>命令行模式（COMMAND MODE）</h2><p>在命令行模式中可以输入命令。在命令执行完后，Vim 返回到命令行模式之前的模式，通常是普通模式。</p>
+<p>使用以下快捷键进入命令行模式：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>:</code></td>
+<td>执行命令： <br/> <code>:h</code> 帮助文档，例如查看 <code>s</code>文本替换命令（substitude）的帮助：<code>:h s</code></td>
+</tr>
+<tr>
+<td><code>!</code></td>
+<td>过滤命令</td>
+</tr>
+<tr>
+<td><code>/</code> 或 <code>?</code></td>
+<td>搜索字符串</td>
+</tr>
+</tbody></table>
+<h3 id="range-参数"><a href="#range-参数" class="headerlink" title="[range] 参数"></a>[range] 参数</h3><p><code>[range]</code> 有以下一些表示方法，例如常用的 <code>%</code> 表示替换所有行，等价于 <code>1,$</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">不写range   ：  默认为光标所在的行。</span><br><span class="line">.           ：  光标所在的行。</span><br><span class="line">1           ：  第一行。</span><br><span class="line">$           ：  最后一行。</span><br><span class="line">33          ：  第33行。</span><br><span class="line">&#39;a          ：  标记a所在的行（之前要使用ma做过标记）。</span><br><span class="line">.+1         ：  当前光标所在行的下面一行。</span><br><span class="line">$-1         ：  倒数第二行。（这里说明我们可以对某一行加减某个数值来</span><br><span class="line">                取得相对的行）。</span><br><span class="line">22,33       ：  第22～33行。</span><br><span class="line">1,$         ：  第1行 到 最后一行。</span><br><span class="line">1,.         ：  第1行 到 当前行。</span><br><span class="line">.,$         ：  当前行 到 最后一行。</span><br><span class="line">&#39;a,&#39;b       ：  标记a所在的行 到 标记b所在的行。</span><br><span class="line"></span><br><span class="line">%           ：  所有行（与 1,$ 等价）。</span><br><span class="line"></span><br><span class="line">?chapter?   ：  从当前位置向上搜索，找到的第一个chapter所在的行。（</span><br><span class="line">                其中chapter可以是任何字符串或者正则表达式。</span><br><span class="line">&#x2F;chapter&#x2F;   ：  从当前位置向下搜索，找到的第一个chapter所在的行。（</span><br><span class="line">                其中chapter可以是任何字符串或者正则表达式。</span><br><span class="line"></span><br><span class="line">注意，上面的所有用于range的表示方法都可以通过 +、- 操作来设置相对偏</span><br><span class="line">移量。</span><br></pre></td></tr></table></figure>
+
+<h3 id="Deleting-text"><a href="#Deleting-text" class="headerlink" title="Deleting text"></a>Deleting text</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>:[range]d[elete] [x]</code></td>
+<td>Delete <code>[range]</code> lines (default: current line) [into register <code>x</code>].</td>
+</tr>
+<tr>
+<td><code>:[range]d[elete] [x] {count}</code></td>
+<td>Delete <code>{count}</code> lines, starting with <code>[range]</code>(default: current line) [into register <code>x</code>].</td>
+</tr>
+<tr>
+<td><code>:[range]j[oin][!] [flags]</code></td>
+<td>Join <code>[range]</code> lines.</td>
+</tr>
+<tr>
+<td><code>:[range]j[oin][!] {count} [flags]</code></td>
+<td>Join <code>{count}</code> lines, starting with <code>[range]</code> (default: current line).</td>
+</tr>
+</tbody></table>
+<p>例子：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 刪除 1-10 行</span></span><br><span class="line">:1,10d</span><br></pre></td></tr></table></figure>
+
+<h3 id="Copying-and-moving-text"><a href="#Copying-and-moving-text" class="headerlink" title="Copying and moving text"></a>Copying and moving text</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>:[range]y[ank] [x]</code></td>
+<td>Yank <code>[range]</code> lines [into register <code>x</code>].</td>
+</tr>
+<tr>
+<td><code>:[range]y[ank] [x] {count}</code></td>
+<td>Yank {count} lines, starting with last line number in [range] (default: current line), [into register <code>x</code>].</td>
+</tr>
+<tr>
+<td><code>:[range]co[py] {address}</code></td>
+<td>Copy the lines given by <code>[range]</code> to below the line given by <code>{address}</code>.</td>
+</tr>
+<tr>
+<td><code>:[range]m[ove] {address}</code></td>
+<td>Move the lines given by <code>[range]</code> to below the line given by <code>{address}</code>.</td>
+</tr>
+</tbody></table>
+<h3 id="Formatting-text"><a href="#Formatting-text" class="headerlink" title="Formatting text"></a>Formatting text</h3><p>Shifting lines left or right: </p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>:[range]&lt;</code></td>
+<td>Shift <code>[range]</code> lines one <code>&#39;shiftwidth&#39;</code> left.  Repeat <code>&#39;&lt;&#39;</code> for shifting multiple <code>&#39;shiftwidth&#39;</code>s.</td>
+</tr>
+<tr>
+<td><code>:[range]&lt; {count}</code></td>
+<td>Shift <code>{count}</code> lines one <code>&#39;shiftwidth&#39;</code> left, starting with <code>[range]</code> (default current line). Repeat ‘&lt;’ for shifting multiple <code>&#39;shiftwidth&#39;</code>s.</td>
+</tr>
+<tr>
+<td><code>:[range]&gt; [flags]</code></td>
+<td>Shift <code>{count}</code> <code>[range]</code> lines one <code>&#39;shiftwidth&#39;</code> right. Repeat <code>&#39;&gt;&#39;</code> for shifting multiple <code>&#39;shiftwidth&#39;</code>s.</td>
+</tr>
+<tr>
+<td><code>:[range]&gt; {count} [flags]</code></td>
+<td>Shift <code>{count}</code> lines one <code>&#39;shiftwidth&#39;</code> right, starting with <code>[range]</code> (default current line). Repeat <code>&#39;&gt;&#39;</code> for shifting multiple <code>&#39;shiftwidth&#39;</code>s.</td>
+</tr>
+</tbody></table>
+<p>Left-align, right-align lines or center lines: </p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>:[range]le[ft] [indent]</code></td>
+<td>Left-align lines in <code>[range]</code>.  Sets the indent in the lines to <code>[indent]</code> (default <code>0</code>).</td>
+</tr>
+<tr>
+<td><code>:[range]ri[ght] [width]</code></td>
+<td>Right-align lines in <code>[range]</code> at <code>[width]</code> columns<br/>(default <code>&#39;textwidth&#39;</code> or <code>80</code> when <code>&#39;textwidth&#39;</code> is <code>0</code>).</td>
+</tr>
+<tr>
+<td><code>:[range]ce[nter] [width]</code></td>
+<td>Center lines in <code>[range]</code> between <code>[width]</code> columns<br/>(default <code>&#39;textwidth&#39;</code> or <code>80</code> when <code>&#39;textwidth&#39;</code> is <code>0</code>).</td>
+</tr>
+</tbody></table>
+<h3 id="Sorting-text"><a href="#Sorting-text" class="headerlink" title="Sorting text"></a>Sorting text</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>:[range]sor[t][!] [b][f][i][n][o][r][u][x] [/{pattern}/]</code></td>
+<td>Sort lines in <code>[range]</code>.  When no range is given all lines are sorted.<br/>With <code>[!]</code> the order is reversed.<br/>With <code>[i]</code> case is ignored.<br/>…</td>
+</tr>
+</tbody></table>
+<h3 id="Substitute-Text"><a href="#Substitute-Text" class="headerlink" title="Substitute Text"></a>Substitute Text</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>:[range]s[ubstitute]/{pattern}/{string}/[flags] [count]</code></td>
+<td>For each line in <code>[range]</code> replace a match of <code>{pattern}</code> with <code>{string}</code>.</td>
+</tr>
+</tbody></table>
+<p>详细命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">4.2 Substitute                                          *:substitute*</span><br><span class="line">                                                        *:s* *:su*</span><br><span class="line">:[range]s[ubstitute]&#x2F;&#123;pattern&#125;&#x2F;&#123;string&#125;&#x2F;[flags] [count]</span><br><span class="line">                        For each line in [range] replace a match of &#123;pattern&#125; with &#123;string&#125;.</span><br><span class="line">                        For the &#123;pattern&#125; see |pattern|.</span><br><span class="line">                        &#123;string&#125; can be a literal string, or something special; see |sub-replace-special|.</span><br><span class="line">                        When [range] and [count] are omitted, replace in the current line only.</span><br><span class="line">                        When [count] is given, replace in [count] lines, starting with the last line in [range].</span><br><span class="line">                        When [range] is omitted start in the current line.</span><br><span class="line">                        Also see |cmdline-ranges|.</span><br><span class="line">                        See |:s_flags| for [flags].</span><br></pre></td></tr></table></figure>
+
+<p><code>[flags]</code> 有以下一些表示方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">无      ：  只对指定范围内的第一个匹配项进行替换。</span><br><span class="line">g       ：  对指定范围内的所有匹配项进行替换。</span><br><span class="line">c       ：  在替换前请求用户确认。</span><br><span class="line">e       ：  忽略执行过程中的错误。</span><br><span class="line">i       :   Ignore case for the pattern.</span><br><span class="line">I       :   Don&#39;t ignore case for the pattern.</span><br><span class="line"></span><br><span class="line">注意：上面的所有flags都可以组合起来使用，比如 gc 表示对指定范围内的所有匹配项进行替换，并且在每一次替换之前都会请用户确认。</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">1.  替换当前行中的内容：    :s&#x2F;from&#x2F;to&#x2F;    （s即substitude）</span><br><span class="line">    :s&#x2F;from&#x2F;to&#x2F;     ：  将当前行中的第一个from，替换成to。如果当前行含有多个</span><br><span class="line">                        from，则只会替换其中的第一个。</span><br><span class="line">    :s&#x2F;from&#x2F;to&#x2F;g    ：  将当前行中的所有from都替换成to。</span><br><span class="line">    :s&#x2F;from&#x2F;to&#x2F;gc   ：  将当前行中的所有from都替换成to，但是每一次替换之前都</span><br><span class="line">                        会询问请求用户确认此操作。</span><br><span class="line"></span><br><span class="line">    注意：这里的from和to都可以是任何字符串，其中from还可以是正则表达式。</span><br><span class="line"></span><br><span class="line">2.  替换某一行的内容：      :33s&#x2F;from&#x2F;to&#x2F;g</span><br><span class="line">    :.s&#x2F;from&#x2F;to&#x2F;g   ：  在当前行进行替换操作。</span><br><span class="line">    :33s&#x2F;from&#x2F;to&#x2F;g  ：  在第33行进行替换操作。</span><br><span class="line">    :$s&#x2F;from&#x2F;to&#x2F;g   ：  在最后一行进行替换操作。</span><br><span class="line"></span><br><span class="line">3.  替换某些行的内容：      :10,20s&#x2F;from&#x2F;to&#x2F;g</span><br><span class="line">    :10,20s&#x2F;from&#x2F;to&#x2F;g   ：  对第10行到第20行的内容进行替换。</span><br><span class="line">    :1,$s&#x2F;from&#x2F;to&#x2F;g     ：  对第一行到最后一行的内容进行替换（即全部文本）。</span><br><span class="line">    :1,.s&#x2F;from&#x2F;to&#x2F;g     ：  对第一行到当前行的内容进行替换。</span><br><span class="line">    :.,$s&#x2F;from&#x2F;to&#x2F;g     ：  对当前行到最后一行的内容进行替换。</span><br><span class="line">    :&#39;a,&#39;bs&#x2F;from&#x2F;to&#x2F;g   ：  对标记a和b之间的行（含a和b所在的行）进行替换。</span><br><span class="line">                            其中a和b是之前用m命令所做的标记。</span><br><span class="line"></span><br><span class="line">4.  替换所有行的内容：      :%s&#x2F;from&#x2F;to&#x2F;g</span><br><span class="line">    :%s&#x2F;from&#x2F;to&#x2F;g   ：  对所有行的内容进行替换。</span><br></pre></td></tr></table></figure>
+
+<p>例子，批量替换所有空格：</p>
+<ul>
+<li><code>:</code> 进入命令行模式</li>
+<li><code>%</code> 表示所有行（与 <code>1,$</code> 等价）</li>
+<li><code>s</code> 表示文本替换命令</li>
+<li><code>\s</code> 表示空格</li>
+<li><code>g</code> 表示对指定范围内的所有匹配项进行替换</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:%s&#x2F;\s&#x2F;&#x2F;g</span><br></pre></td></tr></table></figure>
+
+<h3 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># JSON 格式化</span></span><br><span class="line"><span class="comment"># : 进入命令行模式</span></span><br><span class="line"><span class="comment"># % [range] 参数，指定所有行</span></span><br><span class="line"><span class="comment"># ! 执行具体的命令，这里使用 python</span></span><br><span class="line"><span class="comment"># -m json.tool 调用python里json.tool这个模块</span></span><br><span class="line">:%!python -m json.tool</span><br></pre></td></tr></table></figure>
+
+<p>可以将该常用命令放到 <code>~/.vimrc</code> 配置文件中，方便使用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">" F3 快捷键 JSON 格式化当前行</span></span><br><span class="line"><span class="string">map &lt;F3&gt; :.!python -m json.tool&lt;CR&gt;</span></span><br><span class="line"><span class="string">"</span> F4 快捷键 JSON 格式化全文</span><br><span class="line">map &lt;F4&gt; :%!python -m json.tool&lt;CR&gt;</span><br><span class="line"></span><br><span class="line"><span class="string">" :JsonFormat 命令格式化全文</span></span><br><span class="line"><span class="string">command! JsonFormat :execute '%!python -m json.tool'</span></span><br><span class="line"><span class="string">"</span> :JsonFormat 命令格式化全文，并解决汉字以 unicode 码显示问题，参考：http://qiita.com/tomoemon/items/cc29b414a63e08cd4f89</span><br><span class="line"><span class="built_in">command</span>! JsonFormat :execute <span class="string">'%!python -m json.tool'</span></span><br><span class="line">  \ | :execute <span class="string">'%!python -c "import re,sys;chr=__builtins__.__dict__.get(\"unichr\", chr);sys.stdout.write(re.sub(r\"\\u[0-9a-f]&#123;4&#125;\", lambda x: chr(int(\"0x\" + x.group(0)[2:], 16)).encode(\"utf-8\"), sys.stdin.read()))"'</span></span><br><span class="line">  \ | :<span class="built_in">set</span> ft=javascript</span><br><span class="line">  \ | :1</span><br></pre></td></tr></table></figure>
+
+<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><p>使用 Vim 年月较久后总会定制一套个性化的 Vim 配置，例如截取一段常用的 <code>~/.vimrc</code> 配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">set number                  &quot; 显示行号</span><br><span class="line">set cursorline              &quot; 突出显示当前行</span><br><span class="line">set ruler                   &quot; 打开状态栏标尺</span><br><span class="line">set shiftwidth&#x3D;4            &quot; 设定 &lt;&lt; 和 &gt;&gt; 命令缩进时的宽度为 4</span><br><span class="line">set softtabstop&#x3D;4           &quot; 使得按退格键时可以一次删掉 4 个空格</span><br><span class="line">set tabstop&#x3D;4               &quot; 设定 tab 长度为 4</span><br><span class="line">set nowrapscan              &quot; 禁止在搜索到文件两端时重新搜索</span><br><span class="line">set incsearch               &quot; 输入搜索内容时就显示搜索结果</span><br><span class="line">set hlsearch                &quot; 高亮显示搜索结果</span><br><span class="line">syntax on                   &quot; 程序语法开关</span><br><span class="line">inoremap jj &lt;ESC&gt;           &quot; 重映射 ESCAPE 键</span><br><span class="line">&quot; 定义缩写：ab [缩写] [要替换的文字]</span><br><span class="line">ab asap as soon as possible</span><br></pre></td></tr></table></figure>
+
+<p>另外注意，Vim 的操作记录会写入 <code>~/.viminfo</code> 。</p>
+<h2 id="设置键盘映射"><a href="#设置键盘映射" class="headerlink" title="设置键盘映射"></a>设置键盘映射</h2><p><a href="https://blog.csdn.net/lym152898/article/details/52171494" target="_blank" rel="noopener">https://blog.csdn.net/lym152898/article/details/52171494</a></p>
+<h1 id="GVim"><a href="#GVim" class="headerlink" title="GVim"></a>GVim</h1><p><a href="http://www.vim.org" target="_blank" rel="noopener">GVim</a> 是 Windows 版的 Vim，因为有了标准的 Windows 风格的图形界面，所以叫 G(Graphical)Vim。</p>
+<p>GVim 的多标签切换：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>:tabnew</code></td>
+<td>新建标签页</td>
+</tr>
+<tr>
+<td><code>:tabs</code></td>
+<td>显示已打开标签页的列表</td>
+</tr>
+<tr>
+<td><code>:tabc</code></td>
+<td>关闭当前标签页</td>
+</tr>
+<tr>
+<td><code>:tabn</code></td>
+<td>移动到下一个标签页</td>
+</tr>
+<tr>
+<td><code>:tabp</code></td>
+<td>移动到上一个标签页</td>
+</tr>
+<tr>
+<td><code>:tabfirst</code></td>
+<td>移动到第一个标签页</td>
+</tr>
+<tr>
+<td><code>:tablast</code></td>
+<td>移动到最后一个标签页</td>
+</tr>
+</tbody></table>
+<p>字符集配置参考 <a href="http://sunchuanzhen.blog.51cto.com/3076506/670193" target="_blank" rel="noopener">这里</a>，其它小技巧参考 <a href="http://www.cnblogs.com/alphaqiu/archive/2012/04/12/2444147.html" target="_blank" rel="noopener">这里</a> 。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《<a href="https://zh.wikipedia.org/wiki/Vim" target="_blank" rel="noopener">Vim - wikipedia</a>》</li>
+<li>《<a href="http://coolshell.cn/articles/5426.html" target="_blank" rel="noopener">简明 Vim 练级攻略</a>》</li>
+<li>《<a href="http://coolshell.cn/articles/894.html" target="_blank" rel="noopener">如何在 Vim 中得到你最喜爱的 IDE 特性</a>》</li>
+<li>《<a href="http://www.oschina.net/news/28608/vim-direction-keys" target="_blank" rel="noopener">为什么 Vim 使用 HJKL 键作为方向键</a>》</li>
+<li>《<a href="https://www.cnblogs.com/wind-wang/p/5768000.html" target="_blank" rel="noopener">vim文本替换命令</a>》</li>
+<li>《<a href="https://mp.weixin.qq.com/s?__biz=MzU3NTgyODQ1Nw==&mid=2247499367&idx=2&sn=bfd12789b31b0a6c7810769ec24ba842&chksm=fd1f86e1ca680ff7c7d212139b022ebeefa77f848513fe913359eee5297e8825b0c98ad27e61" target="_blank" rel="noopener">5分钟学会 Vim 分屏操作方方面面</a>》</li>
+<li>VIM 插件：<a href="https://vimawesome.com/plugin/json-vim" target="_blank" rel="noopener">https://vimawesome.com/plugin/json-vim</a></li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2015/09/24/dns/" class="prev">PREV</a><a href="/2015/08/27/git-mergetool/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

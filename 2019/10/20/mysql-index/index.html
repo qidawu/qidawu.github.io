@@ -1,0 +1,146 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> MySQL 索引优化总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="MySQL 索引优化总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">MySQL 索引优化总结</h1><div class="post-info">2019-10-20<a href="/tags/MySQL/" title="MySQL" class="post-demo">MySQL</a></div><div class="post-content"><p>索引优化应该是对查询性能优化最有效的手段了。索引能够轻易将查询性能提高几个数量级，“最优”的索引有时比一个“好的”索引性能要好两个数量级。</p>
+<p>索引是存储引擎用于快速找到记录的一种数据结构。在 MySQL 中，索引是在存储引擎层而不是服务器层实现的（如下图）。所以，并没有统一的索引标准：不同存储引擎的索引的工作方式并不一样，也不是所有的存储引擎都支持所有类型的索引。即使多个存储引擎支持同一种类型的索引，其底层的实现也可能不同。</p>
+<p><img src="/img/mysql/mysql_architecture.png" alt="MySQL Architecture"></p>
+<h1 id="常见索引类型"><a href="#常见索引类型" class="headerlink" title="常见索引类型"></a>常见索引类型</h1><p>MySQL 支持的常见索引类型：</p>
+<ul>
+<li>B+Tree 索引</li>
+<li>Hash index（哈希索引）</li>
+<li>R-Tree index（空间数据索引）</li>
+<li>Full-text index（全文索引）</li>
+<li>……</li>
+</ul>
+<p>本文只探讨最常用的 B-Tree 索引。</p>
+<h1 id="B-Tree-数据结构"><a href="#B-Tree-数据结构" class="headerlink" title="B+Tree 数据结构"></a>B+Tree 数据结构</h1><h1 id="B-Tree-索引特性"><a href="#B-Tree-索引特性" class="headerlink" title="B+Tree 索引特性"></a>B+Tree 索引特性</h1><p>当我们谈论索引的时候，如果没有特别指明类型，那多半说的是 B+Tree 索引。InnoDB 存储引擎默认使用的也是 B+Tree 数据结构来存储数据。<br>索引可以包含一个或多个列的值。如果包含多个列（称为“联合索引”），那么列的顺序至关重要，因为 MySQL 只能高效地使用索引的 <strong>最左前缀列</strong>。创建一个包含两个列的索引，和创建两个只包含一列的索引是大不相同的，下面看个例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE People (</span><br><span class="line">   last_name  varchar(50)    not null,</span><br><span class="line">   first_name varchar(50)    not null,</span><br><span class="line">   dob        date           not null,</span><br><span class="line">   gender     enum(&#39;m&#39;, &#39;f&#39;) not null,</span><br><span class="line">   key(last_name, first_name, dob)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>可以使用该 B-Tree 索引的查询类型：</p>
+<h2 id="全值匹配"><a href="#全值匹配" class="headerlink" title="全值匹配"></a>全值匹配</h2><p>全值匹配（Match the full value）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT * </span><br><span class="line">FROM people</span><br><span class="line">WHERE last_name &#x3D; &#39;Wu&#39; AND first_name &#x3D; &#39;Qida&#39; AND dob &#x3D; &#39;2018-01-01&#39;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="匹配最左前缀"><a href="#匹配最左前缀" class="headerlink" title="匹配最左前缀"></a>匹配最左前缀</h2><p>匹配最左前缀（Match a leftmost prefix）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">SELECT * </span><br><span class="line">FROM people</span><br><span class="line">WHERE last_name &#x3D; &#39;Wu&#39;;</span><br><span class="line"></span><br><span class="line">SELECT * </span><br><span class="line">FROM people</span><br><span class="line">WHERE last_name &#x3D; &#39;Wu&#39; AND first_name &#x3D; &#39;Qida&#39;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="匹配列前缀"><a href="#匹配列前缀" class="headerlink" title="匹配列前缀"></a>匹配列前缀</h2><p>匹配列前缀（Match a column prefix）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT * </span><br><span class="line">FROM people</span><br><span class="line">WHERE last_name LIKE &#39;W%&#39;;</span><br></pre></td></tr></table></figure>
+
+<p>注意 MySQL <code>LIKE</code> 的限制：</p>
+<blockquote>
+<p>MySQL can’t perform the LIKE operation in the index. This is a limitation of the low-level storage engine API, which in MySQL 5.5 and earlier allows only simple comparisons (such as equality, inequality, and greater-than) in index operations. </p>
+<p>MySQL can perform <strong>prefix-match LIKE patterns</strong> in the index because it can convert them to simple comparisons, but the leading wildcard in the query makes it impossible for the storage engine to evaluate the match. Thus, the MySQL server itself will have to fetch and match on the row’s values, not the index’s values.</p>
+</blockquote>
+<h2 id="匹配范围值"><a href="#匹配范围值" class="headerlink" title="匹配范围值"></a>匹配范围值</h2><p>匹配范围值（Match a range of values）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT * </span><br><span class="line">FROM people</span><br><span class="line">WHERE last_name BETWEEN &#39;Wu&#39; AND &#39;Li&#39;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="精确匹配某一列，并范围匹配另外一列"><a href="#精确匹配某一列，并范围匹配另外一列" class="headerlink" title="精确匹配某一列，并范围匹配另外一列"></a>精确匹配某一列，并范围匹配另外一列</h2><p>精确匹配某一列，并范围匹配另外一列（Match one part exactly and match a range on another part）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT * </span><br><span class="line">FROM people</span><br><span class="line">WHERE last_name &#x3D; &#39;Wu&#39; And first_name LIKE &#39;Q%&#39;;</span><br></pre></td></tr></table></figure>
+<h2 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h2><p>只访问索引列的查询（Index-only queries）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT last_name, first_name, dob</span><br><span class="line">FROM people</span><br><span class="line">WHERE last_name &#x3D; &#39;Wu&#39; AND first_name &#x3D; &#39;Qida&#39; AND dob &#x3D; &#39;2018-01-01&#39;;</span><br></pre></td></tr></table></figure>
+
+<h1 id="高性能的索引策略"><a href="#高性能的索引策略" class="headerlink" title="高性能的索引策略"></a>高性能的索引策略</h1><h2 id="选择合适的索引列顺序"><a href="#选择合适的索引列顺序" class="headerlink" title="选择合适的索引列顺序"></a>选择合适的索引列顺序</h2><p>索引列按区分度从高到低排列。</p>
+<h2 id="使用独立的列"><a href="#使用独立的列" class="headerlink" title="使用独立的列"></a>使用独立的列</h2><p>“独立的列”是指不在索引列上做任何操作，包括：</p>
+<ul>
+<li>计算（不能是表达式的一部分）</li>
+<li>作为函数的参数。</li>
+<li>隐式或显式的类型转换</li>
+<li>隐式字符编码转换</li>
+</ul>
+<p>例如，下面这个查询无法使用 actor_id 列的索引：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">-- 错误示范</span><br><span class="line">SELECT * </span><br><span class="line">FROM people</span><br><span class="line">WHERE id + 1 &#x3D; 5;</span><br><span class="line"></span><br><span class="line">-- 正确示范</span><br><span class="line">SELECT * </span><br><span class="line">FROM people</span><br><span class="line">WHERE id &#x3D; 4;</span><br></pre></td></tr></table></figure>
+
+<p>凭肉眼很容易看出 <code>WHERE</code> 中的表达式其实等价于 <code>id = 4</code> ，但是 MySQL 无法自动解析这个方程式。这完全是用户行为。我们应该养成简化 <code>WHERE</code> 条件的习惯，始终将索引列单独放在比较符号的一侧。</p>
+<p>下面是另一个常见的错误，将索引列作为函数的参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">-- 错误示范</span><br><span class="line">SELECT ...</span><br><span class="line">WHERE DATE(create_time) &#x3D; &#39;2000-01-01&#39;;</span><br><span class="line"></span><br><span class="line">-- 正确示范</span><br><span class="line">SELECT ...</span><br><span class="line">WHERE create_time BETWEEN &#39;2000-01-01 00:00:00&#39; AND &#39;2000-01-01 23:59:59&#39;;</span><br></pre></td></tr></table></figure>
+
+<p>另一个常见错误，merchant_no 为 <code>VARCHAR</code> 类型且加了索引，但由于隐式类型转换为数字类型，导致全表扫描：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 错误示范</span></span><br><span class="line"><span class="keyword">SELECT</span> *</span><br><span class="line"><span class="keyword">FROM</span> t_order</span><br><span class="line"><span class="keyword">WHERE</span> merchant_no = <span class="number">2016</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 正确示范</span></span><br><span class="line"><span class="keyword">SELECT</span> *</span><br><span class="line"><span class="keyword">FROM</span> t_order</span><br><span class="line"><span class="keyword">WHERE</span> merchant_no = <span class="string">'2016'</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="字符串索引优化"><a href="#字符串索引优化" class="headerlink" title="字符串索引优化"></a>字符串索引优化</h2><h3 id="常规方式"><a href="#常规方式" class="headerlink" title="常规方式"></a>常规方式</h3><ul>
+<li>直接创建完整索引<ul>
+<li>优点：可以使用覆盖索引</li>
+<li>缺点：比较占用空间</li>
+</ul>
+</li>
+<li>创建前缀索引<ul>
+<li>优点：节省空间</li>
+<li>缺点：<ul>
+<li>需要计算好区分度，以定义合适的索引长度，否则会增加回表次数</li>
+<li>无法使用覆盖索引</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>区分度计算方法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> </span><br><span class="line">  <span class="keyword">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(email,<span class="number">4</span>)) / <span class="keyword">count</span>(<span class="keyword">distinct</span> email) <span class="keyword">as</span> L4, </span><br><span class="line">  <span class="keyword">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(email,<span class="number">5</span>)) / <span class="keyword">count</span>(<span class="keyword">distinct</span> email) <span class="keyword">as</span> L5, </span><br><span class="line">  <span class="keyword">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(email,<span class="number">6</span>)) / <span class="keyword">count</span>(<span class="keyword">distinct</span> email) <span class="keyword">as</span> L6, </span><br><span class="line">  <span class="keyword">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(email,<span class="number">7</span>)) / <span class="keyword">count</span>(<span class="keyword">distinct</span> email) <span class="keyword">as</span> L7,</span><br><span class="line"><span class="keyword">from</span> t1;</span><br></pre></td></tr></table></figure>
+<h3 id="其它方式一"><a href="#其它方式一" class="headerlink" title="其它方式一"></a>其它方式一</h3><ul>
+<li>倒序存储，再创建前缀索引，用于绕过字符串本身前缀的区分度不够的问题。查询时使用 <code>reverse</code> 函数。</li>
+<li>创建额外的 hash 字段并创建索引，查询性能稳定（散列冲突的概率更小），有额外的存储和计算消耗，查询时使用 <code>crc32</code> 函数并二次比较。</li>
+</ul>
+<p>这两种方式都不支持范围扫描，只支持等值查询。</p>
+<h3 id="其它方式二"><a href="#其它方式二" class="headerlink" title="其它方式二"></a>其它方式二</h3><p>改为使用更合适的数据类型，例如：</p>
+<ul>
+<li>使用日期与时间类型，而不是字符串来存储日期和时间。</li>
+<li>使用整型，而不是字符串来存储 IP 地址。</li>
+<li>使用定长二进制类型（如 <code>binary</code>），而不是字符串来存储散列值。</li>
+</ul>
+<h1 id="索引选择性"><a href="#索引选择性" class="headerlink" title="索引选择性"></a>索引选择性</h1><p>了解两个概念：</p>
+<ul>
+<li><strong>基数</strong>（Cardinality）也称为区分度，是指数据列所包含的不同值的数量。例如，某个数据列包含值：1、2、3、4、5、1，则基数为 5。可以通过 <code>show index</code> 查看。</li>
+<li><strong>索引选择性</strong>（Index Selectivity）是指基数（Cardinality）和数据表的记录总数（#T）的比值，范围从 <code>1/#T</code> 到 <code>1</code> 之间。</li>
+</ul>
+<p>索引的选择性越高则查询效率越高，因为选择性高的索引可以让 MySQL 在查找时过滤掉更多的行。唯一索引的选择性是 1，这是最好的索引选择性，性能也是最好的。</p>
+<p>下面显示如何计算某列的<strong>平均选择性</strong>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SELECT COUNT(DISTINCT last_name) &#x2F; COUNT(*) AS Selectivity</span><br><span class="line">FROM people;</span><br><span class="line"></span><br><span class="line">Selectivity: 0.0312</span><br></pre></td></tr></table></figure>
+<p>只看平均选择性有时是不够的，需考虑最坏或特殊情况下的选择性（即值的分布，是否有某些值占比过多？）。</p>
+<p>如果索引的选择性低（基数/总数的比值），可能会导致优化器生成执行计划时，不走这个索引。</p>
+<p>有时 MySQL 会选错索引，解决方案如下：</p>
+<ul>
+<li>通过 <code>show index</code> 语句查看索引的“基数”。对于由于索引统计信息不准确导致的问题，可以用 <code>analyze table</code> 来重新统计索引信息。</li>
+<li><code>force index</code> 强行选择一个索引。</li>
+<li>修改语句，引导 MySQL 使用我们期望的索引。</li>
+<li>新建一个更合适的索引，来提供给优化器做选择，或删掉误用的索引。</li>
+</ul>
+<h1 id="三星索引评价系统"><a href="#三星索引评价系统" class="headerlink" title="三星索引评价系统"></a>三星索引评价系统</h1><p>评估某个索引是否适合某个查询的“三星评价系统”（three-star system）：</p>
+<blockquote>
+<p>Lahdenmaki and Leach’s book also introduces a three-star system for grading how suitable an index is for a query:</p>
+<ul>
+<li>The index earns one star if it places relevant rows adjacent to each other, </li>
+<li>a second star if its rows are sorted in the order the query needs,</li>
+<li>and a final star if it contains all the columns needed for the query.</li>
+</ul>
+</blockquote>
+<ul>
+<li>一星：索引列满足查询所需的条件。如果是多个查询条件，则利用联合索引及其最左前缀匹配特性。</li>
+<li>二星：索引行排序符合查询所需的排序，没有额外的 <code>ORDER BY</code>（避免 <code>filesort</code>）。</li>
+<li>三星：索引列满足查询所需的全部列，不再需要回表查询（即利用覆盖索引 <code>covering index</code>）。</li>
+</ul>
+<h1 id="相关命令"><a href="#相关命令" class="headerlink" title="相关命令"></a>相关命令</h1><p>下面介绍一些查看索引的常用命令：</p>
+<h2 id="DESC"><a href="#DESC" class="headerlink" title="DESC"></a>DESC</h2><p><code>DESC</code> 命令查看表结构时，可以看到索引列 <code>Key</code> ，共有三种类型：</p>
+<ul>
+<li><code>PRI</code> 表示主键索引（PRIMARY KEY）。</li>
+<li><code>UNI</code> 表示唯一索引（UNIQUE KEY），值不能重复。</li>
+<li><code>MUL</code> 表示普通索引（MULTIPLE KEY） ，值可重复。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ DESC table_name;</span><br><span class="line"></span><br><span class="line">+---------+--------------+------+-----+---------+-------+</span><br><span class="line">| Field   | Type         | Null | Key | Default | Extra |</span><br><span class="line">+---------+--------------+------+-----+---------+-------+</span><br><span class="line">| FID     | int(11)      | NO   | PRI | NULL    |       |</span><br><span class="line">| FKEY    | varchar(50)  | NO   | UNI | NULL    |       |</span><br><span class="line">| FVALUE  | varchar(500) | YES  | MUL | NULL    |       |</span><br><span class="line">| FDESC   | varchar(50)  | YES  | MUL | NULL    |       |</span><br><span class="line">| FCACHED | int(1)       | NO   |     | 1       |       |</span><br><span class="line">+---------+--------------+------+-----+---------+-------+</span><br></pre></td></tr></table></figure>
+
+<h2 id="SHOW-INDEX"><a href="#SHOW-INDEX" class="headerlink" title="SHOW INDEX"></a>SHOW INDEX</h2><p><code>SHOW INDEX</code> 可以以列为单位，查看该表索引的具体信息，例如：</p>
+<ul>
+<li>表名 <code>Table</code></li>
+<li>索引唯一性 <code>Non_unique</code></li>
+<li>索引名 <code>Key_name</code></li>
+<li>联合索引中的顺序 <code>Seq_in_index</code></li>
+<li>列名 <code>Column_name</code></li>
+<li>基数 <code>Cardinality</code></li>
+<li>索引类型 <code>Index_type</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ SHOW INDEX FROM table_name;</span><br><span class="line"></span><br><span class="line">+------------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span><br><span class="line">|   Table    | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |</span><br><span class="line">+------------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span><br><span class="line">| table_name |          0 |  PRIMARY |            1 | FID         | A         |         105 |     NULL | NULL   |      | BTREE      |         |               |</span><br><span class="line">| table_name |          0 |  UK_FKEY |            1 | FKEY        | A         |         105 |     NULL | NULL   |      | BTREE      |         |               |</span><br><span class="line">| table_name |          1 |  IDX_V_D |            1 | FVALUE      | A         |         105 |     NULL | NULL   |      | BTREE      |         |               |</span><br><span class="line">| table_name |          1 |  IDX_V_D |            2 | FDESC       | A         |         105 |     NULL | NULL   |      | BTREE      |         |               |</span><br><span class="line">+------------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span><br></pre></td></tr></table></figure>
+
+<h2 id="SHOW-CREATE-TABLE"><a href="#SHOW-CREATE-TABLE" class="headerlink" title="SHOW CREATE TABLE"></a>SHOW CREATE TABLE</h2><p><code>SHOW CREATE TABLE</code> 可以查看该表的建表语句，留意最后几行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">SHOW CREATE TABLE table_name;</span><br><span class="line"></span><br><span class="line">CREATE TABLE &#96;table_name&#96; (</span><br><span class="line">  &#96;FID&#96; int(11) NOT NULL,</span><br><span class="line">  &#96;FKEY&#96; varchar(50) NOT NULL,</span><br><span class="line">  &#96;FVALUE&#96; varchar(200) NOT NULL,</span><br><span class="line">  &#96;FDESC&#96; varchar(50) DEFAULT NULL,</span><br><span class="line">  &#96;FCACHED&#96; int(1) NOT NULL DEFAULT &#39;1&#39;,</span><br><span class="line">  PRIMARY KEY (&#96;FID&#96;),</span><br><span class="line">  UNIQUE KEY &#96;UK_FKEY&#96; (&#96;FKEY&#96;),</span><br><span class="line">  KEY &#96;IDX_V_D&#96; (&#96;FVALUE&#96;, &#96;FDESC&#96;)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《高性能 MySQL》</p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-indexes.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/innodb-indexes.html</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/optimization-indexes.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/optimization-indexes.html</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/show-columns.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/show-columns.html</a></p>
+<p>《<a href="http://blog.codinglabs.org/articles/theory-of-mysql-index.html" target="_blank" rel="noopener">MySQL索引背后的数据结构及算法原理</a>》</p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/10/25/mysql-order-by/" class="prev">PREV</a><a href="/2019/10/01/mysql-explain/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

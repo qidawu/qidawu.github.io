@@ -1,0 +1,153 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> C/C++ 语言系列（十一）I/O 库总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="C/C++ 语言系列（十一）I/O 库总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">C/C++ 语言系列（十一）I/O 库总结</h1><div class="post-info">2021-02-26<a href="/tags/C-C/" title="C/C++" class="post-demo">C/C++</a></div><div class="post-content"><h1 id="Input-Output-library"><a href="#Input-Output-library" class="headerlink" title="Input/Output library"></a>Input/Output library</h1><p>下图是 C++ 提供的输入/输出库，其中：</p>
+<ul>
+<li><code>&lt;xxx&gt;</code> 表示：头文件</li>
+<li>白框表示：类（Classes）</li>
+<li>黑框表示：对象（Objects）</li>
+</ul>
+<p><img src="/img/cpp/iostream.gif" alt="Input/Output library"></p>
+<blockquote>
+<p>The iostream library is an object-oriented library that provides input and output functionality using streams.</p>
+</blockquote>
+<blockquote>
+<p>A stream is an abstraction that represents a device on which input and ouput operations are performed. A stream can basically be represented as a source or destination of characters of indefinite length.</p>
+</blockquote>
+<blockquote>
+<p>Streams are generally associated to a physical source or destination of characters, like a disk file, the keyboard, or the console, so the characters gotten or written to/from our abstraction called stream are physically input/output to the physical device. For example, file streams are C++ objects to manipulate and interact with files; Once a file stream is used to open a file, any input or output operation performed on that stream is physically reflected in the file.</p>
+</blockquote>
+<p>To operate with streams, C++ provides the standard <code>iostream</code> library, which contains the following elements:</p>
+<p>Basic class templates</p>
+<blockquote>
+<p>The base of the iostream library is the hierarchy of class templates. The class templates provide most of the functionality of the library in a type-independent fashion.</p>
+</blockquote>
+<p>Class template instantiations</p>
+<blockquote>
+<p>The library incorporates two standard sets of instantiations of the entire iostream class template hierarchy: </p>
+<ul>
+<li><p>The narrow-oriented (<code>char</code> type) instantiation is probably the better known part of the iostream library. Classes like <code>ios</code>, <code>istream</code> and <code>ofstream</code> are narrow-oriented. The diagram on top of this page shows the names and relationships of narrow-oriented classes.</p>
+</li>
+<li><p>The classes of the wide-oriented (<code>wchar_t</code>) instatiation follow the same naming conventions as the narrow-oriented instantiation but with the name of each class and object prefixed with a <code>w</code> character, forming <code>wios</code>, <code>wistream</code> and <code>wofstream</code>, as an example.</p>
+</li>
+</ul>
+</blockquote>
+<p>Standard objects</p>
+<blockquote>
+<p>As part of the iostream library, the header file <code>&lt;iostream&gt;</code> declares certain objects that are used to perform input and output operations on the standard input and output.</p>
+<p>They are divided in two sets: </p>
+<ul>
+<li>narrow-oriented objects: <code>cin</code>, <code>cout</code>, <code>cerr</code> and <code>clog</code> </li>
+<li>wide-oriented objects: <code>wcin</code>, <code>wcout</code>, <code>wcerr</code> and <code>wclog</code></li>
+</ul>
+</blockquote>
+<p>Manipulators</p>
+<blockquote>
+<p>Manipulators are global functions designed to be used together with insertion (<code>&lt;&lt;</code>) and extraction (<code>&gt;&gt;</code>) operators performed on <code>iostream</code> stream objects. They generally modify properties and formatting settings of the streams.</p>
+</blockquote>
+<p>下表摘录了 iostream 库中常见的元素：</p>
+<p><img src="/img/cpp/elements_of_the_iostream_library.png" alt="Elements of the iostream library"></p>
+<p>其中，下列这些头文件在 C++ 编程中很重要。</p>
+<table>
+<thead>
+<tr>
+<th align="left">头文件</th>
+<th align="left">函数和描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>&lt;iostream&gt;</code></td>
+<td align="left">该文件定义了 <code>cin</code>、<code>cout</code>、<code>cerr</code> 和 <code>clog</code> 对象，用于输入输出。</td>
+</tr>
+<tr>
+<td align="left"><code>&lt;iomanip&gt;</code></td>
+<td align="left">该文件通过所谓的参数化的流操纵器（比如 <code>setw</code>、<code>setfill</code>、<code>setprecision</code>），来声明对执行标准化 I/O 有用的服务。</td>
+</tr>
+<tr>
+<td align="left"><code>&lt;fstream&gt;</code></td>
+<td align="left">该文件定义了 <code>ifstream</code>、<code>ofstream</code>、<code>fstream</code> 对象，用于文件读写。</td>
+</tr>
+</tbody></table>
+<h2 id="lt-iostream-gt"><a href="#lt-iostream-gt" class="headerlink" title="&lt;iostream&gt;"></a>&lt;iostream&gt;</h2><p>下图摘录了 <code>iostream</code> 类的继承关系及成员函数，如下：</p>
+<p><img src="/img/cpp/iostream_class.png" alt="iostream classes"></p>
+<p><a href="http://www.cplusplus.com/doc/tutorial/basic_io/" target="_blank" rel="noopener">http://www.cplusplus.com/doc/tutorial/basic_io/</a></p>
+<p><a href="http://www.cplusplus.com/reference/iolibrary/" target="_blank" rel="noopener">http://www.cplusplus.com/reference/iolibrary/</a></p>
+<h3 id="output-stream"><a href="#output-stream" class="headerlink" title="output stream"></a>output stream</h3><p>输出流与流插入运算符 <code>&lt;&lt;</code> 配合使用。<code>&lt;iostream&gt;</code> 提供了下列三种输出流对象：</p>
+<ul>
+<li><code>cout</code> 标准输出流（默认设备是显示器屏幕）</li>
+<li><code>cerr</code> 无缓冲标准错误输出流（默认设备是显示器屏幕）</li>
+<li><code>clog</code> 有缓冲标准错误输出流（默认设备是打印机）</li>
+</ul>
+<p>此外，<code>&lt;iostream&gt;</code> 还提供了一个常用的操纵符：</p>
+<ul>
+<li><code>endl</code> Insert newline and flush</li>
+</ul>
+<p>例子：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义一些头文件，这些头文件包含了程序中必需的或有用的信息。</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="comment">// 告诉编译器使用 std 命名空间。命名空间是 C++ 中一个相对新的概念。使用该命名空间之后，std::cout 可以简写为：cout</span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 主函数，程序从这里开始执行。</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="comment">// 在屏幕上输出 "Hello World"</span></span><br><span class="line">  <span class="built_in">cout</span> &lt;&lt; <span class="string">"hello world"</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 终止 main() 函数，并向调用进程返回值 0。</span></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用 g++ 编译器，编译 cpp 源文件为可执行文件，并执行之</span></span><br><span class="line"><span class="comment">// cd "/Users/wuqd/Documents/workspace/cpp/" &amp;&amp; g++ HelloWorld.cpp -o HelloWorld &amp;&amp; "/Users/wuqd/Documents/workspace/cpp/"HelloWorld</span></span><br></pre></td></tr></table></figure>
+
+<p>运行结果：<code>hello world</code></p>
+<h3 id="input-stream"><a href="#input-stream" class="headerlink" title="input stream"></a>input stream</h3><p>输入流与流提取运算符 <code>&gt;&gt;</code> 配合使用。<code>&lt;iostream&gt;</code> 提供了下列一种输入流对象：</p>
+<ul>
+<li><code>cin</code> 标准输入流（默认设备是键盘）</li>
+</ul>
+<p>例子：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cin</span> &gt;&gt; name;</span><br><span class="line"><span class="built_in">cin</span> &gt;&gt; age;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 流提取运算符 &gt;&gt; 在一个语句中可以多次使用，如果要求输入多个数据，可以使用如下语句:</span></span><br><span class="line"><span class="built_in">cin</span> &gt;&gt; name &gt;&gt; age;</span><br></pre></td></tr></table></figure>
+
+<h2 id="lt-iomanip-gt-流操纵器"><a href="#lt-iomanip-gt-流操纵器" class="headerlink" title="&lt;iomanip&gt; 流操纵器"></a>&lt;iomanip&gt; 流操纵器</h2><p>常用流操纵器函数如下：</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="http://www.cplusplus.com/reference/iomanip/setw/" target="_blank" rel="noopener"><code>setw</code></a></td>
+<td>Set field width</td>
+</tr>
+<tr>
+<td><a href="http://www.cplusplus.com/reference/iomanip/setfill/" target="_blank" rel="noopener"><code>setfill</code></a></td>
+<td>Set fill character</td>
+</tr>
+<tr>
+<td><a href="http://www.cplusplus.com/reference/iomanip/setprecision/" target="_blank" rel="noopener"><code>setprecision</code></a></td>
+<td>Set decimal precision</td>
+</tr>
+<tr>
+<td>…</td>
+<td></td>
+</tr>
+</tbody></table>
+<p><code>setw</code> 函数用于设置字段的宽度，只对紧接着的输出产生作用。当后面紧跟着的输出字段长度小于 <code>n</code> 的时候，在该字段前面默认用<strong>空格补齐</strong>，当输出字段长度大于 <code>n</code> 时，全部整体输出。如下：</p>
+<p><img src="/img/cpp/cpp-setw.svg" alt="setw"></p>
+<p>例子：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iomanip&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"> </span><br><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment"> * 测试 I/O</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">double</span> pi = <span class="number">3.1415926</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 默认右补位，可以使用 setf() 进行左补位</span></span><br><span class="line">  <span class="built_in">cout</span>.setf(ios::left);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// setprecision() 包含小数点</span></span><br><span class="line">  <span class="built_in">cout</span> &lt;&lt; setfill(<span class="string">'*'</span>) &lt;&lt; setw(<span class="number">5</span>) &lt;&lt; setprecision(<span class="number">3</span>) &lt;&lt; pi &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：<code>3.14*</code></p>
+<p>参考：</p>
+<p><a href="https://www.runoob.com/w3cnote/cpp-func-setw.html" target="_blank" rel="noopener">https://www.runoob.com/w3cnote/cpp-func-setw.html</a></p>
+<h2 id="lt-fstream-gt-文件读写"><a href="#lt-fstream-gt-文件读写" class="headerlink" title="&lt;fstream&gt; 文件读写"></a>&lt;fstream&gt; 文件读写</h2><p><code>&lt;fstream&gt;</code> 定义了下面三个对象，用于文件读写：</p>
+<table>
+<thead>
+<tr>
+<th align="left">数据类型</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>ofstream</code></td>
+<td align="left">该数据类型表示输出文件流，用于创建文件并向文件写入信息。</td>
+</tr>
+<tr>
+<td align="left"><code>ifstream</code></td>
+<td align="left">该数据类型表示输入文件流，用于从文件读取信息。</td>
+</tr>
+<tr>
+<td align="left"><code>fstream</code></td>
+<td align="left">该数据类型通常表示文件流，且同时具有 ofstream 和 ifstream 两种功能，这意味着它可以创建文件，向文件写入信息，从文件读取信息。</td>
+</tr>
+</tbody></table>
+<p>例子：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fstream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">output</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  ofstream myfile;</span><br><span class="line">  <span class="comment">// 打开文件</span></span><br><span class="line">  myfile.<span class="built_in">open</span>(<span class="string">"/Users/wuqd/Desktop/test"</span>, ios::app);  <span class="comment">// ios::app 表示追加模式。所有写入都追加到文件末尾。</span></span><br><span class="line">  <span class="comment">// 写入文件</span></span><br><span class="line">  myfile &lt;&lt; <span class="string">"helloworld"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">  <span class="comment">// 关闭文件</span></span><br><span class="line">  myfile.<span class="built_in">close</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">input</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  ifstream in;</span><br><span class="line">  <span class="comment">// 打开文件</span></span><br><span class="line">  in.<span class="built_in">open</span>(<span class="string">"/Users/wuqd/Desktop/test"</span>);</span><br><span class="line">  <span class="keyword">char</span> data[<span class="number">100</span>];</span><br><span class="line">  <span class="comment">// 读取文件</span></span><br><span class="line">  <span class="keyword">while</span> (in &gt;&gt; data) &#123;</span><br><span class="line">    <span class="comment">// 输出到屏幕</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; data &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 关闭文件</span></span><br><span class="line">  in.<span class="built_in">close</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  output();</span><br><span class="line">  input();</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>参考：</p>
+<p><a href="https://www.cplusplus.com/doc/oldtutorial/files/" target="_blank" rel="noopener">https://www.cplusplus.com/doc/oldtutorial/files/</a></p>
+<p><a href="https://www.runoob.com/cplusplus/cpp-files-streams.html" target="_blank" rel="noopener">https://www.runoob.com/cplusplus/cpp-files-streams.html</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2021/02/25/cpp-oop-inheritance-and-polymorphism/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

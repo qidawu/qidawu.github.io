@@ -1,0 +1,138 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> GUN/Bash 系列（八）快捷键总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="GUN/Bash 系列（八）快捷键总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">GUN/Bash 系列（八）快捷键总结</h1><div class="post-info">2015-04-19<a href="/tags/GNU-Linux/" title="GNU/Linux" class="post-demo">GNU/Linux</a></div><div class="post-content"><p>下面总结的是 GNU/Bash 中部分最实用的命令名称及默认情况下它们关联的快捷键。更多快捷键请参考 GNU/Bash 文档的 Readline 库。</p>
+<h1 id="移动（Commands-for-Moving）"><a href="#移动（Commands-for-Moving）" class="headerlink" title="移动（Commands for Moving）"></a>移动（Commands for Moving）</h1><table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Command name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Ctrl + A</code></td>
+<td>beginning-of-line</td>
+<td>Move to the start of the current line.</td>
+</tr>
+<tr>
+<td><code>Ctrl + E</code></td>
+<td>end-of-line</td>
+<td>Move to the end of the line.</td>
+</tr>
+<tr>
+<td><code>Ctrl + F</code></td>
+<td>forward-char</td>
+<td>Move forward a character.</td>
+</tr>
+<tr>
+<td><code>Ctrl + B</code></td>
+<td>backward-char</td>
+<td>Move back a character.</td>
+</tr>
+<tr>
+<td><code>Alt + F</code></td>
+<td>forward-word</td>
+<td>Move forward to the end of the next word. Words are composed of alphanumeric characters (letters and digits).</td>
+</tr>
+<tr>
+<td><code>Alt + B</code></td>
+<td>backward-word</td>
+<td>Move back to the start of the current or previous word. Words are composed of alphanumeric characters (letters and digits).</td>
+</tr>
+<tr>
+<td><code>Ctrl + L</code></td>
+<td>clear-screen</td>
+<td>Clear the screen leaving the current line at the top of the screen. With an argument, refresh the current line without clearing the screen.</td>
+</tr>
+</tbody></table>
+<h1 id="操纵历史行（Commands-for-Manipulating-the-History）"><a href="#操纵历史行（Commands-for-Manipulating-the-History）" class="headerlink" title="操纵历史行（Commands for Manipulating the History）"></a>操纵历史行（Commands for Manipulating the History）</h1><table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Command name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Ctrl + P</code></td>
+<td>previous-history</td>
+<td>Fetch the previous command from the history list, moving back in the list.</td>
+</tr>
+<tr>
+<td><code>Ctrl + N</code></td>
+<td>next-history</td>
+<td>Fetch the next command from the history list, moving forward in the list.</td>
+</tr>
+<tr>
+<td><code>Ctrl + R</code></td>
+<td>reverse-search-history</td>
+<td>Search backward starting at the current line and moving `up’ through the history as necessary. This is an incremental search.</td>
+</tr>
+<tr>
+<td><code>Alt + Ctrl + Y</code></td>
+<td>yank-nth-arg</td>
+<td>Insert the first argument to the previous command (usually the second word on the previous line) at point. With an argument n, insert the nth word from the previous command (the words in the previous command begin with word 0). A negative argument inserts the nth word from the end of the previous command. Once the argument n is computed, the argument is extracted as if the “!n” history expansion had been specified.</td>
+</tr>
+</tbody></table>
+<h1 id="改变文本（Commands-for-Changing-Text）"><a href="#改变文本（Commands-for-Changing-Text）" class="headerlink" title="改变文本（Commands for Changing Text）"></a>改变文本（Commands for Changing Text）</h1><table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Command name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Ctrl + D</code></td>
+<td>delete-char</td>
+<td>Delete the character at point. If point is at the beginning of the line, there are no characters in the line, and the last character typed was not bound to delete-char, then return EOF.</td>
+</tr>
+</tbody></table>
+<h1 id="剪切和粘贴（Killing-and-Yanking）"><a href="#剪切和粘贴（Killing-and-Yanking）" class="headerlink" title="剪切和粘贴（Killing and Yanking）"></a>剪切和粘贴（Killing and Yanking）</h1><table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Command name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Ctrl + K</code></td>
+<td>kill-line</td>
+<td>Kill the text from point to the end of the line.</td>
+</tr>
+<tr>
+<td><code>Ctrl + U</code></td>
+<td>backward-kill-line</td>
+<td>Kill backward from point to the beginning of the line.</td>
+</tr>
+<tr>
+<td><code>Alt + D</code></td>
+<td>kill-word</td>
+<td>Kill from point to the end of the current word, or if between words, to the end of the next word. Word boundaries are the same as those used by forward-word.</td>
+</tr>
+<tr>
+<td><code>Ctrl + W</code></td>
+<td>backward-kill-word</td>
+<td>Kill the word behind point, using white space as a word boundary. The killed text is saved on the kill-ring.</td>
+</tr>
+<tr>
+<td><code>Ctrl + Y</code></td>
+<td>yank</td>
+<td>Yank the top of the kill ring into the buffer at point.</td>
+</tr>
+</tbody></table>
+<h1 id="补全（Completing）"><a href="#补全（Completing）" class="headerlink" title="补全（Completing）"></a>补全（Completing）</h1><table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Command name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>TAB</code></td>
+<td>complete</td>
+<td>Attempt to perform completion on the text before point. Bash attempts completion treating the text as a variable (if the text begins with $), username (if the text begins with ~), hostname (if the text begins with @), or command (including aliases and functions) in turn. If none of these produces a match, filename completion is attempted.</td>
+</tr>
+</tbody></table>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a href="http://www.gnu.org/software/bash/manual/bashref.html#Bindable-Readline-Commands" target="_blank" rel="noopener">GNU/Bash Readline Commands</a>》</p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2015/04/19/eclipse-customize-key-assist/" class="prev">PREV</a><a href="/2015/04/12/godaddy-cname-without-www/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

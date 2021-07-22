@@ -1,0 +1,53 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Git 实战系列（三）git reset 命令回退版本 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Git 实战系列（三）git reset 命令回退版本 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Git 实战系列（三）git reset 命令回退版本</h1><div class="post-info">2015-08-09<a href="/tags/Git/" title="Git" class="post-demo">Git</a></div><div class="post-content"><p>Git 相比 SVN 的其中一个卓越之处，就在于有各种“后悔药”可吃。其中一种“后悔药”叫做 <code>reset</code> 命令，相当好用。</p>
+<h1 id="三个工作区域"><a href="#三个工作区域" class="headerlink" title="三个工作区域"></a>三个工作区域</h1><p>理解 <code>reset</code> 命令的前提是理解文件流转的三个工作区域：</p>
+<ul>
+<li>工作目录（working directory）</li>
+<li>暂存区域（staging area）</li>
+<li>本地仓库（repo）</li>
+</ul>
+<p><img src="https://git-scm.com/figures/18333fig0106-tn.png" alt=""></p>
+<h1 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h1><p><code>reset</code> 命令有三种参数形式，本文只介绍最常用的一种：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git reset [&lt;mode&gt;] [&lt;commit&gt;]</span><br><span class="line"></span><br><span class="line">Reset the current branch head (HEAD) to &lt;commit&gt;, optionally modifying index and working tree to match.</span><br></pre></td></tr></table></figure>
+
+<p>该命令用于回退本地仓库当前分支下的版本，并可以选择重置暂存区域、工作目录的修改。</p>
+<h2 id="mode-参数"><a href="#mode-参数" class="headerlink" title="mode 参数"></a>mode 参数</h2><p>mode 参数必须是以下五种中的一种：</p>
+<h3 id="soft"><a href="#soft" class="headerlink" title="--soft"></a><code>--soft</code></h3><blockquote>
+<p>HEAD Only</p>
+</blockquote>
+<p>Git 本地仓库的版本回退速度之所以快，全因为 Git 在内部有个指向当前版本的 HEAD 指针，当你回退版本的时候，Git 仅仅是把 HEAD 指针往回移动。</p>
+<h3 id="mixed"><a href="#mixed" class="headerlink" title="--mixed"></a><code>--mixed</code></h3><blockquote>
+<p>HEAD and Index</p>
+</blockquote>
+<p>默认参数。除了回退本地仓库的版本，还会重置暂存区域（也称为 Index File 索引文件）。</p>
+<p>这个默默无闻的 <code>--mixed</code> 参数其实很常见，每次运行 <code>git status</code> 时都会看到它的作用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Changes to be committed:</span><br><span class="line">  (use <span class="string">"git reset HEAD &lt;file&gt;..."</span> to unstage)</span><br><span class="line"></span><br><span class="line">        new file:   /there/is/a/new/file</span><br><span class="line">        modified:   README.md</span><br></pre></td></tr></table></figure>
+
+<p>由于该命令实在太常用了，因此会被设为 alias 以便使用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global alias.unstage <span class="string">'reset HEAD'</span></span><br><span class="line">$ git unstage</span><br></pre></td></tr></table></figure>
+
+<h3 id="hard"><a href="#hard" class="headerlink" title="--hard"></a><code>--hard</code></h3><blockquote>
+<p>HEAD, Index, and Working Directory</p>
+</blockquote>
+<p>终极武器，将包括工作目录在内的三个工作区域全部重置或回退，工作目录将重置得一干二净，慎用。</p>
+<p>常见的做法是回退到上一个版本，连同工作目录，就像一切从未发生过一样：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ git reset --hard HEAD~1</span><br><span class="line">HEAD is now at ......</span><br><span class="line"></span><br><span class="line">$ git status</span><br><span class="line">nothing to commit, working directory clean</span><br></pre></td></tr></table></figure>
+
+<p>如果“回退前的版本”已经 <code>push</code> 到远程仓库，则不建议这么做。</p>
+<h3 id="merge"><a href="#merge" class="headerlink" title="--merge"></a><code>--merge</code></h3><p>待补充。</p>
+<h3 id="keep"><a href="#keep" class="headerlink" title="--keep"></a><code>--keep</code></h3><p>待补充。</p>
+<h2 id="commit-参数"><a href="#commit-参数" class="headerlink" title="commit 参数"></a>commit 参数</h2><p>commit 参数有三种常见形式：</p>
+<h3 id="SHA1"><a href="#SHA1" class="headerlink" title="SHA1"></a>SHA1</h3><p>使用 SHA1 值回退到指定的版本，适用于 SH1 值已知的情况：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git reset 17ef24c</span><br></pre></td></tr></table></figure>
+
+<h3 id="HEAD"><a href="#HEAD" class="headerlink" title="HEAD"></a>HEAD</h3><p>更常用的参数，适用于偷懒：</p>
+<ul>
+<li><code>HEAD</code> 表示当前版本（默认参数）。</li>
+<li>上一个版本为 <code>HEAD^</code> ，上上一个版本为 <code>HEAD^^</code> ，以此类推。</li>
+<li>上 100 个版本，简写为 <code>HEAD~100</code> 。</li>
+<li><code>ORIG_HEAD</code> 表示上一个 <code>HEAD</code> ，一般用于撤销上一次 <code>reset</code> 。（”reset” copies the old head to .git/ORIG_HEAD）</li>
+</ul>
+<h3 id="HEAD-1"><a href="#HEAD-1" class="headerlink" title="HEAD@{}"></a>HEAD@{}</h3><p>Git 在 1.8.5 版本之后，加入了 <code>HEAD@{}</code> 功能，它通过一个链表记录 <code>HEAD</code> 的移动路径，链表头部的 <code>HEAD@{0}</code> 即 <code>HEAD</code> 指针。这个功能可以用于回退到一个早已忘记的提交。</p>
+<p>这个功能一般配合 <code>reflog</code> 命令使用。</p>
+<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><p>更多例子参见 <code>git help reset</code> 的 EXAMPLES 部分。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a href="http://www.th7.cn/Program/c/201409/280832.shtml" target="_blank" rel="noopener">Git 中 HEAD 和 ORIG_HEAD 指针分别指的是什么？</a>》</p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2015/08/15/git-checkout/" class="prev">PREV</a><a href="/2015/08/04/git-log/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

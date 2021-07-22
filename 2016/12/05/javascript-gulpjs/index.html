@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> 自动化构建工具 Gulp.js · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="自动化构建工具 Gulp.js - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">自动化构建工具 Gulp.js</h1><div class="post-info">2016-12-05<a href="/tags/前端/" title="前端" class="post-demo">前端</a></div><div class="post-content"><p>某段时期前端技术选型上使用过 <a href="https://www.gulpjs.com.cn/" target="_blank" rel="noopener">Gulp.js</a> 解决前端工程化及自动化构建问题，下表整理了其在实践项目中常用的插件：</p>
+<table>
+<thead>
+<tr>
+<th>插件</th>
+<th>功能</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://www.npmjs.com/package/gulp-jshint" target="_blank" rel="noopener">gulp-jshint</a></td>
+<td>检查 JavaScript 语法</td>
+<td><a href="http://jshint.com/docs/options/" target="_blank" rel="noopener">http://jshint.com/docs/options/</a></td>
+</tr>
+<tr>
+<td><a href="https://www.npmjs.com/package/gulp-uglify" target="_blank" rel="noopener">gulp-uglify</a></td>
+<td>压缩 JavaScript</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.npmjs.com/package/gulp-sourcemaps" target="_blank" rel="noopener">gulp-sourcemaps</a></td>
+<td>输出 sourcemaps</td>
+<td>部署前端之前，开发者通常会对代码进行打包压缩，这样可以减少代码大小，从而有效提高访问速度。然而，压缩代码的报错信息是很难Debug的，因为它的行号和列号已经失真。这时就需要Source Map来还原真实的出错位置了。</td>
+</tr>
+<tr>
+<td><a href="https://www.npmjs.com/package/gulp-imagemin" target="_blank" rel="noopener">gulp-imagemin</a></td>
+<td>压缩图片</td>
+<td><code>progressive</code> JPEG 图像渐进式扫描；<code>interlaced</code> GIF 图像隔行扫描</td>
+</tr>
+<tr>
+<td><a href="https://www.npmjs.com/package/gulp-rev" target="_blank" rel="noopener">gulp-rev</a></td>
+<td>静态资源 hash</td>
+<td>在实际生产环境中，我们页面引用的静态资源的文件名都是带版本号的（非覆盖式升级），这样方便版本管理（如更新与回滚）和防止缓存。通常我们使用文件的md5编码作为版本号，生成文件指纹。</td>
+</tr>
+<tr>
+<td><a href="https://www.npmjs.com/package/gulp-less" target="_blank" rel="noopener">gulp-less</a></td>
+<td>Less 文件编译</td>
+<td>用于引入 Less 扩展 CSS 语言，提升前端样式的开发效率。</td>
+</tr>
+<tr>
+<td><a href="https://www.npmjs.com/package/gulp-autoprefixer" target="_blank" rel="noopener">gulp-autoprefixer</a></td>
+<td>根据所需兼容的浏览器版本，自动补全厂商前缀</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.npmjs.com/package/gulp-css-base64/" target="_blank" rel="noopener">gulp-css-base64</a></td>
+<td>将CSS 样式表中引用的图片和字体通过 base64 编码压缩合并到一起，减少文件请求数</td>
+<td><code>maxWeightResource</code> 资源最大阈值，默认为 32K</td>
+</tr>
+<tr>
+<td><a href="https://www.npmjs.com/package/gulp-ejs" target="_blank" rel="noopener">gulp-ejs</a></td>
+<td>编译 HTML 中的 ejs 模板，可用于页面布局拆分，提升代码复用性</td>
+<td><a href="http://ejs.co/" target="_blank" rel="noopener">http://ejs.co/</a></td>
+</tr>
+<tr>
+<td><a href="https://www.npmjs.com/package/gulp-htmlmin" target="_blank" rel="noopener">gulp-htmlmin</a></td>
+<td>压缩 HTML</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.npmjs.com/package/gulp-inline-source" target="_blank" rel="noopener">gulp-inline-source</a></td>
+<td>将 HTML 外部引用的样式和脚本以内联的方式嵌到 HTML 文件中，减少文件请求数</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.npmjs.com/search?q=gulp-if" target="_blank" rel="noopener">gulp-if</a></td>
+<td>编译时动态判断</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.npmjs.com/package/gulp-replace" target="_blank" rel="noopener">gulp-replace</a></td>
+<td>编译时动态替换字符串</td>
+<td>可用于根据不同环境构建代码，解决各环境间的差异。例如正则匹配并全局替换 HTML 中的 <code>${web}</code> 变量。</td>
+</tr>
+<tr>
+<td><a href="https://www.npmjs.com/package/gulp-tar" target="_blank" rel="noopener">gulp-tar</a></td>
+<td>打包静态资源</td>
+<td><a href="https://github.com/mafintosh/tar-stream" target="_blank" rel="noopener">tar-stream</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/sanyueyu/gulp-mock-server" target="_blank" rel="noopener">gulp-mock-server</a></td>
+<td>API Mock Server，前后端分离后的 API 模拟利器</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.npmjs.com/package/browser-sync" target="_blank" rel="noopener">browser-sync</a></td>
+<td>监听本地文件变化并同步刷新浏览器，提升开发效率的利器</td>
+<td><a href="https://www.browsersync.io/" target="_blank" rel="noopener">https://www.browsersync.io/</a></td>
+</tr>
+</tbody></table>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2017/01/07/h5-storage/" class="prev">PREV</a><a href="/2016/10/06/ssh/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

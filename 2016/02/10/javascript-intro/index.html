@@ -1,0 +1,94 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Javascript 简介 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Javascript 简介 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Javascript 简介</h1><div class="post-info">2016-02-10<a href="/tags/前端/" title="前端" class="post-demo">前端</a></div><div class="post-content"><p>一个完整的 JavaScript 实现由下列三个不同的部分组成：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">+--------------------------+</span><br><span class="line">|                          |</span><br><span class="line">|        JavaScript        |</span><br><span class="line">|                          |</span><br><span class="line">| +----------+ +---+ +---+ |</span><br><span class="line">| |ECMAScript| |DOM| |BOM| |</span><br><span class="line">| +----------+ +---+ +---+ |</span><br><span class="line">|                          |</span><br><span class="line">+--------------------------+</span><br></pre></td></tr></table></figure>
+
+<p>下面分别介绍这些部分：</p>
+<h1 id="核心（ECMAScript）"><a href="#核心（ECMAScript）" class="headerlink" title="核心（ECMAScript）"></a>核心（ECMAScript）</h1><p>以网景的 Netscape Navigator 内置的 JavaScript 1.1 为蓝本，由 ECMA-262 定义的 ECMAScript 是一种 <strong>与 Web 浏览器没有依赖关系</strong> 的脚本语言标准，它由下列基础部分组成：</p>
+<ul>
+<li>语法（Syntax）</li>
+<li>类型（Types）</li>
+<li>语句（Statements）</li>
+<li>关键字（Keywords）</li>
+<li>保留字（Reserved words）</li>
+<li>操作符（Operators）</li>
+<li>对象（Objects）</li>
+</ul>
+<h2 id="宿主环境"><a href="#宿主环境" class="headerlink" title="宿主环境"></a>宿主环境</h2><p>ECMA-262 定义的只是这门语言的基础部分，而在此基础之上，<strong>宿主环境（host environment）</strong> 可以构建更完善的脚本语言。常见的宿主环境有：</p>
+<ul>
+<li>Web Broswer</li>
+<li>Node.js</li>
+<li>Adobe Flash</li>
+</ul>
+<p>以我们最常见的 Web Broswer 为例，不仅提供了基本的 ECMAScript 实现，同时还提供了该语言的扩展，以便语言与环境之间对接交互。而这些扩展——如 DOM，则利用 ECMAScript 的核心类型（Types）和语法（Syntax）提供更多更具体的功能，以便实现针对环境的操作。</p>
+<h2 id="版本"><a href="#版本" class="headerlink" title="版本"></a>版本</h2><p>ECMA-262 目前已经发布了六个大版本的 ECMAScript：</p>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>发布时间</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>1997 年 6 月</td>
+<td>以网景的 Netscape Navigator 内置的 JavaScript 1.1 为蓝本制定，但删除了所有针对浏览器的代码，并支持 Unicode 标准（从而支持多语言开发）。</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1998 年 6 月</td>
+<td>基本没有修改。</td>
+</tr>
+<tr>
+<td>3</td>
+<td>1999 年 12 月</td>
+<td>标准的第一次大修改，涉及：新增的正则表达式，更好的字符串处理，新的控制语句，try / catch 异常处理的支持，更严格的错误定义，数值格式化输出和其它增强功能。该版标志着 ECMAScript 成为了一门真正的编程语言。</td>
+</tr>
+<tr>
+<td><del>4</del></td>
+<td><del>已废弃</del></td>
+<td>该版对 ECMAScript 进行了大刀阔斧的修改，但由于复杂的语言政治分歧而被废弃了。</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2009 年 12 月</td>
+<td>澄清了第三版规范许多模糊之处，并增加了一些新功能，如：原生 JSON 对象、继承的方法和高级属性定义，以及“严格模式（strict mode）”。<strong>是目前浏览器兼容性最好、最主流的版本。</strong></td>
+</tr>
+<tr>
+<td>5.1</td>
+<td>2011 年 6 月</td>
+<td>基本没有修改。</td>
+</tr>
+<tr>
+<td>6</td>
+<td>2015 年 6 月</td>
+<td>标准的又一次大修改，被称为 ECMAScript 2015。它为编写日益复杂的应用程序增加了大量重要的新语法，包括：类（classes）和模块（modules）、新的迭代器（iterators）和 for/of 循环（loops）、Python 风格的生成器（generators）和生成器表达式、arrow functions, binary data, typed arrays, collections (maps, sets and weak maps), promises, number and math enhancements, reflection, and proxies …<br/>更多特性详见<a href="http://es6-features.org/#Constants" target="_blank" rel="noopener">这里</a>。</td>
+</tr>
+<tr>
+<td>7</td>
+<td>制定中</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="兼容"><a href="#兼容" class="headerlink" title="兼容"></a>兼容</h2><p>各个浏览器对 ECMAScript 5 的兼容性可查看 <a href="http://caniuse.com/#feat=es5" target="_blank" rel="noopener">这里</a> 。</p>
+<h1 id="文档对象模型（DOM）"><a href="#文档对象模型（DOM）" class="headerlink" title="文档对象模型（DOM）"></a>文档对象模型（DOM）</h1><p>文档对象模型（DOM，Document Object Model）是针对 XML 但经过扩展用于 HTML 的 API。借助 DOM 提供的 API，开发人员可以轻松自如地删除、添加、替换或修改任何节点，获得控制页面内容和结构的主动权。</p>
+<h1 id="浏览器对象模型（BOM）"><a href="#浏览器对象模型（BOM）" class="headerlink" title="浏览器对象模型（BOM）"></a>浏览器对象模型（BOM）</h1><p>浏览器对象模型（BOM，Browser Object Model）是一组浏览器提供的自定义扩展 API，可以控制浏览器显示的页面以外的部分，例如：</p>
+<ul>
+<li>弹出新浏览器窗口的功能；</li>
+<li>移动、缩放和关闭浏览器窗口的功能；</li>
+<li>提供浏览器详细信息的 navigator 对象；</li>
+<li>提供浏览器所加载页面的详细信息的 location 对象；</li>
+<li>提供用户显示器分辨率详细信息的 screen 对象；</li>
+<li>对 cookies 的支持；</li>
+<li>像 XMLHttpRequest 和 IE 的 ActiveXObject 这样的自定义对象。</li>
+</ul>
+<p>常用的 BOM API 如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">window</span><br><span class="line">  |</span><br><span class="line">  +--&gt; document</span><br><span class="line">  |</span><br><span class="line">  +--&gt; location</span><br><span class="line">  |</span><br><span class="line">  +--&gt; navigator</span><br><span class="line">  |</span><br><span class="line">  +--&gt; screen</span><br><span class="line">  |</span><br><span class="line">  +--&gt; history</span><br><span class="line">  |</span><br><span class="line">  +--&gt; ...</span><br></pre></td></tr></table></figure>
+
+<p>由于没有 BOM 标准可以遵循，因此每个浏览器都有自己的实现。虽然也存在一些事实标准，例如要有 window 对象和 navigator 对象等，但每个浏览器都会为这两个对象乃至其它对象定义自己的属性和方法。如今 HTML 5 致力于把很多 BOM 功能纳入正式规范，BOM 实现的细节有望朝着兼容性越来越高的方向发展。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《JavaScript 高级程序设计》</li>
+<li>《<a href="https://en.wikipedia.org/wiki/ECMAScript" target="_blank" rel="noopener">ECMAScript - Wikipedia</a>》</li>
+<li>《<a href="https://en.wikipedia.org/wiki/Document_Object_Model" target="_blank" rel="noopener">Document Object Model - Wikipedia</a>》</li>
+<li>《<a href="https://en.wikipedia.org/wiki/Browser_Object_Model" target="_blank" rel="noopener">Browser Object Model - Wikipedia</a>》</li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2016/02/11/javascript-primitive-types/" class="prev">PREV</a><a href="/2015/11/22/fhs/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

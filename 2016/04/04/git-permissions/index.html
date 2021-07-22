@@ -1,0 +1,78 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Git 实战系列（十二）Git 权限控制 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Git 实战系列（十二）Git 权限控制 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Git 实战系列（十二）Git 权限控制</h1><div class="post-info">2016-04-04<a href="/tags/Git/" title="Git" class="post-demo">Git</a></div><div class="post-content"><p>除了 Git 命令，权限控制也是 Git 中极为重要的组成部分，本文主要介绍 GitLab 系统提供的最常用的权限控制功能。</p>
+<h1 id="分配成员角色"><a href="#分配成员角色" class="headerlink" title="分配成员角色"></a>分配成员角色</h1><p>首先来了解下，Git 中的五种角色：</p>
+<table>
+<thead>
+<tr>
+<th>角色</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Owner</td>
+<td>Git 系统管理员</td>
+</tr>
+<tr>
+<td>Master</td>
+<td>Git 项目管理员</td>
+</tr>
+<tr>
+<td>Developer</td>
+<td>Git 项目开发人员</td>
+</tr>
+<tr>
+<td>Reporter</td>
+<td>Git 项目测试人员</td>
+</tr>
+<tr>
+<td>Guest</td>
+<td>访客</td>
+</tr>
+</tbody></table>
+<p>每一种角色所拥有的权限都不同，如下图：</p>
+<p><img src="/img/git/git_permissions.png" alt="Git 权限控制"></p>
+<p>我们需要做的是，为项目成员分配恰当的角色，以限制其权限。</p>
+<h1 id="Protected-Branches"><a href="#Protected-Branches" class="headerlink" title="Protected Branches"></a>Protected Branches</h1><p>在对 Git 不熟悉的时候，时常苦恼于各个分支不受约束，任何开发人员都可以向任何分支直接推送任何提交，各种未经审查的代码、花样百出的 Bug 就这样流窜在预发布分支上。</p>
+<p>其实我们可以通过 GitLab 的<strong>受保护分支（Protected Branches）</strong>功能解决该问题，该功能可用于：</p>
+<blockquote>
+<p>Keep stable branches secure and force developers to use <strong>merge requests</strong>.</p>
+<p>By default, protected branches are designed to:</p>
+<ul>
+<li>prevent their creation, if not already created, from everybody except Masters</li>
+<li>prevent pushes from everybody except Masters</li>
+<li>prevent <strong>anyone</strong> from force pushing to the branch</li>
+<li>prevent <strong>anyone</strong> from deleting the branch</li>
+</ul>
+</blockquote>
+<p>接下来我们就使用这项功能，锁定我们的受保护分支——主分支 <code>master</code> 和预发布分支 <code>release-*</code>，以阻止 Developer 直接向这两类分支中推送代码：</p>
+<p><img src="/img/git/git_protected_branches.png" alt="Git 受保护分支"></p>
+<p>锁定后，Developer 推送代码将会报错：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ git push origin master</span><br><span class="line">Counting objects: 4, done.</span><br><span class="line">Delta compression using up to 4 threads.</span><br><span class="line">Compressing objects: 100% (2&#x2F;2), done.</span><br><span class="line">Writing objects: 100% (3&#x2F;3), 283 bytes | 0 bytes&#x2F;s, done.</span><br><span class="line">Total 3 (delta 1), reused 1 (delta 0)</span><br><span class="line">remote: GitLab: You are not allowed to access master!</span><br><span class="line">remote: error: hook declined to update refs&#x2F;heads&#x2F;master</span><br><span class="line">To git@website:project.git</span><br><span class="line"> ! [remote rejected] master -&gt; master (hook declined)</span><br><span class="line">error: failed to push some refs to &#39;git@website:project.git&#39;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Merge-Requests"><a href="#Merge-Requests" class="headerlink" title="Merge Requests"></a>Merge Requests</h1><p>锁定受保护分支后，要么 Master 需要时刻、主动关注各特性分支的进度，要么 Developer 需要线下、口头向 Master 汇报其特性分支的进度，这两种做法都非常不便于 Master 管理每个预发布分支的合并，尤其在团队大、分支多的情况。</p>
+<p>我们可以通过 GitLab 的<strong>发起合并请求（Merge Request）</strong>功能解决该问题，这样既可以让 Developer 更自如的掌控自己分支进度，在必要的时候才主动发起合并请求；又可以减轻 Master 的合并工作量和沟通成本，可谓一举两得。</p>
+<h2 id="新建-MR"><a href="#新建-MR" class="headerlink" title="新建 MR"></a>新建 MR</h2><p>第一步，按表单要求填写合并请求。注意，对于 Developer 而言：</p>
+<ul>
+<li><code>Source branch</code> 是你的特性分支 <code>feature-*</code>；</li>
+<li><code>Tagget branch</code> 只可能是预发布分支 <code>release-*</code>；</li>
+<li><code>Title</code> 和 <code>Description</code> 要填写恰当的分支描述；</li>
+<li><code>Assignee</code> 是该项目的 Master。</li>
+</ul>
+<p><img src="/img/git/git_new_merge_request.png" alt="新建合并请求"></p>
+<h2 id="审查-MR"><a href="#审查-MR" class="headerlink" title="审查 MR"></a>审查 MR</h2><p>第二步，Master 收到合并请求后，进行代码审查。逐一查看 <code>Commits</code> 或 <code>Changes</code> 一栏提交的内容即可，对于需要改进的代码，可以直接在该行添加注释，非常方便。</p>
+<p>如果对整个请求还有疑问的地方，还可以通过 <code>Discussion</code> 功能进行线上讨论。</p>
+<h2 id="处理-MR"><a href="#处理-MR" class="headerlink" title="处理 MR"></a>处理 MR</h2><p>第三步，针对审查结果进行相应处理：</p>
+<h3 id="关闭"><a href="#关闭" class="headerlink" title="关闭"></a>关闭</h3><p>对于完全不合格的垃圾代码、或者废弃的特性分支的合并请求，Master 点击右上角的 <code>Close</code> 按钮即可。合并请求将被关闭，相当于扔进回收站。</p>
+<h3 id="改进"><a href="#改进" class="headerlink" title="改进"></a>改进</h3><p>对于分支内需改进的代码，Developer 直接修正并推送即可，合并请求将会自动包含最新的推送提交。</p>
+<h3 id="接受"><a href="#接受" class="headerlink" title="接受"></a>接受</h3><p>Master 审查无误后，可以接受该次合并请求。点击 <code>Accept Merge Request</code> 按钮将自动合并分支，勾选 <code>Remove source-branch</code> 将同时删除该特性分支。</p>
+<p>整个自动合并过程如果以命令形式手工执行的话，步骤如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#Step 1. Update the repo and checkout the branch we are going to merge </span></span><br><span class="line">git fetch origin</span><br><span class="line">git checkout -b <span class="built_in">test</span> origin/feature-test</span><br><span class="line"></span><br><span class="line"><span class="comment">#Step 2. Merge the branch and push the changes to GitLab </span></span><br><span class="line">git checkout release-2016.4.7</span><br><span class="line">git merge --no-ff feature-test</span><br><span class="line">git push origin release-2016.4.7</span><br></pre></td></tr></table></figure>
+
+<p>以<a href="/2015/08/17/git-merge/#非快进式合并">非快进式合并</a>完成后，祖先图谱（graph）的展现结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">*   be512fa (HEAD, origin&#x2F;release-2016.4.7, release-2016.4.7)  Merge branch &#39;test&#39; into &#39;release-2016.4.7&#39;</span><br><span class="line">|\</span><br><span class="line">| * 1f52adf 测试</span><br><span class="line">|&#x2F;</span><br><span class="line">*   a4febbb (tag: 1.0.0, origin&#x2F;master) 格式化货币保留两位小数</span><br></pre></td></tr></table></figure>
+
+<p>最后需要注意的是，只有 <code>Assignee</code> 才能够接受合并请求，其它人只会被通知：</p>
+<blockquote>
+<p>You don’t have permission to merge this MR</p>
+</blockquote>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>GitLab 提供的上述功能非常实用，为项目的源码管理提供了有力的支持。</p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2016/04/05/git-branch-in-action/" class="prev">PREV</a><a href="/2016/04/03/git-branch/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

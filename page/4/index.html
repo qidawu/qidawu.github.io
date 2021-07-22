@@ -1,0 +1,1268 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="学习笔记 知识总结 思考感悟"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><ul class="home post-list"><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/10/25/mysql-order-by/" class="post-title-link">MySQL 几种排序机制分析及优化</a></h2><div class="post-info">2019-10-25<a href="/tags/MySQL/" title="MySQL" class="post-demo">MySQL</a></div><div class="post-content"><h1 id="排序流程"><a href="#排序流程" class="headerlink" title="排序流程"></a>排序流程</h1><p>四种排序情况的流程（参考《极客时间》专栏）：</p>
+<p><img src="/img/mysql/order_by_process.png" alt="order_by_process"></p>
+<p><img src="/img/mysql/order_by_process_2.png" alt="order_by_process"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>排序总结：</p>
+<p><img src="/img/mysql/order_by.png" alt="order_by"></p>
+<p>外部排序总结：</p>
+<ul>
+<li>MySQL 会给每个线程分配一块内存用于排序，称为 <code>sort_buffer</code>。对 <code>sort_buffer</code> 中的数据按照排序字段做<strong>快速排序</strong>；</li>
+<li>排序可能在内存中完成，也可能需要使用磁盘排序，取决于排序所需的内存和参数 <code>sort_buffer_size</code>。</li>
+<li>内存放不下时，使用外部磁盘排序，外部磁盘排序一般使用<strong>归并排序</strong>算法。可以简单理解，MySQL 将需要排序的数据分成 N 份，每一份单独排序后存在这些临时文件中。然后把这 N 个有序文件再合并成一个有序的大文件。</li>
+</ul>
+<p>优化方式：</p>
+<ul>
+<li>将 <code>WHERE</code> 和 <code>ORDER BY</code> 子句用到的字段，添加联合索引（注意字段顺序）；</li>
+<li>如果 <code>GROUP BY</code> 结果无需排序，可以加上 <code>ORDER BY NULL</code>。</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://dev.mysql.com/doc/refman/5.7/en/order-by-optimization.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/order-by-optimization.html</a></p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/10/20/mysql-index/" class="post-title-link">MySQL 索引优化总结</a></h2><div class="post-info">2019-10-20<a href="/tags/MySQL/" title="MySQL" class="post-demo">MySQL</a></div><div class="post-content"><p>索引优化应该是对查询性能优化最有效的手段了。索引能够轻易将查询性能提高几个数量级，“最优”的索引有时比一个“好的”索引性能要好两个数量级。</p>
+<p>索引是存储引擎用于快速找到记录的一种数据结构。在 MySQL 中，索引是在存储引擎层而不是服务器层实现的（如下图）。所以，并没有统一的索引标准：不同存储引擎的索引的工作方式并不一样，也不是所有的存储引擎都支持所有类型的索引。即使多个存储引擎支持同一种类型的索引，其底层的实现也可能不同。</p>
+<p><img src="/img/mysql/mysql_architecture.png" alt="MySQL Architecture"></p>
+<h1 id="常见索引类型"><a href="#常见索引类型" class="headerlink" title="常见索引类型"></a>常见索引类型</h1><p>MySQL 支持的常见索引类型：</p>
+<ul>
+<li>B+Tree 索引</li>
+<li>Hash index（哈希索引）</li>
+<li>R-Tree index（空间数据索引）</li>
+<li>Full-text index（全文索引）</li>
+<li>……</li>
+</ul>
+<p>本文只探讨最常用的 B-Tree 索引。</p>
+<h1 id="B-Tree-数据结构"><a href="#B-Tree-数据结构" class="headerlink" title="B+Tree 数据结构"></a>B+Tree 数据结构</h1><h1 id="B-Tree-索引特性"><a href="#B-Tree-索引特性" class="headerlink" title="B+Tree 索引特性"></a>B+Tree 索引特性</h1><p>当我们谈论索引的时候，如果没有特别指明类型，那多半说的是 B+Tree 索引。InnoDB 存储引擎默认使用的也是 B+Tree 数据结构来存储数据。<br>索引可以包含一个或多个列的值。如果包含多个列（称为“联合索引”），那么列的顺序至关重要，因为 MySQL 只能高效地使用索引的 <strong>最左前缀列</strong>。创建一个包含两个列的索引，和创建两个只包含一列的索引是大不相同的，下面看个例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE People (</span><br><span class="line">   last_name  varchar(50)    not null,</span><br><span class="line">   first_name varchar(50)    not null,</span><br><span class="line">   dob        date           not null,</span><br><span class="line">   gender     enum(&#39;m&#39;, &#39;f&#39;) not null,</span><br><span class="line">   key(last_name, first_name, dob)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>可以使用该 B-Tree 索引的查询类型：</p>
+<h2 id="全值匹配"><a href="#全值匹配" class="headerlink" title="全值匹配"></a>全值匹配</h2><p>全值匹配（Match the full value）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT * </span><br><span class="line">FROM people</span><br><span class="line">WHERE last_name &#x3D; &#39;Wu&#39; AND first_name &#x3D; &#39;Qida&#39; AND dob &#x3D; &#39;2018-01-01&#39;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="匹配最左前缀"><a href="#匹配最左前缀" class="headerlink" title="匹配最左前缀"></a>匹配最左前缀</h2><p>匹配最左前缀（Match a leftmost prefix）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">SELECT * </span><br><span class="line">FROM people</span><br><span class="line">WHERE last_name &#x3D; &#39;Wu&#39;;</span><br><span class="line"></span><br><span class="line">SELECT * </span><br><span class="line">FROM people</span><br><span class="line">WHERE last_name &#x3D; &#39;Wu&#39; AND first_name &#x3D; &#39;Qida&#39;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="匹配列前缀"><a href="#匹配列前缀" class="headerlink" title="匹配列前缀"></a>匹配列前缀</h2><p>匹配列前缀（Match a column prefix）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT * </span><br><span class="line">FROM people</span><br><span class="line">WHERE last_name LIKE &#39;W%&#39;;</span><br></pre></td></tr></table></figure>
+
+<p>注意 MySQL <code>LIKE</code> 的限制：</p>
+<blockquote>
+<p>MySQL can’t perform the LIKE operation in the index. This is a limitation of the low-level storage engine API, which in MySQL 5.5 and earlier allows only simple comparisons (such as equality, inequality, and greater-than) in index operations. </p>
+<p>MySQL can perform <strong>prefix-match LIKE patterns</strong> in the index because it can convert them to simple comparisons, but the leading wildcard in the query makes it impossible for the storage engine to evaluate the match. Thus, the MySQL server itself will have to fetch and match on the row’s values, not the index’s values.</p>
+</blockquote>
+<h2 id="匹配范围值"><a href="#匹配范围值" class="headerlink" title="匹配范围值"></a>匹配范围值</h2><p>匹配范围值（Match a range of values）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT * </span><br><span class="line">FROM people</span><br><span class="line">WHERE last_name BETWEEN &#39;Wu&#39; AND &#39;Li&#39;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="精确匹配某一列，并范围匹配另外一列"><a href="#精确匹配某一列，并范围匹配另外一列" class="headerlink" title="精确匹配某一列，并范围匹配另外一列"></a>精确匹配某一列，并范围匹配另外一列</h2><p>精确匹配某一列，并范围匹配另外一列（Match one part exactly and match a range on another part）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT * </span><br><span class="line">FROM people</span><br><span class="line">WHERE last_name &#x3D; &#39;Wu&#39; And first_name LIKE &#39;Q%&#39;;</span><br></pre></td></tr></table></figure>
+<h2 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h2><p>只访问索引列的查询（Index-only queries）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT last_name, first_name, dob</span><br><span class="line">FROM people</span><br><span class="line">WHERE last_name &#x3D; &#39;Wu&#39; AND first_name &#x3D; &#39;Qida&#39; AND dob &#x3D; &#39;2018-01-01&#39;;</span><br></pre></td></tr></table></figure>
+
+<h1 id="高性能的索引策略"><a href="#高性能的索引策略" class="headerlink" title="高性能的索引策略"></a>高性能的索引策略</h1><h2 id="选择合适的索引列顺序"><a href="#选择合适的索引列顺序" class="headerlink" title="选择合适的索引列顺序"></a>选择合适的索引列顺序</h2><p>索引列按区分度从高到低排列。</p>
+<h2 id="使用独立的列"><a href="#使用独立的列" class="headerlink" title="使用独立的列"></a>使用独立的列</h2><p>“独立的列”是指不在索引列上做任何操作，包括：</p>
+<ul>
+<li>计算（不能是表达式的一部分）</li>
+<li>作为函数的参数。</li>
+<li>隐式或显式的类型转换</li>
+<li>隐式字符编码转换</li>
+</ul>
+<p>例如，下面这个查询无法使用 actor_id 列的索引：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">-- 错误示范</span><br><span class="line">SELECT * </span><br><span class="line">FROM people</span><br><span class="line">WHERE id + 1 &#x3D; 5;</span><br><span class="line"></span><br><span class="line">-- 正确示范</span><br><span class="line">SELECT * </span><br><span class="line">FROM people</span><br><span class="line">WHERE id &#x3D; 4;</span><br></pre></td></tr></table></figure>
+
+<p>凭肉眼很容易看出 <code>WHERE</code> 中的表达式其实等价于 <code>id = 4</code> ，但是 MySQL 无法自动解析这个方程式。这完全是用户行为。我们应该养成简化 <code>WHERE</code> 条件的习惯，始终将索引列单独放在比较符号的一侧。</p>
+<p>下面是另一个常见的错误，将索引列作为函数的参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">-- 错误示范</span><br><span class="line">SELECT ...</span><br><span class="line">WHERE DATE(create_time) &#x3D; &#39;2000-01-01&#39;;</span><br><span class="line"></span><br><span class="line">-- 正确示范</span><br><span class="line">SELECT ...</span><br><span class="line">WHERE create_time BETWEEN &#39;2000-01-01 00:00:00&#39; AND &#39;2000-01-01 23:59:59&#39;;</span><br></pre></td></tr></table></figure>
+
+<p>另一个常见错误，merchant_no 为 <code>VARCHAR</code> 类型且加了索引，但由于隐式类型转换为数字类型，导致全表扫描：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 错误示范</span></span><br><span class="line"><span class="keyword">SELECT</span> *</span><br><span class="line"><span class="keyword">FROM</span> t_order</span><br><span class="line"><span class="keyword">WHERE</span> merchant_no = <span class="number">2016</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 正确示范</span></span><br><span class="line"><span class="keyword">SELECT</span> *</span><br><span class="line"><span class="keyword">FROM</span> t_order</span><br><span class="line"><span class="keyword">WHERE</span> merchant_no = <span class="string">'2016'</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="字符串索引优化"><a href="#字符串索引优化" class="headerlink" title="字符串索引优化"></a>字符串索引优化</h2><h3 id="常规方式"><a href="#常规方式" class="headerlink" title="常规方式"></a>常规方式</h3><ul>
+<li>直接创建完整索引<ul>
+<li>优点：可以使用覆盖索引</li>
+<li>缺点：比较占用空间</li>
+</ul>
+</li>
+<li>创建前缀索引<ul>
+<li>优点：节省空间</li>
+<li>缺点：<ul>
+<li>需要计算好区分度，以定义合适的索引长度，否则会增加回表次数</li>
+<li>无法使用覆盖索引</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>区分度计算方法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> </span><br><span class="line">  <span class="keyword">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(email,<span class="number">4</span>)) / <span class="keyword">count</span>(<span class="keyword">distinct</span> email) <span class="keyword">as</span> L4, </span><br><span class="line">  <span class="keyword">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(email,<span class="number">5</span>)) / <span class="keyword">count</span>(<span class="keyword">distinct</span> email) <span class="keyword">as</span> L5, </span><br><span class="line">  <span class="keyword">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(email,<span class="number">6</span>)) / <span class="keyword">count</span>(<span class="keyword">distinct</span> email) <span class="keyword">as</span> L6, </span><br><span class="line">  <span class="keyword">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(email,<span class="number">7</span>)) / <span class="keyword">count</span>(<span class="keyword">distinct</span> email) <span class="keyword">as</span> L7,</span><br><span class="line"><span class="keyword">from</span> t1;</span><br></pre></td></tr></table></figure>
+<h3 id="其它方式一"><a href="#其它方式一" class="headerlink" title="其它方式一"></a>其它方式一</h3><ul>
+<li>倒序存储，再创建前缀索引，用于绕过字符串本身前缀的区分度不够的问题。查询时使用 <code>reverse</code> 函数。</li>
+<li>创建额外的 hash 字段并创建索引，查询性能稳定（散列冲突的概率更小），有额外的存储和计算消耗，查询时使用 <code>crc32</code> 函数并二次比较。</li>
+</ul>
+<p>这两种方式都不支持范围扫描，只支持等值查询。</p>
+<h3 id="其它方式二"><a href="#其它方式二" class="headerlink" title="其它方式二"></a>其它方式二</h3><p>改为使用更合适的数据类型，例如：</p>
+<ul>
+<li>使用日期与时间类型，而不是字符串来存储日期和时间。</li>
+<li>使用整型，而不是字符串来存储 IP 地址。</li>
+<li>使用定长二进制类型（如 <code>binary</code>），而不是字符串来存储散列值。</li>
+</ul>
+<h1 id="索引选择性"><a href="#索引选择性" class="headerlink" title="索引选择性"></a>索引选择性</h1><p>了解两个概念：</p>
+<ul>
+<li><strong>基数</strong>（Cardinality）也称为区分度，是指数据列所包含的不同值的数量。例如，某个数据列包含值：1、2、3、4、5、1，则基数为 5。可以通过 <code>show index</code> 查看。</li>
+<li><strong>索引选择性</strong>（Index Selectivity）是指基数（Cardinality）和数据表的记录总数（#T）的比值，范围从 <code>1/#T</code> 到 <code>1</code> 之间。</li>
+</ul>
+<p>索引的选择性越高则查询效率越高，因为选择性高的索引可以让 MySQL 在查找时过滤掉更多的行。唯一索引的选择性是 1，这是最好的索引选择性，性能也是最好的。</p>
+<p>下面显示如何计算某列的<strong>平均选择性</strong>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SELECT COUNT(DISTINCT last_name) &#x2F; COUNT(*) AS Selectivity</span><br><span class="line">FROM people;</span><br><span class="line"></span><br><span class="line">Selectivity: 0.0312</span><br></pre></td></tr></table></figure>
+<p>只看平均选择性有时是不够的，需考虑最坏或特殊情况下的选择性（即值的分布，是否有某些值占比过多？）。</p>
+<p>如果索引的选择性低（基数/总数的比值），可能会导致优化器生成执行计划时，不走这个索引。</p>
+<p>有时 MySQL 会选错索引，解决方案如下：</p>
+<ul>
+<li>通过 <code>show index</code> 语句查看索引的“基数”。对于由于索引统计信息不准确导致的问题，可以用 <code>analyze table</code> 来重新统计索引信息。</li>
+<li><code>force index</code> 强行选择一个索引。</li>
+<li>修改语句，引导 MySQL 使用我们期望的索引。</li>
+<li>新建一个更合适的索引，来提供给优化器做选择，或删掉误用的索引。</li>
+</ul>
+<h1 id="三星索引评价系统"><a href="#三星索引评价系统" class="headerlink" title="三星索引评价系统"></a>三星索引评价系统</h1><p>评估某个索引是否适合某个查询的“三星评价系统”（three-star system）：</p>
+<blockquote>
+<p>Lahdenmaki and Leach’s book also introduces a three-star system for grading how suitable an index is for a query:</p>
+<ul>
+<li>The index earns one star if it places relevant rows adjacent to each other, </li>
+<li>a second star if its rows are sorted in the order the query needs,</li>
+<li>and a final star if it contains all the columns needed for the query.</li>
+</ul>
+</blockquote>
+<ul>
+<li>一星：索引列满足查询所需的条件。如果是多个查询条件，则利用联合索引及其最左前缀匹配特性。</li>
+<li>二星：索引行排序符合查询所需的排序，没有额外的 <code>ORDER BY</code>（避免 <code>filesort</code>）。</li>
+<li>三星：索引列满足查询所需的全部列，不再需要回表查询（即利用覆盖索引 <code>covering index</code>）。</li>
+</ul>
+<h1 id="相关命令"><a href="#相关命令" class="headerlink" title="相关命令"></a>相关命令</h1><p>下面介绍一些查看索引的常用命令：</p>
+<h2 id="DESC"><a href="#DESC" class="headerlink" title="DESC"></a>DESC</h2><p><code>DESC</code> 命令查看表结构时，可以看到索引列 <code>Key</code> ，共有三种类型：</p>
+<ul>
+<li><code>PRI</code> 表示主键索引（PRIMARY KEY）。</li>
+<li><code>UNI</code> 表示唯一索引（UNIQUE KEY），值不能重复。</li>
+<li><code>MUL</code> 表示普通索引（MULTIPLE KEY） ，值可重复。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ DESC table_name;</span><br><span class="line"></span><br><span class="line">+---------+--------------+------+-----+---------+-------+</span><br><span class="line">| Field   | Type         | Null | Key | Default | Extra |</span><br><span class="line">+---------+--------------+------+-----+---------+-------+</span><br><span class="line">| FID     | int(11)      | NO   | PRI | NULL    |       |</span><br><span class="line">| FKEY    | varchar(50)  | NO   | UNI | NULL    |       |</span><br><span class="line">| FVALUE  | varchar(500) | YES  | MUL | NULL    |       |</span><br><span class="line">| FDESC   | varchar(50)  | YES  | MUL | NULL    |       |</span><br><span class="line">| FCACHED | int(1)       | NO   |     | 1       |       |</span><br><span class="line">+---------+--------------+------+-----+---------+-------+</span><br></pre></td></tr></table></figure>
+
+<h2 id="SHOW-INDEX"><a href="#SHOW-INDEX" class="headerlink" title="SHOW INDEX"></a>SHOW INDEX</h2><p><code>SHOW INDEX</code> 可以以列为单位，查看该表索引的具体信息，例如：</p>
+<ul>
+<li>表名 <code>Table</code></li>
+<li>索引唯一性 <code>Non_unique</code></li>
+<li>索引名 <code>Key_name</code></li>
+<li>联合索引中的顺序 <code>Seq_in_index</code></li>
+<li>列名 <code>Column_name</code></li>
+<li>基数 <code>Cardinality</code></li>
+<li>索引类型 <code>Index_type</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ SHOW INDEX FROM table_name;</span><br><span class="line"></span><br><span class="line">+------------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span><br><span class="line">|   Table    | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |</span><br><span class="line">+------------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span><br><span class="line">| table_name |          0 |  PRIMARY |            1 | FID         | A         |         105 |     NULL | NULL   |      | BTREE      |         |               |</span><br><span class="line">| table_name |          0 |  UK_FKEY |            1 | FKEY        | A         |         105 |     NULL | NULL   |      | BTREE      |         |               |</span><br><span class="line">| table_name |          1 |  IDX_V_D |            1 | FVALUE      | A         |         105 |     NULL | NULL   |      | BTREE      |         |               |</span><br><span class="line">| table_name |          1 |  IDX_V_D |            2 | FDESC       | A         |         105 |     NULL | NULL   |      | BTREE      |         |               |</span><br><span class="line">+------------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span><br></pre></td></tr></table></figure>
+
+<h2 id="SHOW-CREATE-TABLE"><a href="#SHOW-CREATE-TABLE" class="headerlink" title="SHOW CREATE TABLE"></a>SHOW CREATE TABLE</h2><p><code>SHOW CREATE TABLE</code> 可以查看该表的建表语句，留意最后几行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">SHOW CREATE TABLE table_name;</span><br><span class="line"></span><br><span class="line">CREATE TABLE &#96;table_name&#96; (</span><br><span class="line">  &#96;FID&#96; int(11) NOT NULL,</span><br><span class="line">  &#96;FKEY&#96; varchar(50) NOT NULL,</span><br><span class="line">  &#96;FVALUE&#96; varchar(200) NOT NULL,</span><br><span class="line">  &#96;FDESC&#96; varchar(50) DEFAULT NULL,</span><br><span class="line">  &#96;FCACHED&#96; int(1) NOT NULL DEFAULT &#39;1&#39;,</span><br><span class="line">  PRIMARY KEY (&#96;FID&#96;),</span><br><span class="line">  UNIQUE KEY &#96;UK_FKEY&#96; (&#96;FKEY&#96;),</span><br><span class="line">  KEY &#96;IDX_V_D&#96; (&#96;FVALUE&#96;, &#96;FDESC&#96;)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《高性能 MySQL》</p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-indexes.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/innodb-indexes.html</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/optimization-indexes.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/optimization-indexes.html</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/show-columns.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/show-columns.html</a></p>
+<p>《<a href="http://blog.codinglabs.org/articles/theory-of-mysql-index.html" target="_blank" rel="noopener">MySQL索引背后的数据结构及算法原理</a>》</p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/10/01/mysql-explain/" class="post-title-link">MySQL 执行计划总结</a></h2><div class="post-info">2019-10-01<a href="/tags/MySQL/" title="MySQL" class="post-demo">MySQL</a></div><div class="post-content"><p><code>EXPLAIN</code> 语句提供有关 MySQL 优化器如何执行语句的信息。能够用于 <code>SELECT</code>、<code>DELETE</code>、<code>INSERT</code>、<code>REPLACE</code>、<code>UPDATE</code> 语句。</p>
+<p><code>EXPLAIN</code> 为 <code>SELECT</code> 语句中使用到的每张表输出一行信息 。它按照 MySQL 在处理 <code>SELECT</code> 语句时的读取顺序来列出各张表。</p>
+<p>MySQL 使用嵌套循环连接算法（NLJ）来解析所有的表连接（MySQL resolves all joins using a nested-loop join method）。详见另一篇。</p>
+<p><code>EXPLAIN</code> 输出列如下：</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>JSON Name</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_id" target="_blank" rel="noopener"><code>id</code></a></td>
+<td><code>SELECT</code> 标识符</td>
+<td>The <code>SELECT</code> identifier</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_select_type" target="_blank" rel="noopener"><code>select_type</code></a></td>
+<td><code>SELECT</code> 类型</td>
+<td>The <code>SELECT</code> type</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_table" target="_blank" rel="noopener"><code>table</code></a></td>
+<td>引用的表名</td>
+<td>The table for the output row</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_partitions" target="_blank" rel="noopener"><code>partitions</code></a></td>
+<td>匹配的分区</td>
+<td>The matching partitions</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_type" target="_blank" rel="noopener"><code>type</code></a></td>
+<td>连接类型</td>
+<td>The join type</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_possible_keys" target="_blank" rel="noopener"><code>possible_keys</code></a></td>
+<td>可选的索引</td>
+<td>The possible indexes to choose</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_key" target="_blank" rel="noopener"><code>key</code></a></td>
+<td>实际选择的索引</td>
+<td>The index actually chosen</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_key_len" target="_blank" rel="noopener"><code>key_len</code></a></td>
+<td>实际所选 key 的长度</td>
+<td>The length of the chosen key</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_ref" target="_blank" rel="noopener"><code>ref</code></a></td>
+<td>与索引比较的列</td>
+<td>The columns compared to the index</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_rows" target="_blank" rel="noopener"><code>rows</code></a></td>
+<td>扫描行数</td>
+<td>Estimate of rows to be examined</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_filtered" target="_blank" rel="noopener"><code>filtered</code></a></td>
+<td>按表条件过滤的行百分比</td>
+<td>Percentage of rows filtered by table condition</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain_extra" target="_blank" rel="noopener"><code>Extra</code></a></td>
+<td>附加信息</td>
+<td>Additional information</td>
+</tr>
+</tbody></table>
+<h1 id="id"><a href="#id" class="headerlink" title="id"></a>id</h1><p><code>id</code> 列的编号是 <code>SELECT</code> 的序列号，有几个 <code>SELECT</code> 就有几个 <code>id</code>。<code>id</code> 值越大执行优先级越高，<code>id</code> 值相同则从上往下执行，<code>id</code> 值为 <code>NULL</code> 则最后执行。</p>
+<h1 id="select-type"><a href="#select-type" class="headerlink" title="select_type"></a>select_type</h1><p>表示查询类型是简单查询还是复杂查询。常见 <code>SELECT</code> 类型如下：</p>
+<table>
+<thead>
+<tr>
+<th><code>select_type</code> Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>SIMPLE</code></td>
+<td>Simple <a href="https://dev.mysql.com/doc/refman/5.7/en/select.html" target="_blank" rel="noopener"><code>SELECT</code></a> (not using <a href="https://dev.mysql.com/doc/refman/5.7/en/union.html" target="_blank" rel="noopener"><code>UNION</code></a> or subqueries)</td>
+</tr>
+<tr>
+<td><code>PRIMARY</code></td>
+<td>Outermost <a href="https://dev.mysql.com/doc/refman/5.7/en/select.html" target="_blank" rel="noopener"><code>SELECT</code></a></td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/union.html" target="_blank" rel="noopener"><code>UNION</code></a></td>
+<td>Second or later <a href="https://dev.mysql.com/doc/refman/5.7/en/select.html" target="_blank" rel="noopener"><code>SELECT</code></a> statement in a <a href="https://dev.mysql.com/doc/refman/5.7/en/union.html" target="_blank" rel="noopener"><code>UNION</code></a></td>
+</tr>
+<tr>
+<td><code>UNION RESULT</code></td>
+<td>Result of a <a href="https://dev.mysql.com/doc/refman/5.7/en/union.html" target="_blank" rel="noopener"><code>UNION</code></a></td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/optimizer-hints.html#optimizer-hints-subquery" target="_blank" rel="noopener"><code>SUBQUERY</code></a></td>
+<td>First <a href="https://dev.mysql.com/doc/refman/5.7/en/select.html" target="_blank" rel="noopener"><code>SELECT</code></a> in subquery</td>
+</tr>
+<tr>
+<td><code>DERIVED</code></td>
+<td>Derived table</td>
+</tr>
+<tr>
+<td><code>MATERIALIZED</code></td>
+<td>Materialized subquery</td>
+</tr>
+</tbody></table>
+<h1 id="table"><a href="#table" class="headerlink" title="table"></a>table</h1><p>表示输出行所引用的表名，特殊情况如下：</p>
+<ul>
+<li>&lt;union<em>M</em>,<em>N</em>&gt;：该行指的是 <code>id</code> 值为 <em>M</em> 和 <em>N</em> 的并集。当有 <code>UNION</code> 时，<code>UNION RESULT</code> 的 <code>table</code> 列的值为 &lt;union<em>M</em>,<em>N</em>&gt;，表示参与并集的 <code>id</code> 查询编号为 <em>M</em> 和 <em>N</em>。</li>
+<li>&lt;derived<em>N</em>&gt;：当 <code>FROM</code> 子句中有子查询时， <code>table</code> 列为 &lt;derived<em>N</em>&gt;，表示当前查询依赖于 id=N 的查询结果，于是先执行 id=N 的查询。</li>
+<li>&lt;subquery<em>N</em>&gt;</li>
+</ul>
+<h1 id="type"><a href="#type" class="headerlink" title="type"></a>type</h1><p>单表查询的性能对比：<code>const</code> &gt; <code>ref</code> &gt; <code>range</code> &gt; <code>index</code> &gt; <code>ALL</code>。一般来说，得保证查询达到 <code>range</code> 级别，最好达到 <code>ref</code> 级别。</p>
+<h2 id="system"><a href="#system" class="headerlink" title="system"></a>system</h2><p>该表只有一行。是 <code>const</code> 连接类型的特例。</p>
+<h2 id="const"><a href="#const" class="headerlink" title="const"></a>const</h2><p>该表最多只有一个匹配行，该行在查询开始时读取。因为只有一行，所以优化器的其余部分可以将这一行中列的值视为常量。<code>const</code> 表非常快，因为它们只能读取一次。</p>
+<p>当主键索引（<code>PRIMARY KEY</code> ）或唯一索引（<code>UNIQUE KEY</code>）与常量值比较时使用 <code>const</code> 类型。如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> tbl_name <span class="keyword">WHERE</span> primary_key = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> tbl_name <span class="keyword">WHERE</span> primary_key_part1 = <span class="number">1</span> <span class="keyword">AND</span> primary_key_part2 = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> tbl_name <span class="keyword">WHERE</span> unique_key = <span class="string">'001'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> tbl_name <span class="keyword">WHERE</span> unique_key_part1 = <span class="string">'001'</span> <span class="keyword">AND</span> unique_key_part2 = <span class="string">'002'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> ref_table,other_table</span><br><span class="line">  <span class="keyword">WHERE</span> ref_table.unique_key_column = other_table.unique_key_column</span><br><span class="line">  <span class="keyword">AND</span> other_table.unique_key_column = <span class="string">'001'</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="eq-ref"><a href="#eq-ref" class="headerlink" title="eq_ref"></a>eq_ref</h2><p>对于 <code>other_table</code> 中的每行，仅从 <code>ref_table</code> 中读取唯一一行。<code>eq_ref</code> 类型用于主键索引（<code>PRIMARY KEY</code> ）或 <code>NOT NULL</code> 的唯一索引（<code>UNIQUE KEY</code>），且索引被表连接所使用时。除了 <code>system</code> 和 <code>const</code> 类型之外，这是最好的连接类型。<code>select_type=SIMPLE</code> 简单查询类型不会出现这种类型。</p>
+<p>例子：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> ref_table,other_table</span><br><span class="line">  <span class="keyword">WHERE</span> ref_table.unique_key_column = other_table.column;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> ref_table,other_table</span><br><span class="line">  <span class="keyword">WHERE</span> ref_table.unique_key_column_part1 = other_table.column</span><br><span class="line">  <span class="keyword">AND</span> ref_table.unique_key_column_part2 = <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ref"><a href="#ref" class="headerlink" title="ref"></a>ref</h2><p>对于 <code>other_table</code> 中的每行，从 <code>ref_table</code> 中读取所有匹配行。<code>ref</code> 类型用于普通索引或联合索引的最左前缀列（<code>leftmost prefix of the key</code>），即无法根据键值查询到唯一一行。如果使用的索引仅匹配几行结果，则也是一种很好的连接类型。</p>
+<p>例子：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> ref_table <span class="keyword">WHERE</span> key_column = expr;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> ref_table <span class="keyword">WHERE</span> key_column_part1 = expr;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> ref_table,other_table</span><br><span class="line">  <span class="keyword">WHERE</span> ref_table.key_column = other_table.column;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> ref_table,other_table</span><br><span class="line">  <span class="keyword">WHERE</span> ref_table.key_column_part1 = other_table.column</span><br><span class="line">  <span class="keyword">AND</span> ref_table.key_column_part2 = <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="range"><a href="#range" class="headerlink" title="range"></a>range</h2><p>使用索引进行范围查询时，例如：<code>=</code>, <code>&lt;&gt;</code>, <code>&gt;</code>, <code>&gt;=</code>, <code>&lt;</code>, <code>&lt;=</code>,  <code>&lt;=&gt;</code>, <code>IS NULL</code>, <code>BETWEEN</code>, <code>LIKE</code>, <code>IN()</code>。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> tbl_name</span><br><span class="line">  <span class="keyword">WHERE</span> key_column = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> tbl_name</span><br><span class="line">  <span class="keyword">WHERE</span> key_column <span class="keyword">BETWEEN</span> <span class="number">10</span> <span class="keyword">and</span> <span class="number">20</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> tbl_name</span><br><span class="line">  <span class="keyword">WHERE</span> key_column <span class="keyword">IN</span> (<span class="number">10</span>,<span class="number">20</span>,<span class="number">30</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> tbl_name</span><br><span class="line">  <span class="keyword">WHERE</span> key_part1 = <span class="number">10</span> <span class="keyword">AND</span> key_part2 <span class="keyword">IN</span> (<span class="number">10</span>,<span class="number">20</span>,<span class="number">30</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="index"><a href="#index" class="headerlink" title="index"></a>index</h2><p>索引扫描，类似于 <code>ALL</code> 全表扫描。以下情况发生：</p>
+<ul>
+<li><p>覆盖索引（<code>covering index</code>）。此时 <code>Extra</code> 列显示 <code>Using index</code>。覆盖索引扫描通常比全表扫描速度更快，因为其存储空间更小。例子：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> primary_key <span class="keyword">FROM</span> tbl_name;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> unique_key <span class="keyword">FROM</span> tbl_name;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(primary_key) <span class="keyword">FROM</span> tbl_name;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(unique_key) <span class="keyword">FROM</span> tbl_name;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="ALL"><a href="#ALL" class="headerlink" title="ALL"></a>ALL</h2><p><a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_full_table_scan" target="_blank" rel="noopener">全表扫描</a>。此时必须增加索引优化查询。</p>
+<p>全表扫描发生的情况如下：</p>
+<ul>
+<li>小表，此时全表扫描比二级索引扫描再回表的速度要快；</li>
+<li><code>ON</code> 或 <code>WHERE</code> 子句没有可用的索引；</li>
+<li>查询的字段虽然使用了索引，但查询条件覆盖的范围太大以至于还不如全表扫描。优化方式详见：<a href="https://dev.mysql.com/doc/refman/5.7/en/where-optimization.html" target="_blank" rel="noopener">Section 8.2.1.1, “WHERE Clause Optimization”</a></li>
+<li>使用了区分度（cardinality）低的索引，索引扫描范围太大以至于还不如全表扫描。如果是统计不准，可以用 <code>ANALYZE TABLE</code> 语句优化：<a href="https://dev.mysql.com/doc/refman/5.7/en/analyze-table.html" target="_blank" rel="noopener">Section 13.7.2.1, “ANALYZE TABLE Syntax”</a></li>
+</ul>
+<h1 id="possible-keys"><a href="#possible-keys" class="headerlink" title="possible_keys"></a>possible_keys</h1><p>表示 MySQL 可选的索引。</p>
+<p>如果此列为 <code>NULL</code>，表示 MySQL 没有可选的索引。此时，可以检查 <code>WHERE</code> 子句是否引用了某些适合建立索引的列，建立索引以提升查询性能。</p>
+<h1 id="key"><a href="#key" class="headerlink" title="key"></a>key</h1><p>表示 MySQL 实际选择的索引。</p>
+<ul>
+<li>如果此列为 <code>NULL</code>，表示 MySQL 没有找到可用于提高查询性能的索引。</li>
+<li>如果 <code>possible_keys NOT NULL</code>，但 <code>key NULL</code>，可能是因为表中数据不多，MySQL 认为索引对此查询帮助不大，选择了全表扫描。</li>
+</ul>
+<p>如需强制 MySQL 使用或忽略 <code>possible_keys</code> 中列出的索引，可以在查询中使用 <code>FORCE INDEX</code>、<code>USE INDEX</code> 或 <code>IGNORE INDEX</code>。详见：<a href="https://dev.mysql.com/doc/refman/5.7/en/index-hints.html" target="_blank" rel="noopener">索引提示</a>。</p>
+<h1 id="key-len"><a href="#key-len" class="headerlink" title="key_len"></a>key_len</h1><p>表示 MySQL 实际选择的索引长度。如果该索引为联合索引，可用于判断 MySQL 实际使用了联合索引中的多少个字段。如果 <code>key</code> 列为 <code>NULL</code>，<code>key_len</code> 列也为 <code>NULL</code>。</p>
+<p><code>key_len</code> 计算规则如下：</p>
+<ul>
+<li><p>使用 <code>NULL</code> 需要额外增加 1 Byte 记录是否为 <code>NULL</code>。并且进行比较和计算时要对 <code>NULL</code> 值做特别的处理，因此尽可能把所有列定义为 <code>NOT NULL</code>。</p>
+</li>
+<li><p>各个类型：</p>
+<ul>
+<li>整数类型<ul>
+<li><code>TINYINT</code> 1 Byte</li>
+<li><code>SMALLINT</code> 2 Bytes</li>
+<li><code>MEDIUMINT</code> 3 Bytes</li>
+<li><code>INT</code> 4 Bytes</li>
+<li><code>BIGINT</code> 8 Bytes</li>
+</ul>
+</li>
+<li>日期与时间类型<ul>
+<li><code>DATE</code> 3 Bytes</li>
+<li><code>TIMESTAMP</code> 4 Bytes</li>
+<li><code>DATETIME</code> 8 Bytes</li>
+</ul>
+</li>
+<li>字符串类型<ul>
+<li><code>char(n)</code>：如果字符集为 <code>utf8</code>，则长度为 3n Bytes</li>
+<li><code>varchar(n)</code>：如果字符集为 <code>utf8</code>，则长度为 3n + 2 Bytes。额外 2 Bytes 用于存储长度。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>各个字符集：</p>
+<ul>
+<li><code>latin1</code> 编码一个字符 1 Byte</li>
+<li><code>gbk</code> 编码一个字符 2 Bytes</li>
+<li><code>utf8</code> 编码一个字符 3 Bytes</li>
+<li><code>utf8mb4</code> 编码一个字符 4 Bytes</li>
+</ul>
+</li>
+<li><p>创建索引的时候可以指定索引的长度，例如：<code>alter table test add index idx_username (username(30));</code>。长度 30 指的是字符的个数。</p>
+</li>
+<li><p><code>InnoDB</code> 索引最大长度为 767 Bytes，引自<a href="https://dev.mysql.com/doc/refman/5.7/en/create-table.html" target="_blank" rel="noopener">官方文档</a>：</p>
+<blockquote>
+<p><em>key_part</em>:<br><em>col_name</em> [(<em>length</em>)] [ASC | DESC]</p>
+<p><em>index_type</em>:<br>USING {BTREE | HASH}</p>
+<blockquote>
+<p>Prefixes, defined by the <em>length</em> attribute, can be up to 767 bytes long for <code>InnoDB</code> tables or 3072 bytes if the <a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-parameters.html#sysvar_innodb_large_prefix" target="_blank" rel="noopener"><code>innodb_large_prefix</code></a> option is enabled. For <code>MyISAM</code> tables, the prefix length limit is 1000 bytes.</p>
+</blockquote>
+</blockquote>
+</li>
+</ul>
+<p>举个例子，在字符集为 <code>utf8</code> 的情况下，<code>n</code> 最大只能为 <code>(767 - 2 (存储长度)) / 3 = 765 / 3 = 255 个字符</code>。因此当字符串过长时，MySQL 最多会将开头 255 个字符串截取出来作为索引。一个例子：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`student`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`username`</span> <span class="built_in">varchar</span>(<span class="number">256</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`password`</span> <span class="built_in">varchar</span>(<span class="number">1</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>),</span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`idx_username`</span> (<span class="string">`username`</span>(<span class="number">255</span>)) <span class="keyword">USING</span> BTREE,</span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`idx_password`</span> (<span class="string">`password`</span>) <span class="keyword">USING</span> BTREE</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- key_len: 255 * 3 + 2 + 1 = 768 Bytes (额外增加 1 Byte 记录是否为 NULL)</span></span><br><span class="line">mysql&gt; explain select username from student where username = 'pete';</span><br><span class="line">+<span class="comment">----+-------------+---------+------+---------------+--------------+---------+-------+------+-------------+</span></span><br><span class="line">| id | select_type | table   | type | possible_keys | key          | key_len | ref   | rows | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+---------+------+---------------+--------------+---------+-------+------+-------------+</span></span><br><span class="line">|  1 | SIMPLE      | student | ref  | idx_username  | idx_username | 768     | const |    1 | Using where |</span><br><span class="line">+<span class="comment">----+-------------+---------+------+---------------+--------------+---------+-------+------+-------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- key_len: 1 * 3 + 2 + 1 = 6 Bytes</span></span><br><span class="line">mysql&gt; explain select password from student where password = 'pete';</span><br><span class="line">+<span class="comment">----+-------------+---------+------+---------------+--------------+---------+-------+------+--------------------------+</span></span><br><span class="line">| id | select_type | table   | type | possible_keys | key          | key_len | ref   | rows | Extra                    |</span><br><span class="line">+<span class="comment">----+-------------+---------+------+---------------+--------------+---------+-------+------+--------------------------+</span></span><br><span class="line">|  1 | SIMPLE      | student | ref  | idx_password  | idx_password | 6       | const |    1 | Using where; Using index |</span><br><span class="line">+<span class="comment">----+-------------+---------+------+---------------+--------------+---------+-------+------+--------------------------+</span></span><br></pre></td></tr></table></figure>
+
+<p>如果使用过长的索引，例如修改了字符串编码类型、增加联合索引列，则报错如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[Err] 1071 - Specified key was too long; max key length is 767 bytes</span><br></pre></td></tr></table></figure>
+
+<h1 id="ref-1"><a href="#ref-1" class="headerlink" title="ref"></a>ref</h1><p><code>ref</code> 显示与 <code>key</code> 列（实际选择的索引）比较的内容，可选值：</p>
+<ul>
+<li>列名</li>
+<li><code>const</code>：常量值</li>
+<li><code>func</code>：值为某些函数的结果</li>
+<li><code>NULL</code>：范围查询（<code>type=range</code>）</li>
+</ul>
+<p>例如联合索引如下，使用三个索引列查询时，执行计划如下（注意 <code>key_len</code> 和 <code>ref</code>）：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">`channel_task_no` varchar(60) NOT NULL,</span><br><span class="line">`reconciliation_code` tinyint(4) unsigned NOT NULL DEFAULT '0',</span><br><span class="line">`reconciliation_status` tinyint(4) unsigned NOT NULL DEFAULT '0',</span><br><span class="line">KEY `idx_taskno_rcode_rstatus` (`channel_task_no`,`reconciliation_code`,`reconciliation_status`) USING BTREE</span><br><span class="line"></span><br><span class="line">+<span class="comment">----+-------------+-------+------+--------------------------+--------------------------+---------+-------------------+------+-----------------------+</span></span><br><span class="line">| id | select_type | table | type | possible_keys            | key                      | key_len | ref               | rows | Extra                 |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+--------------------------+--------------------------+---------+-------------------+------+-----------------------+</span></span><br><span class="line">|  1 | SIMPLE      | t_xxx | ref  | idx_taskno_rcode_rstatus | idx_taskno_rcode_rstatus | 184     | const,const,const |    1 | Using index condition |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+--------------------------+--------------------------+---------+-------------------+------+-----------------------+</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="rows"><a href="#rows" class="headerlink" title="rows"></a>rows</h1><p>表示 MySQL 认为执行查询必须扫描的行数。</p>
+<p>对于 InnoDB 表，此数字是估计值，可能并不总是准确。</p>
+<p>当 <code>prossible_keys</code> 存在多个可选索引时，优化器会选择一个认为最优的执行方案，以最小的代价去执行语句。其中，这个扫描行数就是影响执行代价的因素之一。扫描的行数越少，意味着访问磁盘数据的 IO 次数越少，消耗的 CPU 资源也越少。</p>
+<p>当然，扫描行数并不是唯一的判断标准，优化器还会结合是否使用临时表、是否排序等因素进行综合判断。</p>
+<p>所以在实践中，如果你发现 explain 的结果预估的 <code>rows</code> 值跟实际情况差距比较大，可以采用执行 <code>analyze table</code> 重新统计信息。</p>
+<blockquote>
+<p>在数据库的慢查询日志中看到一个 rows_examined 的字段，表示这个语句执行过程中扫描了多少行。这个值就是在<strong>执行器每次调用引擎获取数据行</strong>的时候累加的。</p>
+<p>在有些场景下，执行器调用一次，在引擎内部则扫描了多行，因此引擎扫描行数跟 rows_examined 并不是完全相同的。</p>
+</blockquote>
+<h1 id="Extra"><a href="#Extra" class="headerlink" title="Extra"></a>Extra</h1><p>这一列显示的是额外信息。如果想要查询越快越好，需要特别留意 <code>Extra</code> 列是否出现以下情况：</p>
+<table>
+<thead>
+<tr>
+<th>Extra</th>
+<th>缓冲区</th>
+<th>大小配置</th>
+<th>数据结构</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Using filesort</code></td>
+<td><code>sort_buffer</code></td>
+<td><code>sort_buffer_size</code></td>
+<td>有序数组</td>
+<td>使用了“外部排序”（全字段排序或 rowid 排序）</td>
+</tr>
+<tr>
+<td><code>Using join buffer (Block Nested Loop)</code></td>
+<td><code>join_buffer</code></td>
+<td><code>join_buffer_size</code></td>
+<td>无序数组</td>
+<td>使用了“基于块的嵌套循环连接”算法（Block Nested-Loop Join（BNL））</td>
+</tr>
+<tr>
+<td><code>Using temporary</code></td>
+<td>临时表</td>
+<td>小于 <code>tmp_table_size</code> 为内存临时表，否则为磁盘临时表（可以使用 <code>SQL_BIG_RESULT</code> 直接指定）</td>
+<td>二维表结构（类似于 Map，Key-Value）</td>
+<td>如果执行逻辑需要用到二维表特性，就会优先考虑使用临时表。例如：<code>DISTINCT</code>、<code>GROUP BY</code>、<code>UNION</code></td>
+</tr>
+</tbody></table>
+<p>这三个数据结构都是用来存放 <code>SELECT</code> 语句执行过程中的中间数据，以辅助 SQL 语句的执行的。这些情况通常都能通过索引优化。</p>
+<p>各种常见的重要值如下：</p>
+<h2 id="Using-index"><a href="#Using-index" class="headerlink" title="Using index"></a>Using index</h2><p>使用了覆盖索引。</p>
+<h2 id="Using-where"><a href="#Using-where" class="headerlink" title="Using where"></a>Using where</h2><p>使用 <code>WHERE</code> 条件过滤结果，但查询的列未被索引覆盖。</p>
+<h2 id="Using-index-condition"><a href="#Using-index-condition" class="headerlink" title="Using index condition"></a>Using index condition</h2><p>查询的列不完全被索引覆盖。</p>
+<p>例如：<a href="https://dev.mysql.com/doc/refman/5.7/en/index-condition-pushdown-optimization.html" target="_blank" rel="noopener">索引下推优化（ICP）</a></p>
+<h2 id="Using-temporary"><a href="#Using-temporary" class="headerlink" title="Using temporary"></a>Using temporary</h2><p>MySQL 需要创建一张临时表来处理查询。通常发生于查询包含 <code>DISTINCT</code>、<code>GROUP BY</code> 或 <code>ORDER BY</code> 子句等需要数据去重的场景。出现这种情况一般是要进行优化的，首先想到的是用索引进行优化。</p>
+<h2 id="Using-join-buffer"><a href="#Using-join-buffer" class="headerlink" title="Using join buffer"></a>Using join buffer</h2><p>使用 BNL 算法进行表连接。这种情况下一般考虑使用索引对被驱动表的表连接字段进行优化，以使用更高效的 NLJ 算法。</p>
+<h2 id="Using-filesort"><a href="#Using-filesort" class="headerlink" title="Using filesort"></a>Using filesort</h2><p>将用外部排序而不是索引排序，数据较少时从内存排序，否则需要在磁盘完成排序。这种情况下一般考虑使用索引进行优化。</p>
+<p>优化参考：<a href="https://dev.mysql.com/doc/refman/5.7/en/order-by-optimization.html" target="_blank" rel="noopener">Section 8.2.1.14, “ORDER BY Optimization”</a></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://dev.mysql.com/doc/refman/5.7/en/execution-plan-information.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/execution-plan-information.html</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/analyze-table.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/analyze-table.html</a></p>
+<p><em>MySQL Workbench</em> has a Visual Explain capability that provides a visual representation of <a href="https://dev.mysql.com/doc/refman/5.7/en/explain.html" target="_blank" rel="noopener">EXPLAIN</a> output. See <a href="https://dev.mysql.com/doc/workbench/en/wb-tutorial-visual-explain-dbt3.html" target="_blank" rel="noopener">Tutorial: Using Explain to Improve Query Performance</a>.</p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/09/16/jvm-tools/" class="post-title-link">Java 虚拟机系列（四）性能监控、故障处理工具总结</a></h2><div class="post-info">2019-09-16<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><h1 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h1><h2 id="命令行工具"><a href="#命令行工具" class="headerlink" title="命令行工具"></a>命令行工具</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>全称</th>
+<th>作用</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>jps</code></td>
+<td>虚拟机进程状况工具（JVM Process Status Tool），</td>
+<td>显示正在运行的所有 HotSpot VM 进程。</td>
+<td></td>
+</tr>
+<tr>
+<td><code>jstat</code></td>
+<td>虚拟机统计信息监控工具（JVM Statistics Monitoring Tool）</td>
+<td>用于监视本地或远程 HotSpot VM 各方面的运行数据，例如类加载/卸载、运行时数据区、GC、JIT。</td>
+<td></td>
+</tr>
+<tr>
+<td><code>jinfo</code></td>
+<td>Java 配置信息工具（Configuration Info for Java）</td>
+<td>实时显示或修改虚拟机配置信息。例如 <code>jinfo -flag MetaspaceSize VMID</code></td>
+<td>在 JDK 9 中已集成到 <code>JHSDB</code></td>
+</tr>
+<tr>
+<td><code>jmap</code></td>
+<td>Memory Map for Java</td>
+<td>用于实时生成虚拟机的堆内存转储快照（heap dump/hprof 文件），或查看堆内存信息。其它转储方法：<br/><code>-XX:+HeapDumpOnOutOfMemoryError</code><br/><code>-XX:+HeapDumpOnCtrlBreak</code></td>
+<td>在 JDK 9 中已集成到 <code>JHSDB</code></td>
+</tr>
+<tr>
+<td><code>jhat</code></td>
+<td>JVM Heap Dump Browser</td>
+<td>用于分析 heap dump 文件，它会建立一个 HTTP/HTML 服务器，让用户可以在浏览器上查看分析结果。分析结果默认以包为单位进行分组显示，分析内存泄漏问题主要会使用到其中的 Heap Histogram（与 <code>jmap -histo</code> 功能一样）与 OQL 页签功能，前者可以找到内存中总容量最大的对象，后者是标准的对象查询语言，使用类似 SQL 的语法堆内存中的对象进行查询统计。</td>
+<td>在 JDK 9 中已被  <code>JHSDB</code> 替代</td>
+</tr>
+<tr>
+<td><code>jstack</code></td>
+<td>Stack Trace for Java</td>
+<td>显示虚拟机当前时刻的线程快照（thread dump/javacore 文件）。线程快照就是当前虚拟机内每一条线程正在执行的方法堆栈的集合，生成堆栈快照的目的通常是定位线程出现长时间停顿的原因，如线程间死锁、死循环、请求外部资源导致的长时间挂起等，都是导致线程长时间停顿的常见原因。</td>
+<td>在 JDK 9 中已集成到 <code>JHSDB</code></td>
+</tr>
+</tbody></table>
+<h2 id="可视化工具"><a href="#可视化工具" class="headerlink" title="可视化工具"></a>可视化工具</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>名称</th>
+<th>基于</th>
+<th>作用</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>jconsole</code></td>
+<td>Java Console</td>
+<td>JMX</td>
+<td>一款基于 JMX (Java Management Extensions) 的可视化监视、管理工具。它的主要功能是通过 JMX  的 MBean (Managed Bean) 对系统进行信息收集和参数动态调整。</td>
+<td>JDK 5 起免费提供</td>
+</tr>
+<tr>
+<td><code>jvisualvm</code></td>
+<td>Java VisualVM</td>
+<td>无需特殊 Agent</td>
+<td>拥有丰富的插件扩展。目前已经从 Oracle JDK 中分离出来，成为一个独立发展的开源项目：<a href="https://visualvm.github.io/" target="_blank" rel="noopener">https://visualvm.github.io/</a></td>
+<td>JDK 6 起免费提供</td>
+</tr>
+<tr>
+<td><code>jmc</code></td>
+<td>Java Mission Control</td>
+<td>Java Flight Recorder, JFR</td>
+<td>曾经是 BEA 公司的图形化诊断工具，随着 BEA 公司被 Oracle 收购而融合进 Oracle JDK。从 JDK 11 开始已被移除出 JDK。2018 年开源并交付给 Open JDK 组织管理。需要与 HotSpot 内部的 JFR 配合才能工作。</td>
+<td>JDK 7 起付费提供</td>
+</tr>
+<tr>
+<td><code>jhsdb</code></td>
+<td>Java HotSpot Debugger</td>
+<td>Serviceability Agent</td>
+<td>一个基于 Serviceability Agent 的 HotSpot 进程调试器。</td>
+<td>JDK 9 起免费提供</td>
+</tr>
+</tbody></table>
+<h2 id="反汇编工具"><a href="#反汇编工具" class="headerlink" title="反汇编工具"></a>反汇编工具</h2><blockquote>
+<p>大多数情况下，通过诸如javap等反编译工具来查看源码的字节码已经能够满足我们的日常需求，但是不排除在有些特定场景下，我们需要通过反汇编来查看相应的汇编指令。本文我们就来介绍两个很好用的工具——HSDIS、JITWatch</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>HSDIS (HotSpot disassembler)</td>
+<td>一款 HotSpot 虚拟机 JIT 编译代码的反汇编插件。</td>
+</tr>
+<tr>
+<td>JITWatch</td>
+<td>用于可视化分析。</td>
+</tr>
+</tbody></table>
+<p><a href="https://zhuanlan.zhihu.com/p/158168592?from_voters_page=true" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/158168592?from_voters_page=true</a></p>
+<h1 id="命令行工具-1"><a href="#命令行工具-1" class="headerlink" title="命令行工具"></a>命令行工具</h1><h2 id="jps"><a href="#jps" class="headerlink" title="jps"></a>jps</h2><p><code>jps</code> 命令的功能与 <code>ps</code> 类似，用于列出正在运行的 JVM 进程状态。</p>
+<p>常用参数：</p>
+<ul>
+<li><code>-q</code> 只输出 LVMID，省略主类的名称。</li>
+<li><code>-l</code> 输出主类的全名，如果进程执行的是 JAR 包，则输出 JAR 路径。</li>
+<li><code>-m</code> 输出虚拟机进程启动时传递给主类 <code>main()</code> 函数的参数。</li>
+<li><code>-v</code> 输出虚拟机进程启动时的 JVM 参数。</li>
+</ul>
+<h2 id="jstat"><a href="#jstat" class="headerlink" title="jstat"></a>jstat</h2><p><code>jstat</code> 命令用于监视当前 JVM 的各种运行状态信息。在用户体验上也许不如 JMC、VisualVM 等可视化监控工具以图表形式展示那样直观，但在实际生产环境中不一定可以使用 GUI 图形界面，因此在没有 GUI、只提供命令行界面的服务器上，仍是<strong>运行期</strong>定位虚拟机性能问题的常用工具。</p>
+<p>命令格式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ jstat options vmid [interval[s|ms] [count]]</span><br></pre></td></tr></table></figure>
+
+<p>常用参数：</p>
+<ul>
+<li>options，要查询的虚拟机信息，主要分为三类：<ul>
+<li>类加载<ul>
+<li><code>-class</code> 监视类加载、卸载数量、总空间以及类加载所耗费的时间</li>
+</ul>
+</li>
+<li>运行时数据区、GC<ul>
+<li><code>-gccapacity</code> 查看 GC 情况和 JVM 各区的<strong>容量</strong>（字节）</li>
+<li><code>-gc</code> 查看 GC 情况和 JVM 各区的<strong>容量</strong>和<strong>使用量</strong>（字节）</li>
+<li><code>-gcutil</code> 查看 GC 情况和 JVM 各区的<strong>使用率</strong>（%）</li>
+<li>…</li>
+</ul>
+</li>
+<li>JIT<ul>
+<li><code>-compiler</code> 输出即时编译器编译过的方法、耗时等信息</li>
+<li><code>-printcompilation</code> 输出已经被即时编译的方法</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>vmid，如果是本地虚拟机进程，VMID 与 LVMID 一致；如果是远程虚拟机进程，则 VMID 的格式为：<code>[protocol:][//]lvmid[@hostname[:port]/servername]</code></li>
+<li>interval，间隔时间，单位为秒或者毫秒</li>
+<li>count，打印次数，如果缺省则打印无数次</li>
+</ul>
+<p>示例展示：</p>
+<p>此示例连接到 lvmid 21891，并以 250 毫秒的间隔获取 7 个样本，每 6 行显示一次标题（<code>[-h&lt;lines&gt;]</code>），并显示由 <code>-gcutil</code> 选项指定的输出：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$ jstat -gcutil -h6 21891 250 7</span><br><span class="line"></span><br><span class="line">  S0     S1     E      O      P     YGC    YGCT    FGC    FGCT     GCT</span><br><span class="line"></span><br><span class="line"> 12.44   0.00  27.20   9.49  96.70    78    0.176     5    0.495    0.672</span><br><span class="line"></span><br><span class="line"> 12.44   0.00  62.16   9.49  96.70    78    0.176     5    0.495    0.672</span><br><span class="line"></span><br><span class="line"> 12.44   0.00  83.97   9.49  96.70    78    0.176     5    0.495    0.672</span><br><span class="line"></span><br><span class="line">  0.00   7.74   0.00   9.51  96.70    79    0.177     5    0.495    0.673</span><br><span class="line"></span><br><span class="line">  0.00   7.74  23.37   9.51  96.70    79    0.177     5    0.495    0.673</span><br><span class="line"></span><br><span class="line">  0.00   7.74  43.82   9.51  96.70    79    0.177     5    0.495    0.673</span><br><span class="line"></span><br><span class="line">  S0     S1     E      O      P     YGC    YGCT    FGC    FGCT     GCT</span><br><span class="line"></span><br><span class="line">  0.00   7.74  58.11   9.51  96.71    79    0.177     5    0.495    0.673</span><br></pre></td></tr></table></figure>
+
+<p>该示例结果显示，对象首先都在 Eden 区中创建，在第 3 和第 4 个样本之间由于 Eden 区装满，发生了 Young GC， gc 耗时 0.001 秒，并将对象从 Eden 区（E）提升到 Old 区（O），导致 Old 区的使用率从 9.49％ 增加到 9.51％。</p>
+<p> <code>-gcutil</code> 选项每列说明：</p>
+<table>
+<thead>
+<tr>
+<th>列名</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>S0</td>
+<td>Heap 上的 Survivor space 0 区（单位<strong>%</strong>）</td>
+</tr>
+<tr>
+<td>S1</td>
+<td>Heap 上的 Survivor space 1 区（单位<strong>%</strong>）</td>
+</tr>
+<tr>
+<td>E</td>
+<td>Heap 上的 Eden space 区（单位<strong>%</strong>）</td>
+</tr>
+<tr>
+<td>O</td>
+<td>Heap 上的 Old space 区（单位<strong>%</strong>）</td>
+</tr>
+<tr>
+<td>P</td>
+<td>Perm space 区（单位<strong>%</strong>）</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>列名</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>YGC</td>
+<td>从应用程序启动到采样时发生 Young GC 的次数，<strong>E 区满后触发</strong></td>
+</tr>
+<tr>
+<td>YGCT</td>
+<td>从应用程序启动到采样时 Young GC 所用的时间（单位秒）</td>
+</tr>
+<tr>
+<td>FGC</td>
+<td>从应用程序启动到采样时发生 Full GC 的次数， <strong>O 区满后触发</strong></td>
+</tr>
+<tr>
+<td>FGCT</td>
+<td>从应用程序启动到采样时 Full GC 所用的时间（单位秒）</td>
+</tr>
+<tr>
+<td>GCT</td>
+<td>从应用程序启动到采样时用于垃圾回收的<strong>总时间</strong>（单位秒）</td>
+</tr>
+</tbody></table>
+<h2 id="jmap"><a href="#jmap" class="headerlink" title="jmap"></a>jmap</h2><p><code>jmap</code> 命令用于生成虚拟机的内存转储快照（heap dump 文件），或查看堆内存信息。</p>
+<p>常用参数：</p>
+<ul>
+<li><code>-dump</code> 生成 Java 堆转储快照。格式为 <code>-dump:[live,]format=b,file=&lt;filename&gt;</code>，其中 <code>live</code> 子参数表示是否只 dump 出存活的对象。</li>
+<li><code>-histo</code> 显示堆中对象统计信息，包括类、实例数量、合计容量。</li>
+<li><code>-heap</code> 查看当前堆内存的详细信息，如配置信息 <code>Heap Configuration</code>、使用情况 <code>Heap Usage</code>。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">$ jmap -heap 21090</span><br><span class="line">Attaching to process ID 21090, please wait...</span><br><span class="line">Debugger attached successfully.</span><br><span class="line">Server compiler detected.</span><br><span class="line">JVM version is 24.79-b02</span><br><span class="line"></span><br><span class="line">using thread-local object allocation.</span><br><span class="line">Parallel GC with 4 thread(s)</span><br><span class="line"></span><br><span class="line">Heap Configuration:</span><br><span class="line">   MinHeapFreeRatio &#x3D; 0</span><br><span class="line">   MaxHeapFreeRatio &#x3D; 100</span><br><span class="line">   MaxHeapSize      &#x3D; 3145728000 (3000.0MB)</span><br><span class="line">   NewSize          &#x3D; 2097152000 (2000.0MB)</span><br><span class="line">   MaxNewSize       &#x3D; 2097152000 (2000.0MB)</span><br><span class="line">   OldSize          &#x3D; 5439488 (5.1875MB)</span><br><span class="line">   NewRatio         &#x3D; 2</span><br><span class="line">   SurvivorRatio    &#x3D; 8</span><br><span class="line">   PermSize         &#x3D; 268435456 (256.0MB)  &#x2F;&#x2F; JDK8+ MetaspaceSize</span><br><span class="line">   MaxPermSize      &#x3D; 268435456 (256.0MB)  &#x2F;&#x2F; JDK8+ MaxMetaspaceSize</span><br><span class="line">   G1HeapRegionSize &#x3D; 0 (0.0MB)</span><br><span class="line"></span><br><span class="line">Heap Usage:</span><br><span class="line">PS Young Generation</span><br><span class="line">Eden Space:</span><br><span class="line">   capacity &#x3D; 1762656256 (1681.0MB)</span><br><span class="line">   used     &#x3D; 1420607552 (1354.7969360351562MB)</span><br><span class="line">   free     &#x3D; 342048704 (326.20306396484375MB)</span><br><span class="line">   80.59470172725499% used</span><br><span class="line">From Space:</span><br><span class="line">   capacity &#x3D; 138412032 (132.0MB)</span><br><span class="line">   used     &#x3D; 0 (0.0MB)</span><br><span class="line">   free     &#x3D; 138412032 (132.0MB)</span><br><span class="line">   0.0% used</span><br><span class="line">To Space:</span><br><span class="line">   capacity &#x3D; 138412032 (132.0MB)</span><br><span class="line">   used     &#x3D; 0 (0.0MB)</span><br><span class="line">   free     &#x3D; 138412032 (132.0MB)</span><br><span class="line">   0.0% used</span><br><span class="line">PS Old Generation</span><br><span class="line">   capacity &#x3D; 1048576000 (1000.0MB)</span><br><span class="line">   used     &#x3D; 1048403072 (999.8350830078125MB)</span><br><span class="line">   free     &#x3D; 172928 (0.1649169921875MB)</span><br><span class="line">   99.98350830078125% used</span><br><span class="line">PS Perm Generation  &#x2F;&#x2F; JDK8+ 没有该区域</span><br><span class="line">   capacity &#x3D; 268435456 (256.0MB)</span><br><span class="line">   used     &#x3D; 67917928 (64.7715835571289MB)</span><br><span class="line">   free     &#x3D; 200517528 (191.2284164428711MB)</span><br><span class="line">   25.30139982700348% used</span><br></pre></td></tr></table></figure>
+
+<p>注意，由于此例中使用的 JDK 7 版本，因此 Heap 中包含 Perm Generation。如果使用的 JDK 8 以上版本，则 Heap 不再包含此区域，取而代之的是在 Heap 之外有一块 Metaspace。</p>
+<p>例如上述例子通过 <code>jmap -heap pid</code> 命令发现了某个服务 O 区内存被占满的问题：<code>Old Generation</code> 达到 99.98350830078125% used，O 区内存被占满，可以通过 <code>jstack</code> 继续排查 JVM 内存的<strong>动态使用情况</strong>。</p>
+<h2 id="jstack"><a href="#jstack" class="headerlink" title="jstack"></a>jstack</h2><p><code>jstack</code> 命令用于 dump 出当前线程堆栈快照，根据堆栈信息我们可以定位到具体代码，所以它在 JVM 性能调优中使用得非常多。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">$ jstack 21090 &gt; &#x2F;tmp&#x2F;threaddump</span><br><span class="line">$ less &#x2F;tmp&#x2F;localfile</span><br><span class="line"></span><br><span class="line">Full thread dump Java HotSpot(TM) 64-Bit Server VM (24.79-b02 mixed mode):</span><br><span class="line"></span><br><span class="line">&quot;Attach Listener&quot; daemon prio&#x3D;10 tid&#x3D;0x00007f67e03b4800 nid&#x3D;0x7bb9 waiting on condition [0x0000000000000000]</span><br><span class="line">   java.lang.Thread.State: RUNNABLE</span><br><span class="line"></span><br><span class="line">&quot;catalina-exec-8000&quot; daemon prio&#x3D;10 tid&#x3D;0x00007f67ba4a0000 nid&#x3D;0x795a waiting on condition [0x00007f6558c0a000]</span><br><span class="line">   java.lang.Thread.State: WAITING (parking)</span><br><span class="line">	at sun.misc.Unsafe.park(Native Method)</span><br><span class="line">	- parking to wait for  &lt;0x00000007886ab360&gt; (a java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject)</span><br><span class="line">	at java.util.concurrent.locks.LockSupport.park(LockSupport.java:186)</span><br><span class="line">	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2043)</span><br><span class="line">	at org.apache.http.pool.PoolEntryFuture.await(PoolEntryFuture.java:139)</span><br><span class="line">	at org.apache.http.pool.AbstractConnPool.getPoolEntryBlocking(AbstractConnPool.java:307)</span><br><span class="line">	at org.apache.http.pool.AbstractConnPool.access$000(AbstractConnPool.java:65)</span><br><span class="line">	at org.apache.http.pool.AbstractConnPool$2.getPoolEntry(AbstractConnPool.java:193)</span><br><span class="line">	at org.apache.http.pool.AbstractConnPool$2.getPoolEntry(AbstractConnPool.java:186)</span><br><span class="line">	at org.apache.http.pool.PoolEntryFuture.get(PoolEntryFuture.java:108)</span><br><span class="line">	at org.apache.http.impl.conn.PoolingClientConnectionManager.leaseConnection(PoolingClientConnectionManager.java:212)</span><br><span class="line">	at org.apache.http.impl.conn.PoolingClientConnectionManager$1.getConnection(PoolingClientConnectionManager.java:199)</span><br><span class="line">	at org.apache.http.impl.client.DefaultRequestDirector.execute(DefaultRequestDirector.java:424)</span><br><span class="line">	at org.apache.http.impl.client.AbstractHttpClient.doExecute(AbstractHttpClient.java:884)</span><br><span class="line">	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:82)</span><br><span class="line">	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:107)</span><br><span class="line">	at com.xxx.xxx.xxx.HttpClientService.doPost(HttpClientService.java:103)</span><br><span class="line">	......</span><br></pre></td></tr></table></figure>
+
+<p>由于导出的 <code>threaddump</code> 文件非常大，可以先统计下所有线程、或关注的线程分别处于什么状态：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ grep /tmp/threaddump | awk <span class="string">'&#123;print $2$3$4$5&#125;'</span> | sort | uniq -c | sort</span><br><span class="line"></span><br><span class="line">39  RUNNABLE</span><br><span class="line">21  TIMED_WAITING (onobjectmonitor)</span><br><span class="line">6   TIMED_WAITING (parking)</span><br><span class="line">51  TIMED_WAITING (sleeping)</span><br><span class="line">3   WAITING (onobjectmonitor)</span><br><span class="line">305 WAITING (parking)</span><br></pre></td></tr></table></figure>
+
+<p>发现有大量 <code>WAITING (parking)</code> 状态的线程。重新打开 <code>threaddump</code> 文件排查，根据堆栈可以定位到具体的问题代码，可以初步判断是 HTTP 连接耗尽资源导致的问题。</p>
+<h1 id="可视化工具-1"><a href="#可视化工具-1" class="headerlink" title="可视化工具"></a>可视化工具</h1><h2 id="VisualVM"><a href="#VisualVM" class="headerlink" title="VisualVM"></a>VisualVM</h2><p>VisualVM 拥有丰富的<a href="https://visualvm.github.io/plugins.html" target="_blank" rel="noopener">插件</a>扩展。目前已经从 Oracle JDK 中分离出来，成为一个独立发展的开源项目：<a href="https://visualvm.github.io/" target="_blank" rel="noopener">https://visualvm.github.io/</a></p>
+<p>例如：</p>
+<ul>
+<li><em>TDA</em> Plugin: Thread Dump Analyzer is a GUI for analyzing thread dumps generated by the Java VM.</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《深入理解 Java 虚拟机》</p>
+<p>《<a href="https://blog.csdn.net/u013970991/article/details/52036253" target="_blank" rel="noopener">使用 VisualVM 进行性能分析及调优</a>》</p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/09/10/jvm-gc/" class="post-title-link">Java 虚拟机系列（三）垃圾收集器总结</a></h2><div class="post-info">2019-09-10<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><p>本文总结下垃圾收集涉及的一些重点：</p>
+<p><img src="/img/java/jvm/gc_summary.png" alt="gc_summary"></p>
+<p>基于分代收集算法的垃圾收集器组合，总结如下图，常用于 JDK 8 及之前的版本：</p>
+<p><img src="/img/java/jvm/gc_combination.png" alt="generational_collection"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《深入理解 Java 虚拟机》</p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/09/01/jvm-runtime-data-areas/" class="post-title-link">Java 虚拟机系列（二）运行时数据区总结</a></h2><div class="post-info">2019-09-01<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>最近为了做春节大型活动，研究了下性能压测和 JVM 调优，先来看一张 JVM 监控图（硬件：4 核 8G）。</p>
+<p><img src="/img/java/jvm/jvm_monitor.png" alt="JVM 监控"></p>
+<p>6 小时的吞吐量为：(21600s - Young GC 35s + Old GC 0s) / 21600s = 99.8%，总吞吐量还是不错的（吞吐量就是 CPU 用于运行用户代码的时间与 CPU 总消耗时间的比值，即 <code>吞吐量 = 运行用户代码时间 / (运行用户代码时间 + GC 时间)</code>。如果虚拟机总共运行了 100 分钟，其中 GC 总耗时 1 分钟，那么吞吐量就是 99%。）。同时单次 Young GC 的平均耗时仅为 35s / 639 = 55 ms，停顿时间较短。</p>
+<p>如果还需要进一步优化，思路如下：</p>
+<ul>
+<li>合理调整 Old Gen 与 Young Gen 大小比例，以减少 Young GC 次数，但单次 GC 耗时可能会相应延长，具体需测试。</li>
+<li>更换垃圾收集器，并对垃圾收集器参数进行调优。</li>
+</ul>
+<p>下面介绍一些基础知识。</p>
+<h1 id="运行时数据区"><a href="#运行时数据区" class="headerlink" title="运行时数据区"></a>运行时数据区</h1><p>手绘的运行时数据区如下：</p>
+<p><img src="/img/java/jvm/runtime_data_areas.jpg" alt="jvm"></p>
+<p>JVM 定义了在程序执行期间使用的各种运行时数据区：</p>
+<ul>
+<li>其中一些数据区是在 JVM 启动时创建、仅在 JVM 退出时才被销毁。</li>
+<li>另外一些数据区是随每个线程创建及销毁。</li>
+</ul>
+<h2 id="PC-Register"><a href="#PC-Register" class="headerlink" title="PC Register"></a>PC Register</h2><p>JVM 可以一次支持多个线程执行。每个 JVM 线程都有专属的 <code>pc</code>（程序计数器 program counter）寄存器。在任何时候，每个 JVM 线程都在执行某个方法的代码，即该线程的当前方法（参考 <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.6" target="_blank" rel="noopener">栈帧（Frames）</a>一节）。</p>
+<p><code>pc</code> 寄存器的值可以为两种：</p>
+<ul>
+<li>如果当前执行的是非 <code>native</code> 方法，值为当前正在执行的 JVM 指令的地址（<code>returnAddress</code>）。</li>
+<li>如果是 <code>native</code> 方法，值为 undefined。</li>
+</ul>
+<p>JVM 的 <code>pc</code> 寄存器长度足以保存 <code>returnAddress</code> 或特定平台的本地指针。</p>
+<p>The <code>returnAddress</code> Type and Values :</p>
+<blockquote>
+<p>The <code>returnAddress</code> type is used by the Java Virtual Machine’s <em>jsr</em>, <em>ret</em>, and <em>jsr_w</em> instructions (<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.jsr" target="_blank" rel="noopener">§<em>jsr</em></a>, <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.ret" target="_blank" rel="noopener">§<em>ret</em></a>, <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.jsr_w" target="_blank" rel="noopener">§<em>jsr_w</em></a>). The values of the <code>returnAddress</code> type are pointers to the opcodes of Java Virtual Machine instructions. Unlike the numeric primitive types, the <code>returnAddress</code> type does not correspond to any Java programming language type and cannot be modified by the running program.</p>
+</blockquote>
+<h2 id="JVM-Stacks"><a href="#JVM-Stacks" class="headerlink" title="JVM Stacks"></a>JVM Stacks</h2><p>每个 JVM 线程都有一个私有的 <em>JVM Stack</em> 栈区，与该线程同时创建。JVM Stack 存储栈帧（参考 <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.6" target="_blank" rel="noopener">栈帧（Frames）</a>一节）。JVM Stack 类似于常规编程语言（例如 C 语言）：它保存局部变量和部分结果，并在方法调用和返回中起作用。由于 JVM Stack 的操作只有出栈和入栈，因此栈帧可能堆积。JVM Stack 的内存空间不必连续。</p>
+<p>规范允许 JVM Stack 要么是固定大小（通过 <code>-Xss</code> 指定大小）、要么是根据计算的需要进行动态扩容和缩容。如果 JVM Stack 的大小固定，则在创建每个 JVM Stack 时可以独立选择其大小。</p>
+<p>以下异常情况与 JVM Stack 相关：</p>
+<ul>
+<li>如果线程所需空间大于分配的 JVM Stack 空间，则 JVM 抛出 <code>StackOverflowError</code>。</li>
+<li>如果 JVM Stack 能够动态扩展，并尝试扩展，但是内存不足，则 JVM 抛出  <code>OutOfMemoryError</code>。</li>
+</ul>
+<h3 id="Frames"><a href="#Frames" class="headerlink" title="Frames"></a>Frames</h3><p>栈帧用于：</p>
+<ul>
+<li>存储数据和部分结果</li>
+<li>作为方法的返回值</li>
+<li>调度异常</li>
+<li>执行动态链接</li>
+</ul>
+<p>每次调用方法时都会创建一个栈帧。当方法调用完毕，无论是正常还是异常结束（例如抛出了未捕获的异常），栈帧都会销毁。栈帧由 JVM 栈区创建。每个栈帧都有它自己的局部变量数组（Local Variables Array）、操作数栈（Operand Stacks）、以及对当前类当前方法的运行时常量池的引用。</p>
+<p>局部变量数组和操作数栈的大小在编译时确定，并与栈帧关联的方法代码（参考 <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.7.3" target="_blank" rel="noopener">The <code>Code</code> Attribute</a>）一起提供。因此，栈帧数据结构的大小仅取决于 JVM 的实现，并且可以在方法调用时分配用于这些结构的内存。</p>
+<p>在给定线程的任何时候，只有一个在执行方法中的栈帧处于活动状态。该活动栈帧称为<em>当前帧（current frame）</em>，该方法称为<em>当前方法（current method）</em>，定义当前方法的类称为<em>当前类（current class）</em>。局部变量和操作数栈上的操作引用<em>当前帧</em>。</p>
+<p>如果当前方法调用了另一个方法或者该方法执行完毕，则该方法所处的帧不再是<em>当前帧</em>。调用方法时，将创建新的栈帧，并在控制权转移到新方法时变为<em>当前帧</em>。当方法返回时，<em>当前帧</em>将其方法调用的结果（如有）传递回前一帧并被丢弃，然后前一帧变回<em>当前帧</em>。</p>
+<p>注意，由线程创建的栈帧仅线程自身可见，无法被其它线程所引用。</p>
+<h2 id="Heap"><a href="#Heap" class="headerlink" title="Heap"></a>Heap</h2><p>JVM 具有一个在所有 JVM 线程之间共享的堆区（<em>Heap</em>），用于分配所有类实例和数组所需的内存。</p>
+<p>堆区在虚拟机启动时创建。堆中的对象由垃圾收集器（<em>garbage collector</em>）进行回收。对象永远不会显式释放。JVM 不假定任何类型的垃圾收集器，而由实现者根据系统要求自行选择实现。</p>
+<p>堆的大小可以是固定的，也可以根据计算的需要进行扩容，如果不需要更大空间的堆，可以进行缩容。堆区的内存空间不必连续。</p>
+<p>JVM 实现可以为用户提供堆的初始值配置。并且，如果堆可以动态扩容和缩容，还需提供堆的最大、最小值配置。</p>
+<p>以下异常情况与堆相关：</p>
+<ul>
+<li>如果所需的堆空间大于能够分配的堆空间，则 JVM 抛出  <code>OutOfMemoryError</code>。</li>
+</ul>
+<h2 id="Method-Area"><a href="#Method-Area" class="headerlink" title="Method Area"></a>Method Area</h2><p>JVM 具有一个在所有 JVM 线程之间共享的方法区（<em>Method Area</em>）。方法区类似于常规编程语言的编译代码的存储区域。它存储每个类的结构，例如运行时常量池、字段（field）及方法（method）的数据、以及方法（methods）和构造方法（constructors）的代码，包括用于类及其实例初始化和接口初始化的特殊方法（参考 <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.9" target="_blank" rel="noopener">Special Methods</a>）。 </p>
+<p>方法区在虚拟机启动时创建。尽管方法区在逻辑上是堆区的一部分，但是 JVM 实现可以选择不进行垃圾回收或压缩。JVM 规范没有规定方法区的位置或用于管理已编译代码的策略。</p>
+<p>方法区可以是固定大小的，或者根据计算的需要进行扩容，如果无需更大空间的方法区，可以进行缩容。方法区的内存空间不必连续。</p>
+<p>JVM 实现可以为用户提供方法区的初始值配置。在方法区大小可变的情况下，可以提供最大、最小值配置。</p>
+<p>以下异常情况与方法区相关：</p>
+<ul>
+<li>如果方法区的内存空间无法满足分配请求，则 JVM 抛出  <code>OutOfMemoryError</code>。</li>
+</ul>
+<h2 id="Run-Time-Constant-Pool"><a href="#Run-Time-Constant-Pool" class="headerlink" title="Run-Time Constant Pool"></a>Run-Time Constant Pool</h2><p>运行时常量池是每个类或每个接口的 <code>class</code> 文件中 <code>constant_pool</code> 表（参考 <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4" target="_blank" rel="noopener">The Constant Pool</a>）的运行时表示。它包含多种常量，范围从编译时已知的数值型的字面值（<em>numeric literals</em>）到必须在运行时解析的方法和字段引用。运行时常量池的功能类似于常规编程语言的符号表，尽管它包含的数据范围比典型的符号表要大。</p>
+<p>每个运行时常量池都由方法区分配。当 JVM 创建类或接口时（参考 <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-5.html#jvms-5.3" target="_blank" rel="noopener">Creation and Loading Class</a>），将构造该类或接口的运行时常量池。</p>
+<p>以下异常情况与方法区相关：</p>
+<ul>
+<li>创建类或接口时，如果运行时常量池的构造所需的内存超过 JVM 的方法区中可用的内存，则 JVM 抛出  <code>OutOfMemoryError</code>。</li>
+</ul>
+<h2 id="Native-Method-Stacks"><a href="#Native-Method-Stacks" class="headerlink" title="Native Method Stacks"></a>Native Method Stacks</h2><h1 id="java-命令"><a href="#java-命令" class="headerlink" title="java 命令"></a>java 命令</h1><p><strong>java</strong> [<em>options*] *classname</em> [<em>args</em>]</p>
+<p><strong>java</strong> [<em>options<em>] *</em>-jar** *filename</em> [<em>args</em>]</p>
+<ul>
+<li><em>options</em>: Command-line options separated by spaces.</li>
+<li><em>classname</em>: The name of the class to be launched.</li>
+<li><em>filename</em>: The name of the Java Archive (JAR) file to be called. Used only with the <code>-jar</code> option.</li>
+<li><em>args</em>: The arguments passed to the <code>main()</code> method separated by spaces.</li>
+</ul>
+<p><code>java</code> 命令用于启动 Java 应用程序。它通过启动 JRE，加载指定类并调用其 <code>main()</code> 方法来实现启动。<code>main()</code> 方法声明如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span></span><br></pre></td></tr></table></figure>
+
+<p><code>java</code> 命令支持以下几类选项：</p>
+<ul>
+<li><a href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#BABDJJFI" target="_blank" rel="noopener">标准选项</a>，JVM 的所有实现所支持的最常用选项。</li>
+<li><a href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#BABHDABI" target="_blank" rel="noopener">非标准选项</a>，特定于 Java HotSpot VM 的通用选项。</li>
+<li><a href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#BABCBGHF" target="_blank" rel="noopener">高级运行时选项</a>，用于控制 Java HotSpot VM 的运行时行为。</li>
+<li><a href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#BABDDFII" target="_blank" rel="noopener">高级 JIT 编译器选项</a>，用于控制 Java HotSpot VM 执行动态实时（JIT）编译。</li>
+<li><a href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#BABFJDIC" target="_blank" rel="noopener">高级可维修性选项</a>，提供了收集系统信息和执行调试的能力。</li>
+<li><a href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#BABFAFAE" target="_blank" rel="noopener">高级垃圾收集选项</a>，用于控制 Java HotSpot VM 如何执行垃圾回收（GC）。</li>
+</ul>
+<p>所有 JVM 实现都需要保证支持<em>标准选项</em>。标准选项用于执行常见操作，例如检查 JRE 版本、设置类路径、启用详细输出等。</p>
+<p><em>非标准选项</em>是针对 Java HotSpot VM 的通用选项，因此不能保证所有 JVM 实现都能支持，并且随时可能改变。非标组选项以 <code>-X</code> 开头。</p>
+<p><em>高级选项</em>不建议随意使用。这些是开发人员用于调整 Java HotSpot VM 特定区域的选项。这些区域通常具有特定的系统要求，并且可能需要对系统配置参数的访问权限。这些选项也不能保证所有 JVM 实现都能支持，并且随时可能改变。高级选项以 <code>-XX</code> 开头。</p>
+<p>此处参考<a href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#BABDCEGG" target="_blank" rel="noopener">已废弃与已移除的选项</a>（JDK 8）。</p>
+<p>布尔类型的选项用于启用默认情况下禁用的功能，或者禁用默认情况下启用的功能。此类选项无需参数，格式如下：</p>
+<ul>
+<li><code>-XX:+</code><em>OptionName</em> 用于启用；</li>
+<li><code>-XX:-</code><em>OptionName</em> 用于禁用。</li>
+</ul>
+<p>对于需要参数的选项，每个选项的确切语法有所差异：参数可以用空格、冒号（<code>:</code>）或等号（<code>=</code>）与选项名分开，或者参数可以直接跟在选项后面，具体参考文档。</p>
+<p>如果需要指定字节大小，可以使用以下几种格式：</p>
+<ul>
+<li>no suffix</li>
+<li><code>k</code> or <code>K</code> for kilobytes (KB)</li>
+<li><code>m</code> or <code>M</code> for megabytes (MB)</li>
+<li><code>g</code> or <code>G</code> for gigabytes (GB)</li>
+</ul>
+<p>例如，大小为 8 GB，参数可以设为 <code>8g</code>, <code>8192m</code>, <code>8388608k</code>, <code>8589934592</code>。如果需要指定百分比，使用 0 到 1 之间的数字（例如， <code>0.25</code> for 25%）。</p>
+<h2 id="JVM-Stack"><a href="#JVM-Stack" class="headerlink" title="JVM Stack"></a>JVM Stack</h2><p><code>-Xss</code><em>size</em></p>
+<p>Sets the thread stack size (in bytes). Append the letter <code>k</code> or <code>K</code> to indicate KB, <code>m</code> or <code>M</code> to indicate MB, <code>g</code> or <code>G</code> to indicate GB. The default value depends on the platform:</p>
+<ul>
+<li>Linux/ARM (32-bit): 320 KB</li>
+<li>Linux/i386 (32-bit): 320 KB</li>
+<li>Linux/x64 (64-bit): 1024 KB</li>
+<li>OS X (64-bit): 1024 KB</li>
+<li>Oracle Solaris/i386 (32-bit): 320 KB</li>
+<li>Oracle Solaris/x64 (64-bit): 1024 KB</li>
+</ul>
+<p>The following examples set the thread stack size to 1024 KB in different units:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-Xss1m</span><br><span class="line">-Xss1024k</span><br><span class="line">-Xss1048576</span><br></pre></td></tr></table></figure>
+
+<p>This option is equivalent to <code>-XX:ThreadStackSize</code>.</p>
+<h2 id="Heap-1"><a href="#Heap-1" class="headerlink" title="Heap"></a>Heap</h2><p><code>-Xms</code><em>size</em></p>
+<p>Sets the initial size (in bytes) of the heap. This value must be a multiple of 1024 and greater than 1 MB. Append the letter <code>k</code> or <code>K</code> to indicate kilobytes, <code>m</code> or <code>M</code> to indicate megabytes, <code>g</code> or <code>G</code> to indicate gigabytes.</p>
+<p>The following examples show how to set the size of allocated memory to 6 MB using various units:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-Xms6291456</span><br><span class="line">-Xms6144k</span><br><span class="line">-Xms6m</span><br></pre></td></tr></table></figure>
+
+<p>If you do not set this option, then the initial size will be set as the sum of the sizes allocated for the old generation and the young generation.</p>
+<p>The <code>-Xms</code> option is equivalent to <code>-XX:InitialHeapSize</code>.</p>
+<p><code>-Xmx</code><em>size</em></p>
+<p>Specifies the maximum size (in bytes) of the memory allocation pool in bytes. This value must be a multiple of 1024 and greater than 2 MB. Append the letter <code>k</code> or <code>K</code> to indicate kilobytes, <code>m</code> or <code>M</code> to indicate megabytes, <code>g</code> or <code>G</code> to indicate gigabytes. The default value is chosen at runtime based on system configuration. For server deployments, <code>-Xms</code> and <code>-Xmx</code> are often set to the same value. See the section “Ergonomics” in <em>Java SE HotSpot Virtual Machine Garbage Collection Tuning Guide</em> at <a href="http://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/index.html" target="_blank" rel="noopener">http://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/index.html</a>.</p>
+<p>The following examples show how to set the maximum allowed size of allocated memory to 80 MB using various units:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-Xmx83886080</span><br><span class="line">-Xmx81920k</span><br><span class="line">-Xmx80m</span><br></pre></td></tr></table></figure>
+
+<p>The <code>-Xmx</code> option is equivalent to <code>-XX:MaxHeapSize</code>.</p>
+<p><code>-Xmn</code><em>size</em></p>
+<p>Sets the initial and maximum size (in bytes) of the heap for the young generation (nursery). Append the letter <code>k</code> or <code>K</code> to indicate kilobytes, <code>m</code> or <code>M</code> to indicate megabytes, <code>g</code> or <code>G</code> to indicate gigabytes.</p>
+<p>The young generation region of the heap is used for new objects. GC is performed in this region more often than in other regions. If the size for the young generation is too small, then a lot of minor garbage collections will be performed. If the size is too large, then only full garbage collections will be performed, which can take a long time to complete. Oracle recommends that you keep the size for the young generation between a half and a quarter of the overall heap size.</p>
+<p>The following examples show how to set the initial and maximum size of young generation to 256 MB using various units:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-Xmn256m</span><br><span class="line">-Xmn262144k</span><br><span class="line">-Xmn268435456</span><br></pre></td></tr></table></figure>
+
+<p>Instead of the <code>-Xmn</code> option to set both the initial and maximum size of the heap for the young generation, you can use <code>-XX:NewSize</code> to set the initial size and <code>-XX:MaxNewSize</code> to set the maximum size.</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-Xms</code>、<code>-XX:InitialHeapSize</code><br/><code>-Xmx</code>、<code>-XX:MaxHeapSize</code></td>
+<td>设置 Heap 堆区的初始值和最大值，Server 端 JVM 建议将 <code>-Xms</code> 和 <code>-Xmx</code> 设为相同值。</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-Xmn</code><br/><code>-XX:NewSize</code><br/><code>-XX:MaxNewSize</code></td>
+<td>设置 Heap 堆内 Young Generation，而 Old Generation 等于：堆区减去 <code>-Xmn</code>。<br/>设置 <code>-Xmn</code> 等同于设置了相同的初始值 <code>-XX:NewSize</code> 和最大值 <code>-XX:MaxNewSize</code>。</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-XX:NewRatio</code></td>
+<td>设置 Young Generation 和 Old Generation 的比值，例如该值为 3，则表示 Young Generation 和 Old Generation 比值为1:3。</td>
+</tr>
+<tr>
+<td><code>-XX:SurvivorRatio</code></td>
+<td>设置 Young Generation 中 E 区和 S 区的比例， 即 -XX:SurvivorRatio=eden/s0=eden/s1。</td>
+</tr>
+</tbody></table>
+<h2 id="Method-Area-1"><a href="#Method-Area-1" class="headerlink" title="Method Area"></a>Method Area</h2><h3 id="PermGen"><a href="#PermGen" class="headerlink" title="PermGen"></a>PermGen</h3><p>JDK 7 以前：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-XX:PermSize</code></td>
+<td>Perm 的初始值</td>
+</tr>
+<tr>
+<td><code>-XX:MaxPermSize</code></td>
+<td>Perm 的最大值</td>
+</tr>
+</tbody></table>
+<p>JVM 的永久代(PermGen)主要用于存放 Class 的 meta-data，Class 在被 Loader 加载时就会被放到 PermGen space，GC 在主程序运行期间不会对该区进行清理，默认是 64M 大小，当程序需要加载的对象比较多时，超过 64M 就会报这部分内存溢出了，需要加大内存分配。 </p>
+<h3 id="Metaspace"><a href="#Metaspace" class="headerlink" title="Metaspace"></a>Metaspace</h3><p>JDK 8 及以后，永久代(PermGen)的概念被废弃掉了，参考 <a href="http://openjdk.java.net/jeps/122" target="_blank" rel="noopener">JEP 122: Remove the Permanent Generation</a>：</p>
+<blockquote>
+<p>The proposed implementation will <strong>allocate class meta-data in native memory</strong> and <strong>move interned Strings and class static variables to the Java heap</strong>. </p>
+<p>Hotspot will explicitly allocate and free the native memory for the class meta-data. Allocation of new class meta-data would be <strong>limited by the amount of available native memory</strong> rather than fixed by the value of <code>-XX:MaxPermSize</code>, whether the default or specified on the command line.</p>
+</blockquote>
+<p>取而代之的是一个称为 Metaspace 的存储空间。Metaspace 使用的是本地内存，而不是堆内存，也就是说在默认情况下 Metaspace 的大小只与本地内存大小有关。可以通过以下的几个参数对 Metaspace 进行控制： </p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-XX:MetaspaceSize</code></td>
+<td>Metaspace 的初始值</td>
+</tr>
+<tr>
+<td><code>-XX:MaxMetaspaceSize</code></td>
+<td>Metaspace 的最大值</td>
+</tr>
+</tbody></table>
+<h2 id="Direct-Memory"><a href="#Direct-Memory" class="headerlink" title="Direct Memory"></a>Direct Memory</h2><p><code>-XX:MaxDirectMemorySize</code>=<em>size</em></p>
+<p>Sets the maximum total size (in bytes) of the New I/O (the <code>java.nio</code> package) direct-buffer allocations. Append the letter <code>k</code> or <code>K</code> to indicate kilobytes, <code>m</code> or <code>M</code> to indicate megabytes, <code>g</code> or <code>G</code> to indicate gigabytes. By default, the size is set to 0, meaning that the JVM chooses the size for NIO direct-buffer allocations automatically.</p>
+<p>The following examples illustrate how to set the NIO size to 1024 KB in different units:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-XX:MaxDirectMemorySize&#x3D;1m</span><br><span class="line">-XX:MaxDirectMemorySize&#x3D;1024k</span><br><span class="line">-XX:MaxDirectMemorySize&#x3D;1048576</span><br></pre></td></tr></table></figure>
+
+<h1 id="内存溢出"><a href="#内存溢出" class="headerlink" title="内存溢出"></a>内存溢出</h1><h2 id="情况一"><a href="#情况一" class="headerlink" title="情况一"></a>情况一</h2><p><code>java.lang.OutOfMemoryError: Java heap space</code>：这种是堆内存不够，一个原因是真不够，另一个原因是程序中有死循环，例如：</p>
+<p><img src="/img/java/jvm/OOM.png" alt="OutOfMemory"></p>
+<p>如果是堆内存不足，可调整 <code>-Xms</code>、<code>-Xmx</code>，或者新老生代的比例。</p>
+<h2 id="情况二"><a href="#情况二" class="headerlink" title="情况二"></a>情况二</h2><p><code>java.lang.OutOfMemoryError: PermGen space</code>：这种是P区内存不够，可调整：<code>-XX:PermSize</code>、<code>-XX:MaxPermSize</code>。</p>
+<h2 id="情况三"><a href="#情况三" class="headerlink" title="情况三"></a>情况三</h2><p><code>java.lang.StackOverflowError</code>：线程栈溢出，要么是方法调用层次过多（比如存在无限递归调用）：</p>
+<p><img src="/img/java/jvm/SOF.png" alt="StackOverflow"></p>
+<p>要么是线程栈太小，可调整 <code>-Xss</code> 参数增加线程栈大小。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a href="https://item.jd.com/11703581.html" target="_blank" rel="noopener">Java 虚拟机规范（Java SE 8 版 - 中文版）</a>》</p>
+<p>《<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/index.html" target="_blank" rel="noopener">Java 虚拟机规范（Java SE 8 版 - 英文版）</a>》</p>
+<p>《<a href="http://openjdk.java.net/jeps/122" target="_blank" rel="noopener">JEP 122: Remove the Permanent Generation - Release on JDK 8</a>》</p>
+<p>《<a href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html" target="_blank" rel="noopener">Command Line Options - JDK 8 HotSpot VM</a>》</p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/08/29/jvm-impl/" class="post-title-link">Java 虚拟机系列（一）厂商实现总结</a></h2><div class="post-info">2019-08-29<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><p><img src="/img/java/jvm/jvm_impl.png" alt="jvm_impl"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://en.wikipedia.org/wiki/Comparison_of_Java_virtual_machines" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Comparison_of_Java_virtual_machines</a></p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/07/06/hexo-with-img/" class="post-title-link">Hexo 不用图床解决图片资源问题</a></h2><div class="post-info">2019-07-06<a href="/tags/建站/" title="建站" class="post-demo">建站</a></div><div class="post-content"><p>写博客难免会引用图片资源，这里提供一种不用图床解决图片资源上传的思路：将图片资源作为源文件一并上传仓库。</p>
+<h1 id="新建-img-目录"><a href="#新建-img-目录" class="headerlink" title="新建 img 目录"></a>新建 img 目录</h1><p>首先，在 hexo 博客 source 目录下新建 img 目录，即：<code>hexo/source/img</code></p>
+<p>然后，在文章的图片引用处使用该路径即可，例如：<code>![mono_create](/img/java/reactive/reactor/mono/mono_create.png)</code></p>
+<p>最后，<code>hexo g</code> 构建出 <code>./public</code> 目录，发现 <code>img</code> 在该目录之中。<code>hexo s</code> 启动服务后，确认能够成功引用图片。</p>
+<h1 id="解决-Typora-实时预览"><a href="#解决-Typora-实时预览" class="headerlink" title="解决 Typora 实时预览"></a>解决 Typora 实时预览</h1><p>通过上述方法能够解决部署后图片引用问题，但带来一个新的问题就是 Typora 无法实时预览。解决办法：在文章顶部加上 <code>typora-root-url: ..</code></p>
+<p><img src="/img/hexo/hexo_with_img.png" alt="hexo_with_img"></p>
+<p>可以将该路径加入到 hexo 模板之中，这样每次 <code>hexo n</code> 新建文稿都会带上该配置：</p>
+<p><img src="/img/hexo/hexo_with_img_2.png" alt="hexo_with_img_2"></p>
+<p>配置如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: &#123;&#123; title &#125;&#125;</span><br><span class="line">date: &#123;&#123; date &#125;&#125;</span><br><span class="line">updated: &#123;&#123; updated &#125;&#125;</span><br><span class="line">tags:</span><br><span class="line">typora-root-url: ..</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/06/05/redis-cmd/" class="post-title-link">Redis 实战系列（一）常用数据结构及使用场景总结</a></h2><div class="post-info">2019-06-05<a href="/tags/Redis/" title="Redis" class="post-demo">Redis</a></div><div class="post-content"><h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><h2 id="Strings"><a href="#Strings" class="headerlink" title="Strings"></a>Strings</h2><table>
+<thead>
+<tr>
+<th></th>
+<th>单个</th>
+<th>批量</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>获取</td>
+<td><code>GET</code> key<br/><code>STRLEN</code> key<br/><code>GETRANGE</code> key start end</td>
+<td><code>MGET</code> key [key …]</td>
+</tr>
+<tr>
+<td>设值</td>
+<td><code>SET</code> key value [EX seconds&#124;PX milliseconds] [NX&#124;XX] [KEEPTTL]<br/><code>SETNX</code> key value<br/><code>SETEX</code> key seconds value<br/><code>PSETEX</code> key milliseconds value<br/><code>GETSET</code> key value<br/><code>SETRANGE</code> key offset value</td>
+<td><code>MSET</code> key value [key value …]<br/><code>MSETNX</code> key value [key value …]</td>
+</tr>
+<tr>
+<td>原子递增、递减</td>
+<td><code>INCR</code> key<br/><code>INCRBY</code> key increment<br/><code>INCRBYFLOAT</code> key increment<br/><code>DECR</code> key<br/><code>DECRBY</code> key decrement</td>
+<td></td>
+</tr>
+<tr>
+<td>追加</td>
+<td><code>APPEND</code></td>
+<td></td>
+</tr>
+<tr>
+<td>位操作</td>
+<td><code>SETBIT</code> key offset value<br/><code>GETBIT</code> key offset<br/><code>BITCOUNT</code> key [start end]<br/><code>BITOP</code> operation destkey key [key …]<br/><code>BITFIELD</code> …<br/><code>BITPOS</code> key bit [start] [end]</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>使用场景：</p>
+<ul>
+<li><p>WEB 集群下的 Session 共享：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SET key value</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>分布式锁：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-- 返回 1 表示加锁成功，0 表示加锁失败</span><br><span class="line">SETNX key value</span><br><span class="line">SET key value NX</span><br><span class="line"></span><br><span class="line">-- 解锁</span><br><span class="line">DEL key</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>全局计数器：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">INCR key</span><br><span class="line">DECR key</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>分布式流水号：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">INCR key</span><br><span class="line">INCRBY key</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<p>分布式流水号 Java 伪代码如下，单机一次性取 1000 个 ID，以降低网络开销和 Redis 负载：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> id;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> maxId;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> INCR_BY = <span class="number">1000</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">int</span> <span class="title">nextId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (id == <span class="number">0</span> || id == maxId) &#123;</span><br><span class="line">    maxId = eval(incrby id INCR_BY);</span><br><span class="line">    id = maxId - INCR_BY + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">return</span> id;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> id++;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Hashes"><a href="#Hashes" class="headerlink" title="Hashes"></a>Hashes</h2><p>散列表，一种通过<strong>散列函数</strong>计算对应数组下标，并通过下标随机访问数据时，时间复杂度为 <code>O(1)</code> 的特性快速定位数据的数据结构。Redis 散列表使用这种数据结构来快速获取指定 field。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>单个</th>
+<th>批量</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>获取</td>
+<td><code>HGET</code> key field<br/><code>HSCAN</code> key cursor [MATCH pattern] [COUNT count]<br/><code>HSTRLEN</code> key field</td>
+<td><code>HMGET</code> key field [field …]</td>
+</tr>
+<tr>
+<td>获取所有 fields</td>
+<td><code>HKEYS</code> key</td>
+<td></td>
+</tr>
+<tr>
+<td>获取所有 values</td>
+<td><code>HVALS</code> key</td>
+<td></td>
+</tr>
+<tr>
+<td>获取所有 fields 和 values</td>
+<td><code>HGETALL</code> key</td>
+<td></td>
+</tr>
+<tr>
+<td>判断 field 是否存在</td>
+<td><code>HEXISTS</code> key field</td>
+<td></td>
+</tr>
+<tr>
+<td>获取 field 个数</td>
+<td><code>HLEN</code> key</td>
+<td></td>
+</tr>
+<tr>
+<td>设值</td>
+<td><code>HSET</code> key field value [field value …]<br/><code>HSETNX</code> key field value</td>
+<td><del><code>HMSET</code> key field value [field value …]</del></td>
+</tr>
+<tr>
+<td>原子递增、递减</td>
+<td><code>HINCRBY</code> key field increment<br/><code>HINCRBYFLOAT</code> key field increment</td>
+<td></td>
+</tr>
+<tr>
+<td>删除 fields</td>
+<td><code>HDEL</code> key field [field …]</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="Lists"><a href="#Lists" class="headerlink" title="Lists"></a>Lists</h2><p>双端队列。</p>
+<p><img src="/img/redis/redis_lists.png" alt="redis_lists"></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>左</th>
+<th>右</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>入队</td>
+<td><code>LPUSH</code> key element [element …]<br/><code>LPUSHX</code> key element [element …]</td>
+<td><code>RPUSH</code> key element [element …]<br/><code>RPUSHX</code> key element [element …]</td>
+</tr>
+<tr>
+<td>出队</td>
+<td><code>LPOP</code> key</td>
+<td><code>RPOP</code> key</td>
+</tr>
+<tr>
+<td>阻塞出队</td>
+<td><code>BLPOP</code> key [key …] timeout</td>
+<td><code>BRPOP</code> key [key …] timeout</td>
+</tr>
+<tr>
+<td>插队</td>
+<td><code>LINSERT</code> key BEFORE&#124;AFTER pivot element</td>
+<td></td>
+</tr>
+<tr>
+<td>获取指定索引的元素</td>
+<td><code>LINDEX</code> key index</td>
+<td></td>
+</tr>
+<tr>
+<td>获取指定范围的元素</td>
+<td><code>LRANGE</code> key start stop</td>
+<td></td>
+</tr>
+<tr>
+<td>获取列表长度</td>
+<td><code>LLEN</code> key</td>
+<td></td>
+</tr>
+<tr>
+<td>覆盖元素</td>
+<td><code>LSET</code> key index element</td>
+<td></td>
+</tr>
+<tr>
+<td>移除元素</td>
+<td><code>LREM</code> key count element</td>
+<td></td>
+</tr>
+<tr>
+<td>移除指定范围的元素</td>
+<td><code>LTRIM</code> key start stop</td>
+<td></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>非阻塞</th>
+<th>阻塞</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>出队并重新入队另一个队列</td>
+<td><code>RPOPLPUSH</code> source destination</td>
+<td><code>BRPOPLPUSH</code> source destination timeout</td>
+</tr>
+</tbody></table>
+<p>使用场景：</p>
+<ul>
+<li>Stack (FILO): <code>LPUSH</code> + <code>LPOP</code></li>
+<li>Queue (FIFO): <code>LPUSH</code> + <code>RPOP</code>，实现消息流</li>
+<li>Blocking Queue (FIFO): <code>LPUSH</code> + <code>BRPOP</code></li>
+</ul>
+<h2 id="Sets"><a href="#Sets" class="headerlink" title="Sets"></a>Sets</h2><p>无序集合。</p>
+<p>集合操作：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>添加元素</td>
+<td><code>SADD</code> key member [member …]</td>
+</tr>
+<tr>
+<td>移除元素</td>
+<td><code>SREM</code> key member [member …]</td>
+</tr>
+<tr>
+<td>判断指定元素是否存在</td>
+<td><code>SISMEMBER</code> key member</td>
+</tr>
+<tr>
+<td>获取所有元素</td>
+<td><code>SMEMBERS</code> key</td>
+</tr>
+<tr>
+<td>获取元素个数</td>
+<td><code>SCARD</code> key</td>
+</tr>
+<tr>
+<td>增量式遍历集合元素</td>
+<td><code>SSCAN</code> key cursor [MATCH pattern] [COUNT count]</td>
+</tr>
+<tr>
+<td>获取指定个数的<strong>随机元素</strong></td>
+<td><code>SRANDMEMBER</code> key [count]</td>
+</tr>
+<tr>
+<td>移除指定个数的<strong>随机元素</strong>，并返回</td>
+<td><code>SPOP</code> key [count]</td>
+</tr>
+</tbody></table>
+<p>集合运算：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>移动指定元素到另一个集合</td>
+<td><code>SMOVE</code> source destination member</td>
+</tr>
+<tr>
+<td>求交集</td>
+<td><code>SINTER</code> key [key …]</td>
+</tr>
+<tr>
+<td>求交集，并保存结果</td>
+<td><code>SINTERSTORE</code> destination key [key …]</td>
+</tr>
+<tr>
+<td>求并集</td>
+<td><code>SUNION</code> key [key …]</td>
+</tr>
+<tr>
+<td>求并集，并保存结果</td>
+<td><code>SUNIONSTORE</code> destination key [key …]</td>
+</tr>
+<tr>
+<td>求差集</td>
+<td><code>SDIFF</code> key [key …]</td>
+</tr>
+<tr>
+<td>求差集，并保存结果</td>
+<td><code>SDIFFSTORE</code> destination key [key …]</td>
+</tr>
+</tbody></table>
+<p>使用场景：</p>
+<ul>
+<li><p>抽奖：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-- 随机抽奖</span><br><span class="line">SRANDMEMBER key [count]</span><br><span class="line"></span><br><span class="line">-- 随机抽取一二三等奖</span><br><span class="line">SPOP key [count]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>社交应用的关注模型：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">-- 我关注的人</span><br><span class="line">SMEMBERS key</span><br><span class="line"></span><br><span class="line">-- 求共同关注</span><br><span class="line">SINTER key [key ...]</span><br><span class="line"></span><br><span class="line">-- 我关注的人也关注 ta</span><br><span class="line">foreach(member <span class="keyword">in</span> 我关注的人) &#123;</span><br><span class="line">  -- 我每个关注的人，他们关注的人中，是否有 ta</span><br><span class="line">  SISMEMBER ((SMEMBERS key) of member) ta</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">-- 我可能认识的人</span><br><span class="line">foreach(member <span class="keyword">in</span> 我关注的人) &#123;</span><br><span class="line">  -- 我每个关注的人，他们关注的人中，有我可能认识的人</span><br><span class="line">  SDIFF ((SMEMBERS key) of member) 我关注的人</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>商品筛选</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">-- 1、分类筛选维度，每个维度的每个值都为一个集合</span><br><span class="line">-- 2、将商品按维度按值加入对应集合</span><br><span class="line">-- 3、多选筛选条件，求交集</span><br><span class="line">SINTER key [key ...]</span><br><span class="line"></span><br><span class="line">-- 4、根据交集 member，获取商品详情（O(1) 时间复杂度）</span><br><span class="line">foreach member &#123;</span><br><span class="line">  -- 每个 field 为商品属性</span><br><span class="line">  HGETALL member</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="Sorted-Sets"><a href="#Sorted-Sets" class="headerlink" title="Sorted Sets"></a>Sorted Sets</h2><p>有序集合。</p>
+<h1 id="其它命令"><a href="#其它命令" class="headerlink" title="其它命令"></a>其它命令</h1><table>
+<thead>
+<tr>
+<th></th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>删除 key</td>
+<td><code>DEL</code></td>
+</tr>
+<tr>
+<td>设值 key 的过期时间（秒）</td>
+<td><code>EXPIRE</code></td>
+</tr>
+</tbody></table>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://redis.io/commands" target="_blank" rel="noopener">https://redis.io/commands</a></p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/06/02/data-structure/" class="post-title-link">数据结构系列（一）脑图总结</a></h2><div class="post-info">2019-06-02<a href="/tags/Redis/" title="Redis" class="post-demo">Redis</a></div><div class="post-content"><h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p><img src="/img/data-structure/problem_solution_steps.png" alt="计算机解决问题的步骤"></p>
+<h1 id="基本概念和术语"><a href="#基本概念和术语" class="headerlink" title="基本概念和术语"></a>基本概念和术语</h1><p><img src="/img/data-structure/data_structure_terms.png" alt="data_structure"></p>
+<ul>
+<li>数据</li>
+<li>数据对象：是<strong>性质相同</strong>的数据元素的集合，是数据的子集。</li>
+<li>数据元素：数据的<strong>基本单位</strong>，也是运算的基本单位。例如在数据库中，又称为记录（Record）/元组（Tuple）。</li>
+<li>数据项：数据不可分割的<strong>最小单位</strong>。例如在数据库中，又称为字段（Field）/域（Domain）。</li>
+<li>数据结构：是相互之间存在一种或多种特定关系的数据元素的集合。它包括：<ul>
+<li>数据的逻辑结构</li>
+<li>数据的存储结构</li>
+<li>数据的基本运算</li>
+</ul>
+</li>
+</ul>
+<h2 id="逻辑结构"><a href="#逻辑结构" class="headerlink" title="逻辑结构"></a>逻辑结构</h2><table>
+<thead>
+<tr>
+<th></th>
+<th>线性结构</th>
+<th>树形结构</th>
+<th>图结构</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>顺序存储方式</td>
+<td>数组</td>
+<td>数组<br/>* 完全二叉树<br/>* 满二叉树</td>
+<td>-</td>
+</tr>
+<tr>
+<td>链式存储方式</td>
+<td>链表<br/>* 单向链表<br/>* 双向链表<br/>* 单向循环链表<br/>* 双向循环链表</td>
+<td>链表</td>
+<td>链表</td>
+</tr>
+</tbody></table>
+<h3 id="离散集合"><a href="#离散集合" class="headerlink" title="离散集合"></a>离散集合</h3><h3 id="线性结构"><a href="#线性结构" class="headerlink" title="线性结构"></a>线性结构</h3><h3 id="树形结构"><a href="#树形结构" class="headerlink" title="树形结构"></a>树形结构</h3><h3 id="图结构"><a href="#图结构" class="headerlink" title="图结构"></a>图结构</h3><h2 id="存储结构"><a href="#存储结构" class="headerlink" title="存储结构"></a>存储结构</h2><p>数据的逻辑结构在计算机中的实现，成为数据的存储结构（或物理结构）。</p>
+<p>一般情况下，一个存储结构包括以下两个部分：</p>
+<ul>
+<li>存储数据元素本身</li>
+<li>数据元素之间的关联方式</li>
+</ul>
+<h3 id="顺序存储方式"><a href="#顺序存储方式" class="headerlink" title="顺序存储方式"></a>顺序存储方式</h3><h3 id="链式存储方式"><a href="#链式存储方式" class="headerlink" title="链式存储方式"></a>链式存储方式</h3><h3 id="索引存储方式"><a href="#索引存储方式" class="headerlink" title="索引存储方式"></a>索引存储方式</h3><h3 id="散列存储方式"><a href="#散列存储方式" class="headerlink" title="散列存储方式"></a>散列存储方式</h3><h1 id="常用数据结构"><a href="#常用数据结构" class="headerlink" title="常用数据结构"></a>常用数据结构</h1><p><img src="/img/data-structure/data_structure.png" alt="data_structure"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://www.cs.usfca.edu/~galles/visualization/Algorithms.html" target="_blank" rel="noopener">https://www.cs.usfca.edu/~galles/visualization/Algorithms.html</a></p>
+<p><a href="https://www.bigocheatsheet.com" target="_blank" rel="noopener">https://www.bigocheatsheet.com</a></p>
+<p><a href="https://baozoulin.gitbook.io/-data-structure/chapter1/12-luo-ji-jie-gou-yu-wu-li-jie-gou" target="_blank" rel="noopener">逻辑结构与物理结构</a></p>
+</div></article></li></ul><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div class="recent"><h4>最近文章</h4><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2021/02/26/cpp-io-library/">C/C++ 语言系列（十一）I/O 库总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/25/cpp-oop-inheritance-and-polymorphism/">C/C++ 语言系列（十）面向对象编程之继承与多态</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/20/cpp-oop-class/">C/C++ 语言系列（九）面向对象编程之类、类模板、类指针</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/18/cpp-type-aliases/">C/C++ 语言系列（八）复合数据类型之类型别名</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/16/cpp-struct/">C/C++ 语言系列（七）复合数据类型之结构体</a></li></ul></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/page/3/" class="prev">PREV</a><a href="/page/5/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

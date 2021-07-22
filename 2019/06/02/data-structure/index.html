@@ -1,0 +1,47 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> 数据结构系列（一）脑图总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="数据结构系列（一）脑图总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">数据结构系列（一）脑图总结</h1><div class="post-info">2019-06-02<a href="/tags/Redis/" title="Redis" class="post-demo">Redis</a></div><div class="post-content"><h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p><img src="/img/data-structure/problem_solution_steps.png" alt="计算机解决问题的步骤"></p>
+<h1 id="基本概念和术语"><a href="#基本概念和术语" class="headerlink" title="基本概念和术语"></a>基本概念和术语</h1><p><img src="/img/data-structure/data_structure_terms.png" alt="data_structure"></p>
+<ul>
+<li>数据</li>
+<li>数据对象：是<strong>性质相同</strong>的数据元素的集合，是数据的子集。</li>
+<li>数据元素：数据的<strong>基本单位</strong>，也是运算的基本单位。例如在数据库中，又称为记录（Record）/元组（Tuple）。</li>
+<li>数据项：数据不可分割的<strong>最小单位</strong>。例如在数据库中，又称为字段（Field）/域（Domain）。</li>
+<li>数据结构：是相互之间存在一种或多种特定关系的数据元素的集合。它包括：<ul>
+<li>数据的逻辑结构</li>
+<li>数据的存储结构</li>
+<li>数据的基本运算</li>
+</ul>
+</li>
+</ul>
+<h2 id="逻辑结构"><a href="#逻辑结构" class="headerlink" title="逻辑结构"></a>逻辑结构</h2><table>
+<thead>
+<tr>
+<th></th>
+<th>线性结构</th>
+<th>树形结构</th>
+<th>图结构</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>顺序存储方式</td>
+<td>数组</td>
+<td>数组<br/>* 完全二叉树<br/>* 满二叉树</td>
+<td>-</td>
+</tr>
+<tr>
+<td>链式存储方式</td>
+<td>链表<br/>* 单向链表<br/>* 双向链表<br/>* 单向循环链表<br/>* 双向循环链表</td>
+<td>链表</td>
+<td>链表</td>
+</tr>
+</tbody></table>
+<h3 id="离散集合"><a href="#离散集合" class="headerlink" title="离散集合"></a>离散集合</h3><h3 id="线性结构"><a href="#线性结构" class="headerlink" title="线性结构"></a>线性结构</h3><h3 id="树形结构"><a href="#树形结构" class="headerlink" title="树形结构"></a>树形结构</h3><h3 id="图结构"><a href="#图结构" class="headerlink" title="图结构"></a>图结构</h3><h2 id="存储结构"><a href="#存储结构" class="headerlink" title="存储结构"></a>存储结构</h2><p>数据的逻辑结构在计算机中的实现，成为数据的存储结构（或物理结构）。</p>
+<p>一般情况下，一个存储结构包括以下两个部分：</p>
+<ul>
+<li>存储数据元素本身</li>
+<li>数据元素之间的关联方式</li>
+</ul>
+<h3 id="顺序存储方式"><a href="#顺序存储方式" class="headerlink" title="顺序存储方式"></a>顺序存储方式</h3><h3 id="链式存储方式"><a href="#链式存储方式" class="headerlink" title="链式存储方式"></a>链式存储方式</h3><h3 id="索引存储方式"><a href="#索引存储方式" class="headerlink" title="索引存储方式"></a>索引存储方式</h3><h3 id="散列存储方式"><a href="#散列存储方式" class="headerlink" title="散列存储方式"></a>散列存储方式</h3><h1 id="常用数据结构"><a href="#常用数据结构" class="headerlink" title="常用数据结构"></a>常用数据结构</h1><p><img src="/img/data-structure/data_structure.png" alt="data_structure"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://www.cs.usfca.edu/~galles/visualization/Algorithms.html" target="_blank" rel="noopener">https://www.cs.usfca.edu/~galles/visualization/Algorithms.html</a></p>
+<p><a href="https://www.bigocheatsheet.com" target="_blank" rel="noopener">https://www.bigocheatsheet.com</a></p>
+<p><a href="https://baozoulin.gitbook.io/-data-structure/chapter1/12-luo-ji-jie-gou-yu-wu-li-jie-gou" target="_blank" rel="noopener">逻辑结构与物理结构</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/06/05/redis-cmd/" class="prev">PREV</a><a href="/2019/05/26/hexo-with-travis-ci/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

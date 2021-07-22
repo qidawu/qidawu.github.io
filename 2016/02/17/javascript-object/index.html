@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Javascript 引用类型之 Object · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Javascript 引用类型之 Object - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Javascript 引用类型之 Object</h1><div class="post-info">2016-02-17<a href="/tags/前端/" title="前端" class="post-demo">前端</a></div><div class="post-content"><h1 id="Object"><a href="#Object" class="headerlink" title="Object"></a>Object</h1><p>ECMAScript 中使用最多的类型就是 <code>Object</code>。虽然 <code>Object</code> 的实例不具备多少功能，但对于在应用程序中存储和传输数据而言，它们是非常理想的选择。</p>
+<h2 id="创建方式"><a href="#创建方式" class="headerlink" title="创建方式"></a>创建方式</h2><p>创建 <code>Object</code> 实例的方式有两种。第一种是使用 <code>new</code> 操作符后跟 <code>Object</code> 构造函数，如下所示：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> person = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">person.name = <span class="string">"Nicholas"</span>;</span><br><span class="line">person.age = <span class="number">29</span>;</span><br></pre></td></tr></table></figure>
+
+<p>另一种方式是使用对象字面量表示法。对象字面量是对象定义的一种简写形式，目的在于简化创建包含大量属性的对象的过程：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> person = &#123;</span><br><span class="line">    name : <span class="string">"Nicholas"</span>,</span><br><span class="line">    age : <span class="number">29</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>使用这种对象字面量语法要求的代码量更少，而且能够给人以封装数据的感觉。</p>
+<p>实际上，对象字面量也是向函数传递大量可选参数的首选方式。一般来讲，命名参数虽然容易处理，但在有多个可选参数的情况下就会显示不够灵活。例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">doSomething</span>(<span class="params">arg0, arg1, arg2, arg3, arg4</span>) </span>&#123;　　</span><br><span class="line">    ... </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">doSomething(<span class="string">''</span>, <span class="string">'foo'</span>, <span class="number">5</span>, [], <span class="literal">false</span>);    <span class="comment">// 这里必须传够五个命名参数，无法跳过中间某个可选参数</span></span><br></pre></td></tr></table></figure>
+
+<p>但最好的做法是对那些必需值使用命名参数，而使用对象字面量来封装多个可选参数：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">doSomething</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 不传任何参数也能正常运行</span></span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">arguments</span>[<span class="number">0</span>]) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 为 undefined 的参数设置默认值</span></span><br><span class="line">    <span class="keyword">var</span> oArgs = <span class="built_in">arguments</span>[<span class="number">0</span>]</span><br><span class="line">        arg0  = oArgs.arg0 || <span class="string">""</span>,</span><br><span class="line">        arg1  = oArgs.arg1 || <span class="string">""</span>,</span><br><span class="line">        arg2  = oArgs.arg2 || <span class="number">0</span>,</span><br><span class="line">        arg3  = oArgs.arg3 || [],</span><br><span class="line">        arg4  = oArgs.arg4 || <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 传入可选参数而不报错</span></span><br><span class="line">doSomething(&#123;</span><br><span class="line">    arg1: <span class="string">"foo"</span>,</span><br><span class="line">    arg2: <span class="number">5</span>,</span><br><span class="line">    arg4: <span class="literal">false</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="属性和方法"><a href="#属性和方法" class="headerlink" title="属性和方法"></a>属性和方法</h2><p>由于在 ECMAScript 中 <code>Object</code> 是所有对象的基础，因此所有对象都具有下列这些基本的属性和方法：</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>constructor</code></td>
+<td>保存着用于创建当前对象的函数。</td>
+</tr>
+<tr>
+<td><code>isPrototypeOf(object)</code></td>
+<td>用于检查传入的对象是否是传入对象的原型。</td>
+</tr>
+<tr>
+<td><code>hasOwnProperty(propertyName)</code></td>
+<td>用于检查给定的属性在当前对象实例中（而不是在实例的原型中）是否存在。</td>
+</tr>
+<tr>
+<td><code>propertyIsEnumerable(propertyName)</code></td>
+<td>用于检查给定的属性是否能够使用 <code>for-in</code> 语句来枚举。</td>
+</tr>
+<tr>
+<td><code>toLocaleString()</code></td>
+<td>返回对象的字符串表示，该字符串与执行环境的地区对应。</td>
+</tr>
+<tr>
+<td><code>toString()</code></td>
+<td>返回对象的字符串表示。</td>
+</tr>
+<tr>
+<td><code>valueOf()</code></td>
+<td>返回对象的字符串、数值或布尔值表示。通常与 <code>toString()</code> 方法的返回值相同。</td>
+</tr>
+</tbody></table>
+<p>例如，要检查某个对象的专有属性，可以使用 <code>hasOwnProperty(propertyName)</code> 方法进行判断：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = &#123;<span class="attr">foo</span>: <span class="string">'foo'</span>, <span class="attr">bar</span>: <span class="string">'bar'</span>&#125;;</span><br><span class="line">obj.hasOwnProperty(<span class="string">'foo'</span>)    <span class="comment">// true</span></span><br><span class="line">obj.hasOwnProperty(<span class="string">'constructor'</span>)    <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《JavaScript 高级程序设计》</li>
+<li>《JavaScript 语言精粹》</li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2016/02/18/javascript-array/" class="prev">PREV</a><a href="/2016/02/11/javascript-primitive-types/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

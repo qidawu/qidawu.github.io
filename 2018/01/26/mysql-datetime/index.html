@@ -1,0 +1,218 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> MySQL 常用日期函数 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="MySQL 常用日期函数 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">MySQL 常用日期函数</h1><div class="post-info">2018-01-26<a href="/tags/MySQL/" title="MySQL" class="post-demo">MySQL</a></div><div class="post-content"><h1 id="日期函数"><a href="#日期函数" class="headerlink" title="日期函数"></a>日期函数</h1><h2 id="获得当前日期-时间"><a href="#获得当前日期-时间" class="headerlink" title="获得当前日期/时间"></a>获得当前日期/时间</h2><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Synonym</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_current-date" target="_blank" rel="noopener"><code>CURRENT_DATE</code>, <code>CURRENT_DATE()</code></a></td>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_curdate" target="_blank" rel="noopener"><code>CURDATE()</code></a></td>
+<td>Return the current date as <br/><em><code>&#39;YYYY-MM-DD&#39;</code></em> / <em><code>YYYYMMDD</code></em></td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_current-time" target="_blank" rel="noopener"><code>CURRENT_TIME</code>, <code>CURRENT_TIME([fsp])</code></a></td>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_curtime" target="_blank" rel="noopener"><code>CURTIME([fsp])</code></a></td>
+<td>Return the current time as <br/><em><code>&#39;hh:mm:ss&#39;</code></em> / <em><code>hhmmss</code></em><br/>The value is expressed in the session time zone.</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_current-timestamp" target="_blank" rel="noopener"><code>CURRENT_TIMESTAMP</code>, <code>CURRENT_TIMESTAMP([fsp])</code></a><br/><a href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_localtime" target="_blank" rel="noopener"><code>LOCALTIME</code>, <code>LOCALTIME([fsp])</code></a><br/><a href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_localtimestamp" target="_blank" rel="noopener"><code>LOCALTIMESTAMP</code>, <code>LOCALTIMESTAMP([fsp])</code></a></td>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_now" target="_blank" rel="noopener"><code>NOW([fsp])</code></a></td>
+<td>Return the current date and time as <br/><em><code>&#39;YYYY-MM-DD hh:mm:ss&#39;</code></em> / <em><code>YYYYMMDDhhmmss</code></em><br/>The value is expressed in the session time zone.</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_utc-date" target="_blank" rel="noopener"><code>UTC_DATE</code>, <code>UTC_DATE()</code></a></td>
+<td></td>
+<td>Return the current UTC date as <br/><em><code>&#39;YYYY-MM-DD&#39;</code></em> / <em><code>YYYYMMDD</code></em></td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_utc-time" target="_blank" rel="noopener"><code>UTC_TIME</code>, <code>UTC_TIME([fsp])</code></a></td>
+<td></td>
+<td>Return the current UTC time as <br/><em><code>&#39;hh:mm:ss&#39;</code></em> / <em><code>hhmmss</code></em></td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_utc-timestamp" target="_blank" rel="noopener"><code>UTC_TIMESTAMP</code>, <code>UTC_TIMESTAMP([fsp])</code></a></td>
+<td></td>
+<td>Return the current UTC date and time as <br/><em><code>&#39;YYYY-MM-DD hh:mm:ss&#39;</code></em> / <em><code>YYYYMMDDhhmmss</code></em></td>
+</tr>
+</tbody></table>
+<p>注意，MySQL 时间支持的最高存储精度为微秒：</p>
+<blockquote>
+<p>1 秒(s) =<br>1,000 毫秒(ms) =<br>1,000,000 微秒(μs) =<br>1,000,000,000 纳秒(ns) =<br>1,000,000,000,000 皮秒(ps) =<br>1,000,000,000,000,000 飞秒(fs) =<br>1,000,000,000,000,000,000 仄秒(zs) =<br>1,000,000,000,000,000,000,000 幺秒(ys) =<br>1,000,000,000,000,000,000,000,000 渺秒(as)</p>
+</blockquote>
+<blockquote>
+<p>1 微秒(μs) = 10^-6 秒（0.000,001，百万分之一秒）<br>1 毫秒(ms) = 10^-3 秒（0.001，千分之一秒）</p>
+</blockquote>
+<p>因此 <code>fsp</code> 参数范围只能为 0 ~ 6：</p>
+<blockquote>
+<p>If the <em><code>fsp</code></em> argument is given to specify a fractional seconds precision from 0 to 6, the return value includes a fractional seconds part of that many digits.</p>
+</blockquote>
+<p>例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">SELECT CURDATE();                       -- 2018-08-08，获取当前年月日</span><br><span class="line">SELECT CURTIME();                       -- 22:41:30，获取当前时分秒</span><br><span class="line">SELECT NOW();                           -- 2018-08-08 22:20:46，获取当前年月日时分秒</span><br><span class="line">SELECT NOW(3);                          -- 2018-08-08 22:20:46.166，获取当前年月日时分秒毫秒</span><br><span class="line">SELECT NOW(6);                          -- 2018-08-08 22:20:46.166123，获取当前年月日时分秒毫秒微秒</span><br><span class="line">SELECT CURRENT_TIMESTAMP;               -- 2018-08-08 22:20:46，获取当前年月日时分秒</span><br></pre></td></tr></table></figure>
+
+<h2 id="时区"><a href="#时区" class="headerlink" title="时区"></a>时区</h2><h3 id="查看当前时区"><a href="#查看当前时区" class="headerlink" title="查看当前时区"></a>查看当前时区</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 结果主要看 system_time_zone</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">'%time_zone%'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查询系统时区、会话时区、下一事务时区</span></span><br><span class="line"><span class="keyword">SELECT</span> @@GLOBAL.time_zone, </span><br><span class="line">       @@SESSION.time_zone, </span><br><span class="line">       @@<span class="keyword">time_zone</span>;;</span><br></pre></td></tr></table></figure>
+
+<p>参考：<a href="https://www.cnblogs.com/Uest/p/8259821.html" target="_blank" rel="noopener">MySQL 中几个关于时间/时区的变量</a></p>
+<h3 id="修改时区"><a href="#修改时区" class="headerlink" title="修改时区"></a>修改时区</h3><p>通过 SQL <code>SET</code> 语法临时修改：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 设置 Global 全局时区，重启后失效</span></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> <span class="keyword">time_zone</span> = <span class="string">'+8:00'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 设置 Session 会话时区，会话关闭后失效</span></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">time_zone</span> = <span class="string">'+8:00'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 设置 下一事务 时区，事务结束后失效</span></span><br><span class="line"><span class="keyword">set</span> @@<span class="keyword">time_zone</span> = <span class="string">'+8:00'</span>;</span><br></pre></td></tr></table></figure>
+
+<p>通过修改配置文件，重启后永久生效：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ vim /etc/mysql/my.cnf</span><br><span class="line">default-time_zone = '+8:00'</span><br><span class="line"></span><br><span class="line">$ service mysql restart</span><br></pre></td></tr></table></figure>
+
+<h3 id="时区转换"><a href="#时区转换" class="headerlink" title="时区转换"></a>时区转换</h3><p>参考：<a href="https://dev.mysql.com/doc/refman/5.7/en/datetime.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/datetime.html</a></p>
+<blockquote>
+<p>MySQL converts <code>TIMESTAMP</code> values from the current time zone to UTC for storage, and back from UTC to the current time zone for retrieval. (This does not occur for other types such as <code>DATETIME</code>.) By default, the current time zone for each connection is the server’s time. The time zone can be set on a per-connection basis. As long as the time zone setting remains constant, you get back the same value you store. If you store a <code>TIMESTAMP</code> value, and then change the time zone and retrieve the value, the retrieved value is different from the value you stored. This occurs because the same time zone was not used for conversion in both directions. The current time zone is available as the value of the <a href="https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_time_zone" target="_blank" rel="noopener"><code>time_zone</code></a> system variable. For more information, see <a href="https://dev.mysql.com/doc/refman/5.7/en/time-zone-support.html" target="_blank" rel="noopener">Section 5.1.13, “MySQL Server Time Zone Support”</a>.</p>
+</blockquote>
+<p><code>CONVERT_TZ(dt, from_tz, to_tz)</code> 函数用于将 <code>DATETIME</code> 类型转为指定时区，例如：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># TIMESTAMP 类型（UTC±00:00） &gt; DATETIME 类型（UTC±00:00） &gt; DATETIME 类型（UTC+08:00）</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">CONVERT_TZ</span>( FROM_UNIXTIME( <span class="keyword">UNIX_TIMESTAMP</span>() ), <span class="string">'+00:00'</span>, <span class="string">'+08:00'</span> ) <span class="keyword">AS</span> <span class="keyword">NOW</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="日期-时间转换"><a href="#日期-时间转换" class="headerlink" title="日期/时间转换"></a>日期/时间转换</h2><h3 id="日期-时间-gt-时间戳"><a href="#日期-时间-gt-时间戳" class="headerlink" title="日期/时间 &gt; 时间戳"></a>日期/时间 &gt; 时间戳</h3><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_unix-timestamp" target="_blank" rel="noopener"><code>UNIX_TIMESTAMP([date])</code></a></td>
+<td>Return a Unix timestamp.<br/>If no <em><code>date</code></em> argument, it returns a Unix timestamp representing seconds since <code>&#39;1970-01-01 00:00:00&#39;</code> UTC.<br/>If with a <em><code>date</code></em> argument, it returns the value of the argument as seconds since <code>&#39;1970-01-01 00:00:00&#39;</code> UTC.</td>
+</tr>
+</tbody></table>
+<p>例子：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">UNIX_TIMESTAMP</span>();                <span class="comment">-- 1218124800，获取当前时间戳</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">UNIX_TIMESTAMP</span>(<span class="keyword">now</span>());           <span class="comment">-- 1218124800，将当前时间转换为时间戳，等价于上例</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">UNIX_TIMESTAMP</span>(<span class="string">'2008-08-08'</span>);    <span class="comment">-- 1219125100，将指定参数转换为时间戳</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="时间戳-gt-日期-时间"><a href="#时间戳-gt-日期-时间" class="headerlink" title="时间戳 &gt; 日期/时间"></a>时间戳 &gt; 日期/时间</h3><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_from-unixtime" target="_blank" rel="noopener"><code>FROM_UNIXTIME(unix_timestamp[,format])</code></a></td>
+<td>Format Unix timestamp as a date</td>
+</tr>
+</tbody></table>
+<p>注意，该函数只支持单位为秒的时间戳，不支持毫秒、微秒，需要先换算：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> FROM_UNIXTIME(<span class="number">1447430881</span>);                                    <span class="comment">-- 2015-11-13 10:08:01</span></span><br><span class="line"><span class="keyword">SELECT</span> FROM_UNIXTIME(<span class="number">1447430881123</span> / <span class="number">1000</span>);                          <span class="comment">-- 2015-11-13 16:08:01.1230</span></span><br><span class="line"><span class="keyword">SELECT</span> FROM_UNIXTIME(<span class="number">1447430881123456</span> / <span class="number">1000000</span>, <span class="string">'%Y %D %M %r %f'</span>);  <span class="comment">-- 2015 13th November 04:08:01 PM 123456</span></span><br></pre></td></tr></table></figure>
+
+<p>支持指定 <code>fomart</code> 格式：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> FROM_UNIXTIME(<span class="number">0</span>);                       <span class="comment">-- 1970-01-01 00:00:00</span></span><br><span class="line"><span class="keyword">SELECT</span> FROM_UNIXTIME(<span class="number">0</span>, <span class="string">'%Y %D %M %h:%i:%s'</span>);  <span class="comment">-- 1970 1st January 12:00:00</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="日期-时间-gt-字符串"><a href="#日期-时间-gt-字符串" class="headerlink" title="日期/时间 &gt; 字符串"></a>日期/时间 &gt; 字符串</h3><p>Date/Time to Str（日期/时间转换为字符串）函数：</p>
+<ul>
+<li><code>date_format(date, format)</code></li>
+<li><code>time_format(time, format)</code></li>
+</ul>
+<p>例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">select date_format(now(), &#39;%Y-%m-%d&#39;);                          -- 2018-08-08</span><br><span class="line">select date_format(&#39;2018-08-08 22:23:00&#39;, &#39;%W %M %Y&#39;);          -- Friday August 2018</span><br><span class="line">select date_format(&#39;2018-08-08 22:23:01&#39;, &#39;%Y%m%d%H%i%s&#39;);      -- 20180808222301</span><br><span class="line">select time_format(&#39;22:23:01&#39;, &#39;%H.%i.%s&#39;);                     -- 22.23.01</span><br></pre></td></tr></table></figure>
+
+<h3 id="字符串-gt-日期-时间"><a href="#字符串-gt-日期-时间" class="headerlink" title="字符串 &gt; 日期/时间"></a>字符串 &gt; 日期/时间</h3><p>Str to Date （字符串转换为日期）函数：</p>
+<ul>
+<li><code>str_to_date(str, format)</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">select str_to_date(&#39;08&#x2F;09&#x2F;2008&#39;, &#39;%m&#x2F;%d&#x2F;%Y&#39;);                   -- 2008-08-09</span><br><span class="line">select str_to_date(&#39;08&#x2F;09&#x2F;08&#39;  , &#39;%m&#x2F;%d&#x2F;%y&#39;);                   -- 2008-08-09</span><br><span class="line">select str_to_date(&#39;08.09.2008&#39;, &#39;%m.%d.%Y&#39;);                   -- 2008-08-09</span><br><span class="line">select str_to_date(&#39;08:09:30&#39;, &#39;%h:%i:%s&#39;);                     -- 08:09:30</span><br><span class="line">select str_to_date(&#39;08.09.2008 08:09:30&#39;, &#39;%m.%d.%Y %h:%i:%s&#39;); -- 2008-08-09 08:09:30</span><br></pre></td></tr></table></figure>
+
+<h3 id="format-参数"><a href="#format-参数" class="headerlink" title="format 参数"></a>format 参数</h3><p><code>format</code> 如下，这里只列出常用的：</p>
+<table>
+<thead>
+<tr>
+<th><code>format</code></th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>%Y</code></td>
+<td>Year, numeric, four digits</td>
+</tr>
+<tr>
+<td><code>%y</code></td>
+<td>Year, numeric (two digits)</td>
+</tr>
+<tr>
+<td><code>%M</code></td>
+<td>Month name (<code>January</code>..<code>December</code>)</td>
+</tr>
+<tr>
+<td><code>%m</code></td>
+<td>Month, numeric (<code>00</code>..<code>12</code>)</td>
+</tr>
+<tr>
+<td><code>%D</code></td>
+<td>Day of the month with English suffix (<code>0th</code>, <code>1st</code>, <code>2nd</code>, <code>3rd</code>, …)</td>
+</tr>
+<tr>
+<td><code>%d</code></td>
+<td>Day of the month, numeric (<code>00</code>..<code>31</code>)</td>
+</tr>
+<tr>
+<td><code>%H</code></td>
+<td>Hour (<code>00</code>..<code>23</code>)</td>
+</tr>
+<tr>
+<td><code>%h</code></td>
+<td>Hour (<code>01</code>..<code>12</code>)</td>
+</tr>
+<tr>
+<td><code>%i</code></td>
+<td>Minutes, numeric (<code>00</code>..<code>59</code>)</td>
+</tr>
+<tr>
+<td><code>%s</code></td>
+<td>Seconds (<code>00</code>..<code>59</code>)</td>
+</tr>
+<tr>
+<td><code>%f</code></td>
+<td>Microseconds (<code>000000</code>..<code>999999</code>)</td>
+</tr>
+<tr>
+<td><code>%T</code></td>
+<td>Time, 24-hour (<em><code>hh:mm:ss</code></em>)</td>
+</tr>
+<tr>
+<td><code>%r</code></td>
+<td>Time, 12-hour (<em><code>hh:mm:ss</code></em> followed by <code>AM</code> or <code>PM</code>)</td>
+</tr>
+</tbody></table>
+<h2 id="日期-时间计算"><a href="#日期-时间计算" class="headerlink" title="日期/时间计算"></a>日期/时间计算</h2><p>为日期增加一个时间间隔：</p>
+<ul>
+<li><code>date_add()</code></li>
+</ul>
+<p>为日期减去一个时间间隔：</p>
+<ul>
+<li><code>date_sub()</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">set @dt &#x3D; now();</span><br><span class="line"></span><br><span class="line">select date_add(@dt, interval 1 day);        -- add 1 day</span><br><span class="line">select date_add(@dt, interval 1 hour);       -- add 1 hour</span><br><span class="line">select date_add(@dt, interval 1 minute);     -- ...</span><br><span class="line">select date_add(@dt, interval 1 second);</span><br><span class="line">select date_add(@dt, interval 1 microsecond);</span><br><span class="line">select date_add(@dt, interval 1 week);</span><br><span class="line">select date_add(@dt, interval 1 month);</span><br><span class="line">select date_add(@dt, interval 1 quarter);</span><br><span class="line">select date_add(@dt, interval 1 year);</span><br><span class="line"></span><br><span class="line">select date_add(@dt, interval -1 day);       -- sub 1 day</span><br><span class="line"></span><br><span class="line">SELECT DATE_SUB(@dt, INTERVAL 7 DAY);        -- 七天前</span><br></pre></td></tr></table></figure>
+
+<h2 id="日期-时间截取"><a href="#日期-时间截取" class="headerlink" title="日期/时间截取"></a>日期/时间截取</h2><p>选取日期时间的各个部分：日期、时间、年、季度、月、日、小时、分钟、秒、微秒</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">set @dt &#x3D; now();</span><br><span class="line"></span><br><span class="line">select date(@dt);        -- 2008-09-10</span><br><span class="line">select time(@dt);        -- 07:15:30.123456</span><br><span class="line">select year(@dt);        -- 2008</span><br><span class="line">select quarter(@dt);     -- 3</span><br><span class="line">select month(@dt);       -- 9</span><br><span class="line">select week(@dt);        -- 36</span><br><span class="line">select day(@dt);         -- 10</span><br><span class="line">select hour(@dt);        -- 7</span><br><span class="line">select minute(@dt);      -- 15</span><br><span class="line">select second(@dt);      -- 30</span><br><span class="line">select microsecond(@dt); -- 123456</span><br></pre></td></tr></table></figure>
+
+<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><h2 id="按天统计订单量"><a href="#按天统计订单量" class="headerlink" title="按天统计订单量"></a>按天统计订单量</h2><p>按天统计订单量（同理，按小时统计：<code>DATE_FORMAT(create_time,&#39;%Y-%m-%d %H:00:00&#39;)</code>）：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(*), <span class="keyword">DATE_FORMAT</span>(create_time,<span class="string">'%Y-%m-%d'</span>) <span class="keyword">days</span> </span><br><span class="line"><span class="keyword">from</span> t_order </span><br><span class="line"><span class="keyword">where</span> create_time <span class="keyword">BETWEEN</span> <span class="string">'2008-9-29'</span> <span class="keyword">AND</span> <span class="string">'2008-9-30'</span> </span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> <span class="keyword">days</span>;</span><br><span class="line"></span><br><span class="line">+<span class="comment">----------+------------+</span></span><br><span class="line">| count(*) | hours      |</span><br><span class="line">+<span class="comment">----------+------------+</span></span><br><span class="line">|   150628 | 2008-09-01 |</span><br><span class="line">|   172419 | 2008-09-02 |</span><br><span class="line">|   177021 | 2008-09-03 |</span><br><span class="line">|   178917 | 2008-09-04 |</span><br><span class="line">|   180960 | 2008-09-05 |</span><br><span class="line">|   177626 | 2008-09-06 |</span><br><span class="line">|   177504 | 2008-09-07 |</span><br><span class="line">|   166118 | 2008-09-08 |</span><br><span class="line">|   193006 | 2008-09-09 |</span><br><span class="line">|   204156 | 2008-09-10 |</span><br><span class="line">|   196598 | 2008-09-11 |</span><br><span class="line">|   200184 | 2008-09-12 |</span><br><span class="line">|   159169 | 2008-09-13 |</span><br><span class="line">|   179798 | 2008-09-14 |</span><br><span class="line">|   203586 | 2008-09-15 |</span><br><span class="line">|   217863 | 2008-09-16 |</span><br><span class="line">|   231207 | 2008-09-17 |</span><br><span class="line">|   245960 | 2008-09-18 |</span><br><span class="line">|   226578 | 2008-09-19 |</span><br><span class="line">|   211986 | 2008-09-20 |</span><br><span class="line">|   201396 | 2008-09-21 |</span><br><span class="line">|   183012 | 2008-09-22 |</span><br><span class="line">|   221780 | 2008-09-23 |</span><br><span class="line">|   228094 | 2008-09-24 |</span><br><span class="line">|   220251 | 2008-09-25 |</span><br><span class="line">|   240866 | 2008-09-26 |</span><br><span class="line">|   235670 | 2008-09-27 |</span><br><span class="line">|   244964 | 2008-09-28 |</span><br><span class="line">|    98805 | 2008-09-29 |</span><br><span class="line">+<span class="comment">----------+------------+</span></span><br><span class="line">29 rows in <span class="keyword">set</span> (<span class="number">5.83</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h2 id="按-N-分钟统计订单量"><a href="#按-N-分钟统计订单量" class="headerlink" title="按 N 分钟统计订单量"></a>按 N 分钟统计订单量</h2><p>做法在于将每行的分钟数 <code>(MINUTE(create_time)</code> 除以 10 得到的小数向下取整，再乘以 10 就是所属的区间。例如：</p>
+<ul>
+<li>1 分钟 &gt; 0</li>
+<li>25 分钟 &gt; 20</li>
+<li>59 分钟 &gt; 50</li>
+</ul>
+<p>下例按 10 分钟统计订单量：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(*), <span class="keyword">DATE_FORMAT</span>(</span><br><span class="line">  <span class="keyword">CONCAT</span>(</span><br><span class="line">    <span class="built_in">DATE</span>(create_time), </span><br><span class="line">    <span class="string">' '</span>, </span><br><span class="line">    <span class="keyword">HOUR</span>(create_time), </span><br><span class="line">    <span class="string">':'</span>, </span><br><span class="line">    <span class="keyword">FLOOR</span>(<span class="keyword">MINUTE</span>(create_time) / <span class="number">10</span>) * <span class="number">10</span></span><br><span class="line">  ), <span class="string">'%Y-%m-%d %H:%i'</span></span><br><span class="line">) <span class="keyword">AS</span> <span class="keyword">hours</span></span><br><span class="line"><span class="keyword">FROM</span> t_order</span><br><span class="line"><span class="keyword">WHERE</span> create_time <span class="keyword">BETWEEN</span> <span class="string">'2008-9-29'</span> <span class="keyword">AND</span> <span class="string">'2008-9-30'</span></span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> <span class="keyword">hours</span>;</span><br><span class="line"></span><br><span class="line">+<span class="comment">----------+------------------+</span></span><br><span class="line">| COUNT(*) | hours            |</span><br><span class="line">+<span class="comment">----------+------------------+</span></span><br><span class="line">|       51 | 2008-09-29 00:00 |</span><br><span class="line">|       53 | 2008-09-29 00:10 |</span><br><span class="line">|       43 | 2008-09-29 00:20 |</span><br><span class="line">|       59 | 2008-09-29 00:30 |</span><br><span class="line">|       40 | 2008-09-29 00:40 |</span><br><span class="line">|       27 | 2008-09-29 00:50 |</span><br><span class="line">|       22 | 2008-09-29 01:00 |</span><br><span class="line">|       24 | 2008-09-29 01:10 |</span><br><span class="line">|       15 | 2008-09-29 01:20 |</span><br><span class="line">|       15 | 2008-09-29 01:30 |</span><br><span class="line">|       26 | 2008-09-29 01:40 |</span><br><span class="line">|       18 | 2008-09-29 01:50 |</span><br><span class="line">|     1949 | 2008-09-29 02:00 |</span><br></pre></td></tr></table></figure>
+
+<h1 id="建表自动初始化与更新时间"><a href="#建表自动初始化与更新时间" class="headerlink" title="建表自动初始化与更新时间"></a>建表自动初始化与更新时间</h1><p>假设表有 3 个字段：id、name、update_time，希望在新增记录时能自动设置 update_time 字段为当前时间，设置 <code>DEFAULT CURRENT_TIMESTAMP</code> 子句即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE &#96;test&#96; (</span><br><span class="line">&#96;id&#96; int NOT NULL,</span><br><span class="line">&#96;name&#96; varchar(255),</span><br><span class="line">&#96;update_time&#96; timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,</span><br><span class="line">PRIMARY KEY (&#96;id&#96;)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>如果希望在更新记录时还能自动更新 update_time 字段为当前时间，设置 <code>ON UPDATE CURRENT_TIMESTAMP</code> 子句即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">&#96;update_time&#96; timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP DEFAULT CURRENT_TIMESTAMP,</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>设置之后，即使直接通过 Navicat 工具修改了 name 字段，那么 update_time 也会自动更新，除非手动设置了 update_time 字段。</p>
+<p>参考：<a href="https://dev.mysql.com/doc/refman/5.7/en/timestamp-initialization.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/timestamp-initialization.html</a></p>
+<h1 id="DATETIME-类型快速对比"><a href="#DATETIME-类型快速对比" class="headerlink" title="DATETIME 类型快速对比"></a>DATETIME 类型快速对比</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select count(1) </span><br><span class="line">from t_table </span><br><span class="line">where createTime between 20180215 and 20180216;</span><br></pre></td></tr></table></figure>
+
+<p>datetime 会自动转为整数，查询范围从 2018-02-15 00:00:00 到 2018-02-16 00:00:00。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://dev.mysql.com/doc/refman/5.7/en/functions.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/functions.html</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/timestamp-initialization.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/timestamp-initialization.html</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/time-zone-support.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/time-zone-support.html</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2018/02/02/mysql-select-syntax/" class="prev">PREV</a><a href="/2018/01/05/mysql-data-types/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

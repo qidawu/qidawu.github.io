@@ -1,0 +1,411 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Java 常用类型系列（四）Java 8 日期与时间总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Java 常用类型系列（四）Java 8 日期与时间总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Java 常用类型系列（四）Java 8 日期与时间总结</h1><div class="post-info">2018-04-05<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><h1 id="现有问题"><a href="#现有问题" class="headerlink" title="现有问题"></a>现有问题</h1><p><code>java.util.Date</code> 存在的问题：</p>
+<ul>
+<li>正如类名所表达的，这个类无法表示“日期”（替代方案是 <code>LocalDate</code>），只能以毫秒的精度表示“时间”（替代方案是 <code>LocalDateTime</code>）。</li>
+<li>更糟糕的是它的易用性，比如：年份的起始选择是 1900 年，月份的起始从 0 开始。如果要表达 2014 年 3 月 18 日，需要创建以下 <code>Date</code> 实例：<code>Date date = new Date(144，2，18)</code></li>
+<li>非线程安全，且所有的日期类都是可变的，这表示在运行期其值可以任意修改，这是 Java 日期类最大的问题之一。</li>
+</ul>
+<p><code>java.util.Date</code> 及 <code>java.sql.Timestamp</code> API 如下：</p>
+<p><img src="/img/java/time/java_time_old_api.png" alt="java time old api"></p>
+<h1 id="Java-8-日期与时间"><a href="#Java-8-日期与时间" class="headerlink" title="Java 8 日期与时间"></a>Java 8 日期与时间</h1><p>Java 8 引入了新的 <code>java.time</code> 类库，用于加强对日期与时间的操作，本文主要总结其 API 结构、具体实现和使用方式。</p>
+<p>先看下涉及的包结构简介：</p>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://docs.oracle.com/javase/8/docs/api/java/time/package-summary.html" target="_blank" rel="noopener">java.time</a></td>
+<td>The main API for dates, times, instants, and durations.</td>
+</tr>
+<tr>
+<td><a href="https://docs.oracle.com/javase/8/docs/api/java/time/temporal/package-summary.html" target="_blank" rel="noopener">java.time.temporal</a></td>
+<td>Access to date and time using fields and units, and date time adjusters.</td>
+</tr>
+<tr>
+<td><a href="https://docs.oracle.com/javase/8/docs/api/java/time/chrono/package-summary.html" target="_blank" rel="noopener">java.time.chrono</a></td>
+<td>Generic API for calendar systems other than the default ISO.</td>
+</tr>
+<tr>
+<td><a href="https://docs.oracle.com/javase/8/docs/api/java/time/zone/package-summary.html" target="_blank" rel="noopener">java.time.zone</a></td>
+<td>Support for time-zones and their rules.</td>
+</tr>
+<tr>
+<td><a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/package-summary.html" target="_blank" rel="noopener">java.time.format</a></td>
+<td>Provides classes to print and parse dates and times.</td>
+</tr>
+</tbody></table>
+<h2 id="java-time"><a href="#java-time" class="headerlink" title="java.time"></a>java.time</h2><p><code>java.time</code> 包的核心接口：</p>
+<p><img src="/img/java/time/java-time%E6%A0%B8%E5%BF%83%E6%8E%A5%E5%8F%A3.png" alt="java-time核心接口"></p>
+<p><code>java.time</code> 包的常用类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Year              <span class="comment">// 2007</span></span><br><span class="line">YearMonth         <span class="comment">// 2007-12</span></span><br><span class="line">MonthDay          <span class="comment">// --12-03</span></span><br><span class="line"></span><br><span class="line">LocalDate         <span class="comment">// 2007-12-03</span></span><br><span class="line">LocalTime         <span class="comment">// 10:15:30</span></span><br><span class="line">LocalDateTime     <span class="comment">// 2007-12-03T10:15:30</span></span><br><span class="line"></span><br><span class="line">OffsetTime        <span class="comment">// 10:15:30+01:00</span></span><br><span class="line">OffsetDateTime    <span class="comment">// 2007-12-03T10:15:30+01:00</span></span><br><span class="line">ZonedDateTime     <span class="comment">// 2007-12-03T10:15:30+01:00 Europe/Paris</span></span><br><span class="line"></span><br><span class="line">Instant           <span class="comment">// 以 Unix 元年时间（UTC 时区 1970-01-01T00:00:00Z，“Z” 代表 UTC 时区）开始所经历的秒数</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/img/java/time/java.time%E6%A0%B8%E5%BF%83%E7%B1%BB.png" alt="java.time核心类"></p>
+<h2 id="java-time-temporal"><a href="#java-time-temporal" class="headerlink" title="java.time.temporal"></a>java.time.temporal</h2><p><code>java.time.temporal</code> 包的核心接口：</p>
+<table>
+<thead>
+<tr>
+<th>Interface</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>TemporalAccessor</code></td>
+<td>框架级别的根接口，定义了对 temporal 对象的只读访问。</td>
+</tr>
+<tr>
+<td><code>Temporal</code></td>
+<td>框架级别的接口，定义了对 temporal 对象的读写访问。实现类有 <code>LocalDate</code>、<code>OffsetDateTime</code>、<code>Instant</code> 等等。继承自 <code>TemporalAccessor</code>。</td>
+</tr>
+<tr>
+<td><code>TemporalAmount</code></td>
+<td>框架级别的接口，定义了一个时间段，例如”6 小时“、”8 天“、”3 个月“。实现类有 <code>Duration</code>、<code>Period</code>。可传入 temporal 对象的 <code>plus</code> 或 <code>minus</code> 方法进行时间调整。</td>
+</tr>
+<tr>
+<td><code>TemporalUnit</code></td>
+<td>日期和时间的单元，<code>ChronoUnit</code> 枚举实现了该接口。可传入 temporal 对象的 <code>plus</code> 或 <code>minus</code> 方法进行时间调整。</td>
+</tr>
+<tr>
+<td><code>TemporalField</code></td>
+<td>日期和时间的字段。<code>ChronoField</code> 枚举实现了该接口，可传入 temporal 对象的 <code>get</code> 或 <code>with</code> 方法获取或修改枚举对应的值。</td>
+</tr>
+<tr>
+<td><code>TemporalAdjuster</code></td>
+<td>函数式接口，定义了对 temporal 对象的调整策略。可以使用 <code>TemporalAdjusters</code> 工具类的静态工厂方法生成对象实例，并传入temporal 对象的 <code>with</code> 方法进行时间调整。</td>
+</tr>
+</tbody></table>
+<p><img src="/img/java/time/temporal%E6%A0%B8%E5%BF%83%E6%8E%A5%E5%8F%A3.png" alt="ChronoLocalDate核心接口方法"></p>
+<h1 id="LocalDate、LocalTime"><a href="#LocalDate、LocalTime" class="headerlink" title="LocalDate、LocalTime"></a>LocalDate、LocalTime</h1><p><code>LocalDate</code>、<code>LocalTime</code> 是人类易读的日期和时间格式，表示一个本地时间点，<strong>无时区信息</strong>。</p>
+<h2 id="历法系统介绍"><a href="#历法系统介绍" class="headerlink" title="历法系统介绍"></a>历法系统介绍</h2><p>首先了解几个概念：</p>
+<h3 id="历法"><a href="#历法" class="headerlink" title="历法"></a>历法</h3><p><a href="https://zh.wikipedia.org/wiki/历法" target="_blank" rel="noopener">历法</a>，或称日历，是用<a href="https://zh.wikipedia.org/wiki/年" target="_blank" rel="noopener">年</a>、<a href="https://zh.wikipedia.org/wiki/月" target="_blank" rel="noopener">月</a>、<a href="https://zh.wikipedia.org/wiki/日" target="_blank" rel="noopener">日</a>等时间单位计算时间的方法。Java 8 提供的历法实现如下：</p>
+<table>
+<thead>
+<tr>
+<th>历法</th>
+<th>Java 8 实现</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://zh.wikipedia.org/wiki/格里曆" target="_blank" rel="noopener">格里历（公历）</a>，即 <a href="https://en.wikipedia.org/wiki/Gregorian_calendar" target="_blank" rel="noopener">Gregorian calendar</a></td>
+<td><code>LocalDate</code></td>
+</tr>
+<tr>
+<td><a href="https://zh.wikipedia.org/wiki/和历" target="_blank" rel="noopener">和历</a></td>
+<td><code>JapaneseDate</code></td>
+</tr>
+<tr>
+<td><a href="https://zh.wikipedia.org/wiki/民國紀年" target="_blank" rel="noopener">中华民国历</a></td>
+<td><code>MinguoDate</code></td>
+</tr>
+<tr>
+<td><a href="https://zh.wikipedia.org/wiki/泰國曆" target="_blank" rel="noopener">泰国历</a></td>
+<td><code>ThaiBuddhistDate</code></td>
+</tr>
+<tr>
+<td><a href="https://zh.wikipedia.org/zh/伊斯兰历" target="_blank" rel="noopener">伊斯兰历（回历）</a></td>
+<td><code>HijrahDate</code></td>
+</tr>
+</tbody></table>
+<p><a href="https://zh.wikipedia.org/wiki/ISO_8601" target="_blank" rel="noopener">ISO-8601</a> 日历系统是世界文明日历系统的事实标准，其<strong>日期表示法</strong>为：</p>
+<blockquote>
+<p>年由4位数字组成YYYY，或者带正负号的四或五位数字表示±YYYYY。以<strong><a href="https://zh.wikipedia.org/wiki/公历" target="_blank" rel="noopener">公历</a>公元</strong>1年为0001年，以公元前1年为0000年，公元前2年为-0001年，其他以此类推。</p>
+<p>月、日用两位数字表示：MM、DD。</p>
+</blockquote>
+<p>Java 8 中 <code>LocalDate</code> 基于 ISO-8601 实现。另外还提供了四种其它的日历系统。这些日历系统中的每一个都有一个对应的类，如下图。所有这些类都实现了 <code>java.time.chrono.ChronoLocalDate</code> 接口，能够对公历的日期进行建模。</p>
+<p><img src="/img/java/time/ChronoLocalDate%E5%AE%9E%E7%8E%B0%E7%B1%BB.png" alt="ChronoLocalDate实现类"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 格里历（公历）</span></span><br><span class="line">LocalDate date = LocalDate.now();</span><br><span class="line"><span class="comment">// 和历</span></span><br><span class="line">JapaneseDate japaneseDate = JapaneseDate.from(date);</span><br><span class="line"><span class="comment">// 中华民国历</span></span><br><span class="line">MinguoDate minguoDate = MinguoDate.from(date);</span><br><span class="line"><span class="comment">// 泰国历</span></span><br><span class="line">ThaiBuddhistDate thaiBuddhistDate = ThaiBuddhistDate.from(date);</span><br><span class="line"><span class="comment">// 伊斯兰历（回历）</span></span><br><span class="line">HijrahDate hijrahDate = HijrahDate.from(date);</span><br></pre></td></tr></table></figure>
+
+<p>还有一些常见的历法，例如：</p>
+<ul>
+<li><a href="https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BC%A0%E7%BB%9F%E5%8E%86%E6%B3%95" target="_blank" rel="noopener">中国传统历法</a></li>
+<li><a href="https://zh.wikipedia.org/wiki/會計年度" target="_blank" rel="noopener">会计年度</a>：</li>
+</ul>
+<blockquote>
+<p>财政年度，又称会计年度，是指公司或国家每年制定预算或计算收入的统计时间。但每个国家或其法例所辖的组织各有不同，大抵分成两类：</p>
+<ul>
+<li>历年制，即是由1月1日起，使用历年制有中国、德国、法国、等等。</li>
+<li>跨年制，使用跨年制有美国、日本、香港、澳大利亚、等等。</li>
+</ul>
+<p>在会计上常会用 <a href="https://en.wikipedia.org/wiki/4-4-5_Calendar" target="_blank" rel="noopener">4/4/5 日历</a>，每一个月会有固定的周数，以便各月之间和各年之间的比较。</p>
+</blockquote>
+<h3 id="纪年"><a href="#纪年" class="headerlink" title="纪年"></a>纪年</h3><blockquote>
+<p><a href="https://zh.wikipedia.org/wiki/纪年" target="_blank" rel="noopener">纪年</a>，或称<strong>纪元</strong>，是指<a href="https://zh.wikipedia.org/wiki/历法" target="_blank" rel="noopener">历法</a>中的<strong>年份</strong>命名体系，例如<a href="https://zh.wikipedia.org/wiki/格里曆" target="_blank" rel="noopener">格里历</a>（公历）所使用的<a href="https://zh.wikipedia.org/wiki/基督纪年" target="_blank" rel="noopener">基督纪年</a>（<a href="https://zh.wikipedia.org/wiki/公元" target="_blank" rel="noopener">公元</a>），中国<a href="https://zh.wikipedia.org/wiki/农历" target="_blank" rel="noopener">农历</a>使用的<a href="https://zh.wikipedia.org/wiki/干支纪年" target="_blank" rel="noopener">干支纪年</a>等。世界各地曾存在过各种不同的纪年方法，其中一些至今仍在使用，例如日本现在仍在使用<a href="https://zh.wikipedia.org/wiki/年号纪年" target="_blank" rel="noopener">年号纪年</a>。</p>
+<p>这里提供了一个常见的<a href="https://zh.wikipedia.org/wiki/%E6%B0%91%E5%9C%8B%E7%B4%80%E5%B9%B4#%E7%B4%80%E5%B9%B4%E5%B0%8D%E7%85%A7" target="_blank" rel="noopener">纪年对照表</a>，可供参考。 </p>
+</blockquote>
+<p>-</p>
+<blockquote>
+<p><a href="https://zh.wikipedia.org/wiki/%E5%B9%B4%E5%8F%B7" target="_blank" rel="noopener">年号</a>是中国历史君主时代帝王纪年所立的名号，缘起于西汉汉武帝时期，后来朝鲜新罗在6世纪、日本在7世纪后期、越南在10世纪都因为中国的影响，开始使用年号；台湾岛的郑氏王朝与台湾民主国、朝鲜半岛大韩帝国与高丽、蒙古国建国初年受到中国影响，都还使用过年号，目前唯一使用年号的是仍保持君主制的日本。</p>
+<p>值得一提，<a href="https://zh.wikipedia.org/wiki/中華民國" target="_blank" rel="noopener">中华民国</a>所用的<a href="https://zh.wikipedia.org/wiki/民國紀年" target="_blank" rel="noopener">民国纪年</a>、以及<a href="https://zh.wikipedia.org/wiki/朝鮮民主主義人民共和國" target="_blank" rel="noopener">朝鲜民主主义人民共和国</a>使用的<a href="https://zh.wikipedia.org/wiki/主体纪年" target="_blank" rel="noopener">主体纪年</a>，常被误认为是年号，实际上仅是单纯的纪年<a href="https://zh.wikipedia.org/wiki/曆法" target="_blank" rel="noopener">历法</a>。</p>
+</blockquote>
+<p>-</p>
+<blockquote>
+<p><a href="https://zh.wikipedia.org/wiki/%E4%B8%80%E4%B8%96%E4%B8%80%E5%85%83%E5%88%B6" target="_blank" rel="noopener">一世一元制</a>，指<a href="https://zh.wikipedia.org/wiki/君主" target="_blank" rel="noopener">君主</a>(国王、大君主、可汗、天皇、皇帝)在其在位期间只使用同一个<a href="https://zh.wikipedia.org/wiki/年號" target="_blank" rel="noopener">年号</a>，不进行改元的制度。例外：如果君主后来另行称帝或是重祚，会另建新年号，以示区别。</p>
+</blockquote>
+<h2 id="底层实现"><a href="#底层实现" class="headerlink" title="底层实现"></a>底层实现</h2><p><code>LocalDate</code> 的底层实现包含不可变的年、月、日：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">LocalDate</span></span></span><br><span class="line"><span class="class">        <span class="keyword">implements</span> <span class="title">Temporal</span>, <span class="title">TemporalAdjuster</span>, <span class="title">ChronoLocalDate</span>, <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The year.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> year;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The month-of-year.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">short</span> month;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The day-of-month.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">short</span> day;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>LocalTime</code> 的底层实现包含不可变的时、分、秒、纳秒：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">LocalTime</span></span></span><br><span class="line"><span class="class">        <span class="keyword">implements</span> <span class="title">Temporal</span>, <span class="title">TemporalAdjuster</span>, <span class="title">Comparable</span>&lt;<span class="title">LocalTime</span>&gt;, <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The hour.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">byte</span> hour;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The minute.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">byte</span> minute;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The second.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">byte</span> second;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The nanosecond.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> nano;   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>LocalDateTime</code> 的底层实现包含不可变的 <code>LocalDate</code> 和 <code>LocalTime</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">LocalDateTime</span></span></span><br><span class="line"><span class="class">        <span class="keyword">implements</span> <span class="title">Temporal</span>, <span class="title">TemporalAdjuster</span>, <span class="title">ChronoLocalDateTime</span>&lt;<span class="title">LocalDate</span>&gt;, <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The date part.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> LocalDate date;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The time part.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> LocalTime time;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h2><table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>是否静态方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>of</code></td>
+<td>是</td>
+<td>由 <code>Temporal</code> 对象的某个部分创建该对象。</td>
+</tr>
+<tr>
+<td><code>now</code></td>
+<td>是</td>
+<td>依据系统时钟创建 <code>Temporal</code> 对象。</td>
+</tr>
+<tr>
+<td><code>from</code></td>
+<td>是</td>
+<td>依据传入的 <code>Temporal</code> 对象创建对象。</td>
+</tr>
+<tr>
+<td><code>parse</code></td>
+<td>是</td>
+<td>由字符串创建 <code>Temporal</code> 对象。</td>
+</tr>
+<tr>
+<td><code>format</code></td>
+<td>否</td>
+<td>使用某个指定的 <code>DateTimeFormatter</code> 将 <code>Temporal</code> 对象转换为字符串。</td>
+</tr>
+<tr>
+<td><code>atOffset</code></td>
+<td>否</td>
+<td>将 <code>Temporal</code> 对象和某个时区偏移相结合。</td>
+</tr>
+<tr>
+<td><code>atZone</code></td>
+<td>否</td>
+<td>将 <code>Temporal</code> 对象和某个时区相结合。</td>
+</tr>
+<tr>
+<td><code>get</code></td>
+<td>否</td>
+<td>读取 <code>Temporal</code> 对象的某一部分值。</td>
+</tr>
+<tr>
+<td><code>minus</code></td>
+<td>否</td>
+<td>创建 <code>Temporal</code> 对象的副本，通过将当前 <code>Temporal</code> 对象的值减去一定的时长创建该副本。</td>
+</tr>
+<tr>
+<td><code>plus</code></td>
+<td>否</td>
+<td>创建 <code>Temporal</code> 对象的副本，通过将当前 <code>Temporal</code> 对象的值加上一定的时长创建该副本。</td>
+</tr>
+<tr>
+<td><code>with</code></td>
+<td>否</td>
+<td>以该 <code>Temporal</code> 对象为模板，对某些状态进行修改创建该对象的副本。</td>
+</tr>
+</tbody></table>
+<p>例子：</p>
+<h3 id="创建实例"><a href="#创建实例" class="headerlink" title="创建实例"></a>创建实例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 通过静态工厂方法创建实例</span></span><br><span class="line">LocalTime time = LocalTime.of(<span class="number">12</span>, <span class="number">0</span>);</span><br><span class="line">LocalDate date = LocalDate.of(<span class="number">2007</span>, <span class="number">12</span>, <span class="number">3</span>);</span><br><span class="line"><span class="comment">// 1970-01-01。epoch day（历元日）是一个简单的天数递增计数，其中第 0 天表示 1970-01-01。负数代表更早的日期。</span></span><br><span class="line">LocalDate date1 = LocalDate.ofEpochDay(<span class="number">0</span>);</span><br><span class="line"><span class="comment">// 通过静态方法创建实例</span></span><br><span class="line">LocalDate date2 = LocalDate.parse(<span class="string">"2007-12-03"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 合并日期和时间</span></span><br><span class="line">LocalDateTime dateTime = date.atTime(time);</span><br><span class="line">LocalDateTime dateTime1 = time.atDate(date);</span><br><span class="line">LocalDateTime dateTime2 = date.atStartOfDay();</span><br><span class="line">LocalDateTime dateTime3 = LocalDateTime.of(date, time);</span><br><span class="line"></span><br><span class="line"><span class="comment">// java.time.LocalDateTime 转 java.sql.Timestamp</span></span><br><span class="line">Timestamp timestamp = Timestamp.valueOf(localDateTime);</span><br></pre></td></tr></table></figure>
+
+<h3 id="读取字段信息"><a href="#读取字段信息" class="headerlink" title="读取字段信息"></a>读取字段信息</h3><p>读取信息使用 <code>TemporalAccessor</code> 接口，通过传递一个 <code>ChronoField</code> 枚举给 <code>get</code> 方法读取相关信息：</p>
+<p><img src="/img/java/time/temporal%E6%A0%B8%E5%BF%83%E6%8E%A5%E5%8F%A3.png" alt="ChronoLocalDate核心接口方法"></p>
+<p><code>ChronoField</code> 枚举提供的值如下图：</p>
+<p><img src="/img/java/time/ChronoField%E6%9E%9A%E4%B8%BE.png" alt="ChronoField枚举">：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用 TemporalAccessor#get(TemporalField)，传入 TemporalField 接口的实现类 ChronoField</span></span><br><span class="line"><span class="keyword">int</span> year = date.get(ChronoField.YEAR);</span><br><span class="line"><span class="keyword">int</span> month = date.get(ChronoField.MONTH_OF_YEAR);</span><br><span class="line"><span class="keyword">int</span> dayOfMonth = date.get(ChronoField.DAY_OF_MONTH);</span><br><span class="line"></span><br><span class="line"><span class="comment">// LocalTime/LocalDate/LocalDateTime 各自也提供了一组 getter 快捷方法</span></span><br><span class="line"><span class="keyword">int</span> year1 = date.getYear();</span><br><span class="line"><span class="keyword">int</span> month1 = date.getMonthValue();</span><br><span class="line"><span class="keyword">int</span> dayOfMonth1 = date.getDayOfMonth();</span><br><span class="line"><span class="keyword">boolean</span> leapYear = date.isLeapYear();</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建副本并修改"><a href="#创建副本并修改" class="headerlink" title="创建副本并修改"></a>创建副本并修改</h3><p>创建副本使用 <code>Temporal</code> 接口，其提供了一组 <code>with</code>/<code>plus</code>/<code>minus</code> 方法：</p>
+<p><img src="/img/java/time/temporal%E6%A0%B8%E5%BF%83%E6%8E%A5%E5%8F%A3.png" alt="ChronoLocalDate核心接口方法"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用 Temporal#with(TemporalField, long)，传入 TemporalField 接口的实现类 ChronoField</span></span><br><span class="line">LocalDate newDate = date.with(ChronoField.YEAR, <span class="number">2019</span>);</span><br><span class="line">LocalDate newDate2 = date.with(ChronoField.MONTH_OF_YEAR, <span class="number">1</span>);</span><br><span class="line">LocalDate newDate3 = date.with(ChronoField.DAY_OF_MONTH, <span class="number">30</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// LocalTime/LocalDate/LocalDateTime 各自也提供了一组 with 快捷方法</span></span><br><span class="line">LocalDate newDate4 = date.withYear(<span class="number">2019</span>);</span><br><span class="line">LocalDate newDate5 = date.withMonth(<span class="number">1</span>);</span><br><span class="line">LocalDate newDate6 = date.withDayOfMonth(<span class="number">30</span>);</span><br></pre></td></tr></table></figure>
+
+<p>如果 <code>with(TemporalField, long)</code> 方法不满足需求，可以使用更灵活的 <code>with(TemporalAdjuster)</code> 方法，配合 <code>TemporalAdjusters</code> 工具类提供的静态工厂方法，方法名非常直观：</p>
+<p><img src="/img/java/time/TemporalAdjusters%E9%9D%99%E6%80%81%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95.png" alt="TemporalAdjusters静态工厂方法"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用 Temporal#with(TemporalAdjuster)</span></span><br><span class="line">LocalDate newDate7 = date.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));</span><br><span class="line">LocalDate newDate8 = date.with(TemporalAdjusters.lastDayOfMonth());</span><br></pre></td></tr></table></figure>
+
+<p>如果在 <code>TemporalAdjusters</code> 工具类中没有找到符合要求的预定义静态工厂方法，可以自己实现 <code>TemporalAdjuster</code> 函数式接口，以定制一些更复杂的时间修改操作：</p>
+<p><img src="/img/java/time/TemporalAdjuster.png" alt="TemporalAdjuster"></p>
+<h1 id="Instant"><a href="#Instant" class="headerlink" title="Instant"></a>Instant</h1><p>作为人，我们习惯于以星期几、几号、几点、几分这样的方式理解日期和时间。毫无疑问，这种方式对于计算机而言并不容易理解。从计算机的角度来看，建模时间最自然的格式是表示一个持续时间段上某个点的单一大整型数。这也是新的 <code>java.time.Instant</code> 类对时间建模的方式，它是以 <strong>Unix 元年时间</strong>（UTC 时区 1970-01-01T00:00:00Z，“Z” 代表 UTC 时区）开始所经历的秒数进行计算。</p>
+<blockquote>
+<p>1 秒(s) =<br>1,000 毫秒(ms) =<br>1,000,000 微秒(μs) =<br>1,000,000,000 纳秒(ns) =<br>1,000,000,000,000 皮秒(ps) =<br>1,000,000,000,000,000 飞秒(fs) =<br>1,000,000,000,000,000,000 仄秒(zs) =<br>1,000,000,000,000,000,000,000 幺秒(ys) =<br>1,000,000,000,000,000,000,000,000 渺秒(as)</p>
+</blockquote>
+<blockquote>
+<p>1 纳秒(ns) = 10^-9 秒（0.000,000,001，十亿分之一秒）<br>1 微秒(μs) = 10^-6 秒（0.000,001，百万分之一秒）<br>1 毫秒(ms) = 10^-3 秒（0.001，千分之一秒）</p>
+</blockquote>
+<h2 id="底层实现-1"><a href="#底层实现-1" class="headerlink" title="底层实现"></a>底层实现</h2><p>从底层实现可见，<code>Instant</code> 仅包含不可变的秒、纳秒。即支持的最高存储精度为<strong>纳秒</strong>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Instant</span></span></span><br><span class="line"><span class="class">        <span class="keyword">implements</span> <span class="title">Temporal</span>, <span class="title">TemporalAdjuster</span>, <span class="title">Comparable</span>&lt;<span class="title">Instant</span>&gt;, <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The number of seconds from the epoch of 1970-01-01T00:00:00Z.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span> seconds;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The number of nanoseconds, later along the time-line, from the seconds field.</span></span><br><span class="line"><span class="comment">     * This is always positive, and never exceeds 999,999,999.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> nanos;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用方式-1"><a href="#使用方式-1" class="headerlink" title="使用方式"></a>使用方式</h2><p>通过静态工厂方法创建实例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 自 1970-01-01T00:00:00Z 之后经过的毫秒数</span></span><br><span class="line"><span class="comment">// 1970-01-01T00:00:01.000Z</span></span><br><span class="line">Instant instant = Instant.ofEpochMilli(<span class="number">1000</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// // 自 1970-01-01T00:00:00Z 之后经过的秒数</span></span><br><span class="line"><span class="comment">// 1970-01-01T00:00:01Z</span></span><br><span class="line">Instant instant1 = Instant.ofEpochSecond(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">Instant instant2 = Instant.now();</span><br></pre></td></tr></table></figure>
+
+<p><code>Instant</code> 与 <code>java.util.Date</code> 互转：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Date date = Date.from(instant);</span><br><span class="line">Instant instant = date.toInstant();</span><br></pre></td></tr></table></figure>
+
+<p><code>Instant</code> 与时间戳互转：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Instant instant = Instant.now(); <span class="comment">// 2019-07-07T11:07:42.814Z</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Instant 的设计初衷是为了便于机器使用，底层实现仅包含由秒和纳秒所构成的数字。</span></span><br><span class="line"><span class="keyword">long</span> seconds = instant.getEpochSecond();  <span class="comment">// 1562497662</span></span><br><span class="line"><span class="keyword">int</span> nanoSeconds = instant.getNano();  <span class="comment">// 814000000</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Instant 无法处理那些我们非常容易理解的时间单位，例如下述操作将抛出异常：</span></span><br><span class="line"><span class="comment">// java.time.temporal.UnsupportedTemporalTypeException: Unsupported field: DayOfMonth</span></span><br><span class="line"><span class="comment">// instant.get(ChronoField.DAY_OF_MONTH);</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Instant 与时间戳互转</span></span><br><span class="line"><span class="keyword">long</span> timestamp = instant.toEpochMilli();  <span class="comment">// 1562497662814</span></span><br><span class="line">assertEquals(System.currentTimeMillis(), timestamp); <span class="comment">// true</span></span><br><span class="line">Instant instant2 = Instant.ofEpochMilli(timestamp); <span class="comment">// 2019-07-07T11:07:42.814Z</span></span><br></pre></td></tr></table></figure>
+
+<p>创建副本并修改：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Instant newInstant = instant.with(ChronoField.INSTANT_SECONDS, <span class="number">30</span>);</span><br><span class="line">Instant newInstant2 = instant.with(ChronoField.MILLI_OF_SECOND, <span class="number">300</span>);</span><br><span class="line">Instant newInstant3 = instant.plus(<span class="number">30</span>, ChronoUnit.SECONDS);</span><br><span class="line">Instant newInstant4 = instant.plusSeconds(<span class="number">30</span>);</span><br><span class="line">Instant newInstant5 = instant.minusSeconds(<span class="number">30</span>);</span><br></pre></td></tr></table></figure>
+
+<h1 id="Duration、Period"><a href="#Duration、Period" class="headerlink" title="Duration、Period"></a>Duration、Period</h1><p><code>Duration</code> 和 <code>Period</code> 类用于保存两个 <code>Temporal</code> 对象之间的时间段。</p>
+<p><img src="/img/java/time/TemporalAmount%E5%AE%9E%E7%8E%B0%E7%B1%BB.png" alt="TemporalAmount实现类"></p>
+<h2 id="底层实现-2"><a href="#底层实现-2" class="headerlink" title="底层实现"></a>底层实现</h2><p><code>Duration</code> 的底层实现仅包含不可变的秒、纳秒：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Duration</span></span></span><br><span class="line"><span class="class">        <span class="keyword">implements</span> <span class="title">TemporalAmount</span>, <span class="title">Comparable</span>&lt;<span class="title">Duration</span>&gt;, <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The number of seconds in the duration.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span> seconds;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The number of nanoseconds in the duration, expressed as a fraction of the</span></span><br><span class="line"><span class="comment">     * number of seconds. This is always positive, and never exceeds 999,999,999.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> nanos;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>Period</code> 的底层实现包含不可变的年、月、日：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Period</span></span></span><br><span class="line"><span class="class">        <span class="keyword">implements</span> <span class="title">ChronoPeriod</span>, <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The number of years.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> years;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The number of months.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> months;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The number of days.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> days;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用方式-2"><a href="#使用方式-2" class="headerlink" title="使用方式"></a>使用方式</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Duration 类的静态工厂方法 between 仅支持两个 LocalTime 或两个 LocalDateTime、或两个 Instant 对象之间的 duration</span></span><br><span class="line">Duration duration = Duration.between(dateTime1, dateTime);</span><br><span class="line">Duration.between(time, time);</span><br><span class="line">Duration.between(instant, instant1);</span><br><span class="line"><span class="comment">// 由于 Duration 类主要用于以秒和纳秒衡量时间的长短，如果传 LocalDate 对象会抛异常：java.time.temporal.UnsupportedTemporalTypeException</span></span><br><span class="line"><span class="comment">// Duration.between(date1, date);</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Period 类的静态工厂方法 between 仅支持两个 LocalDates</span></span><br><span class="line">Period period = Period.between(date1, date);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Duration 和 Period 类都提供了很多非常方便的静态工厂方法，用于直接创建对应的实例</span></span><br><span class="line">Duration threeDays = Duration.ofDays(<span class="number">3</span>);</span><br><span class="line">Duration threeHours = Duration.ofHours(<span class="number">3</span>);</span><br><span class="line">Duration threeMinutes = Duration.ofMinutes(<span class="number">3</span>);</span><br><span class="line">Duration threeMinutes2 = Duration.of(<span class="number">3</span>, ChronoUnit.MINUTES);</span><br><span class="line">Duration threeSeconds = Duration.ofSeconds(<span class="number">3</span>);</span><br><span class="line">Duration threeMillis = Duration.ofMillis(<span class="number">3</span>);</span><br><span class="line">Duration twoDaysThreeHoursFourMinutes = Duration.parse(<span class="string">"P2DT3H4M"</span>);</span><br><span class="line"></span><br><span class="line">Period tenYears = Period.ofYears(<span class="number">10</span>);</span><br><span class="line">Period tenMonths = Period.ofMonths(<span class="number">10</span>);</span><br><span class="line">Period tenWeeks = Period.ofWeeks(<span class="number">10</span>);</span><br><span class="line">Period tenDays = Period.ofDays(<span class="number">10</span>);</span><br><span class="line">Period twoYearsSixMonthsOneDay = Period.of(<span class="number">2</span>, <span class="number">6</span>, <span class="number">1</span>);</span><br><span class="line">Period oneYearTwoMonthsThreeDays = Period.parse(<span class="string">"P1Y2M3D"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 准确获取该时段的差值：日、时、分、秒、毫秒、纳秒</span></span><br><span class="line"><span class="keyword">long</span> days = duration.toDays();</span><br><span class="line"><span class="keyword">long</span> hours = duration.toHours();</span><br><span class="line"><span class="keyword">long</span> minutes = duration.toMinutes();</span><br><span class="line"><span class="keyword">long</span> seconds = duration.getSeconds();</span><br><span class="line"><span class="keyword">long</span> seconds2 = duration.get(ChronoUnit.SECONDS);</span><br><span class="line"><span class="keyword">long</span> millis = duration.toMillis();</span><br><span class="line"><span class="keyword">long</span> nanos2 = duration.toNanos();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取指定部分的差值</span></span><br><span class="line"><span class="keyword">int</span> years = period.getYears();</span><br><span class="line"><span class="keyword">int</span> months = period.getMonths();</span><br><span class="line"><span class="keyword">int</span> days1 = period.getDays();</span><br><span class="line"><span class="keyword">long</span> days2 = period.get(ChronoUnit.DAYS);</span><br></pre></td></tr></table></figure>
+
+<p><code>ChronoUnit</code> 枚举提供的值：</p>
+<p><img src="/img/java/time/TemporalUnit%E6%9E%9A%E4%B8%BE.png" alt="TemporalUnit枚举"></p>
+<h1 id="日期格式化"><a href="#日期格式化" class="headerlink" title="日期格式化"></a>日期格式化</h1><p><code>DateTimeFormatter</code> 用于日期格式化。和老的 <code>java.util.DateFormat</code> 相比，所有的 <code>DateTimeFormatter</code> 实例都是线程安全的。所以，你能够以单例模式创建格式器实例，并在多个线程间共享。</p>
+<p>下面介绍创建格式器的三种方式：</p>
+<h2 id="预定义的格式器"><a href="#预定义的格式器" class="headerlink" title="预定义的格式器"></a>预定义的格式器</h2><p>创建格式器最简单的方法是通过它<a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#predefined" target="_blank" rel="noopener">预定义的格式器</a>常量，定义如下：</p>
+<table>
+<thead>
+<tr>
+<th align="left">Formatter</th>
+<th align="left">Description</th>
+<th align="left">Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ofLocalizedDate-java.time.format.FormatStyle-" target="_blank" rel="noopener"><code>ofLocalizedDate(dateStyle)</code></a></td>
+<td align="left">Formatter with date style from the locale</td>
+<td align="left">‘2011-12-03’</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ofLocalizedTime-java.time.format.FormatStyle-" target="_blank" rel="noopener"><code>ofLocalizedTime(timeStyle)</code></a></td>
+<td align="left">Formatter with time style from the locale</td>
+<td align="left">‘10:15:30’</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ofLocalizedDateTime-java.time.format.FormatStyle-" target="_blank" rel="noopener"><code>ofLocalizedDateTime(dateTimeStyle)</code></a></td>
+<td align="left">Formatter with a style for date and time from the locale</td>
+<td align="left">‘3 Jun 2008 11:05:30’</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ofLocalizedDateTime-java.time.format.FormatStyle-" target="_blank" rel="noopener"><code>ofLocalizedDateTime(dateStyle,timeStyle)</code></a></td>
+<td align="left">Formatter with date and time styles from the locale</td>
+<td align="left">‘3 Jun 2008 11:05’</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#BASIC_ISO_DATE" target="_blank" rel="noopener"><code>BASIC_ISO_DATE</code></a></td>
+<td align="left">Basic ISO date</td>
+<td align="left">‘20111203’</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_LOCAL_DATE" target="_blank" rel="noopener"><code>ISO_LOCAL_DATE</code></a></td>
+<td align="left">ISO Local Date</td>
+<td align="left">‘2011-12-03’</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_OFFSET_DATE" target="_blank" rel="noopener"><code>ISO_OFFSET_DATE</code></a></td>
+<td align="left">ISO Date with offset</td>
+<td align="left">‘2011-12-03+01:00’</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_DATE" target="_blank" rel="noopener"><code>ISO_DATE</code></a></td>
+<td align="left">ISO Date with or without offset</td>
+<td align="left">‘2011-12-03+01:00’; ‘2011-12-03’</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_LOCAL_TIME" target="_blank" rel="noopener"><code>ISO_LOCAL_TIME</code></a></td>
+<td align="left">Time without offset</td>
+<td align="left">‘10:15:30’</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_OFFSET_TIME" target="_blank" rel="noopener"><code>ISO_OFFSET_TIME</code></a></td>
+<td align="left">Time with offset</td>
+<td align="left">‘10:15:30+01:00’</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_TIME" target="_blank" rel="noopener"><code>ISO_TIME</code></a></td>
+<td align="left">Time with or without offset</td>
+<td align="left">‘10:15:30+01:00’; ‘10:15:30’</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_LOCAL_DATE_TIME" target="_blank" rel="noopener"><code>ISO_LOCAL_DATE_TIME</code></a></td>
+<td align="left">ISO Local Date and Time</td>
+<td align="left">‘2011-12-03T10:15:30’</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_OFFSET_DATE_TIME" target="_blank" rel="noopener"><code>ISO_OFFSET_DATE_TIME</code></a></td>
+<td align="left">Date Time with Offset</td>
+<td align="left">2011-12-03T10:15:30+01:00’</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_ZONED_DATE_TIME" target="_blank" rel="noopener"><code>ISO_ZONED_DATE_TIME</code></a></td>
+<td align="left">Zoned Date Time</td>
+<td align="left">‘2011-12-03T10:15:30+01:00[Europe/Paris]’</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_DATE_TIME" target="_blank" rel="noopener"><code>ISO_DATE_TIME</code></a></td>
+<td align="left">Date and time with ZoneId</td>
+<td align="left">‘2011-12-03T10:15:30+01:00[Europe/Paris]’</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_ORDINAL_DATE" target="_blank" rel="noopener"><code>ISO_ORDINAL_DATE</code></a></td>
+<td align="left">Year and day of year</td>
+<td align="left">‘2012-337’</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_WEEK_DATE" target="_blank" rel="noopener"><code>ISO_WEEK_DATE</code></a></td>
+<td align="left">Year and Week</td>
+<td align="left">2012-W48-6’</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_INSTANT" target="_blank" rel="noopener"><code>ISO_INSTANT</code></a></td>
+<td align="left">Date and Time of an Instant</td>
+<td align="left">‘2011-12-03T10:15:30Z’</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#RFC_1123_DATE_TIME" target="_blank" rel="noopener"><code>RFC_1123_DATE_TIME</code></a></td>
+<td align="left">RFC 1123 / RFC 822</td>
+<td align="left">‘Tue, 3 Jun 2008 11:05:30 GMT’</td>
+</tr>
+</tbody></table>
+<p><img src="/img/java/time/DateTimeFormatter%E5%B8%B8%E9%87%8F.png" alt="DateTimeFormatter常量"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 2021-02-01</span></span><br><span class="line">LocalDateTime.now().format(DateTimeFormatter.ISO_DATE);</span><br></pre></td></tr></table></figure>
+
+<h2 id="自定义-Pattern"><a href="#自定义-Pattern" class="headerlink" title="自定义 Pattern"></a>自定义 Pattern</h2><p><a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#patterns" target="_blank" rel="noopener">Patterns for Formatting and Parsing</a>:</p>
+<blockquote>
+<p>Patterns are based on a simple sequence of letters and symbols. A pattern is used to create a Formatter using the <a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ofPattern-java.lang.String-" target="_blank" rel="noopener"><code>ofPattern(String)</code></a> and <a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ofPattern-java.lang.String-java.util.Locale-" target="_blank" rel="noopener"><code>ofPattern(String, Locale)</code></a> methods.</p>
+<p>A formatter created from a pattern can be used as many times as necessary, it is immutable and is thread-safe.</p>
+</blockquote>
+<p><code>DateTimeFormatter#ofPattern(String)</code> 静态工厂方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 01/02/2021</span></span><br><span class="line">LocalDateTime.now().format(DateTimeFormatter.ofPattern(<span class="string">"dd/MM/yyyy"</span>));</span><br></pre></td></tr></table></figure>
+
+<p><code>DateTimeFormatter#ofPattern(String, Locale)</code> 静态工厂方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 2021 2 1</span></span><br><span class="line">LocalDateTime.now().format(DateTimeFormatter.ofPattern(<span class="string">"yyyy M d"</span>, Locale.US));</span><br><span class="line"><span class="comment">// 2021 02 1</span></span><br><span class="line">LocalDateTime.now().format(DateTimeFormatter.ofPattern(<span class="string">"yyyy MM d"</span>, Locale.US));</span><br><span class="line"><span class="comment">// 2021 Feb 1</span></span><br><span class="line">LocalDateTime.now().format(DateTimeFormatter.ofPattern(<span class="string">"yyyy MMM d"</span>, Locale.US));</span><br><span class="line"><span class="comment">// 2021 February 1</span></span><br><span class="line">LocalDateTime.now().format(DateTimeFormatter.ofPattern(<span class="string">"yyyy MMMM d"</span>, Locale.US));</span><br><span class="line"><span class="comment">// 2021 F 1</span></span><br><span class="line">LocalDateTime.now().format(DateTimeFormatter.ofPattern(<span class="string">"yyyy MMMMM d"</span>, Locale.US));</span><br></pre></td></tr></table></figure>
+
+<p>Pattern 的字母数量决定格式，以月份为例：</p>
+<ul>
+<li>Exactly 1 pattern letter will use the minimum number of digits and without padding.</li>
+<li>Exactly 2 pattern letters, the count of digits is used as the width of the output field, with the value zero-padded as necessary.</li>
+<li>Exactly 3 pattern letters will use the <a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/TextStyle.html#SHORT" target="_blank" rel="noopener"><code>short form</code></a>.</li>
+<li>Exactly 4 pattern letters will use the <a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/TextStyle.html#FULL" target="_blank" rel="noopener"><code>full form</code></a>. </li>
+<li>Exactly 5 pattern letters will use the <a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/TextStyle.html#NARROW" target="_blank" rel="noopener"><code>narrow form</code></a>.</li>
+</ul>
+<h2 id="更灵活的构建器"><a href="#更灵活的构建器" class="headerlink" title="更灵活的构建器"></a>更灵活的构建器</h2><p>如果还需要更加细粒度的控制，<code>DateTimeFormatterBuilder</code> 类还提供了更复杂的格式器构建，你可以选择恰当的方法，一步一步地构造自己的格式器：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">DateTimeFormatter dtf = <span class="keyword">new</span> DateTimeFormatterBuilder().appendPattern(<span class="string">"dd/MM/yyyy[ [HH][:mm][:ss][.SSS]]"</span>)</span><br><span class="line">  .parseDefaulting(ChronoField.HOUR_OF_DAY, <span class="number">0</span>)</span><br><span class="line">  .parseDefaulting(ChronoField.MINUTE_OF_HOUR, <span class="number">0</span>)</span><br><span class="line">  .parseDefaulting(ChronoField.SECOND_OF_MINUTE, <span class="number">0</span>)</span><br><span class="line">  .toFormatter(Locale.US);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 1999-01-01T02:04:06</span></span><br><span class="line">LocalDateTime.parse(<span class="string">"01/01/1999 02:04:06"</span>, dtf);</span><br><span class="line"><span class="comment">// 1999-01-01T00:00</span></span><br><span class="line">LocalDateTime.parse(<span class="string">"01/01/1999"</span>, dtf);</span><br></pre></td></tr></table></figure>
+
+<p>另外，<code>DateTimeFormatterBuilder</code> 类还提供了非常强大的解析功能，比如区分大小写的解析、柔性解析（允许解析器使用启发式的机制去解析输入，不精确地匹配指定的模式）、填充，以及在格式器中指定可选节。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《Java 8 实战》</li>
+<li>Java SE Docs</li>
+<li>《<a href="https://www.jianshu.com/p/b4629857fc6f" target="_blank" rel="noopener">LocalDate、LocalDateTime与timestamp、Date的转换</a>》</li>
+<li>《<a href="https://docs.oracle.com/javase/tutorial/datetime/iso/format.html" target="_blank" rel="noopener">Parsing and Formatting (The Java™ Tutorials &gt; Date Time &gt; Standard Calendar)</a>》</li>
+<li>《<a href="https://stackoverflow.com/questions/41177442/uuuu-versus-yyyy-in-datetimeformatter-formatting-pattern-codes-in-java" target="_blank" rel="noopener"><code>uuuu</code> versus <code>yyyy</code> in <code>DateTimeFormatter</code> formatting pattern codes in Java?</a>》</li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2018/04/06/java8-time-zone/" class="prev">PREV</a><a href="/2018/04/04/java-string/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

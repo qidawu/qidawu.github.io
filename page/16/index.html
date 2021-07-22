@@ -1,0 +1,594 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="学习笔记 知识总结 思考感悟"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><ul class="home post-list"><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/08/25/git-resolving-conflicts/" class="post-title-link">Git 实战系列（八）Git 解决冲突</a></h2><div class="post-info">2015-08-25<a href="/tags/Git/" title="Git" class="post-demo">Git</a></div><div class="post-content"><p>如果工作目录的本地代码做了修改但尚未提交，<code>pull</code> 拉取远程仓库的新提交时，往往会提示冲突：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ git pull</span><br><span class="line">error: Your <span class="built_in">local</span> changes to the following files would be overwritten by merge:</span><br><span class="line">        /there/is/a/conflict/file</span><br><span class="line">Please, commit your changes or stash them before you can merge.</span><br></pre></td></tr></table></figure>
+
+<p>如上所示，有 <code>commit</code> 和 <code>stash</code> 两种处理方法。针对本地代码的<strong>完成情况</strong>我们需要作出选择。</p>
+<h1 id="代码已完成"><a href="#代码已完成" class="headerlink" title="代码已完成"></a>代码已完成</h1><p>如果确认本地代码已经<strong>完成无误</strong>，可以先将本地代码 <code>commit</code> 到本地仓库。再次 <code>pull</code> 拉取远程仓库时，如无冲突，Git 会自动产生一次“合并”提交：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ git lg</span><br><span class="line">*   e6f4e18 - Merge branch <span class="string">'master'</span> of origin (1 minutes ago)</span><br><span class="line">|\  </span><br><span class="line">* | abfa93b - 本地仓库的提交 (2 minutes ago)</span><br><span class="line">| * 1f1c21d - 远程仓库的提交 (3 minutes ago)</span><br><span class="line">|/  </span><br><span class="line">* 17ef24c - 基准版本 (4 minutes ago)</span><br></pre></td></tr></table></figure>
+
+<p>这是因为 <code>pull</code> 的默认策略是“fetch + <a href="/2015/08/17/git-merge/">merge</a>”。如果本地仓库的提交一直不 <code>push</code> 到远程仓库，极端情况下每一次 <code>pull</code> 都可能会产生一次“合并”提交，这会造成祖先图谱（graph）无谓的复杂。此时推荐使用 <a href="/2015/08/20/git-rebase/">rebase</a> 避免本地仓库无谓的合并节点：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git pull --rebase</span><br></pre></td></tr></table></figure>
+
+<h1 id="代码未完成"><a href="#代码未完成" class="headerlink" title="代码未完成"></a>代码未完成</h1><p>但如果本地代码<strong>仍未完成</strong>，此时推荐使用 <code>stash</code> 命令暂存修改，避免将未完成的功能代码 <code>commit</code> 到本地仓库，污染仓库。</p>
+<h2 id="暂存当前修改"><a href="#暂存当前修改" class="headerlink" title="暂存当前修改"></a>暂存当前修改</h2><p>第一步，<code>stash</code> 暂存当前修改：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git stash save <span class="string">"填写你的备注"</span></span><br><span class="line">Saved working directory and index state ......</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git status</span><br><span class="line">On branch master</span><br><span class="line">nothing to commit, working directory clean</span><br></pre></td></tr></table></figure>
+
+<p>可以看到暂存后工作目录一干二净。这是因为 <code>stash</code> 命令可以将“修改过的被追踪的文件（modified tracked files）”和“暂存的变更（staged changes）”暂存到临时堆栈中，并将工作目录还原干净，以便后续的操作。</p>
+<blockquote>
+<p>Stashing takes the dirty state of your working directory – that is, your modified tracked files and staged changes – and saves it on a stack of unfinished changes that you can reapply at any time.</p>
+</blockquote>
+<h2 id="拉取远程仓库"><a href="#拉取远程仓库" class="headerlink" title="拉取远程仓库"></a>拉取远程仓库</h2><p>第二步，继续 <code>pull</code> 拉取远程仓库并进行自动合并：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git pull</span><br></pre></td></tr></table></figure>
+
+<h2 id="重新还原暂存"><a href="#重新还原暂存" class="headerlink" title="重新还原暂存"></a>重新还原暂存</h2><p>第三步，<code>stash pop</code> 重新还原暂存修改：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git stash pop</span><br></pre></td></tr></table></figure>
+
+<h2 id="处理冲突"><a href="#处理冲突" class="headerlink" title="处理冲突"></a>处理冲突</h2><p>最后一步，如果还原后产生冲突，需要<a href="/2015/08/27/git-mergetool/">手工或使用 <code>mergetool</code></a> 进行处理。处理完毕后，使用 <code>add</code> 标明冲突已解决：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git add .</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a href="http://git-scm.com/book/zh/v1/Git-工具-储藏（Stashing）" target="_blank" rel="noopener">Git-工具-储藏（Stashing）</a>》</p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/08/21/git-cherry-pick/" class="post-title-link">Git 实战系列（七）git cherry-pick 命令选取合并</a></h2><div class="post-info">2015-08-21<a href="/tags/Git/" title="Git" class="post-demo">Git</a></div><div class="post-content"><p><code>cherry-pick</code> 这个命令的名字是比较形象的，即“摘樱桃”，使用该命令可以将任意的 commit 合并到你想要的分支上。 例如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 切换到 master 分支</span></span><br><span class="line">$ git checkout master</span><br><span class="line"></span><br><span class="line"><span class="comment"># cherry-pick 特性分支上的三个 commit</span></span><br><span class="line">$ git cherry-pick e7ce3f8 915fe84 dc6baf3</span><br></pre></td></tr></table></figure>
+
+<p>合并完毕后，会在 master 分支上新产生三个 commit 号，但提交内容不变。</p>
+<p>如果只是想<a href="/2015/08/20/git-rebase/">整理当前分支</a>，可以使用 rebase 命令。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a href="http://www.cnblogs.com/ludashi/p/8116434.html" target="_blank" rel="noopener">Git知识总览(四) git分支管理之rebase 以及 cherry-pick相关操作</a>》</p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/08/20/git-rebase/" class="post-title-link">Git 实战系列（六）git rebase 命令衍合分支</a></h2><div class="post-info">2015-08-20<a href="/tags/Git/" title="Git" class="post-demo">Git</a></div><div class="post-content"><p>本文介绍一个生僻但相当好用的命令 <code>rebase</code>（衍合）。</p>
+<h1 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h1><p>衍合的两个使用场景：</p>
+<ol>
+<li>生成干净历史、补丁</li>
+<li>整理当前分支</li>
+</ol>
+<h2 id="生成干净历史"><a href="#生成干净历史" class="headerlink" title="生成干净历史"></a>生成干净历史</h2><p>开发过程中，常常需要定期将最新的远程分支拉取（<code>pull</code>）到本地分支，保持本地代码最新（up to date）。如果拉取频繁，<code>pull</code> 默认的 <code>merge</code> 行为会造成祖先图谱（ancestry graph）无谓的复杂：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ git pull origin master    &#x2F;&#x2F; pull &#x3D; fetch + merge</span><br><span class="line"></span><br><span class="line">*   ab900eb - 三方合并版本（注意这里！）</span><br><span class="line">|\</span><br><span class="line">| * 756ba83 - 本地分支提交的版本</span><br><span class="line">* | 915fe84 - 先被推送到远程分支的版本</span><br><span class="line">|&#x2F;</span><br><span class="line">*   e7ce3f8 - 基准版本（共同祖先）</span><br></pre></td></tr></table></figure>
+
+<p>解决方案是改用 <code>rebase</code> 命令，其产生的祖先图谱如下，非常简洁：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">*   dc6baf3 - 本地分支提交的版本（注意这个提交被改写了！）</span><br><span class="line">|</span><br><span class="line">*   915fe84 - 先被推送到远程分支的版本</span><br><span class="line">|</span><br><span class="line">*   e7ce3f8 - 基准版本（共同祖先）</span><br></pre></td></tr></table></figure>
+
+<p>可见，这个神奇的命令功能类似 <code>merge</code> ，但它避免了上述无谓的合并节点，从而产生一个更为整洁的提交历史。如果视察一个衍合过的分支历史，仿佛所有的提交都是在一根时间轴上先后进行的，尽管实际上它们原本是同时并行发生的。这么做的好处是，非常便于项目管理人员按时间轴进行<strong>代码审查</strong>。</p>
+<h3 id="命令用法"><a href="#命令用法" class="headerlink" title="命令用法"></a>命令用法</h3><p>可以在 <code>pull</code> 时主动加上 <code>--rebase</code> 参数：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git pull --rebase origin master</span><br></pre></td></tr></table></figure>
+
+<p>甚至推荐将 <code>rebase</code> 设为 <code>pull</code> 命令的默认行为，从而应用于所有新建分支：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global branch.autosetuprebase always</span><br></pre></td></tr></table></figure>
+
+<p>注意，对于应用上述命令前已存在的分支（例如 <code>master</code>），需要补充执行如下配置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git config branch.master.rebase <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="命令原理"><a href="#命令原理" class="headerlink" title="命令原理"></a>命令原理</h3><p> 下面进一步介绍 <code>rebase</code> 命令的原理：</p>
+<ol>
+<li>把本地分支从上一次 <code>pull</code> 之后的变更暂存起来；</li>
+<li>恢复到上一次 <code>pull</code> 时的情况；</li>
+<li>合并远程分支的提交；</li>
+<li>最后再逐一合并刚暂存下来的本地提交（相当于重放一遍）。</li>
+</ol>
+<h2 id="生成干净补丁"><a href="#生成干净补丁" class="headerlink" title="生成干净补丁"></a>生成干净补丁</h2><p>使用衍合的另一个目的，是想要得到一个能在远程分支上干净应用的补丁 — 比如某些项目、或些分支你不是维护者，但想帮点忙的话，最好用衍合：先在自己的一个独立分支中进行开发，当准备向主项目提交补丁的时候，根据最新的 <code>origin/master</code> 进行一次 <code>git rebase</code> 衍合操作然后再提交，这样维护者就<strong>不需要做任何整合工作</strong>（实际上是把解决分支补丁同最新主干代码之间冲突的责任，化转为由提交补丁的人来解决。），只需根据你提供的仓库地址作一次<strong>快进合并</strong>，或者直接采纳你提交的补丁。</p>
+<h2 id="整理当前分支"><a href="#整理当前分支" class="headerlink" title="整理当前分支"></a>整理当前分支</h2><p>衍合的另一个用法是整理当前分支，使用 <code>git rebase [-i | --interactive]</code> 命令。</p>
+<p>首先选取提交范围，<code>e7ce3f8</code> 为当前分支的历史提交：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">*   dc6baf3 - commit3</span><br><span class="line">|</span><br><span class="line">*   915fe84 - commit2</span><br><span class="line">|</span><br><span class="line">*   e7ce3f8 - commit1</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">$ git rebase -i e7ce3f8</span><br><span class="line"></span><br><span class="line">  1 pick dc6baf3 本地分支提交的版本</span><br><span class="line">  2 pick 915fe84 先被推送到远程分支的版本</span><br><span class="line">  3</span><br><span class="line">  4 <span class="comment"># Rebase 1ff20826..61527529 onto 1ff20826 (2 commands)</span></span><br><span class="line">  5 <span class="comment">#</span></span><br><span class="line">  6 <span class="comment"># Commands:</span></span><br><span class="line">  7 <span class="comment"># p, pick = use commit</span></span><br><span class="line">  8 <span class="comment"># r, reword = use commit, but edit the commit message</span></span><br><span class="line">  9 <span class="comment"># e, edit = use commit, but stop for amending</span></span><br><span class="line"> 10 <span class="comment"># s, squash = use commit, but meld into previous commit</span></span><br><span class="line"> 11 <span class="comment"># f, fixup = like "squash", but discard this commit's log message</span></span><br><span class="line"> 12 <span class="comment"># x, exec = run command (the rest of the line) using shell</span></span><br><span class="line"> 13 <span class="comment"># d, drop = remove commit</span></span><br><span class="line"> 14 <span class="comment">#</span></span><br><span class="line"> 15 <span class="comment"># These lines can be re-ordered; they are executed from top to bottom.</span></span><br><span class="line"> 16 <span class="comment">#</span></span><br><span class="line"> 17 <span class="comment"># If you remove a line here THAT COMMIT WILL BE LOST.</span></span><br><span class="line"> 18 <span class="comment">#</span></span><br><span class="line"> 19 <span class="comment"># However, if you remove everything, the rebase will be aborted.</span></span><br><span class="line"> 20 <span class="comment">#</span></span><br><span class="line"> 21 <span class="comment"># Note that empty commits are commented out</span></span><br></pre></td></tr></table></figure>
+
+<p>可见，我们可以选取、编辑、合并、丢弃指定提交，达到整理分支的目的。</p>
+<h1 id="使用风险"><a href="#使用风险" class="headerlink" title="使用风险"></a>使用风险</h1><p>注意，衍合必须遵守的准则：<strong>一旦本地分支中的提交（commit）已经被推送到远程仓库，就千万不要对该分支进行衍合操作。</strong>如果把衍合当成一种<strong>在推送（<code>push</code>）代码之前</strong>整理提交历史的手段，而且仅仅衍合那些<strong>尚未推送</strong>的本地提交，就没问题。如果衍合那些已经推送的提交，并且已经有人基于这些提交对象开展了后续开发工作的话，就会出现叫人沮丧的麻烦。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《<a href="https://git-scm.com/book/zh/v1/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%9A%84%E8%A1%8D%E5%90%88#%E8%A1%8D%E5%90%88%E7%9A%84%E9%A3%8E%E9%99%A9" target="_blank" rel="noopener">Git-分支-分支的衍合#衍合的风险</a>》</li>
+<li>《<a href="http://segmentfault.com/q/1010000000430041" target="_blank" rel="noopener">团队开发里频繁使用 git rebase 来保持树的整洁好吗?</a>》</li>
+</ul>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/08/17/git-merge/" class="post-title-link">Git 实战系列（五）git merge 分支合并策略</a></h2><div class="post-info">2015-08-17<a href="/tags/Git/" title="Git" class="post-demo">Git</a></div><div class="post-content"><h1 id="快进式合并"><a href="#快进式合并" class="headerlink" title="快进式合并"></a>快进式合并</h1><p>默认情况下，当使用 <code>git merge</code> 合并代码时，背后实际上是进行了一次“快进式合并”：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git checkout master</span><br><span class="line">$ git merge feature-test</span><br></pre></td></tr></table></figure>
+
+<p>什么是“快进式合并（fast-forward merge）”？如果顺着一个分支走下去可以直接到达另一个分支的话，那么 Git 在合并两者时，只会简单地把指针右移，因为这种单线的历史分支不存在任何需要解决的分歧，所以这种合并过程可以称为快进（Fast forward）。</p>
+<p>![fast-forward merge](/img/git/fast-forward merge.png)</p>
+<h1 id="非快进式合并"><a href="#非快进式合并" class="headerlink" title="非快进式合并"></a>非快进式合并</h1><p>作为对比，加上 <code>--no-ff</code> 参数进行“非快进式合并（no-fast-forward merge）”：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git checkout master</span><br><span class="line">$ git merge --no-ff feature-test</span><br></pre></td></tr></table></figure>
+
+<p>其祖先图谱如下：</p>
+<p>![no-fast-forward merge](/img/git/no-fast-forward merge.png)</p>
+<p>可见，合并后保留有分支历史痕迹（每一次提交），能看得出来曾经做过分支合并，版本演进比较清晰。</p>
+<h1 id="压缩合并"><a href="#压缩合并" class="headerlink" title="压缩合并"></a>压缩合并</h1><p>但大多数时候，没有必要把特性分支的历史保留得太细，只需把整个特性分支压缩（squash）为主干上的一个提交即可。这样的祖先图谱既清晰，又能方便后人审查代码，推荐使用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git checkout master</span><br><span class="line">$ git merge --squash feature-test</span><br><span class="line">$ git commit</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《<a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/0013758410364457b9e3d821f4244beb0fd69c61a185ae0000" target="_blank" rel="noopener">Git 分支管理策略 - 廖雪峰</a>》</li>
+</ul>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/08/15/git-checkout/" class="post-title-link">Git 实战系列（四）git checkout 命令撤销修改</a></h2><div class="post-info">2015-08-15<a href="/tags/Git/" title="Git" class="post-demo">Git</a></div><div class="post-content"><p><code>checkout</code> 命令可以用于三种场景：</p>
+<ul>
+<li>切换分支</li>
+<li>创建分支</li>
+<li>撤销修改</li>
+</ul>
+<p>本文只介绍第三种场景。</p>
+<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><p>如果我们想要撤销一个文件的本地修改，自然可以手工编辑恢复，但这样做实在是吃力不讨好。 <code>checkout</code> 命令可以帮助我们：</p>
+<h2 id="只撤销本地修改"><a href="#只撤销本地修改" class="headerlink" title="只撤销本地修改"></a>只撤销本地修改</h2><p>修改文件后，使用 <code>status</code> 命令查看一下文件状态：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ git status</span><br><span class="line">Changes not staged <span class="keyword">for</span> commit:</span><br><span class="line">  (use <span class="string">"git add/rm &lt;file&gt;..."</span> to update what will be committed)</span><br><span class="line">  (use <span class="string">"git checkout -- &lt;file&gt;..."</span> to discard changes <span class="keyword">in</span> working directory)</span><br><span class="line"></span><br><span class="line">      modified:   /there/is/a/modified/file</span><br></pre></td></tr></table></figure>
+
+<p>Git 提示我们，对于未 <code>add</code> 进暂存区的文件，可以使用 <code>git checkout -- &lt;file&gt;</code> 快速撤销本地修改。</p>
+<h2 id="同时撤销本地和暂存区修改"><a href="#同时撤销本地和暂存区修改" class="headerlink" title="同时撤销本地和暂存区修改"></a>同时撤销本地和暂存区修改</h2><p>那么，对于已 <code>add</code> 进暂存区的文件，如何撤销本地修改？还是先使用 <code>status</code> 命令查看一下文件状态：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ git status</span><br><span class="line">Changes to be committed:</span><br><span class="line">  (use <span class="string">"git reset HEAD &lt;file&gt;..."</span> to unstage)</span><br><span class="line"></span><br><span class="line">      modified:   /there/is/a/modified/file</span><br></pre></td></tr></table></figure>
+
+<h3 id="先取消暂存修改"><a href="#先取消暂存修改" class="headerlink" title="先取消暂存修改"></a>先取消暂存修改</h3><p>Git 提示我们，可以使用 <code>reset</code> 命令取消暂存：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git reset &#x2F;there&#x2F;is&#x2F;a&#x2F;modified&#x2F;file</span><br></pre></td></tr></table></figure>
+
+<p>取消暂存后，文件状态就回到了跟“例1”一样了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ git status</span><br><span class="line">Changes not staged <span class="keyword">for</span> commit:</span><br><span class="line">  (use <span class="string">"git add/rm &lt;file&gt;..."</span> to update what will be committed)</span><br><span class="line">  (use <span class="string">"git checkout -- &lt;file&gt;..."</span> to discard changes <span class="keyword">in</span> working directory)</span><br><span class="line"></span><br><span class="line">      modified:   /there/is/a/modified/file</span><br></pre></td></tr></table></figure>
+
+<h3 id="再撤销本地修改"><a href="#再撤销本地修改" class="headerlink" title="再撤销本地修改"></a>再撤销本地修改</h3><p>这时按提示使用 <code>checkout</code> 即可：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git checkout -- /there/is/a/modified/file</span><br></pre></td></tr></table></figure>
+
+<p>这时工作目录就干净了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git status</span><br><span class="line">nothing to commit, working directory clean</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，结合使用 <code>reset</code> 和 <code>checkout</code> 命令，可以撤销 index 和 working tree 的修改。</p>
+<h3 id="一步到位"><a href="#一步到位" class="headerlink" title="一步到位"></a>一步到位</h3><p>那么有更便捷的、一步到位的办法吗？有，指定提交即可：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ git status</span><br><span class="line">Changes to be committed:</span><br><span class="line">  (use <span class="string">"git reset HEAD &lt;file&gt;..."</span> to unstage)</span><br><span class="line"></span><br><span class="line">      modified:   /there/is/a/modified/file</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git checkout HEAD -- /there/is/a/modified/file</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git status</span><br><span class="line">nothing to commit, working directory clean</span><br></pre></td></tr></table></figure>
+
+<p>那么 <code>checkout</code> 命令的全貌究竟是怎样的呢？</p>
+<h1 id="checkout-命令格式"><a href="#checkout-命令格式" class="headerlink" title="checkout 命令格式"></a><code>checkout</code> 命令格式</h1><p><code>checkout</code> 命令的格式及描述如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git checkout [&lt;tree-ish&gt;] [--] &lt;paths&gt;...</span><br><span class="line"></span><br><span class="line">Updates the named paths <span class="keyword">in</span> the working tree from the index file (default) or from a named &lt;tree-ish&gt; (most often a commit, tag or branch)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>默认使用 index 暂存区的内容覆盖本地修改，如果不指定 <code>&lt;tree-ish&gt;</code> 参数。</li>
+<li>或者可以使用指定的提交、标记、分支版本覆盖本地修改。</li>
+<li>为了避免文件路径 <code>&lt;paths&gt;</code> 和 <code>&lt;tree-ish&gt;</code> 同名而发生冲突，在 <code>&lt;paths&gt;</code> 前用 <code>--</code> 作为分隔。</li>
+</ul>
+<h1 id="checkout-与-reset"><a href="#checkout-与-reset" class="headerlink" title="checkout 与 reset"></a><code>checkout</code> 与 <code>reset</code></h1><p>还记得在《<a href="http://www.cnblog.me/2015/08/09/git-reset/" target="_blank" rel="noopener">git reset 命令回退版本</a>》中介绍的 <code>reset</code> 命令吗？它与 <code>checkout</code> 命令之间有什么区别与关系？</p>
+<h2 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h2><p>在这里介绍 <code>reset</code> 命令的另一种形式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git reset [&lt;tree-ish&gt;] [--] &lt;paths&gt;...</span><br><span class="line"></span><br><span class="line">This form copy entries from &lt;tree-ish&gt; to the index <span class="keyword">for</span> all &lt;paths&gt;. (It does not affect the working tree or the current branch.)</span><br></pre></td></tr></table></figure>
+
+<p>与 <code>checkout</code> 命令的参数一模一样，区别是什么？</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>操作目标</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>checkout</code></td>
+<td>工作目录（working tree）</td>
+<td>用于撤销本地修改</td>
+</tr>
+<tr>
+<td><code>reset</code></td>
+<td>暂存区（index）</td>
+<td>只用于覆盖暂存区</td>
+</tr>
+</tbody></table>
+<p>因此 <code>git reset &lt;paths&gt;</code> 等于 <code>git add &lt;paths&gt;</code> 的逆向操作。</p>
+<p>如果企图用 <code>reset</code> 命令覆盖工作目录，是会报错的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git reset --hard &#x2F;there&#x2F;is&#x2F;a&#x2F;modified&#x2F;file</span><br><span class="line">fatal: Cannot do hard reset with paths.</span><br></pre></td></tr></table></figure>
+
+<h2 id="关系"><a href="#关系" class="headerlink" title="关系"></a>关系</h2><blockquote>
+<p>After running <code>git reset &lt;paths&gt;</code> to update the index entry, you can use <code>git checkout -- &lt;paths&gt;</code> to check the contents out of the index to the working tree. </p>
+<p>Alternatively, using <code>git checkout [&lt;tree-ish&gt;] [--] &lt;paths&gt;</code> and specifying a commit, you can copy the contents of a path out of a commit to the <strong>index</strong> and to the <strong>working tree</strong> in one go.</p>
+</blockquote>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a href="http://git-scm.com/docs/git-checkout/" target="_blank" rel="noopener">git checkout</a>》<br>《<a href="http://git-scm.com/docs/git-reset/" target="_blank" rel="noopener">git reset</a>》<br>《<a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/001374831943254ee90db11b13d4ba9a73b9047f4fb968d000" target="_blank" rel="noopener">Git 教程 - 撤销修改</a>》</p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/08/09/git-reset/" class="post-title-link">Git 实战系列（三）git reset 命令回退版本</a></h2><div class="post-info">2015-08-09<a href="/tags/Git/" title="Git" class="post-demo">Git</a></div><div class="post-content"><p>Git 相比 SVN 的其中一个卓越之处，就在于有各种“后悔药”可吃。其中一种“后悔药”叫做 <code>reset</code> 命令，相当好用。</p>
+<h1 id="三个工作区域"><a href="#三个工作区域" class="headerlink" title="三个工作区域"></a>三个工作区域</h1><p>理解 <code>reset</code> 命令的前提是理解文件流转的三个工作区域：</p>
+<ul>
+<li>工作目录（working directory）</li>
+<li>暂存区域（staging area）</li>
+<li>本地仓库（repo）</li>
+</ul>
+<p><img src="https://git-scm.com/figures/18333fig0106-tn.png" alt=""></p>
+<h1 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h1><p><code>reset</code> 命令有三种参数形式，本文只介绍最常用的一种：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git reset [&lt;mode&gt;] [&lt;commit&gt;]</span><br><span class="line"></span><br><span class="line">Reset the current branch head (HEAD) to &lt;commit&gt;, optionally modifying index and working tree to match.</span><br></pre></td></tr></table></figure>
+
+<p>该命令用于回退本地仓库当前分支下的版本，并可以选择重置暂存区域、工作目录的修改。</p>
+<h2 id="mode-参数"><a href="#mode-参数" class="headerlink" title="mode 参数"></a>mode 参数</h2><p>mode 参数必须是以下五种中的一种：</p>
+<h3 id="soft"><a href="#soft" class="headerlink" title="--soft"></a><code>--soft</code></h3><blockquote>
+<p>HEAD Only</p>
+</blockquote>
+<p>Git 本地仓库的版本回退速度之所以快，全因为 Git 在内部有个指向当前版本的 HEAD 指针，当你回退版本的时候，Git 仅仅是把 HEAD 指针往回移动。</p>
+<h3 id="mixed"><a href="#mixed" class="headerlink" title="--mixed"></a><code>--mixed</code></h3><blockquote>
+<p>HEAD and Index</p>
+</blockquote>
+<p>默认参数。除了回退本地仓库的版本，还会重置暂存区域（也称为 Index File 索引文件）。</p>
+<p>这个默默无闻的 <code>--mixed</code> 参数其实很常见，每次运行 <code>git status</code> 时都会看到它的作用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Changes to be committed:</span><br><span class="line">  (use <span class="string">"git reset HEAD &lt;file&gt;..."</span> to unstage)</span><br><span class="line"></span><br><span class="line">        new file:   /there/is/a/new/file</span><br><span class="line">        modified:   README.md</span><br></pre></td></tr></table></figure>
+
+<p>由于该命令实在太常用了，因此会被设为 alias 以便使用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global alias.unstage <span class="string">'reset HEAD'</span></span><br><span class="line">$ git unstage</span><br></pre></td></tr></table></figure>
+
+<h3 id="hard"><a href="#hard" class="headerlink" title="--hard"></a><code>--hard</code></h3><blockquote>
+<p>HEAD, Index, and Working Directory</p>
+</blockquote>
+<p>终极武器，将包括工作目录在内的三个工作区域全部重置或回退，工作目录将重置得一干二净，慎用。</p>
+<p>常见的做法是回退到上一个版本，连同工作目录，就像一切从未发生过一样：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ git reset --hard HEAD~1</span><br><span class="line">HEAD is now at ......</span><br><span class="line"></span><br><span class="line">$ git status</span><br><span class="line">nothing to commit, working directory clean</span><br></pre></td></tr></table></figure>
+
+<p>如果“回退前的版本”已经 <code>push</code> 到远程仓库，则不建议这么做。</p>
+<h3 id="merge"><a href="#merge" class="headerlink" title="--merge"></a><code>--merge</code></h3><p>待补充。</p>
+<h3 id="keep"><a href="#keep" class="headerlink" title="--keep"></a><code>--keep</code></h3><p>待补充。</p>
+<h2 id="commit-参数"><a href="#commit-参数" class="headerlink" title="commit 参数"></a>commit 参数</h2><p>commit 参数有三种常见形式：</p>
+<h3 id="SHA1"><a href="#SHA1" class="headerlink" title="SHA1"></a>SHA1</h3><p>使用 SHA1 值回退到指定的版本，适用于 SH1 值已知的情况：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git reset 17ef24c</span><br></pre></td></tr></table></figure>
+
+<h3 id="HEAD"><a href="#HEAD" class="headerlink" title="HEAD"></a>HEAD</h3><p>更常用的参数，适用于偷懒：</p>
+<ul>
+<li><code>HEAD</code> 表示当前版本（默认参数）。</li>
+<li>上一个版本为 <code>HEAD^</code> ，上上一个版本为 <code>HEAD^^</code> ，以此类推。</li>
+<li>上 100 个版本，简写为 <code>HEAD~100</code> 。</li>
+<li><code>ORIG_HEAD</code> 表示上一个 <code>HEAD</code> ，一般用于撤销上一次 <code>reset</code> 。（”reset” copies the old head to .git/ORIG_HEAD）</li>
+</ul>
+<h3 id="HEAD-1"><a href="#HEAD-1" class="headerlink" title="HEAD@{}"></a>HEAD@{}</h3><p>Git 在 1.8.5 版本之后，加入了 <code>HEAD@{}</code> 功能，它通过一个链表记录 <code>HEAD</code> 的移动路径，链表头部的 <code>HEAD@{0}</code> 即 <code>HEAD</code> 指针。这个功能可以用于回退到一个早已忘记的提交。</p>
+<p>这个功能一般配合 <code>reflog</code> 命令使用。</p>
+<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><p>更多例子参见 <code>git help reset</code> 的 EXAMPLES 部分。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a href="http://www.th7.cn/Program/c/201409/280832.shtml" target="_blank" rel="noopener">Git 中 HEAD 和 ORIG_HEAD 指针分别指的是什么？</a>》</p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/08/04/git-log/" class="post-title-link">Git 实战系列（二）git log 查看提交历史</a></h2><div class="post-info">2015-08-04<a href="/tags/Git/" title="Git" class="post-demo">Git</a></div><div class="post-content"><p>在提交了若干更新之后，又或者克隆了某个项目，想回顾下提交历史，可以使用 <code>git log</code> 命令查看，或者推荐使用 git 自带的图形化工具 <code>gitk</code>。</p>
+<h1 id="命令方式"><a href="#命令方式" class="headerlink" title="命令方式"></a>命令方式</h1><h2 id="定制输出格式-1"><a href="#定制输出格式-1" class="headerlink" title="定制输出格式 1"></a>定制输出格式 1</h2><p><code>git log</code> 的默认输出格式非常不便于查阅提交历史，使用时可以带上以下三个参数：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">log</span> --graph --oneline --decorate</span><br><span class="line">*   e6f4e18 (HEAD, master) Merge branch <span class="string">'master'</span> of origin</span><br><span class="line">|\  </span><br><span class="line">* | abfa93b 本地仓库的提交</span><br><span class="line">| * 1f1c21d (origin/master) 远程仓库的提交</span><br><span class="line">|/  </span><br><span class="line">*   17ef24c 基准版本</span><br></pre></td></tr></table></figure>
+
+<p>命令的输出形象地展示了提交历史，包括本地分支比远程分支领先了多少个提交版本。</p>
+<h2 id="定制输出格式-2"><a href="#定制输出格式-2" class="headerlink" title="定制输出格式 2"></a>定制输出格式 2</h2><p>如果对输出格式还不满意，可以使用 <code>--pretty</code> 参数定制输出格式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">log</span> -5 --pretty=format:<span class="string">"%h - %an, %ar : %s"</span></span><br><span class="line"></span><br><span class="line">f757dcd - wuqd, 20 hours ago : commit msg 5</span><br><span class="line">5ca68df - wuqd, 13 days ago : commit msg 4</span><br><span class="line">486b8d4 - wuqd, 3 weeks ago : commit msg 3</span><br><span class="line">e58ae38 - wuqd, 3 weeks ago : commit msg 2</span><br><span class="line">4830852 - wuqd, 3 weeks ago : commit msg 1</span><br></pre></td></tr></table></figure>
+
+<p>由于该参数的选项较多，推荐设置为别名（alias）使用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global alias.lg <span class="built_in">log</span> --graph --pretty=format:<span class="string">'%Cred%h%Creset - %s %Cgreen(%cr) %C(bold blue)&lt;%an&gt;'</span></span><br><span class="line">$ git lg</span><br><span class="line">*   e6f4e18 - Merge branch <span class="string">'master'</span> of origin (1 minutes ago) &lt;Cyn&gt;</span><br><span class="line">|\  </span><br><span class="line">* | abfa93b - 本地仓库的提交 (2 minutes ago) &lt;Pete&gt;</span><br><span class="line">| * 1f1c21d - 远程仓库的提交 (3 minutes ago) &lt;John&gt;</span><br><span class="line">|/  </span><br><span class="line">*   17ef24c - 基准版本 (4 minutes ago) &lt;Jerry&gt;</span><br></pre></td></tr></table></figure>
+
+<p>格式化输出，代码着色，而且附上了作者、提交时间和祖先图谱。</p>
+<h2 id="筛选提交历史"><a href="#筛选提交历史" class="headerlink" title="筛选提交历史"></a>筛选提交历史</h2><p>当某个特性分支开发完成之后，我们想要筛选并看清将要合并到主干的是哪些代码，从而理解它们到底做了些什么，是否真的要并入。可以用 <code>--not</code> 选项屏蔽 <code>master</code> 分支，这样就会剔除重复的提交历史，看起来更清晰：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">log</span> feature-cache --not origin/master</span><br></pre></td></tr></table></figure>
+
+<p>也可用于筛选出准备 <code>push</code> 到远程仓库的提交，例如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">log</span> --graph --oneline --decorate HEAD --not origin/master</span><br><span class="line">*   e6f4e18 (HEAD, master) Merge branch <span class="string">'master'</span> of origin</span><br><span class="line">|  </span><br><span class="line">*   abfa93b 本地仓库的提交</span><br></pre></td></tr></table></figure>
+
+<h1 id="图形化方式"><a href="#图形化方式" class="headerlink" title="图形化方式"></a>图形化方式</h1><p>如果对输出格式还不满意，推荐使用 <code>gitk</code> 命令调用图形化工具查阅提交历史：</p>
+<p><img src="http://git-scm.com/figures/18333fig0202-tn.png" alt="gitk"></p>
+<p>上半个窗口显示的是历次提交的分支祖先图谱，下半个窗口显示当前点选的提交对应的具体差异（其中右边 Patch 窗口显示当前提交的<strong>文件列表</strong>，左边 Diff 窗口显示每个文件的提交差异）。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a href="http://git-scm.com/book/zh/v1/Git-%E5%9F%BA%E7%A1%80-%E6%9F%A5%E7%9C%8B%E6%8F%90%E4%BA%A4%E5%8E%86%E5%8F%B2" target="_blank" rel="noopener">Git 基础 - 查看提交历史</a>》</p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/08/03/git-setup/" class="post-title-link">Git 实战系列（一）Git 安装与配置</a></h2><div class="post-info">2015-08-03<a href="/tags/Git/" title="Git" class="post-demo">Git</a></div><div class="post-content"><p>要想 Git 用得爽，首先要安装与配置好。</p>
+<h1 id="如何选择版本？"><a href="#如何选择版本？" class="headerlink" title="如何选择版本？"></a>如何选择版本？</h1><h2 id="Git-1-x"><a href="#Git-1-x" class="headerlink" title="Git 1.x"></a>Git 1.x</h2><p>旧版本，不再维护。</p>
+<h2 id="Git-2-x"><a href="#Git-2-x" class="headerlink" title="Git 2.x"></a>Git 2.x</h2><p>新版本，推荐使用。不向下兼容 1.x。</p>
+<h1 id="如何安装？"><a href="#如何安装？" class="headerlink" title="如何安装？"></a>如何安装？</h1><h2 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h2><p>需要安装 Git for Windows 的客户端 <a href="https://github.com/msysgit/msysgit" target="_blank" rel="noopener">msysgit</a>。推荐使用 <a href="http://git-scm.com/download/wint" target="_blank" rel="noopener">绿色便携版</a> ，优势如下：</p>
+<ul>
+<li>无需安装，无需写注册表，无需管理员权限；</li>
+<li>可以从任意目录运行，甚至 U 盘；</li>
+</ul>
+<p>与安装版的区别：</p>
+<ul>
+<li>不提供右键上下文菜单（如 <code>Git GUI Here</code>、<code>Git Bash Here</code>），因为该功能需要写入注册表；</li>
+<li>不修改环境变量 <code>%path%</code> ，因此无法在命令行工具 <code>cmd</code> 中直接运行 <code>git.exe</code> 和 <code>gitk.exe</code>，解决办法：<ul>
+<li>推荐使用自带的 <code>Git Bash</code> （类 Unix Shell）或 <code>Git Cmd</code> 进行替代；</li>
+<li>或将 <code>%GIT_HOME%\cmd</code> 目录永久加入环境变量 <code>%path%</code> （如果只想在当前会话中临时使用，只需在 <code>cmd</code> 中运行 <code>set path=%GIT_HOME%\cmd;%path%</code> 即可），然后运行 <code>git --help</code> 测试配置效果；</li>
+</ul>
+</li>
+</ul>
+<h2 id="Linux-Unix"><a href="#Linux-Unix" class="headerlink" title="Linux / Unix"></a>Linux / Unix</h2><p>使用包管理 apt-get 或 yum 即可。</p>
+<h2 id="OS-X"><a href="#OS-X" class="headerlink" title="OS X"></a>OS X</h2><p>Homebrew 是最快最便捷的安装方式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo brew install git</span><br></pre></td></tr></table></figure>
+
+<h1 id="如何配置？"><a href="#如何配置？" class="headerlink" title="如何配置？"></a>如何配置？</h1><p>Git 相关的配置文件有三个：</p>
+<ol>
+<li><code>/etc/gitconfig</code> 包含了适用于系统所有用户和所有项目的值。</li>
+<li><code>~/.gitconfig</code> 只适用于当前登录用户的配置。</li>
+<li>Git 项目中的 <code>.git/config</code> 适用于特定 Git 项目的配置。</li>
+</ol>
+<p>对于同一配置项，三个配置文件的优先级是 3 &gt; 2 &gt;1。</p>
+<h2 id="配置提交作者"><a href="#配置提交作者" class="headerlink" title="配置提交作者"></a>配置提交作者</h2><p>开始使用 Git 之前，第一件重要的事情就是配置提交作者，配置后就可以愉快的开始使用 Git 了。更多配置请参考 <a href="http://git-scm.com/docs/git-config" target="_blank" rel="noopener">这里</a> 。</p>
+<p>首先做如下检查：</p>
+<h3 id="全局配置"><a href="#全局配置" class="headerlink" title="全局配置"></a>全局配置</h3><p>使用 <code>--global</code> 查看或修改全局配置文件 <code>~/.gitconfig</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git config -l | grep user</span><br></pre></td></tr></table></figure>
+
+<p>如果返回为空表示未配置，需要配置如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global user.name <span class="string">"你的姓名"</span></span><br><span class="line">$ git config --global user.email <span class="string">"你的邮箱"</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="项目配置"><a href="#项目配置" class="headerlink" title="项目配置"></a>项目配置</h3><p>如果需要单独修改项目配置文件 <code>.git/config</code>，去掉 <code>--global</code> 参数即可，或者直接打开该文件添加：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[user]</span><br><span class="line">name &#x3D; who</span><br><span class="line">email &#x3D; who@where.com</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置格式化与空白"><a href="#配置格式化与空白" class="headerlink" title="配置格式化与空白"></a>配置格式化与空白</h2><blockquote>
+<p>格式化与空白是许多开发人员在协作时，特别是在跨平台情况下，遇到的令人头疼的细小问题。由于编辑器的不同或者Windows程序员在跨平台项目中的文件行尾加入了回车换行符，一些细微的空格变化会不经意地进入大家合作的工作或提交的补丁中。不用怕，Git 的一些配置选项会帮助你解决这些问题。</p>
+</blockquote>
+<h3 id="core-autocrlf"><a href="#core-autocrlf" class="headerlink" title="core.autocrlf"></a>core.autocrlf</h3><p>Git 在你提交时<strong>自动地</strong>把行结束符 CRLF 转换成 LF，而在签出代码时把 LF 转换成 CRLF。假如团队成员只在 Windows 上写程序，可以关闭此功能，避免 Git 自动格式化代码后干扰代码对比：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global core.autocrlf <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="core-whitespace"><a href="#core-whitespace" class="headerlink" title="core.whitespace"></a>core.whitespace</h3><p>Git 预先设置了一些选项来探测和修正空白问题，配置方法待补充。</p>
+<h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><p>Git 长期使用上的一点不便，解决方案仅供参考。</p>
+<h2 id="中文乱码显示问题"><a href="#中文乱码显示问题" class="headerlink" title="中文乱码显示问题"></a>中文乱码显示问题</h2><ol>
+<li><p>打开 GitBash（git-bash.exe）后，对窗口右键-&gt;Options-&gt;Text-&gt;Locale 改为 <code>zh_CN</code>，Character set 改为 <code>GBK</code> ;</p>
+</li>
+<li><p>键入exit退出关闭再打开即可。</p>
+</li>
+</ol>
+<h2 id="配置工作目录"><a href="#配置工作目录" class="headerlink" title="配置工作目录"></a>配置工作目录</h2><p>Git 默认使用程序运行目录作为工作目录，这会带来使用上的不便。解决办法是新建 <code>.bashrc</code> 文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim ~/.bashrc</span><br></pre></td></tr></table></figure>
+
+<p>添加一行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 请将 /d/Repos/ 替换成你的仓库目录</span></span><br><span class="line"><span class="built_in">cd</span> /d/Repos/</span><br></pre></td></tr></table></figure>
+
+<p>即可自动切换到本地仓库所在目录。</p>
+<h2 id="配置-SSH-代理和密钥"><a href="#配置-SSH-代理和密钥" class="headerlink" title="配置 SSH 代理和密钥"></a>配置 SSH 代理和密钥</h2><p>另一个潜在的问题是运行 <code>Git Bash</code> 并拉取远程仓库提示错误：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Could not open a connection to your authentication agent.</span><br></pre></td></tr></table></figure>
+
+<p>这是因为 <code>ssh-agent</code> 未随 <code>bash</code> 一起启动。你可以每次都手工启动，或推荐编写脚本自启动。</p>
+<p>新建 <code>.bashrc</code> 文件，并添加如下代码：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="keyword">if</span> [ -f ~/.agent.env ]; <span class="keyword">then</span></span><br><span class="line">  . ~/.agent.env &gt;/dev/null</span><br><span class="line">  <span class="built_in">kill</span> -15 <span class="variable">$SSH_AGENT_PID</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"Starting ssh-agent..."</span></span><br><span class="line"><span class="built_in">eval</span> `ssh-agent |tee ~/.agent.env`</span><br><span class="line">ssh-add ~/.ssh/github_rsa</span><br></pre></td></tr></table></figure>
+
+<p>这将会自启动 <code>ssh-agent</code> 并添加指定私钥。 <code>ssh-agent</code> 是一个密钥管理器，运行 <code>ssh-agent</code> 以后，使用 <code>ssh-add</code> 将指定私钥交给 <code>ssh-agent</code> 保管，其它程序（例如 git）在需要身份认证的时候，可以将认证申请交给 <code>ssh-agent</code> 来代为完成整个认证过程。</p>
+<p>那么以后每次运行 <code>Git Bash</code> 的时候，就会看到输出效果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Starting ssh-agent...</span><br><span class="line">Agent pid 8828</span><br><span class="line">Identity added: ~/.ssh/github_rsa</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《<a href="http://best-windows.vlaurie.com/environment-variables.html" target="_blank" rel="noopener">How To Use Environment Variables in Windows</a>》</li>
+<li>《<a href="http://linux.101hacks.com/unix/ssh-add/" target="_blank" rel="noopener">Unix / Linux ssh-add Command Examples to Add SSH Key to Agent</a>》</li>
+<li>《<a href="http://git-scm.com/book/zh/v1/%E8%87%AA%E5%AE%9A%E4%B9%89-Git-%E9%85%8D%E7%BD%AE-Git" target="_blank" rel="noopener">自定义 Git - 配置 Git</a>》</li>
+<li>《<a href="https://github.com/msysgit/msysgit/tags" target="_blank" rel="noopener">Git for Windows 1.x 归档版本下载地址</a>》</li>
+</ul>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/05/17/optimizing-hexo-speed/" class="post-title-link">优化 Hexo 博客的访问速度</a></h2><div class="post-info">2015-05-17<a href="/tags/建站/" title="建站" class="post-demo">建站</a></div><div class="post-content"><p>之前本博客是挂在 GitHub Pages 空间上的，但由于众所周知的原因访问速度一直很慢，甚至频繁收到无法访问的告警邮件，实在是不堪其扰啊。因此决定迁移博客到国内的空间，并且对部分资源进行 CDN 加速。</p>
+<h1 id="迁移-Pages-服务"><a href="#迁移-Pages-服务" class="headerlink" title="迁移 Pages 服务"></a>迁移 Pages 服务</h1><p>很多国内的空间都支持部署静态博客，例如 <a href="">GitCafe</a>、<a href="https://coding.net">Coding</a>、<a href="http://sae.sina.com.cn/" target="_blank" rel="noopener">SAE</a>、<a href="http://www.qiniu.com/" target="_blank" rel="noopener">七牛</a>、……</p>
+<p>在此特别介绍 GitCafe，一个 GitHub 的国内版，但访问速度比 GitHub 快，其 Pages 服务免费且支持绑定自定义域名，就选它了。</p>
+<p>如何创建 GitCafe Pages 服务？参考<a href="https://gitcafe.com/GitCafe/Help/wiki/Pages-%E7%9B%B8%E5%85%B3%E5%B8%AE%E5%8A%A9" target="_blank" rel="noopener">这里</a>。</p>
+<p>如何将 Hexo 静态博客部署到 GitCafe 仓库？参考<a href="https://github.com/hexojs/hexo-deployer-git#options" target="_blank" rel="noopener">这里</a>，我的配置如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo:</span><br><span class="line">    github: git@github.com:cynthia903&#x2F;cynthia903.github.io.git,master</span><br><span class="line">    coding: git@git.coding.net:cynthia903&#x2F;cynthia903,coding-pages</span><br><span class="line">    gitcafe: git@gitcafe.com:cynthia903&#x2F;cynthia903.git,gitcafe-pages</span><br></pre></td></tr></table></figure>
+
+<p>注意仓库地址须使用 SSH 而不是 HTTP 协议，这样在推送代码时就无须繁琐的输入账号密码了。</p>
+<p>运行命令即可生成站点并推送部署：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo d -g</span><br></pre></td></tr></table></figure>
+
+<h1 id="使用-CDN-加速"><a href="#使用-CDN-加速" class="headerlink" title="使用 CDN 加速"></a>使用 CDN 加速</h1><p>利用 CDN 服务商遍布全国甚至全球的 CDN 缓存节点，可以使得各地网民迅速的访问到网站资源。对于 Hexo 这种静态博客来说，使用 CDN 进行 HTTP 网页加速尤为合适，缓存命中率极高，减轻源站的访问压力，在博客达到一定访问量时可以考虑使用这种方案。</p>
+<p>目前来说，只需对部分静态资源进行 CDN 加速即可，使用 CDN 公共库可以满足需求。什么是 CDN 公共库？引述自 <a href="http://www.cnbeta.com/articles/304469.htm" target="_blank" rel="noopener">cnbeta</a>：</p>
+<blockquote>
+<p>CDN公共库是指将常用的JS库存放在CDN节点，以方便广大开发者直接调用。使用CDN公共库不仅可以为你节省流量，还能通过CDN加速，获得更快的访问速度。</p>
+</blockquote>
+<p>目前国内一些比较大的 CDN 公共库：</p>
+<ul>
+<li>百度CDN公共库：<a href="http://developer.baidu.com/wiki/index.php?title=docs/cplat/libs" target="_blank" rel="noopener">http://developer.baidu.com/wiki/index.php?title=docs/cplat/libs</a></li>
+<li>新浪云计算CDN公共库：<a href="http://lib.sinaapp.com" target="_blank" rel="noopener">http://lib.sinaapp.com</a></li>
+<li>BootCDN公共库：<a href="http://www.bootcdn.cn" target="_blank" rel="noopener">http://www.bootcdn.cn</a></li>
+<li>360公共库：<a href="http://libs.useso.com" target="_blank" rel="noopener">http://libs.useso.com</a></li>
+<li>七牛云存储 开放静态文件CDN：<a href="http://www.staticfile.org" target="_blank" rel="noopener">http://www.staticfile.org</a></li>
+<li>又拍云JS库CDN服务：<a href="http://jscdn.upai.com" target="_blank" rel="noopener">http://jscdn.upai.com</a></li>
+<li>CDNJS：<a href="http://www.cdnjs.com" target="_blank" rel="noopener">http://www.cdnjs.com</a></li>
+</ul>
+<p>由于 BootCDN 公共库的资源较全，在此推荐选用。</p>
+<p>以 hexo 主题 jacman 为例，修改文件 <code>themes\jacman\layout\_partial\after_footer.ejs</code>，找到以下 JS 和 CSS：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;script src=<span class="string">"&lt;%- config.root %&gt;js/jquery-2.0.3.min.js"</span>&gt;&lt;<span class="regexp">/script&gt;</span></span><br><span class="line"><span class="regexp">&lt;script src="&lt;%- config.root %&gt;js/</span>jquery.imagesloaded.min.js<span class="string">"&gt;&lt;/script&gt;</span></span><br><span class="line"><span class="string">&lt;script src="</span>&lt;%- config.root %&gt;fancybox/jquery.fancybox.pack.js<span class="string">"&gt;&lt;/script&gt;</span></span><br><span class="line"><span class="string">&lt;link rel="</span>stylesheet<span class="string">" href="</span>&lt;%- config.root %&gt;fancybox/jquery.fancybox.css<span class="string">" media="</span>screen<span class="string">" type="</span>text/css<span class="string">"&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>替换为：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;script src=<span class="string">"http://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"</span>&gt;&lt;<span class="regexp">/script&gt;</span></span><br><span class="line"><span class="regexp">&lt;script src="http:/</span><span class="regexp">/cdn.bootcss.com/</span>jquery.imagesloaded/<span class="number">2.1</span><span class="number">.0</span>/jquery.imagesloaded.min.js<span class="string">"&gt;&lt;/script&gt;</span></span><br><span class="line"><span class="string">&lt;script src="</span>http:<span class="comment">//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"&gt;&lt;/script&gt;</span></span><br><span class="line">&lt;link rel=<span class="string">"stylesheet"</span> href=<span class="string">"http://cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"</span> media=<span class="string">"screen"</span> type=<span class="string">"text/css"</span>&gt;</span><br></pre></td></tr></table></figure>
+
+<p>即可生效。</p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/05/03/java-el/" class="post-title-link">JSP EL 表达式总结</a></h2><div class="post-info">2015-05-03<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><p>在 JSP 标签中指定一个属性值 <code>value</code> 时，可以使用字符串：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;jsp:setProperty name&#x3D;&quot;box&quot; property&#x3D;&quot;perimeter&quot; value&#x3D;&quot;100&quot;&#x2F;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>也可以使用 EL 表达式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;jsp:setProperty name&#x3D;&quot;box&quot; property&#x3D;&quot;perimeter&quot; value&#x3D;&quot;$&#123;expr&#125;&quot;&#x2F;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>那么，EL 表达式 <code>${expr}</code> 中可以放些什么呢？</p>
+<h1 id="操作符"><a href="#操作符" class="headerlink" title="操作符"></a>操作符</h1><p>EL 表达式支持大部分 Java 所提供的算术和逻辑操作符：</p>
+<h2 id="基本操作符"><a href="#基本操作符" class="headerlink" title="基本操作符"></a>基本操作符</h2><table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>.</code></td>
+<td>访问一个 Bean 的属性或者一个映射条目</td>
+</tr>
+<tr>
+<td><code>[]</code></td>
+<td>访问一个数组或者链表的元素</td>
+</tr>
+<tr>
+<td><code>()</code></td>
+<td>组织一个子表达式以改变优先级</td>
+</tr>
+</tbody></table>
+<h2 id="算术操作符"><a href="#算术操作符" class="headerlink" title="算术操作符"></a>算术操作符</h2><table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>操作符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>+</code></td>
+<td></td>
+<td>加</td>
+</tr>
+<tr>
+<td><code>-</code></td>
+<td></td>
+<td>减或负</td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td></td>
+<td>乘</td>
+</tr>
+<tr>
+<td><code>/</code></td>
+<td><code>div</code></td>
+<td>除</td>
+</tr>
+<tr>
+<td><code>%</code></td>
+<td><code>mod</code></td>
+<td>取模</td>
+</tr>
+</tbody></table>
+<h2 id="逻辑操作符"><a href="#逻辑操作符" class="headerlink" title="逻辑操作符"></a>逻辑操作符</h2><table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>操作符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>==</code></td>
+<td><code>eq</code></td>
+<td>测试是否相等</td>
+</tr>
+<tr>
+<td><code>!=</code></td>
+<td><code>ne</code></td>
+<td>测试是否不等</td>
+</tr>
+<tr>
+<td><code>&lt;</code></td>
+<td><code>lt</code></td>
+<td>测试是否小于</td>
+</tr>
+<tr>
+<td><code>&gt;</code></td>
+<td><code>gt</code></td>
+<td>测试是否大于</td>
+</tr>
+<tr>
+<td><code>&lt;=</code></td>
+<td><code>le</code></td>
+<td>测试是否小于等于</td>
+</tr>
+<tr>
+<td><code>&gt;=</code></td>
+<td><code>ge</code></td>
+<td>测试是否大于等于</td>
+</tr>
+<tr>
+<td><code>&amp;&amp;</code></td>
+<td><code>and</code></td>
+<td>测试逻辑与</td>
+</tr>
+<tr>
+<td><code>&#124;&#124;</code></td>
+<td><code>or</code></td>
+<td>测试逻辑或</td>
+</tr>
+<tr>
+<td><code>!</code></td>
+<td><code>not</code></td>
+<td>测试取反</td>
+</tr>
+<tr>
+<td></td>
+<td><code>empty</code></td>
+<td>测试是否空值</td>
+</tr>
+</tbody></table>
+<h1 id="隐式对象"><a href="#隐式对象" class="headerlink" title="隐式对象"></a>隐式对象</h1><p>JSP 隐式对象（也称为预定义变量）是 JSP 容器为每个页面提供的 Java 对象，开发者可以直接使用它们而不用显式声明。</p>
+<h2 id="作用域"><a href="#作用域" class="headerlink" title="作用域"></a>作用域</h2><table>
+<thead>
+<tr>
+<th>对象</th>
+<th>等价物</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>pageScope</code></td>
+<td><code>this</code></td>
+<td>page 作用域</td>
+</tr>
+<tr>
+<td><code>requestScope</code></td>
+<td><code>javax.servlet.http.HttpServletRequest</code></td>
+<td>request 作用域</td>
+</tr>
+<tr>
+<td><code>sessionScope</code></td>
+<td><code>javax.servlet.http.HttpSession</code></td>
+<td>session 作用域</td>
+</tr>
+<tr>
+<td><code>applicationScope</code></td>
+<td><code>javax.servlet.ServletContext</code></td>
+<td>application 作用域</td>
+</tr>
+</tbody></table>
+<h2 id="HTTP-请求参数"><a href="#HTTP-请求参数" class="headerlink" title="HTTP 请求参数"></a>HTTP 请求参数</h2><table>
+<thead>
+<tr>
+<th>对象</th>
+<th>等价物</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>param</code></td>
+<td><code>request.getParameter(...)</code></td>
+<td>获取指定 HTTP 请求参数，字符串</td>
+</tr>
+<tr>
+<td><code>paramValues</code></td>
+<td><code>request.getParameterValues()</code></td>
+<td>获取所有 HTTP 请求参数，字符串数组</td>
+</tr>
+</tbody></table>
+<p>例如，要判断 HTTP 请求参数 <code>from</code> 是否为空，可以结合使用 JSTL <code>&lt;c:if&gt;</code> 和 EL 操作符 <code>not</code>、<code>empty</code>、EL 隐式对象 <code>param</code> 进行判断：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;c:if test&#x3D;&quot;$&#123;not empty param.from&#125;&quot;&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="HTTP-请求头"><a href="#HTTP-请求头" class="headerlink" title="HTTP 请求头"></a>HTTP 请求头</h2><table>
+<thead>
+<tr>
+<th>对象</th>
+<th>等价物</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>header</code></td>
+<td><code>request.getHeader(...)</code></td>
+<td>获取指定 HTTP 请求头，字符串</td>
+</tr>
+<tr>
+<td><code>headerValues</code></td>
+<td><code>request.getHeaders()</code></td>
+<td>获取所有 HTTP 请求头，字符串数组</td>
+</tr>
+</tbody></table>
+<p>例如，获取请求来源：<code>${header.Referer}</code>。</p>
+<h2 id="HTTP-Cookie"><a href="#HTTP-Cookie" class="headerlink" title="HTTP Cookie"></a>HTTP Cookie</h2><table>
+<thead>
+<tr>
+<th>对象</th>
+<th>等价物</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>cookie</code></td>
+<td><code>request.getCookies()</code></td>
+<td><code>javax.servlet.http.Cookie</code> 数组</td>
+</tr>
+</tbody></table>
+<p>例如，获取指定 <code>Cookie</code> 的值：<code>${cookie.key.value}</code>。这段 EL 表达式会被 JSP 容器解析成：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Cookie[] cookies = request.getCookies();</span><br><span class="line">Cookie current = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span>(Cookie cookie : cookies) &#123; </span><br><span class="line">    <span class="keyword">if</span>(cookie.getName().equals(<span class="string">"key"</span>)) &#123;</span><br><span class="line">        current = cookie;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(current != <span class="keyword">null</span>) &#123; </span><br><span class="line">    out.print(current.getValue());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="上下文"><a href="#上下文" class="headerlink" title="上下文"></a>上下文</h2><table>
+<thead>
+<tr>
+<th>对象</th>
+<th>等价物</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>initParam</code></td>
+<td></td>
+<td>上下文初始化参数，即 <code>web.xml</code> 的 <code>&lt;context-param&gt;</code></td>
+</tr>
+<tr>
+<td><code>pageContext</code></td>
+<td><code>javax.servlet.jsp.PageContext</code></td>
+<td>提供对 JSP 页面所有对象以及命名空间的访问</td>
+</tr>
+</tbody></table>
+<h1 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h1><p>EL 表达式支持使用函数，其使用语法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$&#123;ns:fn(param1, param2, ...)&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>ns</code> 指的是命名空间（namespace），<code>fn</code> 指的是函数的名称，<code>param1</code> 指的是第一个参数，<code>param2</code> 指的是第二个参数，以此类推。</p>
+<p>例如，要获取一个字符串的长度，可以使用 JSTL 的 <code>length</code> 函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$&#123;fn:length(&quot;Get my length&quot;)&#125;</span><br></pre></td></tr></table></figure>
+
+<p>更多 JSTL 函数，参考<a href="http://www.cnblog.me/2015/05/02/java-jstl/#函数标签库" target="_blank" rel="noopener">这里</a>。</p>
+</div></article></li></ul><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div class="recent"><h4>最近文章</h4><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2021/02/26/cpp-io-library/">C/C++ 语言系列（十一）I/O 库总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/25/cpp-oop-inheritance-and-polymorphism/">C/C++ 语言系列（十）面向对象编程之继承与多态</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/20/cpp-oop-class/">C/C++ 语言系列（九）面向对象编程之类、类模板、类指针</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/18/cpp-type-aliases/">C/C++ 语言系列（八）复合数据类型之类型别名</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/16/cpp-struct/">C/C++ 语言系列（七）复合数据类型之结构体</a></li></ul></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/page/15/" class="prev">PREV</a><a href="/page/17/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

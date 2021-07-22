@@ -1,0 +1,55 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> GNU/Bash 系列（二）Shell 启动流程 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="GNU/Bash 系列（二）Shell 启动流程 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">GNU/Bash 系列（二）Shell 启动流程</h1><div class="post-info">2015-03-05<a href="/tags/GNU-Linux/" title="GNU/Linux" class="post-demo">GNU/Linux</a></div><div class="post-content"><p>了解完什么是 Shell，有哪些 Shell 类型之后，本文开始主要关注 Bash Shell。</p>
+<h1 id="启动流程"><a href="#启动流程" class="headerlink" title="启动流程"></a>启动流程</h1><ol>
+<li>/bin/login 程序首先会检查 <code>/etc/passwd</code> 文件，在这个文件里包含了用户名、密码和该用户的登录 shell，如 /bin/bash 。 /bin/login 在子进程里用 <code>execve</code> 调用了 /bin/bash 。</li>
+<li>/bin/bash 读取 <strong>启动文件</strong> 并启动</li>
+<li>/bin/bash 处理用户键入的命令</li>
+</ol>
+<ul>
+<li>在执行磁盘上某个程序时，我们通常不会指定这个程序文件的绝对路径，比如要执行 <code>echo</code> 命令时，我们一般不会输入 <code>/bin/echo</code> ，而仅仅是输入 <code>echo</code> 。那为什么这样 bash 也能够找到 /bin/echo 呢？原因是 Linux 操作系统支持这样一种策略：shell 的一个环境变量 PATH 里头存放了程序的一些路径，当 shell 执行程序时会去这些目录下查找。</li>
+<li><code>which</code> 作为 shell（这里特指 bash ）的一个内置命令，如果用户输入的命令是磁盘上的某个程序，它会返回这个文件的全路径。</li>
+</ul>
+<h1 id="启动文件"><a href="#启动文件" class="headerlink" title="启动文件"></a>启动文件</h1><h2 id="交互式-shell"><a href="#交互式-shell" class="headerlink" title="交互式 shell"></a>交互式 shell</h2><p>Bash 如何执行它的启动文件？交互式 shell（interactive shell）下需要区分两种情况：</p>
+<h3 id="login-shell"><a href="#login-shell" class="headerlink" title="login shell"></a>login shell</h3><p>在下列情况下，我们可以获得一个 login shell：</p>
+<ul>
+<li>登录系统时获得的顶层 shell，无论是通过本地终端登录，还是通过网络 <code>ssh</code> 登录。这种情况下获得的 login shell 是一个交互式 shell。</li>
+<li>在终端下使用 <code>--login</code> 选项调用 bash，可以获得一个交互式 login shell。</li>
+<li>在脚本中使用 <code>--login</code> 选项调用 bash（比如在 shell 脚本第一行做如下指定：<code>#!/bin/bash --login</code>），此时得到一个非交互式的 login shell。</li>
+<li>使用 <code>su -</code> 切换到指定用户时，获得此用户的 login shell。如果不使用 <code>-</code>，则获得 non-login shell。</li>
+</ul>
+<p>login shell 与 non-login shell 的主要区别在于它们启动时会读取不同的配置文件，从而导致环境不一样。login shell 启动时：</p>
+<ul>
+<li><p>首先读取全局配置：<code>/etc/profile</code></p>
+</li>
+<li><p>然后依次查找以下三个文件，读取第一个找到且可读的文件：</p>
+<ul>
+<li><code>~/.bash_profile</code></li>
+<li><code>~/.bash_login</code></li>
+<li><code>~/.profile</code></li>
+</ul>
+</li>
+<li><p>退出时，读取：<code>~/.bash_logout</code></p>
+</li>
+</ul>
+<h3 id="no-login-shell"><a href="#no-login-shell" class="headerlink" title="no login shell"></a>no login shell</h3><p>交互式的 non-login shell 启动时，会读取：</p>
+<ul>
+<li><code>~/.bashrc</code></li>
+</ul>
+<p>通常我们要定制一些配置时（例如 alias 别名），会将配置写在 <code>~/.bashrc</code> 中，然后在 <code>~/.bash_profile</code> 中读取 <code>~/.bashrc</code>，这样可以保证 login shell 和 non-login shell 得到相同的配置:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">test</span> -f ~/.bashrc &amp;&amp; . ~/.bashrc</span><br></pre></td></tr></table></figure>
+
+<p>至于 <code>/etc/profile</code> 就不要轻易去改啦，毕竟会影响系统全局的配置。</p>
+<h2 id="非交互式-shell"><a href="#非交互式-shell" class="headerlink" title="非交互式 shell"></a>非交互式 shell</h2><ul>
+<li><p>当 Bash 以非交互的方式（non-interactive shell）启动时，<strong>例如在运行一个 shell 脚本时</strong>，它会查找环境变量 <code>BASH_ENV</code>，如果存在则将它的值展开，使用展开的值作为一个文件的名称，读取并执行。 Bash 运作的过程就如同执行了下列命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> [ -n <span class="string">"<span class="variable">$BASH_ENV</span>"</span> ]; <span class="keyword">then</span> </span><br><span class="line">    . <span class="string">"<span class="variable">$BASH_ENV</span>"</span>; </span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>其它情况：</p>
+<blockquote>
+<p>Aliases are not expanded when the shell is not interactive.</p>
+<p>Functions are executed in the context of the current shell; no new process is created to interpret them (contrast this with the execution of a shell script).</p>
+</blockquote>
+</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a href="http://www.gnu.org/software/bash/manual/bashref.html#Bash-Startup-Files" target="_blank" rel="noopener">Bash Startup Files</a>》</p>
+<p>《<a href="http://www.gnu.org/software/bash/manual/bashref.html#Interactive-Shells" target="_blank" rel="noopener">Interactive Shells</a>》</p>
+<p>《<a href="http://linux.chinaunix.net/techdoc/develop/2008/09/16/1032346.shtml" target="_blank" rel="noopener">使用$BASH_ENV来提权</a>》</p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2015/03/10/gnu-bash-shell-quoting-and-params/" class="prev">PREV</a><a href="/2015/03/01/what-is-shell/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

@@ -1,0 +1,1338 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="学习笔记 知识总结 思考感悟"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><ul class="home post-list"><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2021/02/01/cpp-ide/" class="post-title-link">C/C++ 语言系列（一）IDE 准备</a></h2><div class="post-info">2021-02-01<a href="/tags/C-C/" title="C/C++" class="post-demo">C/C++</a></div><div class="post-content"><h1 id="VS-Code-插件安装"><a href="#VS-Code-插件安装" class="headerlink" title="VS Code 插件安装"></a>VS Code 插件安装</h1><p>打开 VScode，进入 <code>Extensions</code> 模块，搜索以下扩展并安装： </p>
+<ul>
+<li>C/C++</li>
+<li>C/C++ Clang Command Adapter</li>
+<li>C++ Intellisense</li>
+<li>Code Runner</li>
+</ul>
+<p>安装完成后，扩展将会自动激活。此时<strong>重启</strong> VScode。 </p>
+<h1 id="Hello-world-测试"><a href="#Hello-world-测试" class="headerlink" title="Hello world 测试"></a>Hello world 测试</h1><p>新建一个 <code>.cpp</code> 文件，输入如下代码： </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"hello, world\n"</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>点击 <strong>运行</strong> 按钮，<code>Terminal</code> 显示编译如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++ HelloWorld.cpp -o HelloWorld</span><br></pre></td></tr></table></figure>
+
+<p>编译完成后，运行并输出如下：<code>hello, world</code>。至此，配置全部完成。 </p>
+<h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><h2 id="DIFFERENCE-BETWEEN-g-amp-gcc"><a href="#DIFFERENCE-BETWEEN-g-amp-gcc" class="headerlink" title="DIFFERENCE BETWEEN g++ &amp; gcc"></a>DIFFERENCE BETWEEN g++ &amp; gcc</h2><blockquote>
+<p><a href="https://www.geeksforgeeks.org/builtin-functions-gcc-compiler/" target="_blank" rel="noopener">GCC</a> 代表 <a href="https://www.geeksforgeeks.org/gcc-command-in-linux-with-examples/" target="_blank" rel="noopener">GNU Compiler Collections</a>，主要用于编译 C 和 C++ 语言。它还可以用于编译 Objective C 和 Objective C++。编译源代码文件时需要的最重要的选项是源程序的名称，其余每个参数都是可选的，如警告、调试、链接库、目标文件等。</p>
+<p><a href="https://www.geeksforgeeks.org/compiling-with-g-plus-plus/" target="_blank" rel="noopener">g++ 命令</a>是 GNU C++ 编译器调用的命令，用于源代码的预处理、编译、汇编和链接以生成可执行文件。</p>
+<table>
+<thead>
+<tr>
+<th align="left">g++</th>
+<th align="left">gcc</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">g++ is used to compile C++ program.</td>
+<td align="left">gcc is used to compile C program.</td>
+</tr>
+<tr>
+<td align="left">g++ can compile any <code>.c</code> or <code>.cpp</code> files but they will be treated as C++ files only.</td>
+<td align="left">gcc can compile any <code>.c</code> or <code>.cpp</code> files but they will be treated as C and C++ respectively.</td>
+</tr>
+<tr>
+<td align="left">Command to compile C++ program through g++ is <code>g++ fileName.cpp -o binary</code></td>
+<td align="left">command to compile C program through gcc is <code>gcc fileName.c -o binary</code></td>
+</tr>
+<tr>
+<td align="left">Using g++ to link the object files, files automatically links in the std C++ libraries.</td>
+<td align="left">gcc does not do this.</td>
+</tr>
+<tr>
+<td align="left">g++ compiles with more predefined macros.</td>
+<td align="left">gcc compiles C++ files with more number of predefined macros. Some of them are #define <strong>GXX_WEAK</strong> 1, #define __cplusplus 1, #define __DEPRECATED 1, etc</td>
+</tr>
+</tbody></table>
+</blockquote>
+<h2 id="DIFFERENCE-BETWEEN-gcc-amp-make"><a href="#DIFFERENCE-BETWEEN-gcc-amp-make" class="headerlink" title="DIFFERENCE BETWEEN gcc &amp; make"></a>DIFFERENCE BETWEEN gcc &amp; make</h2><blockquote>
+<p>gcc是编译器 而make不是 make是依赖于Makefile来编译多个源文件的工具 在Makefile里同样是用gcc(或者别的编译器)来编译程序.</p>
+<p>gcc是编译一个文件，make是编译多个源文件的工程文件的工具。</p>
+<p>make是一个命令工具，是一个解释makefile中指令的命令工具。</p>
+<p>make就是一个gcc/g++的调度器，通过读入一个文件（默认文件名为Makefile或者makefile），执行一组以gcc/g++为主的shell命令序列。输入文件主要用来记录文件之间的依赖关系和命令执行顺序。</p>
+<p>gcc是编译工具；</p>
+<p>make是定义了一系列的规则来指定，哪些文件需要先编译，哪些文件需要后编译；</p>
+<p>也就是说make是调用gcc的。</p>
+</blockquote>
+<h2 id="cannot-edit-in-read-only-editor"><a href="#cannot-edit-in-read-only-editor" class="headerlink" title="cannot edit in read-only editor"></a>cannot edit in read-only editor</h2><p><img src="/img/cpp/auto_guess_encoding.png" alt=""></p>
+<h2 id="GBK-to-UTF-8-乱码问题"><a href="#GBK-to-UTF-8-乱码问题" class="headerlink" title="GBK to UTF-8 乱码问题"></a>GBK to UTF-8 乱码问题</h2><p><a href="https://www.cnblogs.com/kingsonfu/p/11010086.html" target="_blank" rel="noopener">https://www.cnblogs.com/kingsonfu/p/11010086.html</a></p>
+<p><img src="/img/cpp/cannot_edit_in_read-only_editor.png" alt=""></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://www.cplusplus.com/doc/tutorial/introduction/" target="_blank" rel="noopener">http://www.cplusplus.com/doc/tutorial/introduction/</a></p>
+<p><a href="http://www.dooccn.com/cpp/" target="_blank" rel="noopener">C++ 在线编译器</a></p>
+<p><a href="https://cppinsights.io/" target="_blank" rel="noopener">C++ Insights</a></p>
+<p><a href="https://gcc.godbolt.org/" target="_blank" rel="noopener">C++ Compiler Explorer</a></p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2021/01/03/java-logging/" class="post-title-link">Java 日志框架总结</a></h2><div class="post-info">2021-01-03<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><p>日志门面：</p>
+<ul>
+<li>Apache Commons Logging 是 Apache Commons 的一个开源项目。官网：<a href="https://commons.apache.org/proper/commons-logging/" target="_blank" rel="noopener">https://commons.apache.org/proper/commons-logging/</a></li>
+<li>SLF4J 全称为 Simple Logging Facade for Java，即 Java 简单日志门面。官网：<a href="http://www.slf4j.org/" target="_blank" rel="noopener">http://www.slf4j.org/</a></li>
+</ul>
+<p>日志实现</p>
+<ul>
+<li>java.util.logging (JUL)</li>
+<li>logback。<a href="http://logback.qos.ch/" target="_blank" rel="noopener">http://logback.qos.ch/</a></li>
+<li><del>Log4j 1.x。<a href="https://logging.apache.org/log4j/1.2/" target="_blank" rel="noopener">https://logging.apache.org/log4j/1.2/</a></del> (On August 5, 2015 the Logging Services Project Management Committee announced that Log4j 1.x had reached end of life)</li>
+<li>Log4j 2.x。<a href="https://logging.apache.org/log4j/2.x/" target="_blank" rel="noopener">https://logging.apache.org/log4j/2.x/</a></li>
+</ul>
+<h1 id="日志门面——SLF4J"><a href="#日志门面——SLF4J" class="headerlink" title="日志门面——SLF4J"></a>日志门面——SLF4J</h1><p>优点：</p>
+<ul>
+<li><p>通过依赖配置，在编译期静态绑定真正的日志实现库。</p>
+</li>
+<li><p>不需要使用 <code>logger.isDebugEnabled()</code> 来解决日志因为字符拼接产生的性能问题。SLF4J 的方式是使用 <code>{}</code> 作为字符串替换符。</p>
+</li>
+<li><p>提供了很多桥接方案，以便灵活替换日志库。如下：</p>
+<p><img src="/img/java/logging/SLF4J.png" alt="SLF4J"></p>
+</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li><p>旧版不支持 Lambda 表达式（slf4j-api-2.0.0-alpha 支持但还未 GA）。Log4j 2.4 及以上版本支持 Java 8 Lambda，参考 <a href="https://logging.apache.org/log4j/2.x/manual/api.html#LambdaSupport" target="_blank" rel="noopener">1</a>、<a href="https://www.baeldung.com/log4j-2-lazy-logging" target="_blank" rel="noopener">2</a>，例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">logger.debug(<span class="string">"This &#123;&#125; and &#123;&#125; with &#123;&#125; "</span>, () -&gt; <span class="keyword">this</span>, () -&gt; that, () -&gt; compute());</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h1 id="日志实现——Logback"><a href="#日志实现——Logback" class="headerlink" title="日志实现——Logback"></a>日志实现——Logback</h1><h2 id="引入依赖"><a href="#引入依赖" class="headerlink" title="引入依赖"></a>引入依赖</h2><p>推荐使用 SLF4J bound to logback-classic 的经典组合：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>ch.qos.logback<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>logback-classic<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.2.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>传递依赖如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">logback-classic: 1.2.3 [compile]</span><br><span class="line">  logback-core: 1.2.3 [compile]</span><br><span class="line">  slf4j-api: 1.7.25 [compile]</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置-Appenders"><a href="#配置-Appenders" class="headerlink" title="配置 Appenders"></a>配置 Appenders</h2><p>有三种使用 Appenders 的方式：</p>
+<ol>
+<li><p>使用第一方提供的 Appenders（<code>ConsoleAppender</code>、<code>RollingFileAppender</code>）</p>
+</li>
+<li><p>使用第三方提供的 Appenders（logstash）。</p>
+</li>
+<li><p>使用自定义 Appenders。</p>
+</li>
+</ol>
+<h3 id="第一方-Appenders"><a href="#第一方-Appenders" class="headerlink" title="第一方 Appenders"></a>第一方 Appenders</h3><p><a href="http://logback.qos.ch/manual/appenders.html" target="_blank" rel="noopener">http://logback.qos.ch/manual/appenders.html</a></p>
+<p>官方提供的第一方 Appender 如下：</p>
+<p><img src="/img/java/logging/logback/Appender.png" alt="Appender"></p>
+<p>其中，常用的两个 Appender 如下：</p>
+<p><img src="/img/java/logging/logback/OutputStreamAppender.png" alt="OutputStreamAppender"></p>
+<p>其中，<code>RollingFileAppender</code> 可选的策略类如下：</p>
+<p><img src="/img/java/logging/logback/Policy.png" alt="Policy"></p>
+<h3 id="第三方-Appenders"><a href="#第三方-Appenders" class="headerlink" title="第三方 Appenders"></a>第三方 Appenders</h3><p><a href="https://github.com/logstash/logstash-logback-encoder" target="_blank" rel="noopener">https://github.com/logstash/logstash-logback-encoder</a></p>
+<blockquote>
+<p>Provides <a href="http://logback.qos.ch/" target="_blank" rel="noopener">logback</a> encoders, layouts, and appenders to log in JSON and <a href="https://github.com/logstash/logstash-logback-encoder#data-format" target="_blank" rel="noopener">other formats supported by Jackson</a>.</p>
+</blockquote>
+<h3 id="自定义-Appenders"><a href="#自定义-Appenders" class="headerlink" title="自定义 Appenders"></a>自定义 Appenders</h3><p>通过自定义 Appenders，可以将日志输出到如 MongoDB、Kafka 等服务。</p>
+<p>下面演示一个简单的同步 Appender，如需异步 Appender，参考<a href="http://logback.qos.ch/manual/appenders.html#AsyncAppender" target="_blank" rel="noopener">这里</a>。</p>
+<p>一、新建 Appender，继承自抽象类：</p>
+<p><img src="/img/java/logging/logback/UnsynchronizedAppenderBase.png" alt="UnsynchronizedAppenderBase"></p>
+<p><img src="/img/java/logging/logback/ILoggingEvent.png" alt="ILoggingEvent"></p>
+<p>代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> ch.qos.logback.classic.spi.ILoggingEvent;</span><br><span class="line"><span class="keyword">import</span> ch.qos.logback.core.UnsynchronizedAppenderBase;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.mongodb.core.MongoTemplate;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.mongodb.core.SimpleMongoClientDbFactory;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MongoDBAppender</span> <span class="keyword">extends</span> <span class="title">UnsynchronizedAppenderBase</span>&lt;<span class="title">ILoggingEvent</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> SimpleMongoClientDbFactory mongoDbFactory;</span><br><span class="line">    <span class="keyword">private</span> MongoTemplate mongoTemplate;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">new</span> ReentrantLock(<span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        String uri = <span class="keyword">this</span>.getContext().getProperty(<span class="string">"MONGO_URI"</span>);</span><br><span class="line">        mongoDbFactory = <span class="keyword">new</span> SimpleMongoClientDbFactory(uri);</span><br><span class="line">        mongoTemplate = <span class="keyword">new</span> MongoTemplate(mongoDbFactory);</span><br><span class="line">        <span class="keyword">super</span>.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">append</span><span class="params">(ILoggingEvent eventObject)</span> </span>&#123;</span><br><span class="line">        lock.lock();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            PayLog log = <span class="keyword">new</span> PayLog();</span><br><span class="line">            log.setTraceId(eventObject.getMDCPropertyMap().getOrDefault(MDCUtils.LOG_TRACE_ID, <span class="keyword">null</span>));</span><br><span class="line">            log.setOper(eventObject.getMDCPropertyMap().getOrDefault(MDCUtils.OPER, <span class="keyword">null</span>));</span><br><span class="line">            log.setLevel(eventObject.getLevel().toString());</span><br><span class="line">            log.setLogger(eventObject.getLoggerName());</span><br><span class="line">            log.setThread(eventObject.getThreadName());</span><br><span class="line">            log.setMessage(eventObject.getFormattedMessage());</span><br><span class="line">            log.setTimestamp(eventObject.getTimeStamp());</span><br><span class="line">            mongoTemplate.insert(log, <span class="string">"payLog"</span>);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            lock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>二、创建 MDCUtils</p>
+<p><img src="/img/java/logging/logback/MDCUtils.png" alt="MDCUtils"></p>
+<p>三、在合适的设置上下文，例如 traceId：</p>
+<ul>
+<li>在 http 接口的拦截器</li>
+<li>在定时任务执行之前</li>
+</ul>
+<p><img src="/img/java/logging/logback/TraceIdInterceptor.png" alt="TraceIdInterceptor"></p>
+<p>四、配置 Appender，参考配置文件 Sample</p>
+<p>五、验证 MongoDB 数据。</p>
+<h2 id="配置-Encoders-amp-Layouts"><a href="#配置-Encoders-amp-Layouts" class="headerlink" title="配置 Encoders &amp; Layouts"></a>配置 Encoders &amp; Layouts</h2><p>Logback 提供的 <code>Encoder</code> 和 <code>Layout</code> 的默认实现如下：</p>
+<p><img src="/img/java/logging/logback/Encoder_and_Layout.png" alt="Layout"></p>
+<p>一般有几种使用组合方式：</p>
+<h3 id="自定义-Pattern-格式"><a href="#自定义-Pattern-格式" class="headerlink" title="自定义 Pattern 格式"></a>自定义 Pattern 格式</h3><p>基于自定义 <a href="http://logback.qos.ch/manual/layouts.html#PatternLayout" target="_blank" rel="noopener">Pattern</a> 格式，直接使用 <code>ch.qos.logback.classic.encoder.PatternLayoutEncoder</code> 即可：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">"FILE"</span> <span class="attr">class</span>=<span class="string">"ch.qos.logback.core.rolling.RollingFileAppender"</span>&gt;</span></span><br><span class="line">  ...</span><br><span class="line">  <span class="tag">&lt;<span class="name">encoder</span> <span class="attr">class</span>=<span class="string">"ch.qos.logback.classic.encoder.PatternLayoutEncoder"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">pattern</span>&gt;</span>%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125; [%thread] %-5level %logger&#123;50&#125; - %msg%n<span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">encoder</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="预定义格式"><a href="#预定义格式" class="headerlink" title="预定义格式"></a>预定义格式</h3><p>基于预定义格式，需要使用 <code>ch.qos.logback.core.encoder.LayoutWrappingEncoder</code>，并搭配相应 <code>Layout</code> 实现。例如输出成 HTML 格式：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">"FILE"</span> <span class="attr">class</span>=<span class="string">"ch.qos.logback.core.rolling.RollingFileAppender"</span>&gt;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="tag">&lt;<span class="name">encoder</span> <span class="attr">class</span>=<span class="string">"ch.qos.logback.core.encoder.LayoutWrappingEncoder"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">layout</span> <span class="attr">class</span>=<span class="string">"ch.qos.logback.classic.html.HTMLLayout"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">encoder</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="个性化格式"><a href="#个性化格式" class="headerlink" title="个性化格式"></a>个性化格式</h3><p>基于个性化格式，例如输出 traceid。</p>
+<h2 id="配置文件-Sample"><a href="#配置文件-Sample" class="headerlink" title="配置文件 Sample"></a>配置文件 Sample</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">configuration</span> <span class="attr">debug</span>=<span class="string">"false"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">springProperty</span> <span class="attr">scope</span>=<span class="string">"context"</span> <span class="attr">name</span>=<span class="string">"LOG_PATH"</span> <span class="attr">source</span>=<span class="string">"log.path"</span> <span class="attr">defaultValue</span>=<span class="string">"/data/logs"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">springProperty</span> <span class="attr">scope</span>=<span class="string">"context"</span> <span class="attr">name</span>=<span class="string">"ACTIVE_PROFILE"</span> <span class="attr">source</span>=<span class="string">"spring.profiles.active"</span> <span class="attr">defaultValue</span>=<span class="string">"dev"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">springProperty</span> <span class="attr">scope</span>=<span class="string">"context"</span> <span class="attr">name</span>=<span class="string">"LOG_PATTERN"</span> <span class="attr">source</span>=<span class="string">"log.pattern"</span> <span class="attr">defaultValue</span>=<span class="string">"[%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125;] %5p [%t] %logger&#123;50&#125;:%L [%X&#123;traceId&#125;] --&gt; %m%n"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">springProperty</span> <span class="attr">scope</span>=<span class="string">"context"</span> <span class="attr">name</span>=<span class="string">"MONGO_URI"</span> <span class="attr">source</span>=<span class="string">"spring.data.mongodb.uri"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- 控制台输出 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">"STDOUT"</span> <span class="attr">class</span>=<span class="string">"ch.qos.logback.core.ConsoleAppender"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">encoder</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">pattern</span>&gt;</span>$&#123;LOG_PATTERN&#125;<span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">encoder</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- 每天归档日志文件 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">"FILE"</span> <span class="attr">class</span>=<span class="string">"ch.qos.logback.core.rolling.RollingFileAppender"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">file</span>&gt;</span>$&#123;LOG_PATH&#125;/project-$&#123;ACTIVE_PROFILE&#125;.log<span class="tag">&lt;/<span class="name">file</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">rollingPolicy</span> <span class="attr">class</span>=<span class="string">"ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy"</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--日志文件输出的文件名--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">fileNamePattern</span>&gt;</span>$&#123;LOG_PATH&#125;/project-$&#123;ACTIVE_PROFILE&#125;-%i.log.%d&#123;yyyyMMdd&#125;<span class="tag">&lt;/<span class="name">fileNamePattern</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--日志文件保留天数--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">maxHistory</span>&gt;</span>90<span class="tag">&lt;/<span class="name">maxHistory</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">maxFileSize</span>&gt;</span>100MB<span class="tag">&lt;/<span class="name">maxFileSize</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">totalSizeCap</span>&gt;</span>20GB<span class="tag">&lt;/<span class="name">totalSizeCap</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">rollingPolicy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">encoder</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">pattern</span>&gt;</span>$&#123;LOG_PATTERN&#125;<span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">encoder</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- 自定义 MongoDB Appender --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">"MONGO"</span> <span class="attr">class</span>=<span class="string">"com.test.MongoDBAppender"</span>&gt;</span><span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">logger</span> <span class="attr">name</span>=<span class="string">"org.springframework"</span> <span class="attr">level</span>=<span class="string">"WARN"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">root</span> <span class="attr">level</span>=<span class="string">"INFO"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">"FILE"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">"STDOUT"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">"MONGO"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">root</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="使用-API"><a href="#使用-API" class="headerlink" title="使用 API"></a>使用 API</h2><h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://logback.qos.ch/manual/appenders.html" target="_blank" rel="noopener">http://logback.qos.ch/manual/appenders.html</a></p>
+<p><a href="http://logback.qos.ch/manual/appenders.html#AsyncAppender" target="_blank" rel="noopener">http://logback.qos.ch/manual/appenders.html#AsyncAppender</a></p>
+<p><a href="https://github.com/logstash/logstash-logback-encoder" target="_blank" rel="noopener">https://github.com/logstash/logstash-logback-encoder</a></p>
+<p>《<a href="https://mp.weixin.qq.com/s/v3aF1zVwsP5g8KcuJFP4fQ" target="_blank" rel="noopener">Java 中打印日志的正确姿势</a>》</p>
+<p>《<a href="https://mp.weixin.qq.com/s/68QncZycXgWPWgYg71wZGQ" target="_blank" rel="noopener">细说 Java 主流日志工具库</a>》</p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2020/10/10/jakarta-xml-binding/" class="post-title-link">Jakarta EE 系列（四）XML Binding 规范与实践总结</a></h2><div class="post-info">2020-10-10<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><h1 id="规范"><a href="#规范" class="headerlink" title="规范"></a>规范</h1><blockquote>
+<p>The Jakarta XML Binding provides an API and tools that automate the mapping between XML documents and Java objects.</p>
+</blockquote>
+<p>规范文档：<a href="https://jakarta.ee/specifications/xml-binding/" target="_blank" rel="noopener">https://jakarta.ee/specifications/xml-binding/</a></p>
+<h1 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h1><p>官方认证实现：<a href="https://eclipse-ee4j.github.io/jaxb-ri/" target="_blank" rel="noopener">https://eclipse-ee4j.github.io/jaxb-ri/</a></p>
+<p>依赖下载：<a href="https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-ri，将传递依赖：" target="_blank" rel="noopener">https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-ri，将传递依赖：</a></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>jakarta.xml.bind<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jakarta.xml.bind-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><p>本文演示如何生成和解析 XML，主要涉及以下常用注解，更多注解可以自行尝试：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@XmlRootElement</span></span><br><span class="line"><span class="meta">@XmlElement</span></span><br><span class="line"><span class="meta">@XmlAttribute</span></span><br><span class="line"><span class="meta">@XmlValue</span></span><br></pre></td></tr></table></figure>
+
+<p>实体类如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// @Setter 会报错 com.sun.xml.internal.bind.v2.runtime.IllegalAnnotationsException: 4 counts of IllegalAnnotationExceptions</span></span><br><span class="line"><span class="meta">@Getter</span></span><br><span class="line"><span class="meta">@ToString</span></span><br><span class="line"><span class="meta">@Builder</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@XmlRootElement</span>(name = <span class="string">"head"</span>)</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Head</span> </span>&#123;</span><br><span class="line">    <span class="meta">@XmlElement</span>(name = <span class="string">"trade_code"</span>)</span><br><span class="line">    <span class="keyword">private</span> String tradeCode;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@XmlElement</span>(name = <span class="string">"trade_date"</span>)</span><br><span class="line">    <span class="keyword">private</span> String tradeDate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@XmlElement</span>(name = <span class="string">"trade_time"</span>)</span><br><span class="line">    <span class="keyword">private</span> String tradeTime;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@XmlElement</span>(name = <span class="string">"serial_no"</span>)</span><br><span class="line">    <span class="keyword">private</span> String serialNo;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@XmlElement</span>(name = <span class="string">"parent"</span>)</span><br><span class="line">    <span class="keyword">private</span> Parent parent;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Getter</span></span><br><span class="line"><span class="meta">@ToString</span></span><br><span class="line"><span class="meta">@Builder</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@XmlRootElement</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Parent</span> </span>&#123;</span><br><span class="line">    <span class="meta">@XmlElement</span></span><br><span class="line">    <span class="keyword">private</span> List&lt;Child&gt; child;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Getter</span></span><br><span class="line"><span class="meta">@ToString</span></span><br><span class="line"><span class="meta">@Builder</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Child</span> </span>&#123;</span><br><span class="line">    <span class="meta">@XmlAttribute</span></span><br><span class="line">    <span class="keyword">private</span> String key;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@XmlValue</span></span><br><span class="line">    <span class="keyword">private</span> String value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="XML-工具类"><a href="#XML-工具类" class="headerlink" title="XML 工具类"></a>XML 工具类</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">XmlUtils</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Map&lt;String, JAXBContext&gt; JAXB_CONTEXT_MAP = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 传入一个对象，生成对应的 XML</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">String <span class="title">toXml</span><span class="params">(T t)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (t == <span class="keyword">null</span>) &#123;</span><br><span class="line">            log.warn(<span class="string">"[XmlUtils toXml] params is null"</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        JAXBContext jaxbContext = getJAXBContext(t.getClass());</span><br><span class="line">        Marshaller jaxbMarshaller;</span><br><span class="line">        <span class="keyword">try</span> (StringWriter stringWriter = <span class="keyword">new</span> StringWriter()) &#123;</span><br><span class="line">            jaxbMarshaller = jaxbContext.createMarshaller();</span><br><span class="line">            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);</span><br><span class="line">            jaxbMarshaller.setProperty(Marshaller.JAXB_ENCODING, <span class="string">"UTF-8"</span>);</span><br><span class="line">            jaxbMarshaller.marshal(t, stringWriter);</span><br><span class="line">            <span class="keyword">return</span> stringWriter.toString();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (JAXBException | IOException e) &#123;</span><br><span class="line">            log.error(<span class="string">"[XmlUtils toXml] exception"</span>, e);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 将 XML 解析成指定对象</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">T <span class="title">unXml</span><span class="params">(String xml, Class&lt;T&gt; clazz)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (xml == <span class="keyword">null</span> || xml.isEmpty()) &#123;</span><br><span class="line">            log.warn(<span class="string">"[XmlUtils unXml] xml is null"</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        JAXBContext jaxbContext = getJAXBContext(clazz);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();</span><br><span class="line">            StringReader reader = <span class="keyword">new</span> StringReader(xml);</span><br><span class="line">            <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</span><br><span class="line">            T unmarshal = (T) unmarshaller.unmarshal(reader);</span><br><span class="line">            <span class="keyword">return</span> unmarshal;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (JAXBException e) &#123;</span><br><span class="line">            log.error(<span class="string">"[XmlUtils unXml] exception"</span>, e);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据类名称获取 JAXBContext</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> JAXBContext <span class="title">getJAXBContext</span><span class="params">(Class clazz)</span> </span>&#123;</span><br><span class="line">        JAXBContext jaxbContext = JAXB_CONTEXT_MAP.get(clazz.getName());</span><br><span class="line">        <span class="keyword">if</span> (jaxbContext == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                jaxbContext = JAXBContext.newInstance(clazz);</span><br><span class="line">                JAXB_CONTEXT_MAP.put(clazz.getName(), jaxbContext);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (JAXBException e) &#123;</span><br><span class="line">                log.error(e.getMessage(), e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> jaxbContext;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="生成-XML"><a href="#生成-XML" class="headerlink" title="生成 XML"></a>生成 XML</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testToXml</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    LocalDateTime now = LocalDateTime.now();</span><br><span class="line">    Child child = Child.builder()</span><br><span class="line">        .key(<span class="string">"key"</span>)</span><br><span class="line">        .value(<span class="string">"value"</span>)</span><br><span class="line">        .build();</span><br><span class="line"></span><br><span class="line">    Parent parent = Parent.builder()</span><br><span class="line">        .child(Arrays.asList(child, child))</span><br><span class="line">        .build();</span><br><span class="line"></span><br><span class="line">    Head head = Head.builder()</span><br><span class="line">        .tradeCode(<span class="string">"XT-001"</span>)</span><br><span class="line">        .tradeDate(now.format(DateTimeFormatter.ofPattern(<span class="string">"yyyy-MM-dd"</span>)))</span><br><span class="line">        .tradeTime(now.format(DateTimeFormatter.ofPattern(<span class="string">"HH:mm:ss"</span>)))</span><br><span class="line">        .serialNo(UUID.randomUUID().toString())</span><br><span class="line">        .parent(parent)</span><br><span class="line">        .build();</span><br><span class="line">    String xml = XmlUtils.toXml(head);</span><br><span class="line">    log.info(xml);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">trade_code</span>&gt;</span>XT-001<span class="tag">&lt;/<span class="name">trade_code</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">trade_date</span>&gt;</span>2020-03-19<span class="tag">&lt;/<span class="name">trade_date</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">trade_time</span>&gt;</span>18:39:28<span class="tag">&lt;/<span class="name">trade_time</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">serial_no</span>&gt;</span>114d2c0c-30a8-4275-982c-f8eba86cbadb<span class="tag">&lt;/<span class="name">serial_no</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">child</span> <span class="attr">key</span>=<span class="string">"key"</span>&gt;</span>value<span class="tag">&lt;/<span class="name">child</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">child</span> <span class="attr">key</span>=<span class="string">"key"</span>&gt;</span>value<span class="tag">&lt;/<span class="name">child</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="解析-XML"><a href="#解析-XML" class="headerlink" title="解析 XML"></a>解析 XML</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testUnXml</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    String xml = <span class="string">"&lt;?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?&gt;\n"</span> +</span><br><span class="line">        <span class="string">"&lt;head&gt;\n"</span> +</span><br><span class="line">        <span class="string">"    &lt;trade_code&gt;XT-001&lt;/trade_code&gt;\n"</span> +</span><br><span class="line">        <span class="string">"    &lt;trade_date&gt;2020-03-19&lt;/trade_date&gt;\n"</span> +</span><br><span class="line">        <span class="string">"    &lt;trade_time&gt;18:39:28&lt;/trade_time&gt;\n"</span> +</span><br><span class="line">        <span class="string">"    &lt;serial_no&gt;114d2c0c-30a8-4275-982c-f8eba86cbadb&lt;/serial_no&gt;\n"</span> +</span><br><span class="line">        <span class="string">"    &lt;parent&gt;\n"</span> +</span><br><span class="line">        <span class="string">"        &lt;child key=\"key\"&gt;value&lt;/child&gt;\n"</span> +</span><br><span class="line">        <span class="string">"        &lt;child key=\"key\"&gt;value&lt;/child&gt;\n"</span> +</span><br><span class="line">        <span class="string">"    &lt;/parent&gt;\n"</span> +</span><br><span class="line">        <span class="string">"&lt;/head&gt;"</span>;</span><br><span class="line">    Head head = XmlUtils.unXml(xml, Head<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">    log.info(head.toString());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Head(tradeCode&#x3D;XT-001, tradeDate&#x3D;2020-03-19, tradeTime&#x3D;18:39:28, serialNo&#x3D;114d2c0c-30a8-4275-982c-f8eba86cbadb, parent&#x3D;Parent(child&#x3D;[Child(key&#x3D;key, value&#x3D;value), Child(key&#x3D;key, value&#x3D;value)]))</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://jakarta.ee/specifications/xml-binding/" target="_blank" rel="noopener">https://jakarta.ee/specifications/xml-binding/</a></p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2020/10/05/jakarta-bean-validation/" class="post-title-link">Jakarta EE 系列（三）Bean Validation 规范与实践总结</a></h2><div class="post-info">2020-10-05<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><h1 id="Bean-Validation-规范"><a href="#Bean-Validation-规范" class="headerlink" title="Bean Validation 规范"></a>Bean Validation 规范</h1><p>Bean Validation 为 JavaBean 和方法验证定义了一组元数据模型和 API 规范，常用于后端数据的声明式校验。</p>
+<h2 id="RoadMap"><a href="#RoadMap" class="headerlink" title="RoadMap"></a>RoadMap</h2><p>Bean Validation 规范最早在 Oracle Java EE 下维护。</p>
+<p>2017 年 11 月，Oracle 将 Java EE 移交给 Eclipse 基金会。 2018 年 3 月 5 日，Eclipse 基金会宣布 Java EE (Enterprise Edition) 被更名为 Jakarta EE。因此 Bean Validation 规范经历了下面两个阶段：</p>
+<h3 id="JavaEE-Bean-Validation"><a href="#JavaEE-Bean-Validation" class="headerlink" title="JavaEE Bean Validation"></a>JavaEE Bean Validation</h3><blockquote>
+<p>Bean Validation 1.0 (<a href="https://www.jcp.org/en/jsr/detail?id=303" target="_blank" rel="noopener">JSR 303</a>) was the first version of Java’s standard for object validation.</p>
+<p>It was released in 2009 and is part of <a href="https://docs.oracle.com/javaee/6/index.html" target="_blank" rel="noopener">Java EE 6</a>.</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/javax.validation/validation-api --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>javax.validation<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>validation-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0.0.GA<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<p>Bean Validation 1.1 (<a href="https://www.jcp.org/en/jsr/detail?id=349" target="_blank" rel="noopener">JSR 349</a>) was finished in 2013. <a href="https://beanvalidation.org/1.1/" target="_blank" rel="noopener">Changes between Bean Validation 1.0 and 1.1</a></p>
+<p>It is part of <a href="https://docs.oracle.com/javaee/7/index.html" target="_blank" rel="noopener">Java EE 7</a>.</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/javax.validation/validation-api --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>javax.validation<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>validation-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.1.0.Final<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<p>Bean Validation 2.0 (<a href="https://www.jcp.org/en/jsr/detail?id=380" target="_blank" rel="noopener">JSR 380</a>) was finished in August 2017. <a href="https://beanvalidation.org/2.0-jsr380/" target="_blank" rel="noopener">Changes between Bean Validation 2.0 and 1.1</a></p>
+<p>It’s part of <a href="https://www.oracle.com/java/technologies/java-ee-8.html" target="_blank" rel="noopener">Java EE 8</a> (but can of course be used with plain Java SE as the previous releases).</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/javax.validation/validation-api --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>javax.validation<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>validation-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.0.1.Final<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Jakarta-Bean-Validation"><a href="#Jakarta-Bean-Validation" class="headerlink" title="Jakarta Bean Validation"></a>Jakarta Bean Validation</h3><blockquote>
+<p><a href="https://jakarta.ee/specifications/bean-validation/2.0/" target="_blank" rel="noopener">Jakarta Bean Validation 2.0</a> was published in August 2019. There are no changes between Jakarta Bean Validation 2.0 and Bean Validation 2.0 except for the GAV: it is now <code>jakarta.validation:jakarta.validation-api</code>.</p>
+<p>It’s part of <a href="https://projects.eclipse.org/releases/jakarta-ee-8" target="_blank" rel="noopener">Jakarta EE 8</a> (but can of course be used with plain Java SE as the previous releases).</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>jakarta.validation<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jakarta.validation-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.0.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<p><a href="https://jakarta.ee/specifications/bean-validation/3.0/" target="_blank" rel="noopener">Jakarta Bean Validation 3.0</a> was released in Wednesday, October 7, 2020.</p>
+<p>This release is part of <a href="https://projects.eclipse.org/releases/jakarta-ee-9" target="_blank" rel="noopener">Jakarta EE 9</a>.</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>jakarta.validation<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jakarta.validation-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.0.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Constraints"><a href="#Constraints" class="headerlink" title="Constraints"></a>Constraints</h2><p>Constraints 约束是 Bean Validation 规范的核心。约束是通过<strong>约束注解</strong>和一系列<strong>约束验证实现</strong>的组合来定义的。约束注解可应用于类型、字段、方法、构造函数、参数、容器元素或其它约束注解。</p>
+<blockquote>
+<p>一个 constraint 通常由 annotation 和相应的 constraint validator 组成，它们是一对多的关系。也就是说可以有多个 constraint validator 对应一个 annotation。在运行时，Bean Validation 框架本身会根据被注释元素的类型来选择合适的 constraint validator 对数据进行验证。</p>
+<p>有些时候，在用户的应用中需要一些更复杂的 constraint。Bean Validation 提供扩展 constraint 的机制。可以通过两种方法去实现，一种是组合现有的 constraint 来生成一个更复杂的 constraint，另外一种是开发一个全新的 constraint。</p>
+</blockquote>
+<p>下表列出了常用 Constraints：</p>
+<h3 id="官方-Constraints"><a href="#官方-Constraints" class="headerlink" title="官方 Constraints"></a>官方 Constraints</h3><p>表 1. Bean Validation 1.x 中内置的 Constraints，更多官方 Constraints 详见官方新版规范：<a href="https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html" target="_blank" rel="noopener">Jakarta Bean Validation specification</a></p>
+<table>
+<thead>
+<tr>
+<th align="left"><strong>Constraint</strong></th>
+<th align="left"><strong>详细信息</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>@Null</code></td>
+<td align="left">被注释的元素必须为 <code>null</code></td>
+</tr>
+<tr>
+<td align="left"><code>@NotNull</code></td>
+<td align="left">被注释的元素必须不为 <code>null</code></td>
+</tr>
+<tr>
+<td align="left"><code>@AssertTrue</code></td>
+<td align="left">被注释的元素必须为 <code>true</code></td>
+</tr>
+<tr>
+<td align="left"><code>@AssertFalse</code></td>
+<td align="left">被注释的元素必须为 <code>false</code></td>
+</tr>
+<tr>
+<td align="left"><code>@Min(value)</code></td>
+<td align="left">被注释的元素必须是一个数字，其值必须大于等于指定的最小值</td>
+</tr>
+<tr>
+<td align="left"><code>@Max(value)</code></td>
+<td align="left">被注释的元素必须是一个数字，其值必须小于等于指定的最大值</td>
+</tr>
+<tr>
+<td align="left"><code>@DecimalMin(value)</code></td>
+<td align="left">被注释的元素必须是一个数字，其值必须大于等于指定的最小值</td>
+</tr>
+<tr>
+<td align="left"><code>@DecimalMax(value)</code></td>
+<td align="left">被注释的元素必须是一个数字，其值必须小于等于指定的最大值</td>
+</tr>
+<tr>
+<td align="left"><code>@Size(max, min)</code></td>
+<td align="left">被注释的元素的大小必须在指定的范围内</td>
+</tr>
+<tr>
+<td align="left"><code>@Digits (integer, fraction)</code></td>
+<td align="left">被注释的元素必须是一个数字，其值必须在可接受的范围内</td>
+</tr>
+<tr>
+<td align="left"><code>@Past</code></td>
+<td align="left">被注释的元素必须是一个过去的日期</td>
+</tr>
+<tr>
+<td align="left"><code>@Future</code></td>
+<td align="left">被注释的元素必须是一个将来的日期</td>
+</tr>
+<tr>
+<td align="left"><code>@Pattern(value)</code></td>
+<td align="left">被注释的元素必须符合指定的正则表达式</td>
+</tr>
+</tbody></table>
+<h3 id="第三方-Constraints"><a href="#第三方-Constraints" class="headerlink" title="第三方 Constraints"></a>第三方 Constraints</h3><p>表 2. Hibernate Validator 附加的 Constraints，更多 Constraints 详见：<a href="https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#validator-defineconstraints-hv-constraints" target="_blank" rel="noopener">Additional constraints</a></p>
+<table>
+<thead>
+<tr>
+<th align="left"><strong>Constraint</strong></th>
+<th align="left"><strong>详细信息</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>@Email</code></td>
+<td align="left">被注释的元素必须是电子邮箱地址</td>
+</tr>
+<tr>
+<td align="left"><code>@Length</code></td>
+<td align="left">被注释的字符串的大小必须在指定的范围内</td>
+</tr>
+<tr>
+<td align="left"><code>@NotEmpty</code></td>
+<td align="left">被注释的字符串的必须非空</td>
+</tr>
+<tr>
+<td align="left"><code>@Range</code></td>
+<td align="left">被注释的元素必须在合适的范围内</td>
+</tr>
+</tbody></table>
+<p>其它第三方 Constraints：</p>
+<ul>
+<li><a href="https://github.com/nomemory/java-bean-validation-extension" target="_blank" rel="noopener">Java Bean Validation Extension</a> offers a set of useful constraints (<code>@Alphanumeric</code>, <code>@IPv6</code>, <code>@StartsWith</code>…).</li>
+<li><a href="https://github.com/jirutka/validator-collection" target="_blank" rel="noopener">Collection Validators</a> allows to define constraints on elements of collections.</li>
+<li>……</li>
+</ul>
+<h2 id="核心-API"><a href="#核心-API" class="headerlink" title="核心 API"></a>核心 API</h2><p>核心类 <a href="https://docs.oracle.com/javaee/7/api/javax/validation/Validation.html" target="_blank" rel="noopener"><code>javax.validation.Validation</code></a> 作为 Bean Validation 的入口点，提供了三种引导方式。下面代码演示了以最简单的方式创建默认的 <a href="https://docs.oracle.com/javaee/7/api/javax/validation/ValidatorFactory.html" target="_blank" rel="noopener"><code>ValidatorFactory</code></a>，并获取 <code>Validator</code> 用以验证 Java Bean：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> lombok.experimental.UtilityClass;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.ConstraintViolation;</span><br><span class="line"><span class="keyword">import</span> javax.validation.Validation;</span><br><span class="line"><span class="keyword">import</span> javax.validation.ValidatorFactory;</span><br><span class="line"><span class="keyword">import</span> javax.validation.Validator;</span><br><span class="line"><span class="keyword">import</span> java.util.Set;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * JavaBean 校验器</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@UtilityClass</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ValidatorUtil</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Validator VALIDATOR = Validation.buildDefaultValidatorFactory().getValidator();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 校验参数</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> obj 参数</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 校验结果</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> &lt;T&gt; Set&lt;ConstraintViolation&lt;T&gt;&gt; validate(T obj) &#123;</span><br><span class="line">        <span class="keyword">return</span> VALIDATOR.validate(obj);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>涉及的 API 如下：</p>
+<ul>
+<li><p>核心类 <code>javax.validation.Validation</code>：</p>
+<blockquote>
+<p>Note:</p>
+<ul>
+<li>The <code>ValidatorFactory</code> object built by the bootstrap process should be cached and shared amongst <code>Validator</code> consumers.</li>
+<li>This class is <strong>thread-safe</strong>.</li>
+</ul>
+</blockquote>
+</li>
+<li><p>接口 <code>javax.validation.ValidatorFactory</code>：</p>
+<blockquote>
+<p>Factory returning initialized <code>Validator</code> instances.</p>
+<p>Implementations are <strong>thread-safe</strong> and instances are typically cached and reused.</p>
+</blockquote>
+</li>
+<li><p>接口 <code>javax.validation.Validator</code>：</p>
+<blockquote>
+<p>Validates bean instances. Implementations of this interface must be <strong>thread-safe</strong>.</p>
+</blockquote>
+</li>
+</ul>
+<h1 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h1><h2 id="Hibernate-Validator-实现"><a href="#Hibernate-Validator-实现" class="headerlink" title="Hibernate Validator 实现"></a>Hibernate Validator 实现</h2><p>Hibernate 框架提供了各种子项目，如下：</p>
+<p><img src="/img/hibernate/hibernate_projects.png" alt="Hibernate Projects"></p>
+<p>其中，子项目 Hibernate Validator 是 Bean Validation 规范的<strong>官方认证实现</strong>。</p>
+<p>要在 Maven 项目中使用 Hibernate Validator，需要添加如下依赖项：</p>
+<ul>
+<li><p>新版实现，由于该 artifact 已被移至此新 group，6.x 及以上新版建议优先使用：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.hibernate.validator<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hibernate-validator<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">version</span>&gt;</span>7.0.0.Final<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>遗留实现，可以下载到 5.x 及之前的老版本，例如：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-validator --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.hibernate<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hibernate-validator<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>5.4.3.Final<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>Hibernate Validator 版本兼容性如下：</p>
+<table>
+<thead>
+<tr>
+<th>Hibernate Validator</th>
+<th>Java</th>
+<th>Bean Validation 规范</th>
+<th>Expression Language (EL) 规范</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="http://hibernate.org/validator/releases/7.0/" target="_blank" rel="noopener">7.0 series</a></td>
+<td>8 or 11</td>
+<td><a href="https://jakarta.ee/specifications/bean-validation/3.0/" target="_blank" rel="noopener">Jakarta EE 9 - Bean Validation 3.0</a></td>
+<td><a href="https://jakarta.ee/specifications/expression-language/4.0/" target="_blank" rel="noopener">Jakarta EE 9 - Expression Language 4.0</a></td>
+</tr>
+<tr>
+<td><a href="http://hibernate.org/validator/releases/6.0/" target="_blank" rel="noopener">6.1 series</a></td>
+<td>8 or 11</td>
+<td><a href="https://jakarta.ee/specifications/bean-validation/2.0/" target="_blank" rel="noopener">Jakarta EE 8 - Bean Validation 2.0</a></td>
+<td><a href="https://jakarta.ee/specifications/expression-language/3.0/" target="_blank" rel="noopener">Jakarta EE 8 - Expression Language 3.0</a></td>
+</tr>
+<tr>
+<td><a href="http://hibernate.org/validator/releases/5.0/" target="_blank" rel="noopener">5.0 series</a></td>
+<td>6 or 7</td>
+<td><a href="https://beanvalidation.org/1.1/" target="_blank" rel="noopener">JavaEE 7 - Bean Validation 1.1 (JSR 349)</a></td>
+<td>Java EE 7 - Expression Language 3.0 (JSR 341)</td>
+</tr>
+</tbody></table>
+<p>引入 Hibernate Validator 后，将传递依赖 Bean Validation API 规范相应的版本，无需重复引入：</p>
+<blockquote>
+<p>Hibernate’s Jakarta Bean Validation reference implementation. This transitively pulls in the dependency to the Bean Validation API.</p>
+</blockquote>
+<p>详见 <a href="https://repo1.maven.org/maven2/org/hibernate/" target="_blank" rel="noopener">/org/hibernate</a> 该子项目 parent pom.xml 的版本号定义</p>
+<h2 id="Dubbo-参数验证"><a href="#Dubbo-参数验证" class="headerlink" title="Dubbo 参数验证"></a>Dubbo 参数验证</h2><p><a href="https://dubbo.apache.org/zh/docs/v2.7/user/examples/parameter-validation/" target="_blank" rel="noopener">https://dubbo.apache.org/zh/docs/v2.7/user/examples/parameter-validation/</a></p>
+<h2 id="Spring-MVC-参数验证"><a href="#Spring-MVC-参数验证" class="headerlink" title="Spring MVC 参数验证"></a>Spring MVC 参数验证</h2><p><a href="/2016/06/25/spring-mvc/#方法参数验证">参考：Spring MVC 方法参数验证</a></p>
+<h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><h2 id="缺少依赖"><a href="#缺少依赖" class="headerlink" title="缺少依赖"></a>缺少依赖</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HV000183: Unable to load &#39;javax.el.ExpressionFactory&#39;. Check that you have the EL dependencies on the classpath, or use ParameterMessageInterpolator instead</span><br></pre></td></tr></table></figure>
+
+<p>原因：缺少 <code>Unified Expression Language (EL)</code> 规范的实现依赖，即 Glassfish。</p>
+<p>如果查看 Hibernate Validator 的 pom.xml，会发现该依赖被声明为 <code>provided</code>（如下），表示该依赖在运行时由 Java EE container 容器提供，因此无须重复引入。而对于 Spring Boot 应用来说，则需要添加此依赖。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.glassfish<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>javax.el<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">scope</span>&gt;</span>provided<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>解决方案详见如下：</p>
+<blockquote>
+<p>Hibernate Validator also requires an implementation of the Unified Expression Language (<a href="http://jcp.org/en/jsr/detail?id=341" target="_blank" rel="noopener">JSR 341</a>) for evaluating dynamic expressions in constraint violation messages.</p>
+<p>When your application runs in a Java EE container such as <a href="http://wildfly.org/" target="_blank" rel="noopener">WildFly</a>, an EL implementation is already provided by the container.</p>
+<p>In a Java SE environment, however, you have to add an implementation as dependency to your POM file. For instance, you can add the following dependency to use the JSR 341 reference implementation:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">     &lt;groupId&gt;org.glassfish&lt;&#x2F;groupId&gt;</span><br><span class="line">     &lt;artifactId&gt;jakarta.el&lt;&#x2F;artifactId&gt;</span><br><span class="line">     &lt;version&gt;$&#123;version.jakarta.el-api&#125;&lt;&#x2F;version&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>注意，要使用与 Hibernate Validator 匹配的 <code>Unified Expression Language (EL)</code> 的依赖版本，详见《Hibernate Validator 版本兼容性》。</p>
+<p>参考：<a href="https://stackoverflow.com/questions/24386771/javax-validation-validationexception-hv000183-unable-to-load-javax-el-express" target="_blank" rel="noopener">https://stackoverflow.com/questions/24386771/javax-validation-validationexception-hv000183-unable-to-load-javax-el-express</a></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://docs.oracle.com/javaee/7/index.html" target="_blank" rel="noopener">https://docs.oracle.com/javaee/7/index.html</a></p>
+<p><a href="https://docs.oracle.com/javaee/7/api/index.html" target="_blank" rel="noopener">https://docs.oracle.com/javaee/7/api/index.html</a></p>
+<p><a href="https://jakarta.ee/" target="_blank" rel="noopener">https://jakarta.ee/</a></p>
+<p><a href="https://jakarta.ee/specifications/bean-validation/" target="_blank" rel="noopener">https://jakarta.ee/specifications/bean-validation/</a></p>
+<p><a href="https://beanvalidation.org/" target="_blank" rel="noopener">https://beanvalidation.org/</a></p>
+<p><a href="http://hibernate.org/validator/" target="_blank" rel="noopener">http://hibernate.org/validator/</a></p>
+<p><a href="https://blog.csdn.net/qq2413273056/article/details/84378194" target="_blank" rel="noopener">后台表单校验（JSR303）</a></p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2020/10/03/jakarta-annotations/" class="post-title-link">Jakarta EE 系列（二）Annotations 通用注解规范总结</a></h2><div class="post-info">2020-10-03<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><blockquote>
+<p>Jakarta Annotations defines a collection of annotations representing common semantic concepts that enable a declarative style of programming that applies across a variety of Java technologies.</p>
+</blockquote>
+<p>通过在 Java 平台中添加 JSR 175（Java 编程语言的元数据工具），我们设想各种技术将使用注解来实现声明式编程风格。如果这些技术各自为共同概念独立定义自己的注解，那将是不幸的。在 Jakarta EE 和 Java SE 组件技术中保持一致性很有价值，但在 Jakarta EE 和 Java SE 之间实现一致性也很有价值。</p>
+<p>本规范的目的是定义一小组通用注解，这些注解可在其它规范中使用。希望这将有助于避免在不同 Jakarta EE 规范中定义的注解之间不必要的冗余或重复。这将允许我们将通用注解集中在一个地方，让技术引用此规范，而不是在多个规范中指定它们。这样，所有技术都可以使用相同版本的注解，并且跨平台使用的注解将保持一致。</p>
+<p>这些通用注解详见如下：</p>
+<ul>
+<li><a href="https://jakarta.ee/specifications/annotations/1.3/apidocs/" target="_blank" rel="noopener">javax.annotation</a></li>
+<li><a href="https://jakarta.ee/specifications/annotations/2.0/apidocs/" target="_blank" rel="noopener">jakarta.annotation</a></li>
+</ul>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2020/10/01/jakarta-web/" class="post-title-link">Jakarta EE 系列（一）Web 技术的相关规范总结</a></h2><div class="post-info">2020-10-01<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><table>
+<thead>
+<tr>
+<th>Specifications</th>
+<th>Description</th>
+<th>Compatible Implementations</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://jakarta.ee/specifications/servlet/" target="_blank" rel="noopener">Jakarta Servlet</a></td>
+<td>A server-side API for handling HTTP requests and responses</td>
+<td><a href="https://eclipse-ee4j.github.io/glassfish/" target="_blank" rel="noopener">Eclipse GlassFish</a></td>
+</tr>
+<tr>
+<td><a href="https://jakarta.ee/specifications/pages/" target="_blank" rel="noopener">Jakarta Server Pages (JSP)</a></td>
+<td>Defines a template engine for web applications</td>
+<td><a href="https://eclipse-ee4j.github.io/glassfish/" target="_blank" rel="noopener">Eclipse GlassFish</a></td>
+</tr>
+<tr>
+<td><a href="https://jakarta.ee/specifications/tags/" target="_blank" rel="noopener">Jakarta Standard Tag Library (JSTL)</a></td>
+<td>Provides a set of tags to simplify the JSP development</td>
+<td><a href="https://eclipse-ee4j.github.io/glassfish/" target="_blank" rel="noopener">Eclipse GlassFish</a></td>
+</tr>
+<tr>
+<td><a href="https://jakarta.ee/specifications/expression-language/" target="_blank" rel="noopener">Jakarta Expression Language (EL)</a></td>
+<td>Defines an expression language for Java applications</td>
+<td><a href="https://eclipse-ee4j.github.io/el-ri/" target="_blank" rel="noopener">Eclipse Expression Language</a></td>
+</tr>
+<tr>
+<td><a href="https://jakarta.ee/specifications/faces/" target="_blank" rel="noopener">Jakarta Server Faces (JSF)</a></td>
+<td>MVC framework for building user interfaces for web apps</td>
+<td><a href="https://eclipse-ee4j.github.io/mojarra/" target="_blank" rel="noopener">Eclipse Mojarra</a></td>
+</tr>
+<tr>
+<td><a href="https://jakarta.ee/specifications/mvc/" target="_blank" rel="noopener">Jakarta MVC</a></td>
+<td>Standardizes the action-based model-view-controller pattern</td>
+<td><a href="https://eclipse-ee4j.github.io/krazo/" target="_blank" rel="noopener">Eclipse Krazo</a></td>
+</tr>
+<tr>
+<td><a href="https://jakarta.ee/specifications/restful-ws/" target="_blank" rel="noopener">Jakarta RESTful Web Services (JAX-RS)</a></td>
+<td>API to develop web services following the REST pattern</td>
+<td><a href="https://eclipse-ee4j.github.io/jersey/" target="_blank" rel="noopener">Eclipse Jersey</a></td>
+</tr>
+<tr>
+<td><a href="https://jakarta.ee/specifications/enterprise-ws/" target="_blank" rel="noopener">Jakarta Enterprise Web Services</a></td>
+<td>Web Services for Jakarta EE architecture</td>
+<td><a href="https://eclipse-ee4j.github.io/glassfish/" target="_blank" rel="noopener">Eclipse GlassFish</a></td>
+</tr>
+<tr>
+<td><a href="https://jakarta.ee/specifications/websocket/" target="_blank" rel="noopener">Jakarta WebSocket</a></td>
+<td>API for Server and Client Endpoints for WebSocket protocol</td>
+<td><a href="https://eclipse-ee4j.github.io/tyrus/" target="_blank" rel="noopener">Eclipse Tyrus</a></td>
+</tr>
+<tr>
+<td>……</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>一点关于 EL 的历史：</p>
+<blockquote>
+<p>Expression Language (EL) 最初受到 ECMAScript 和 XPath 表达式语言的启发。在其成立之初，参与的专家非常不愿意设计另一种表达语言，并试图使用这些语言中的每一种，但他们在不同的领域都有所欠缺。</p>
+<p>因此，JSP Standard Tag Library (JSTL) version 1.0 (based on JSP 1.2) 首先引入了一种表达式语言，使前端页面开发者可以轻松访问和操作应用程序数据，而无需掌握如 Java、JavaScript 等编程语言相关的复杂性。</p>
+<p>鉴于其成功，EL 随后被移入 JSP 规范（JSP 2.0/JSTL 1.1），使其在 JSP 页面中普遍可用（而不仅仅用于 JSTL 标记库的属性）。</p>
+<p>JavaServer Faces 1.0 定义了用于构建用户界面组件的标准框架，并且构建在 JSP 1.2 技术之上。由于 JSP 1.2 技术没有集成的表达语言，并且 JSP 2.0 EL 不能满足 Faces 的所有需求，因此为 Faces 1.0 开发了一个 EL 变体。Faces 专家组试图使该语言尽可能与 JSP 2.0 兼容，但是还是有一些区别。</p>
+<p>显然需要一种单一、统一的表达语言来满足各种 Web 层技术的需求。因此，Faces 和 JSP 专家组共同制定了统一表达式语言的规范，该规范在 JSR 245 中定义，并在 JSP 2.1 和 Faces 1.2 版本中生效。</p>
+<p>JSP/JSTL/Faces 专家组也意识到 EL 的用处超出了他们自己的规范。3.0 规范是第一个将表达式语言定义为独立规范的 JSR，不依赖于其它技术。</p>
+</blockquote>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="/2015/05/01/java-jsp/">JSP 标签总结</a></p>
+<p><a href="/2015/05/02/java-jstl/">JSP 标准标签库（JSTL）总结</a></p>
+<p><a href="/2015/05/03/java-el/">JSP EL 表达式总结</a></p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2020/09/15/java/" class="post-title-link">Java 学习资源总结</a></h2><div class="post-info">2020-09-15<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><p><a href="https://docs.oracle.com/en/java/index.html" target="_blank" rel="noopener">Java Documentation</a></p>
+<h1 id="Standard-Edition"><a href="#Standard-Edition" class="headerlink" title="Standard Edition"></a>Standard Edition</h1><p><a href="https://docs.oracle.com/en/java/javase/index.html" target="_blank" rel="noopener">Java Platform, Standard Edition Documentation</a></p>
+<h2 id="Roadmap"><a href="#Roadmap" class="headerlink" title="Roadmap"></a>Roadmap</h2><p>详见：<a href="https://www.oracle.com/java/technologies/java-se-support-roadmap.html" target="_blank" rel="noopener">Oracle Java SE Support Roadmap</a></p>
+<table>
+<thead>
+<tr>
+<th align="left">Release</th>
+<th align="left">GA Date</th>
+<th align="left">Premier Support Until</th>
+<th align="left">Extended Support Until</th>
+<th align="left">Sustaining Support</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">6</td>
+<td align="left">December 2006</td>
+<td align="left">December 2015</td>
+<td align="left">December 2018</td>
+<td align="left">Indefinit</td>
+</tr>
+<tr>
+<td align="left">7</td>
+<td align="left">July 2011</td>
+<td align="left">July 2019</td>
+<td align="left">July 2022*****</td>
+<td align="left">Indefinite</td>
+</tr>
+<tr>
+<td align="left">8﻿**</td>
+<td align="left">March 2014</td>
+<td align="left">March 2022</td>
+<td align="left">December 2030*****</td>
+<td align="left">Indefinite</td>
+</tr>
+<tr>
+<td align="left">9 (non‑LTS)</td>
+<td align="left">September 2017</td>
+<td align="left">March 2018</td>
+<td align="left">Not Available</td>
+<td align="left">Indefinite</td>
+</tr>
+<tr>
+<td align="left">10 (non‑LTS)</td>
+<td align="left">March 2018</td>
+<td align="left">September 2018</td>
+<td align="left">Not Available</td>
+<td align="left">Indefinite</td>
+</tr>
+<tr>
+<td align="left">11 (LTS)</td>
+<td align="left">September 2018</td>
+<td align="left">September 2023</td>
+<td align="left">September 2026</td>
+<td align="left">Indefinite</td>
+</tr>
+<tr>
+<td align="left">12 (non‑LTS)</td>
+<td align="left">March 2019</td>
+<td align="left">September 2019</td>
+<td align="left">Not Available</td>
+<td align="left">Indefinite</td>
+</tr>
+<tr>
+<td align="left">13 (non‑LTS)</td>
+<td align="left">September 2019</td>
+<td align="left">March 2020</td>
+<td align="left">Not Available</td>
+<td align="left">Indefinite</td>
+</tr>
+<tr>
+<td align="left">14 (non‑LTS)</td>
+<td align="left">March 2020</td>
+<td align="left">September 2020</td>
+<td align="left">Not Available</td>
+<td align="left">Indefinite</td>
+</tr>
+<tr>
+<td align="left">15 (non‑LTS)</td>
+<td align="left">September 2020</td>
+<td align="left">March 2021</td>
+<td align="left">Not Available</td>
+<td align="left">Indefinite</td>
+</tr>
+<tr>
+<td align="left">16 (non-LTS)</td>
+<td align="left">March 2021</td>
+<td align="left">September 2021</td>
+<td align="left">Not Available</td>
+<td align="left">Indefinite</td>
+</tr>
+<tr>
+<td align="left">17 (LTS)</td>
+<td align="left">September 2021***</td>
+<td align="left">September 2026****</td>
+<td align="left">September 2029****</td>
+<td align="left">Indefinite</td>
+</tr>
+</tbody></table>
+<p><img src="/img/java/basics/java_2019Q3_graph.png" alt=""></p>
+<h2 id="Java-SE-8"><a href="#Java-SE-8" class="headerlink" title="Java SE 8"></a>Java SE 8</h2><p><a href="https://docs.oracle.com/javase/8/docs/technotes/guides/" target="_blank" rel="noopener">Java Platform, Standard Edition (Java SE) Overview</a></p>
+<p>Reference</p>
+<ul>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/index.html" target="_blank" rel="noopener">Java SE API Documentation</a></li>
+<li><a href="http://www.oracle.com/pls/topic/lookup?ctx=javase80&id=JFXAP" target="_blank" rel="noopener">JavaFX API Documentation</a></li>
+<li><a href="https://docs.oracle.com/javase/8/docs/index.html" target="_blank" rel="noopener">Developer Guides</a></li>
+<li><a href="https://docs.oracle.com/javase/specs/index.html" target="_blank" rel="noopener">Java Language and Virtual Machine Specifications</a></li>
+<li><a href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/index.html" target="_blank" rel="noopener">Java SE Tools Reference for UNIX</a></li>
+<li><a href="https://docs.oracle.com/javase/8/docs/technotes/tools/windows/index.html" target="_blank" rel="noopener">Java SE Tools Reference for Windows</a></li>
+</ul>
+<blockquote>
+<p>Oracle has two products that implement Java Platform Standard Edition (Java SE) 8: </p>
+<ul>
+<li><p>Java SE Development Kit (JDK) 8. JDK 8 is a superset of JRE 8, and contains everything that is in JRE 8, plus tools such as the compilers and debuggers necessary for developing applets and applications. </p>
+</li>
+<li><p>Java SE Runtime Environment (JRE) 8. JRE 8 provides the libraries, the Java Virtual Machine (JVM), and other components to run applets and applications written in the Java programming language. Note that the JRE includes components not required by the Java SE specification, including both standard and non-standard Java components.</p>
+</li>
+</ul>
+<p>The following conceptual diagram illustrates the components of Oracle’s Java SE products:</p>
+</blockquote>
+<p><img src="/img/java/basics/description_of_java_conceptual_diagram.png" alt="Description of Java Conceptual Diagram"></p>
+<h2 id="JDK"><a href="#JDK" class="headerlink" title="JDK"></a>JDK</h2><p>一些术语：</p>
+<blockquote>
+<ul>
+<li><a href="https://www.jcp.org/en/home/index" target="_blank" rel="noopener">JCP</a> 是 Java Community Process（Java社区进程）的简称，社会各界组成的 Java 社区，规划和领导 Java 的发展。</li>
+<li><a href="https://www.jcp.org/en/jsr/all" target="_blank" rel="noopener">JSR</a> 是 Java Specification Requests（Java 规范请求）的简称，是  JCP 成员向委员会提交的 Java 发展议案，经过一系列流程后，如果通过会成为 JEP，最终会体现在未来的 Java 中。</li>
+<li><a href="http://openjdk.java.net/jeps/0" target="_blank" rel="noopener">JEP</a> 是 JDK Enhancement Proposals （Java 增强提案）的简称，为了保证日后 JDK 研发能够更加顺利地进行，从 JDK 8 开始，Oracle 启用 JEP 来定义和管理纳入新版 JDK 发布范围的功能特性。JDK 的版本变化将从这些提案中选取。例如：<ul>
+<li><a href="http://openjdk.java.net/projects/coin" target="_blank" rel="noopener">Project Coin</a>：目标是确定应向 JDK 7 中添加哪些小的语言特性。</li>
+<li><a href="http://openjdk.java.net/projects/amber" target="_blank" rel="noopener">Project Amber</a>：目标是探索和孵化较小的、面向生产力的 Java 语言特性。</li>
+<li><a href="http://openjdk.java.net/projects/loom" target="_blank" rel="noopener">Project Loom</a>：</li>
+<li><a href="http://openjdk.java.net/projects/valhalla" target="_blank" rel="noopener">Project Valhalla</a>：</li>
+<li><a href="http://openjdk.java.net/projects/panama" target="_blank" rel="noopener">Project Panama</a>：</li>
+<li>……</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<p>一点历史：</p>
+<blockquote>
+<p>JDK 从 1.5 版本开始，在官方的正式文档与宣传资料中已经不再使用类似“JDK 1.5”的名称，只有程序员内部使用的开发版本号（Developer Version，例如 java -version 的输出）才继续沿用 1.5、1.6 和 1.7 的版本号（JDK 10 之后又改为了采用年份加月份作为开发版本号，例如 18.3），而公开版本号（Product Version）则改为 JDK 5、JDK 6 和 JDK 7 的命名方式。</p>
+<p>从 JDK 10 开始，每年的 3 月和 9 月各发布一个大版本，目的就是避免众多功能特性被集中捆绑到一个 JDK 版本上而引发交付风险。同时为了降低维护成本，每六个 JDK 大版本中才会被划出一个长期支持（Long Term Suppot，LTS）版本，只有 LTS 版的 JDK 能够获得为期三年的支持和更新，普通版的 JDK 就只有短短六个月的生命周期。</p>
+<p>JDK 8 和 JDK 11 是 LTS 版本，再下一个就到 2021 年发布的 JDK 17。</p>
+</blockquote>
+<p>常见 JDK 版本：</p>
+<ul>
+<li><p>OracleJDK 商业版</p>
+<blockquote>
+<p>OTN 协议下发行的传统的 OracleJDK，个人可以免费使用，但若在生产环境中商用就必须付费，可以有三年时间的更新支持。</p>
+</blockquote>
+</li>
+<li><p><a href="http://openjdk.java.net/" target="_blank" rel="noopener">OpenJDK</a> 开源版</p>
+<blockquote>
+<p>GPLv2+CE 协议下由 Oracle 发行的 OpenJDK，可以免费在开发、测试、生产环境中使用，但是只有半年时间的更新支持。</p>
+<p>由于 Oracle 不愿意在旧版本的 OpenJDK 上继续耗费资源，而 RedHat (IBM) 又乐意扩大自己在 Java 社区的影响力，因此 RedHat 代替 Oracle 成为了 OpenJDK 历史版本的维护者，接过了 OpenJDK 6、7、8、11 的管理权力和维护职责。</p>
+</blockquote>
+</li>
+<li><p>OpenJDK 的变种版本：</p>
+<ul>
+<li><p><a href="https://adoptopenjdk.net/" target="_blank" rel="noopener">AdoptOpenJDK builds</a></p>
+</li>
+<li><p>AdoptOpenJDK OpenJ9 builds</p>
+<blockquote>
+<p>除了标准的 OpenJDK 构建外，AdoptOpenJDK 还提供了使用 OpenJ9 而非 HotSpot 的版本。OpenJ9 最初是由 IBM 实现的 JVM，现在已开源并交由 Eclipse 运作。</p>
+</blockquote>
+</li>
+<li><p><a href="https://developers.redhat.com/products/openjdk/overview" target="_blank" rel="noopener">Red Hat build of OpenJDK</a></p>
+</li>
+<li><p><a href="https://www.aliyun.com/product/dragonwell" target="_blank" rel="noopener">Alibaba Dragonwell</a></p>
+</li>
+<li><p><a href="https://www.azul.com/" target="_blank" rel="noopener">Azul Zulu</a></p>
+</li>
+<li><p><a href="https://github.com/Tencent/TencentKona-8" target="_blank" rel="noopener">Tencent Kona 8</a>、<a href="https://github.com/Tencent/TencentKona-11" target="_blank" rel="noopener">Tencent Kona 11</a></p>
+</li>
+<li><p>…</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>参考《<a href="https://github.com/JavaMilk/JDKHistory" target="_blank" rel="noopener">JDK 历代版本变化</a>》</p>
+<h2 id="JVM"><a href="#JVM" class="headerlink" title="JVM"></a>JVM</h2><p>除了官方 HotSpotVM、GraalVM 实现，其它厂商实现如下：</p>
+<p><img src="/img/java/jvm/jvm_impl.png" alt=""></p>
+<h1 id="Enterprise-Edition"><a href="#Enterprise-Edition" class="headerlink" title="Enterprise Edition"></a>Enterprise Edition</h1><h2 id="Roadmap-1"><a href="#Roadmap-1" class="headerlink" title="Roadmap"></a>Roadmap</h2><p>作为分水岭，2017 年 11 月，Oracle 将 Java EE 移交给 Eclipse 基金会。 2018 年 3 月 5 日，Eclipse 基金会宣布 Java EE (Enterprise Edition) 被更名为 Jakarta EE。</p>
+<p>参考：《<a href="https://www.infoq.cn/article/62TVY0c7ANAm*rjdzKfj" target="_blank" rel="noopener">Java EE 规范重命名为 Jakarta EE</a>》</p>
+<ul>
+<li>Jakarta 9（2019 及以后）使用 jakarta 命名空间。</li>
+<li>Java EE 5（2005）到 Java EE 8（2017）使用 javax 命名空间。</li>
+<li>Java EE 4 使用 javax 命名空间。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>规范</th>
+<th>创建组织</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Java EE 1.3 (JSR-058)</td>
+<td>Java Community Process</td>
+</tr>
+<tr>
+<td>Java EE 1.4 (JSR-151)</td>
+<td>Java Community Process</td>
+</tr>
+<tr>
+<td><a href="https://docs.oracle.com/javaee/5/" target="_blank" rel="noopener">Java EE 5 (JSR-244)</a></td>
+<td>Java Community Process</td>
+</tr>
+<tr>
+<td><a href="https://docs.oracle.com/javaee/6/" target="_blank" rel="noopener">Java EE 6 (JSR-316)</a></td>
+<td>Java Community Process</td>
+</tr>
+<tr>
+<td><a href="https://docs.oracle.com/javaee/7/index.html" target="_blank" rel="noopener">Java EE 7 (JSR-342)</a></td>
+<td>Java Community Process</td>
+</tr>
+<tr>
+<td>Java EE 8 (JSR-366)</td>
+<td>Java Community Process</td>
+</tr>
+<tr>
+<td><a href="https://jakarta.ee/release/8/" target="_blank" rel="noopener">Jakarta EE 8</a></td>
+<td>Jakarta EE Platform Specification Project with guidance provided by the <a href="https://jakarta.ee/" target="_blank" rel="noopener">Jakarta EE Working Group</a></td>
+</tr>
+<tr>
+<td><a href="https://jakarta.ee/release/9/" target="_blank" rel="noopener">Jakarta EE 9</a></td>
+<td>Jakarta EE Platform Specification Project with guidance provided by the <a href="https://jakarta.ee/" target="_blank" rel="noopener">Jakarta EE Working Group</a></td>
+</tr>
+</tbody></table>
+<h2 id="Java-EE"><a href="#Java-EE" class="headerlink" title="Java EE"></a>Java EE</h2><p>Java Platform, Enterprise Edition</p>
+<h2 id="Jakarta-EE"><a href="#Jakarta-EE" class="headerlink" title="Jakarta EE"></a>Jakarta EE</h2><p><a href="https://projects.eclipse.org/list-of-projects" target="_blank" rel="noopener">Eclipse Foundation Projects</a></p>
+<ul>
+<li><a href="https://projects.eclipse.org/projects/ee4j" target="_blank" rel="noopener">Eclipse EE4J</a></li>
+<li><a href="https://jakarta.ee/specifications/" target="_blank" rel="noopener">https://jakarta.ee/specifications/</a></li>
+</ul>
+<h3 id="Architecture"><a href="#Architecture" class="headerlink" title="Architecture"></a>Architecture</h3><p>Jakarta EE 平台的架构关系如下图所示。（请注意，此图显示了元素间的逻辑关系；它并不意味着将元素间物理关系为单独的机器、进程、地址空间或虚拟机。）</p>
+<p>下面分别描述每个矩形及其之间的关系：</p>
+<ul>
+<li>容器（如 Web Container）作为 Jakarta EE 运行时环境，为 Application Components（如 Server Pages、Servlet）提供所需服务；</li>
+<li>而所提供的服务，由矩形下半部分的方框表示。例如， Web Container 为 Servlet 提供了 Bean Validation API。详见 <a href="https://jakarta.ee/specifications/platform/9/jakarta-platform-spec-9.html#a84" target="_blank" rel="noopener">Jakarta EE 标准服务</a>。</li>
+<li>Java SE 的 API 受 Java SE 运行时环境（JRE）的支持，适用于每种类型的 Application Components。</li>
+<li>箭头表示需要访问 Jakarta EE 平台的其它部分。例如，Web Container 通过 JDBC™ API 为 Server Pages、Servlet 提供数据库访问能力。</li>
+</ul>
+<p><img src="/img/java/basics/Jakarta_EE_Architecture_Diagram.svg" alt="Jakarta EE Architecture Diagram"></p>
+<h3 id="Application-Components"><a href="#Application-Components" class="headerlink" title="Application Components"></a>Application Components</h3><p>Jakarta EE 运行时环境定义了 Jakarta EE 产品必须支持的四种 Application Components 类型：</p>
+<table>
+<thead>
+<tr>
+<th>Application Components</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Application clients</td>
+<td>通常是在台式计算机上执行的 GUI 程序。提供类似于本机应用程序的用户体验，并且可以访问 Jakarta EE 中间层的所有设施。</td>
+</tr>
+<tr>
+<td>Applets</td>
+<td>通常是在 Web 浏览器中执行的 GUI 组件，但也可以在支持 Applet 编程模型的各种其它应用程序或设备中执行。</td>
+</tr>
+<tr>
+<td>Web Components (<a href="https://jakarta.ee/specifications/servlet/" target="_blank" rel="noopener">Servlets</a>, <a href="https://jakarta.ee/specifications/pages/" target="_blank" rel="noopener">Server Pages</a>, <a href="https://jakarta.ee/specifications/faces/" target="_blank" rel="noopener">Server Faces</a> Applications, Filters, and Web Event Listeners)</td>
+<td>通常在 Web 容器中执行，并可能响应来自 Web 客户端的 HTTP 请求。</td>
+</tr>
+<tr>
+<td><a href="https://jakarta.ee/specifications/enterprise-beans/" target="_blank" rel="noopener">Enterprise Beans</a></td>
+<td>在支持事务的托管环境中执行。可以使用 SOAP/HTTP 协议直接提供 Web 服务。</td>
+</tr>
+</tbody></table>
+<h3 id="Containers"><a href="#Containers" class="headerlink" title="Containers"></a>Containers</h3><p>容器为 Jakarta EE Application Components 提供运行时支持。</p>
+<p>容器为 Application Components 提供了一套底层 Jakarta EE API 的联合视图。Jakarta EE Application Components 从不直接与其它  Jakarta EE  Application Components 交互。它们使用容器的协议和方法来相互交互以及与平台服务交互。在 Application Components 和  Jakarta EE 服务之间插入一个容器，可以使该容器透明地注入该组件所需的服务，例如声明式事务管理，安全检查，资源池和状态管理。</p>
+<blockquote>
+<p>This specification requires that containers provide a Java Compatible™ runtime environment, as defined by the Java Platform, Standard Edition, v8 specification (Java SE).</p>
+</blockquote>
+<h3 id="Database"><a href="#Database" class="headerlink" title="Database"></a>Database</h3><blockquote>
+<p>The Jakarta EE platform requires a database, accessible through the JDBC API, for the storage of business data. The database is accessible from:</p>
+<ul>
+<li>Web Components</li>
+<li>Enterprise Beans</li>
+<li>Application clients</li>
+</ul>
+</blockquote>
+<h3 id="Jakarta-EE-Standard-Services"><a href="#Jakarta-EE-Standard-Services" class="headerlink" title="Jakarta EE Standard Services"></a>Jakarta EE Standard Services</h3><p><a href="https://jakarta.ee/specifications/platform/9/jakarta-platform-spec-9.html#a84" target="_blank" rel="noopener">https://jakarta.ee/specifications/platform/9/jakarta-platform-spec-9.html#a84</a></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>教程：</p>
+<ul>
+<li><p><a href="https://www.tutorialspoint.com/java8/index.htm" target="_blank" rel="noopener">https://www.tutorialspoint.com/java8/index.htm</a></p>
+</li>
+<li><p><a href="https://www.tutorialspoint.com/java9/index.htm" target="_blank" rel="noopener">https://www.tutorialspoint.com/java9/index.htm</a></p>
+</li>
+<li><p><a href="https://www.tutorialspoint.com/java/lang/java_lang_interfaces.htm" target="_blank" rel="noopener">https://www.tutorialspoint.com/java/lang/java_lang_interfaces.htm</a></p>
+</li>
+<li><p><a href="https://www.tutorialspoint.com/java/util/index.htm" target="_blank" rel="noopener">https://www.tutorialspoint.com/java/util/index.htm</a></p>
+</li>
+<li><p><a href="https://www.tutorialspoint.com/java_generics/index.htm" target="_blank" rel="noopener">https://www.tutorialspoint.com/java_generics/index.htm</a></p>
+</li>
+<li><p><a href="https://www.tutorialspoint.com/java_concurrency/index.htm" target="_blank" rel="noopener">https://www.tutorialspoint.com/java_concurrency/index.htm</a></p>
+</li>
+</ul>
+<p>《<a href="https://www.infoq.cn/article/is-java-out-of-date/" target="_blank" rel="noopener">Java 老矣，尚能饭否？——2017 Java 9 语言的发展现状以及未来</a>》</p>
+<p>《<a href="https://www.infoq.cn/article/WomHORGulYaYEDYwoiP8" target="_blank" rel="noopener">2019 中国 Java 发展趋势报告</a>》</p>
+<blockquote>
+<p>Java 作为使用最为广泛的语言，最近几年还是有比较大进步的，无论从语法的易用性上还是性能上都有很大程度的提升。吸收了函数式编程的思想，lambda 表达式、Parallem stream、Var 变量等提升了开发人员的效率与代码的简洁性。ZGC 无疑是一项重大的改进，在一定程度上解决了 Java 天生的 GC 延迟问题。</p>
+<p>Java 的编程复杂度并没有明显的降低，比如 I/O 处理、并发 / 并⾏计算，以及类加载等等。再者是 Java 与操作系统之间的交互仍不够充分，尽管 Java 9 开始提供了不少的 API，然⽽了解和使用的群体不⾜。Java 在这方面明显不及 GO 语言。</p>
+<p>从语⾔层⾯来看，Java 正在向主流非 Java 语⾔融合，解决其中鸿沟的关键是<strong>语法的变化</strong>，比如 Java 8 的 Lambda 表达式 和 Java 10 的局部变量类型（ <code>var</code> ）等。个人认为这是一件好事，未来前后端不分家，相互渗透，对于彼此语言都是良性。</p>
+</blockquote>
+<p>《<a href="https://segmentfault.com/a/1190000021906788" target="_blank" rel="noopener">2020年 JVM 生态报告解读</a>》</p>
+<p>《<a href="https://www.infoq.cn/article/YgPRotsrI1qSr8cxRGlq" target="_blank" rel="noopener">Java 的新未来：逐渐“Kotlin 化”</a>》</p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2020/08/25/java-reactor-api/" class="post-title-link">响应式编程系列（三）Reactor Operator API 总结</a></h2><div class="post-info">2020-08-25<a href="/tags/Java/" title="Java" class="post-demo">Java</a><a href="/tags/响应式编程/" title="响应式编程" class="post-demo">响应式编程</a></div><div class="post-content"><p>Reactive Streams 规范并未提供任何运算符（Operators），而 Reactor 框架的核心价值之一就是提供了丰富的运算符。从简单的转换、过滤到复杂的编排和错误处理，涉及方方面面。</p>
+<p>推荐通过参考文档而不是 JavaDoc 来学习 Mono/Flux API 和 Operator 操作符。参考：<a href="https://projectreactor.io/docs/core/release/reference/docs/index.html#which-operator" target="_blank" rel="noopener">“which operator do I need?” appendix</a></p>
+<h1 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h1><p>使用 Reactor API 时，有以下几个注意点：</p>
+<p>一、每个 Operator API 都会返回新实例</p>
+<blockquote>
+<p>在 Reactor 中，操作符（Operators）好比流水线中的工作站。 每个操作符都会向 <code>Publisher</code> 添加行为，并将上一步的 <code>Publisher</code>  包装成<strong>新实例</strong>。因而，整个链就被串起来，数据从第一个  <code>Publisher</code>   开始，沿着链向下移动，通过每个链接进行转换。最终，<code>Subscriber</code> 结束该流程。 注意，直到 <code>Subscriber</code> 订阅 <code>Publisher</code> 为止，什么都不会发生。</p>
+<p>理解操作符会创建新实例这一行为，有助于避免一些常见错误，详见：<a href="https://projectreactor.io/docs/core/release/reference/#faq.chain" target="_blank" rel="noopener">I Used an Operator on my Flux but it Doesn’t Seem to Apply. What Gives?</a></p>
+</blockquote>
+<p>二、Nothing Happens Until You <code>subscribe()</code></p>
+<blockquote>
+<p>Reactor 中，当您编写 <code>Publisher</code> 链时，仅用于描述异步处理的抽象过程，默认情况下数据不会开始处理。只有通过订阅，将 <code>Publisher</code> 与 <code>Subscriber</code> 绑定在一起时，才能触发整个链中的数据流处理。这是由其内部实现方式决定的：<code>Subscriber</code> 发出<strong>请求信号</strong>并向上传播，直到源 <code>Publisher</code>。</p>
+</blockquote>
+<p><img src="/img/java/reactive-stream/reactive-stream/org.reactivestream_api.png" alt="org.reactivestream_api"></p>
+<p>详见：<a href="https://projectreactor.io/docs/core/release/reference/index.html#faq.chain" target="_blank" rel="noopener">C.2. I Used an Operator on my <code>Flux</code> but it Doesn’t Seem to Apply. What Gives?</a></p>
+<p>三、使用背压（Backpressure）进行流量控制</p>
+<blockquote>
+<p>Propagating signals upstream is also used to implement <strong>backpressure</strong>, which we described in the assembly line analogy as a feedback signal sent up the line when a workstation processes more slowly than an upstream workstation.</p>
+<p>The real mechanism defined by the Reactive Streams specification is pretty close to the analogy: A subscriber can work in <em>unbounded</em> mode and let the source push all the data at its fastest achievable rate or it can use the <code>request</code> mechanism to signal the source that it is ready to process at most <code>n</code> elements.</p>
+<p>Intermediate operators can also change the request in-transit. Imagine a <code>buffer</code> operator that groups elements in batches of ten. If the subscriber requests one buffer, it is acceptable for the source to produce ten elements. Some operators also implement <strong>prefetching</strong> strategies, which avoid <code>request(1)</code> round-trips and is beneficial if producing the elements before they are requested is not too costly.</p>
+<p>This transforms the push model into a <strong>push-pull hybrid</strong>, where the downstream can pull n elements from upstream if they are readily available. But if the elements are not ready, they get pushed by the upstream whenever they are produced.</p>
+</blockquote>
+<h1 id="Mono"><a href="#Mono" class="headerlink" title="Mono"></a>Mono</h1><p><a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html" target="_blank" rel="noopener">https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html</a></p>
+<blockquote>
+<p>for [0|1] elements</p>
+</blockquote>
+<p><img src="/img/java/reactive-stream/reactor/mono/mono.svg" alt="mono"></p>
+<h2 id="创建-Mono-流"><a href="#创建-Mono-流" class="headerlink" title="创建 Mono 流"></a>创建 Mono 流</h2><p><img src="/img/java/reactive-stream/reactor/mono/mono_create.png" alt="mono_create"></p>
+<h2 id="中间操作"><a href="#中间操作" class="headerlink" title="中间操作"></a>中间操作</h2><blockquote>
+<p>Each operator adds behavior to a <code>Publisher</code> and wraps the previous step’s <code>Publisher</code> into a new instance. The whole chain is thus linked, such that data originates from the first <code>Publisher</code> and moves down the chain, transformed by each link. Eventually, a <code>Subscriber</code> finishes the process. Remember that nothing happens until a <code>Subscriber</code> subscribes to a <code>Publisher</code>.</p>
+<p>While the Reactive Streams specification does not specify operators at all, one of the best added values of reactive libraries, such as Reactor, <strong>is the rich vocabulary of operators</strong> that they provide. These cover a lot of ground, from simple transformation and filtering to complex orchestration and error handling.</p>
+</blockquote>
+<h3 id="转换"><a href="#转换" class="headerlink" title="转换"></a>转换</h3><p>常用的如下：</p>
+<ul>
+<li><p>I want to transform existing data:</p>
+<ul>
+<li><p>on a 1-to-1 basis (eg. strings to their length): <code>map</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#map-java.util.function.Function-" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#map-java.util.function.Function-" target="_blank" rel="noopener">Mono</a>)</p>
+<ul>
+<li>…by just casting it: <code>cast</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#cast-java.lang.Class-" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#cast-java.lang.Class-" target="_blank" rel="noopener">Mono</a>)</li>
+<li>…in order to materialize each source value’s index: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#index--" target="_blank" rel="noopener">Flux#index</a></li>
+</ul>
+</li>
+<li><p>on a 1-to-n basis (eg. strings to their characters): <code>flatMap</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#flatMap-java.util.function.Function-" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#flatMap-java.util.function.Function-" target="_blank" rel="noopener">Mono</a>) + use a factory method</p>
+</li>
+<li><p>running an asynchronous task for each source item (eg. urls to http request): <code>flatMap</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#flatMap-java.util.function.Function-" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#flatMap-java.util.function.Function-" target="_blank" rel="noopener">Mono</a>) + an async <a href="https://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Publisher.html?is-external=true" target="_blank" rel="noopener">Publisher</a>-returning method</p>
+<ul>
+<li><p>…ignoring some data: conditionally return a <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#empty--" target="_blank" rel="noopener">Mono.empty()</a> in the flatMap lambda</p>
+</li>
+<li><p>…retaining the original sequence order: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#flatMapSequential-java.util.function.Function-" target="_blank" rel="noopener">Flux#flatMapSequential</a> (this triggers the async processes immediately but reorders the results)</p>
+</li>
+<li><p>…where the async task can return multiple values, from a <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html" target="_blank" rel="noopener">Mono</a> source: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#flatMapMany-java.util.function.Function-" target="_blank" rel="noopener">Mono#flatMapMany</a></p>
+<ul>
+<li><pre><code class="java"><span class="comment">// Mono 转 Flux</span>
+<span class="comment">// Create a Flux that emits the items contained in the provided Iterable. A new iterator will be created for each subscriber.</span>
+Mono#flatMapMany(Flux::fromIterable)</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>I want to add pre-set elements to an existing sequence:</p>
+<ul>
+<li>at the start: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#startWith-T...-" target="_blank" rel="noopener">Flux#startWith(T…)</a></li>
+<li>at the end: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#concatWithValues-T...-" target="_blank" rel="noopener">Flux#concatWithValues(T…)</a></li>
+</ul>
+</li>
+<li><p>I want to aggregate a <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html" target="_blank" rel="noopener">Flux</a>: (the <code>Flux#</code> prefix is assumed below)</p>
+<ul>
+<li><p>into a List: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#collectList--" target="_blank" rel="noopener">collectList</a>, <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#collectSortedList--" target="_blank" rel="noopener">collectSortedList</a></p>
+</li>
+<li><p>into a Map: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#collectMap-java.util.function.Function-" target="_blank" rel="noopener">collectMap</a>, <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#collectMultimap-java.util.function.Function-" target="_blank" rel="noopener">collectMultiMap</a></p>
+</li>
+<li><p>into an arbitrary container: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#collect-java.util.stream.Collector-" target="_blank" rel="noopener">collect</a></p>
+</li>
+<li><p>into the size of the sequence: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#count--" target="_blank" rel="noopener">count</a></p>
+</li>
+<li><p>by applying a function between each element (eg. running sum): <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#reduce-A-java.util.function.BiFunction-" target="_blank" rel="noopener">reduce</a></p>
+<ul>
+<li><pre><code class="java">Flux.range(<span class="number">0</span>, <span class="number">5</span>)
+  .reduce(Integer::sum)  <span class="comment">// 两两相加</span>
+  .map(Objects::toString)
+  .subscribe(log::info);</code></pre>
+</li>
+<li><p>…but emitting each intermediary value: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#scan-A-java.util.function.BiFunction-" target="_blank" rel="noopener">scan</a></p>
+</li>
+</ul>
+</li>
+<li><p>into a boolean value from a predicate:</p>
+<ul>
+<li>applied to all values (AND): <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#all-java.util.function.Predicate-" target="_blank" rel="noopener">all</a></li>
+<li>applied to at least one value (OR): <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#any-java.util.function.Predicate-" target="_blank" rel="noopener">any</a></li>
+<li>testing the presence of any value: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#hasElements--" target="_blank" rel="noopener">hasElements</a> <em>(there is a <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html" target="_blank" rel="noopener">Mono</a> equivalent in <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#hasElement--" target="_blank" rel="noopener">hasElement</a>)</em></li>
+<li>testing the presence of a specific value: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#hasElement-T-" target="_blank" rel="noopener">hasElement(T)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>I want to combine publishers…</p>
+<ul>
+<li>…</li>
+</ul>
+</li>
+<li><p>I want to repeat an existing sequence: <code>repeat</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#repeat--" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#repeat--" target="_blank" rel="noopener">Mono</a>)</p>
+<ul>
+<li>…</li>
+</ul>
+</li>
+<li><p>I have an empty sequence but…</p>
+<ul>
+<li><p>I want a value instead: <code>defaultIfEmpty</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#defaultIfEmpty-T-" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#defaultIfEmpty-T-" target="_blank" rel="noopener">Mono</a>)</p>
+</li>
+<li><p>I want another sequence instead: <code>switchIfEmpty</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#switchIfEmpty-org.reactivestreams.Publisher-" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#switchIfEmpty-reactor.core.publisher.Mono-" target="_blank" rel="noopener">Mono</a>)</p>
+<ul>
+<li><pre><code class="java">Flux.just(<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)
+  .filter(i -&gt; i &lt; <span class="number">0</span>)
+  .next()
+  .doOnNext(i -&gt; log.info(<span class="string">"Exist a item: {}"</span>, i))
+  .switchIfEmpty(Mono.just(-<span class="number">1</span>))
+  .map(Objects::toString)
+  .subscribe(log::info);
+
+</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>I have a sequence but I am not interested in values: <code>ignoreElements</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#ignoreElements--" target="_blank" rel="noopener">Flux.ignoreElements()</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#ignoreElement--" target="_blank" rel="noopener">Mono.ignoreElement()</a>)</p>
+<ul>
+<li>…and I want the completion represented as a <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html" target="_blank" rel="noopener">Mono</a>: <code>then</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#then--" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#then--" target="_blank" rel="noopener">Mono</a>)</li>
+<li>…and I want to wait for another task to complete at the end: <code>thenEmpty</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#thenEmpty-org.reactivestreams.Publisher-" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#thenEmpty-org.reactivestreams.Publisher-" target="_blank" rel="noopener">Mono</a>)</li>
+<li>…and I want to switch to another <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html" target="_blank" rel="noopener">Mono</a> at the end: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#then-reactor.core.publisher.Mono-" target="_blank" rel="noopener">Mono#then(mono)</a></li>
+<li>…and I want to emit a single value at the end: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#thenReturn-V-" target="_blank" rel="noopener">Mono#thenReturn(T)</a></li>
+<li>…and I want to switch to a <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html" target="_blank" rel="noopener">Flux</a> at the end: <code>thenMany</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#thenMany-org.reactivestreams.Publisher-" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#thenMany-org.reactivestreams.Publisher-" target="_blank" rel="noopener">Mono</a>)</li>
+</ul>
+</li>
+<li><p>…</p>
+</li>
+</ul>
+<h3 id="过滤"><a href="#过滤" class="headerlink" title="过滤"></a>过滤</h3><ul>
+<li>I want to filter a sequence:<ul>
+<li>based on an arbitrary criteria: <code>filter</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#filter-java.util.function.Predicate-" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#filter-java.util.function.Predicate-" target="_blank" rel="noopener">Mono</a>)<ul>
+<li>…that is asynchronously computed: <code>filterWhen</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#filterWhen-java.util.function.Function-" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#filterWhen-java.util.function.Function-" target="_blank" rel="noopener">Mono</a>)</li>
+</ul>
+</li>
+<li>restricting on the type of the emitted objects: <code>ofType</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#ofType-java.lang.Class-" target="_blank" rel="noopener">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#ofType-java.lang.Class-" target="_blank" rel="noopener">Mono</a>)</li>
+<li>by ignoring the values altogether: <code>ignoreElements</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#ignoreElements--" target="_blank" rel="noopener">Flux.ignoreElements()</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#ignoreElement--" target="_blank" rel="noopener">Mono.ignoreElement()</a>)</li>
+<li>by ignoring duplicates:<ul>
+<li>in the whole sequence (logical set): <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#distinct--" target="_blank" rel="noopener">Flux#distinct</a></li>
+<li>between subsequently emitted items (deduplication): <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#distinctUntilChanged--" target="_blank" rel="noopener">Flux#distinctUntilChanged</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>I want to keep only a subset of the sequence:<ul>
+<li>by taking N elements:<ul>
+<li>at the beginning of the sequence: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#take-long-boolean-" target="_blank" rel="noopener">Flux#take(long, true)</a><ul>
+<li>…requesting an unbounded amount from upstream: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#take-long-boolean-" target="_blank" rel="noopener">Flux#take(long, false)</a></li>
+<li>…based on a duration: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#take-java.time.Duration-" target="_blank" rel="noopener">Flux#take(Duration)</a></li>
+<li>…only the first element, as a <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html" target="_blank" rel="noopener">Mono</a>: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#next--" target="_blank" rel="noopener">Flux#next()</a></li>
+<li>…using <a href="https://www.reactive-streams.org/reactive-streams-1.0.3-javadoc/org/reactivestreams/Subscription.html#request(long)" target="_blank" rel="noopener">request(N)</a> rather than cancellation: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#limitRequest-long-" target="_blank" rel="noopener">Flux#limitRequest(long)</a></li>
+</ul>
+</li>
+<li>at the end of the sequence: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#takeLast-int-" target="_blank" rel="noopener">Flux#takeLast</a></li>
+<li>until a criteria is met (inclusive): <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#takeUntil-java.util.function.Predicate-" target="_blank" rel="noopener">Flux#takeUntil</a> (predicate-based), <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#takeUntilOther-org.reactivestreams.Publisher-" target="_blank" rel="noopener">Flux#takeUntilOther</a> (companion publisher-based)</li>
+<li>while a criteria is met (exclusive): <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#takeWhile-java.util.function.Predicate-" target="_blank" rel="noopener">Flux#takeWhile</a></li>
+</ul>
+</li>
+<li>by taking at most 1 element:<ul>
+<li>at a specific position: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#elementAt-int-" target="_blank" rel="noopener">Flux#elementAt</a></li>
+<li>at the end: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#takeLast-int-" target="_blank" rel="noopener">.takeLast(1)</a><ul>
+<li>…and emit an error if empty: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#last--" target="_blank" rel="noopener">Flux#last()</a></li>
+<li>…and emit a default value if empty: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#last-T-" target="_blank" rel="noopener">Flux#last(T)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>by skipping elements:<ul>
+<li>at the beginning of the sequence: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#skip-long-" target="_blank" rel="noopener">Flux#skip(long)</a><ul>
+<li>…based on a duration: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#skip-java.time.Duration-" target="_blank" rel="noopener">Flux#skip(Duration)</a></li>
+</ul>
+</li>
+<li>at the end of the sequence: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#skipLast-int-" target="_blank" rel="noopener">Flux#skipLast</a></li>
+<li>until a criteria is met (inclusive): <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#skipUntil-java.util.function.Predicate-" target="_blank" rel="noopener">Flux#skipUntil</a> (predicate-based), <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#skipUntilOther-org.reactivestreams.Publisher-" target="_blank" rel="noopener">Flux#skipUntilOther</a> (companion publisher-based)</li>
+<li>while a criteria is met (exclusive): <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#skipWhile-java.util.function.Predicate-" target="_blank" rel="noopener">Flux#skipWhile</a></li>
+</ul>
+</li>
+<li>by sampling items:<ul>
+<li>by duration: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#sample-java.time.Duration-" target="_blank" rel="noopener">Flux#sample(Duration)</a><ul>
+<li>but keeping the first element in the sampling window instead of the last: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#sampleFirst-java.time.Duration-" target="_blank" rel="noopener">sampleFirst</a></li>
+</ul>
+</li>
+<li>by a publisher-based window: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#sample-org.reactivestreams.Publisher-" target="_blank" rel="noopener">Flux#sample(Publisher)</a></li>
+<li>based on a publisher “timing out”: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#sampleTimeout-java.util.function.Function-" target="_blank" rel="noopener">Flux#sampleTimeout</a> (each element triggers a publisher, and is emitted if that publisher does not overlap with the next)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>I expect at most 1 element (error if more than one)…<ul>
+<li>and I want an error if the sequence is empty: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#single--" target="_blank" rel="noopener">Flux#single()</a></li>
+<li>and I want a default value if the sequence is empty: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#single-T-" target="_blank" rel="noopener">Flux#single(T)</a></li>
+<li>and I accept an empty sequence as well: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#singleOrEmpty--" target="_blank" rel="noopener">Flux#singleOrEmpty</a></li>
+</ul>
+</li>
+</ul>
+<h3 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h3><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>注释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>doOnNext</code></td>
+<td>Add behavior triggered when the <code>Mono</code> emits a data successfully.</td>
+</tr>
+<tr>
+<td><code>doOnSuccess</code></td>
+<td>Add behavior triggered when the <code>Mono</code> completes successfully.<br/>* <code>null</code> : completed without data<br/>* <code>T</code>: completed with data</td>
+</tr>
+<tr>
+<td><code>doOnError</code></td>
+<td>Add behavior triggered when the <code>Mono</code> completes with an error.</td>
+</tr>
+<tr>
+<td><code>doAfterSuccessOrError</code></td>
+<td>Add behavior triggered after the <code>Mono</code> terminates, either by completing downstream successfully or with an error. The arguments will be null depending on success, success with data and error:<br/>* <code>null</code>, <code>null</code> : completed without data<br/>* <code>T</code>, <code>null</code> : completed with data<br/>* <code>null</code>, <code>Throwable</code> : failed with/without data</td>
+</tr>
+<tr>
+<td><code>doOnSubscribe</code></td>
+<td>Add behavior triggered when the <code>Mono</code> is subscribed.</td>
+</tr>
+<tr>
+<td><code>doOnCancel</code></td>
+<td>Add behavior triggered when the <code>Mono</code> is cancelled.</td>
+</tr>
+<tr>
+<td><code>doOnRequest</code></td>
+<td>Add behavior triggering a <code>LongConsumer</code> when the Mono receives any request.</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>注释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>log</code></td>
+<td>Observe all Reactive Streams signals and trace them using <code>Logger</code> support. Default will use <code>Level.INFO</code> and java.util.logging. If <strong>SLF4J</strong> is available, it will be used instead.</td>
+</tr>
+<tr>
+<td><code>timestamp</code></td>
+<td>If this <code>Mono</code> is valued, emit a <code>Tuple2</code> pair of T1 the current clock time in millis (as a <code>Long</code> measured by the parallel Scheduler) and T2 the emitted data (as a T).</td>
+</tr>
+<tr>
+<td><code>elapsed</code></td>
+<td></td>
+</tr>
+</tbody></table>
+<p><img src="/img/java/reactive-stream/reactor/mono/mono_do.png" alt="mono_od"></p>
+<h3 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h3><p>Two ways to recover from errors:</p>
+<ul>
+<li>by falling back</li>
+<li>by retrying</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>注释</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>error</code></td>
+<td>Create a <code>Mono</code> that terminates with the specified error immediately after being subscribed to.</td>
+<td>创建异常流。</td>
+</tr>
+<tr>
+<td><code>onErrorReturn</code></td>
+<td>Simply emit a captured fallback value when <u>any error</u> is observed on this <code>Mono</code>.<br/>Simply emit a captured fallback value when <u>an error of the specified type</u> is observed on this <code>Mono</code>.<br/>Simply emit a captured fallback value when <u>an error matching the given predicate</u> is observed on this <code>Mono</code>.</td>
+<td>catching an exception and falling back to a default value</td>
+</tr>
+<tr>
+<td><code>onErrorResume</code></td>
+<td>Subscribe to a fallback publisher when <u>any error</u> occurs, using a function to choose the fallback depending on the error.<br/>Subscribe to a fallback publisher when <u>an error matching the given type</u> occurs.<br/>Subscribe to a fallback publisher when <u>an error matching a given predicate</u> occurs.</td>
+<td>catching an exception and falling back to another <code>Mono</code></td>
+</tr>
+<tr>
+<td><code>onErrorContinue</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>onErrorMap</code></td>
+<td>Transform any error emitted by this <code>Mono</code> by synchronously applying a function to it.<br/>Transform an error emitted by this <code>Mono</code> by synchronously applying a function to it <u>if the error matches the given type.</u> Otherwise let the error pass through.<br/>Transform an error emitted by this <code>Mono</code> by synchronously applying a function to it <u>if the error matches the given predicate.</u> Otherwise let the error pass through.</td>
+<td>catching an exception and wrapping and re-throwing</td>
+</tr>
+<tr>
+<td><code>retry()</code><br/><code>retry(long)</code></td>
+<td>Re-subscribes to this <code>Mono</code> sequence if it signals any error, indefinitely.<br/>Re-subscribes to this <code>Mono</code> sequence if it signals any error, for a fixed number of times.</td>
+<td>retrying with a simple policy (max number of attempts)</td>
+</tr>
+<tr>
+<td><code>retryWhen</code></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p><img src="/img/java/reactive-stream/reactor/mono/mono_error.png" alt="mono_error"></p>
+<h2 id="终结操作"><a href="#终结操作" class="headerlink" title="终结操作"></a>终结操作</h2><h3 id="订阅"><a href="#订阅" class="headerlink" title="订阅"></a>订阅</h3><h3 id="阻塞返回结果"><a href="#阻塞返回结果" class="headerlink" title="阻塞返回结果"></a>阻塞返回结果</h3><p><img src="/img/java/reactive-stream/reactor/mono/mono_block.png" alt="mono_block"></p>
+<h1 id="Flux"><a href="#Flux" class="headerlink" title="Flux"></a>Flux</h1><p><a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html" target="_blank" rel="noopener">https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html</a></p>
+<blockquote>
+<p>for [N] elements</p>
+</blockquote>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux.svg" alt="flux"></p>
+<h2 id="创建-Flux-流"><a href="#创建-Flux-流" class="headerlink" title="创建 Flux 流"></a>创建 Flux 流</h2><p>普通创建：</p>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux_create.png" alt="flux_create"></p>
+<p>遍历创建：</p>
+<p>定时创建：</p>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux_create_interval.png" alt="flux_create_interval"></p>
+<p>合并创建：</p>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux_create_combine.png" alt="flux_create_combine"></p>
+<p>编程式创建：</p>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux_create_2.png" alt="flux_create_2"></p>
+<p>其它：</p>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux_create_switchOnNext.png" alt="flux_create_switchOnNext"></p>
+<h2 id="中间操作-1"><a href="#中间操作-1" class="headerlink" title="中间操作"></a>中间操作</h2><h3 id="转换操作"><a href="#转换操作" class="headerlink" title="转换操作"></a>转换操作</h3><p>Flux 转 Mono：</p>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux_to_mono.png" alt="flux_to_mono"></p>
+<p><code>map</code>、<code>flatMap</code>：</p>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux_map.png" alt="flux_map"></p>
+<p>转成并行流：</p>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux_parallel.png" alt="flux_parallel"></p>
+<h3 id="空值处理"><a href="#空值处理" class="headerlink" title="空值处理"></a>空值处理</h3><p><img src="/img/java/reactive-stream/reactor/flux/flux_ifempty.png" alt="flux_ifempty"></p>
+<h3 id="计数"><a href="#计数" class="headerlink" title="计数"></a>计数</h3><p><code>count</code></p>
+<h3 id="排序"><a href="#排序" class="headerlink" title="排序"></a>排序</h3><p><img src="/img/java/reactive-stream/reactor/flux/flux_sort.png" alt="flux_sort"></p>
+<h3 id="去重"><a href="#去重" class="headerlink" title="去重"></a>去重</h3><p><img src="/img/java/reactive-stream/reactor/flux/flux_distinct.png" alt="flux_distinct"></p>
+<h3 id="分组"><a href="#分组" class="headerlink" title="分组"></a>分组</h3><p><img src="/img/java/reactive-stream/reactor/flux/flux_window.png" alt="flux_window"></p>
+<h3 id="合并"><a href="#合并" class="headerlink" title="合并"></a>合并</h3><p><img src="/img/java/reactive-stream/reactor/flux/flux_concat.png" alt="flux_concat"></p>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux_merge.png" alt="flux_merge"></p>
+<h3 id="压缩"><a href="#压缩" class="headerlink" title="压缩"></a>压缩</h3><p><img src="/img/java/reactive-stream/reactor/flux/flux_zip.png" alt="flux_zip"></p>
+<h3 id="获取元素"><a href="#获取元素" class="headerlink" title="获取元素"></a>获取元素</h3><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>注释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>take(long n)</code></td>
+<td>Take only the first N values from this <code>Flux</code>, if available.</td>
+</tr>
+<tr>
+<td><code>takeLast(long n)</code></td>
+<td>Emit the last N values this <code>Flux</code> emitted before its completion.</td>
+</tr>
+<tr>
+<td><code>last()</code></td>
+<td>Emit the last element observed before complete signal as a <code>Mono</code>, or emit <code>NoSuchElementException</code> error if the source was empty.</td>
+</tr>
+<tr>
+<td><code>last(T defaultValue)</code></td>
+<td>Emit the last element observed before complete signal as a <code>Mono</code>, or emit the <strong>defaultValue</strong> if the source was empty.</td>
+</tr>
+</tbody></table>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux_take.png" alt="flux_take"></p>
+<h3 id="延迟处理"><a href="#延迟处理" class="headerlink" title="延迟处理"></a>延迟处理</h3><p><img src="/img/java/reactive-stream/reactor/flux/flux_delay.png" alt="flux_delay"></p>
+<h3 id="缓冲"><a href="#缓冲" class="headerlink" title="缓冲"></a>缓冲</h3><p><img src="/img/java/reactive-stream/reactor/flux/flux_buffer.png" alt="flux_buffer"></p>
+<h3 id="执行操作"><a href="#执行操作" class="headerlink" title="执行操作"></a>执行操作</h3><p><img src="/img/java/reactive-stream/reactor/flux/flux_do.png" alt="flux_do"></p>
+<h3 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h3><p><img src="/img/java/reactive-stream/reactor/flux/flux_error.png" alt="flux_error"></p>
+<h2 id="终结操作-1"><a href="#终结操作-1" class="headerlink" title="终结操作"></a>终结操作</h2><h3 id="订阅-1"><a href="#订阅-1" class="headerlink" title="订阅"></a>订阅</h3><p>订阅后可以使用 <code>Disposable</code> API 停止 FLux 流。</p>
+<p><img src="/img/java/reactive-stream/reactor/flux/flux_subscribe.png" alt="flux_subscribe"></p>
+<h3 id="阻塞返回结果-1"><a href="#阻塞返回结果-1" class="headerlink" title="阻塞返回结果"></a>阻塞返回结果</h3><p><img src="/img/java/reactive-stream/reactor/flux/flux_block.png" alt="flux_block"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://projectreactor.io/" target="_blank" rel="noopener">Reactor 框架</a>，实现 Reactive Streams 规范，并扩展大量特性</p>
+<p><a href="https://projectreactor.io/docs/core/release/reference/docs/index.html#which-operator" target="_blank" rel="noopener">Appendix A: Which operator do I need?</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/35964846" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/35964846</a></p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2020/08/08/java-reactor-startup/" class="post-title-link">响应式编程系列（二）Reactor 入门总结</a></h2><div class="post-info">2020-08-08<a href="/tags/Java/" title="Java" class="post-demo">Java</a><a href="/tags/响应式编程/" title="响应式编程" class="post-demo">响应式编程</a></div><div class="post-content"><p>Reactor 是一款基于 JVM 的<strong>完全非阻塞</strong>的响应式编程框架。它实现了 Reactive Streams 规范，具有高效的流量控制（以管理背压的形式），并扩展了大量特性，例如提供了丰富的 Operators 运算符。</p>
+<h1 id="先决条件"><a href="#先决条件" class="headerlink" title="先决条件"></a>先决条件</h1><p>Reactor Core 需要在 <code>Java 8</code> 及以上版本运行。因为 Reactor 直接集成了 Java 8 的函数式 API，特别是：</p>
+<ul>
+<li><code>java.util.CompletableFuture</code></li>
+<li><code>java.util.stream.Stream</code></li>
+<li><code>java.time.Duration</code></li>
+</ul>
+<h1 id="依赖安装"><a href="#依赖安装" class="headerlink" title="依赖安装"></a>依赖安装</h1><p>自 Reactor 3 开始（since <code>reactor-core 3.0.4</code>, with the <code>Aluminium</code> release train），Reactor 使用 BOM (Bill of Materials) 模型来管理依赖。BOM 将一组相关的、可以良好协作的构建（Maven Artifact）组合在一起，提供版本管理。避免构件间潜在的版本不兼容风险。</p>
+<p>为项目引入该 BOM：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencyManagement</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.projectreactor<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>reactor-bom<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;reactor.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">type</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">type</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>import<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencyManagement</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>然后就可以为项目添加相关依赖。注意忽略版本号，以便由 BOM 统一管理版本号（除非你想覆盖 BOM 管理的版本号）：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- Reactor --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.projectreactor<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>reactor-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.projectreactor<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>reactor-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这里 Reactor Core 传递依赖于 Reactive Stream 规范，如下：</p>
+<p><img src="/img/java/reactive-stream/reactor/reactor_dependencies.png" alt="reactor_dependencies"></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.reactivestreams<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>reactive-streams<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">scope</span>&gt;</span>compile<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="响应式编程"><a href="#响应式编程" class="headerlink" title="响应式编程"></a>响应式编程</h1><p>Reactor Core 提供了两个<strong>可组合式</strong>的<strong>异步串行 API</strong>：</p>
+<ul>
+<li><code>reactor.core.publisher.Mono</code> (for [0|1] elements)</li>
+<li><code>reactor.core.publisher.Flux</code> (for [N] elements)</li>
+</ul>
+<p>这两个类都是 <code>org.reactivestreams.Publisher</code> 接口的实现类：</p>
+<p><img src="/img/java/reactive-stream/reactor/Publisher.png" alt="Publisher"></p>
+<p>Reactor Core 还提供了 <code>org.reactivestreams.Subscriber</code> 接口的实现类，如下（还有其它子类，此处不一一例举）：</p>
+<p><img src="/img/java/reactive-stream/reactor/Subscriber.png" alt="Subscriber"></p>
+<p>不过一般不会直接使用该实现类，而是使用 <code>Mono</code>、<code>Flux</code> 提供的 <code>subscribe</code> 方法（如下图），并传入 Lambda 表达式语句（代码即参数），由方法的实现负责将参数封装为 <code>Subscriber</code> 接口的实现类，供消费使用：</p>
+<p><img src="/img/java/reactive-stream/reactor/reactor_subscribe.png" alt="reactor_subscribe"></p>
+<p>响应式编程，如 Reactor 旨在解决 JVM 上传统异步编程带来的缺点、以及编程范式上从命令式过渡到响应式编程：</p>
+<h2 id="阻塞带来的性能浪费"><a href="#阻塞带来的性能浪费" class="headerlink" title="阻塞带来的性能浪费"></a>阻塞带来的性能浪费</h2><p>现代的应用程序通常有大量并发请求。即使现代的硬件性能不断提高，软件性能仍然是关键瓶颈。</p>
+<p>广义上讲，有两种方法可以提高程序的性能：</p>
+<ul>
+<li>利用并行（parallel）使用更多 CPU 线程和更多硬件资源。</li>
+<li>提升现有资源的利用率。</li>
+</ul>
+<p>通常，Java 开发者使用阻塞方式来编写程序。除非达到性能瓶颈，否则这种做法可行。之后，通过增加线程数，运行类似的阻塞代码。 但这种方式很快就会导致<strong>资源争用和并发问题</strong>。</p>
+<p>更糟糕的是，阻塞会浪费资源。试想一下，程序一旦遇到一些延迟（特别是 I/O 操作，例如数据库请求或网络请求），就会挂起线程，从而导致资源浪费，因为大量线程处于空闲状态，等待数据，甚至导致资源耗尽。尽管使用池化技术可以提升资源利用率、避免资源耗尽，但只能缓解而不能解决根本问题，而且池内资源同样有耗尽的问题。</p>
+<p>因此，并行技术并非银弹。</p>
+<h2 id="传统异步编程带来的缺点"><a href="#传统异步编程带来的缺点" class="headerlink" title="传统异步编程带来的缺点"></a>传统异步编程带来的缺点</h2><p>Java 提供了两种异步编程模型：</p>
+<ul>
+<li>Callbacks: 异步方法<strong>没有返回值</strong>，但是带有一个额外的 <code>callback</code> 回调参数（值为 Lambda 表达式或匿名类），回调参数在结果可用时被调用。</li>
+<li>Futures: 异步方法调用后立即返回一个 <code>Future&lt;T&gt;</code> 对象。异步方法负责计算出结果值 <code>T</code>，由 <code>Future</code> 对象包装起来。该结果值并非立即可用，可以轮询该 <code>Future</code> 对象，直到结果值可用为止。这种方式顺序执行代码，将异步编程模型转为同步编程模型。<code>ExecutorService</code> 提供了方法 <code>&lt;T&gt; Future&lt;T&gt; submit(Callable&lt;T&gt; task)</code>。</li>
+</ul>
+<p>两种模型都有一个共同的缺点：难以组合代码，从而导致代码可读性差、难以维护。例如，当业务逻辑复杂，步骤存在依赖关系时，会导致回调<strong>嵌套过深</strong>，从而导致著名的 Callback Hell 问题。</p>
+<p>详见代码例子。</p>
+<h2 id="从命令式过渡到响应式编程"><a href="#从命令式过渡到响应式编程" class="headerlink" title="从命令式过渡到响应式编程"></a>从命令式过渡到响应式编程</h2><p><img src="/img/java/reactive-stream/reactor/from_imperative_to_reactive_programming.png" alt="from_imperative_to_reactive_programming"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://projectreactor.io/" target="_blank" rel="noopener">Reactor 框架</a>，实现 Reactive Streams 规范，并扩展大量特性</p>
+<ul>
+<li><p><a href="https://projectreactor.io/docs/core/release/reference/index.html#getting-started" target="_blank" rel="noopener">https://projectreactor.io/docs/core/release/reference/index.html#getting-started</a></p>
+</li>
+<li><p><a href="https://projectreactor.io/docs/core/release/reference/index.html#intro-reactive" target="_blank" rel="noopener">https://projectreactor.io/docs/core/release/reference/index.html#intro-reactive</a></p>
+</li>
+</ul>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2020/08/01/java-reactive-programming/" class="post-title-link">响应式编程系列（一）Java 响应式编程总结</a></h2><div class="post-info">2020-08-01<a href="/tags/Java/" title="Java" class="post-demo">Java</a><a href="/tags/响应式编程/" title="响应式编程" class="post-demo">响应式编程</a></div><div class="post-content"><h1 id="历史"><a href="#历史" class="headerlink" title="历史"></a>历史</h1><p>响应式编程（Reactive Programming）概念最早于上世纪九十年代被提出，微软为 .NET 生态开发了 Reactive Extensions (Rx) 库用于支持响应式编程，后来 Netflix 开发了 RxJava，为 JVM 生态实现了响应式编程。随着时间的推移，2015 年 <a href="https://www.reactive-streams.org/" target="_blank" rel="noopener">Reactive Stream</a>（响应式流）规范诞生，为 JVM 上的响应式编程定义了一组接口和交互规则。<a href="https://github.com/ReactiveX/RxJava" target="_blank" rel="noopener">RxJava</a> 从 RxJava 2 开始实现 Reactive Stream 规范。同时 MongoDB、<a href="https://projectreactor.io/" target="_blank" rel="noopener">Reactor</a>、Slick 等也相继实现了 Reactive Stream 规范。</p>
+<p>Spring Framework 5 推出了<a href="https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html" target="_blank" rel="noopener">响应式 Web 框架</a>。</p>
+<p>Java 9 引入了<a href="http://openjdk.java.net/jeps/266" target="_blank" rel="noopener">响应式编程的 API</a>，将 Reactive Stream 规范定义的四个接口集成到了 <a href="https://docs.oracle.com/javase/9/docs/api/java/util/concurrent/Flow.html" target="_blank" rel="noopener"><code>java.util.concurrent.Flow</code></a> 类中。Java 9 提供了 <code>SubmissionPublisher</code> 和 <code>ConsumerSubscriber</code> 两个默认实现。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">+--------------------------+     +-------------+     +------------------+     +-------------------------------+</span><br><span class="line">| Reactive Extensions (Rx) |     | RxJava 1.x  |     | Reactive Streams |     | RxJava 2                      |</span><br><span class="line">| by Microsoft             +-----&gt; by Netflix  +-----&gt; Specification    +-----&gt; (Supporting Reactive Streams) |</span><br><span class="line">| for .NET                 |     | for Java 6+ |     | for JVM          |     | for Java 6+                   |</span><br><span class="line">+--------------------------+     +-------------+     +------------------+     +-------------------------------+</span><br><span class="line">                                                                                              |</span><br><span class="line">                                                                                              |</span><br><span class="line">                                                                                              |</span><br><span class="line">                     +-----------------------+     +--------------------+     +---------------v---------------+</span><br><span class="line">                     | Java 9 Standard       |     | Spring Framework 5 |     | Project Reactor              |</span><br><span class="line">                     | (JEP-266 by Doug Lea) &lt;-----+ Reactive Stack     &lt;-----+ (Supporting Reactive Streams) |</span><br><span class="line">                     |                       |     |                    |     | for Java 8+                   |</span><br><span class="line">                     +-----------------------+     +--------------------+     +-------------------------------+</span><br></pre></td></tr></table></figure>
+
+<h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><p>响应式编程（Reactive Programing）是一种基于数据流（data stream）和变化传递（propagation of change）的声明式（declarative）的编程范式。</p>
+<h1 id="设计思想"><a href="#设计思想" class="headerlink" title="设计思想"></a>设计思想</h1><p>响应式编程范式通常在面向对象语言中作为<strong>观察者模式</strong>的扩展出现。可以将其与大家熟知的<strong>迭代器模式</strong>作对比，主要区别在于：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>迭代器（Iterator）</th>
+<th>响应式流（Reactive Stream）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>设计模式</td>
+<td>迭代器模式</td>
+<td>观察者模式</td>
+</tr>
+<tr>
+<td>数据方向</td>
+<td>拉模式（PULL）</td>
+<td>推模式（PUSH）</td>
+</tr>
+<tr>
+<td>获取数据</td>
+<td><code>T next()</code></td>
+<td><code>onNext(T)</code></td>
+</tr>
+<tr>
+<td>处理完成</td>
+<td><code>hasNext()</code></td>
+<td><code>onCompleted()</code></td>
+</tr>
+<tr>
+<td>异常处理</td>
+<td><code>throws Exception</code></td>
+<td><code>onError(Exception)</code></td>
+</tr>
+</tbody></table>
+<p>Java 8 引入了 Stream 用于流的操作，Java 9 引入的 Flow 也是数据流的操作。相比之下：</p>
+<ul>
+<li>Stream 更侧重于流的过滤、映射、整合、收集，使用的是 <strong>PULL</strong> 模式。</li>
+<li>而 Flow/RxJava/Reactor 更侧重于流的产生与消费，使用的是 <strong>PUSH</strong> 模式 。</li>
+</ul>
+<h2 id="迭代器模式"><a href="#迭代器模式" class="headerlink" title="迭代器模式"></a>迭代器模式</h2><p>参考《<a href="/2018/05/01/java-collections-iterator/">Iterator API 总结</a>》</p>
+<h2 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h2><blockquote>
+<p>观察者模式是一种行为型设计模式，允许你定义一种订阅机制，可在对象事件发生时<strong>主动通知</strong>多个 “观察” 该对象的其它对象。</p>
+</blockquote>
+<p><img src="/img/java/design-pattern/Observer.png" alt="Observer"></p>
+<p>在响应式流中，上述操作由 <code>Publisher-Subscriber</code> 负责。由 <code>Publisher</code> 生产新值并推送给 <code>Subscriber</code>，这个“推送”就是响应式的关键，亦即“<strong>变化传递（propagation of change）</strong>”。另外，应用于被推送值的操作（Operator）是“<strong>声明式</strong>”而不是“命令式”的：开发者表达的是计算逻辑，而不是描述其具体的控制流程。</p>
+<p>流程如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">onNext x 0..N [onError | onComplete]</span><br></pre></td></tr></table></figure>
+
+<h1 id="Reactive-Streams-规范"><a href="#Reactive-Streams-规范" class="headerlink" title="Reactive Streams 规范"></a>Reactive Streams 规范</h1><h2 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h2><p>Reactive Stream（响应式流）规范的 Maven 依赖如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.reactivestreams/reactive-streams --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.reactivestreams<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>reactive-streams<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="核心接口"><a href="#核心接口" class="headerlink" title="核心接口"></a>核心接口</h2><p>整个依赖包中，仅仅定义了四个核心接口：</p>
+<ul>
+<li><code>org.reactivestreams.Subscription</code> 接口定义了连接发布者和订阅者的方法；</li>
+<li><code>org.reactivestreams.Publisher&lt;T&gt;</code> 接口定义了发布者的方法；</li>
+<li><code>org.reactivestreams.Subscriber&lt;T&gt;</code> 接口定义了订阅者的方法；</li>
+<li><code>org.reactivestreams.Processor&lt;T,R&gt;</code> 接口定义了处理器；</li>
+</ul>
+<p><img src="/img/java/reactive-stream/reactive-stream/org.reactivestreams.png" alt="org.reactivestreams"></p>
+<h2 id="接口交互流程"><a href="#接口交互流程" class="headerlink" title="接口交互流程"></a>接口交互流程</h2><p>简要交互如下：</p>
+<p><img src="/img/java/reactive-stream/reactive-stream/process_of_reactive_stream.jpg" alt="process_ofreactive_stream"></p>
+<p>API 交互如下：</p>
+<p><img src="/img/java/reactive-stream/reactive-stream/process_of_reactive_stream_2.png" alt="process_of_reactive_stream_2"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《Reactive Java Programming》</p>
+<p>Reactive Streams 规范</p>
+<ul>
+<li><a href="https://www.reactive-streams.org/" target="_blank" rel="noopener">https://www.reactive-streams.org/</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Reactive_Streams" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Reactive_Streams</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/41342507" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/41342507</a></li>
+</ul>
+<p><a href="http://openjdk.java.net/jeps/266" target="_blank" rel="noopener">http://openjdk.java.net/jeps/266</a></p>
+<p><a href="http://reactivex.io/" target="_blank" rel="noopener">http://reactivex.io/</a></p>
+<ul>
+<li>《Reactive Programming with RxJava》</li>
+</ul>
+<p><a href="https://projectreactor.io/" target="_blank" rel="noopener">Reactor 框架</a></p>
+<ul>
+<li>实现 Reactive Streams 规范，并扩展大量特性</li>
+</ul>
+<p><a href="https://spring.io/reactive" target="_blank" rel="noopener">https://spring.io/reactive</a></p>
+<p><a href="https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html" target="_blank" rel="noopener">Web on Reactive Stack - Spring</a></p>
+<ul>
+<li>基于 Reactor 框架实现</li>
+<li>默认基于 Netty 作为应用服务器</li>
+<li>好处：能够以固定的线程来处理高并发（充分发挥机器的性能）</li>
+<li>提供 API：<ul>
+<li>Spring WebFlux</li>
+<li>WebClient</li>
+<li>WebSockets</li>
+<li>Testing</li>
+<li>RSocket</li>
+<li>Reactive Libraries</li>
+</ul>
+</li>
+</ul>
+</div></article></li></ul><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div class="recent"><h4>最近文章</h4><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2021/02/26/cpp-io-library/">C/C++ 语言系列（十一）I/O 库总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/25/cpp-oop-inheritance-and-polymorphism/">C/C++ 语言系列（十）面向对象编程之继承与多态</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/20/cpp-oop-class/">C/C++ 语言系列（九）面向对象编程之类、类模板、类指针</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/18/cpp-type-aliases/">C/C++ 语言系列（八）复合数据类型之类型别名</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/16/cpp-struct/">C/C++ 语言系列（七）复合数据类型之结构体</a></li></ul></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/" class="prev">PREV</a><a href="/page/3/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> JSP 标准标签库（JSTL）总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="JSP 标准标签库（JSTL）总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">JSP 标准标签库（JSTL）总结</h1><div class="post-info">2015-05-02<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><p>JSP 标准标签库（JSP Standard Tag Library）是一个 JSP 标签集合，它封装了 JSP 应用的通用核心功能。</p>
+<p>它的出现，是因为人们开始注重软件的分层设计，不希望在 JSP 页面中出现 JAVA 逻辑代码。同时也由于自定义标签的开发难度较大、不利于技术的标准化，因此产生了 JSTL。</p>
+<p>JSTL 和 EL 的结合，基本可以让页面再无 <code>&lt;% %&gt;</code> 代码。</p>
+<p>JSTL 标准标签库可分为五类：</p>
+<h1 id="核心标签库"><a href="#核心标签库" class="headerlink" title="核心标签库"></a>核心标签库</h1><p>共 14 个，从功能上可以分为 4 类。引用方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ taglib prefix&#x3D;&quot;c&quot; uri&#x3D;&quot;http:&#x2F;&#x2F;java.sun.com&#x2F;jsp&#x2F;jstl&#x2F;core&quot; %&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="表达式控制"><a href="#表达式控制" class="headerlink" title="表达式控制"></a>表达式控制</h2><table>
+<thead>
+<tr>
+<th>标签</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;c:out&gt;</code></td>
+<td>用于显示数据，就像 <code>&lt;%= %&gt;</code>，区别在于 <code>&lt;c:out&gt;</code> 标签可以直接通过 <code>.</code> 操作符来访问属性</td>
+</tr>
+<tr>
+<td><code>&lt;c:set&gt;</code></td>
+<td>用于保存数据</td>
+</tr>
+<tr>
+<td><code>&lt;c:remove&gt;</code></td>
+<td>用于删除数据</td>
+</tr>
+<tr>
+<td><code>&lt;c:catch&gt;</code></td>
+<td>用来处理产生错误的异常状况，并且将错误信息储存起来</td>
+</tr>
+</tbody></table>
+<h2 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h2><table>
+<thead>
+<tr>
+<th>标签</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;c:if&gt;</code></td>
+<td>与我们在一般程序中用的 <code>if</code> 一样</td>
+</tr>
+<tr>
+<td><code>&lt;c:choose&gt;</code></td>
+<td>本身只当做 <code>&lt;c:when&gt;</code> 和 <code>&lt;c:otherwise&gt;</code> 的父标签</td>
+</tr>
+<tr>
+<td><code>&lt;c:when&gt;</code></td>
+<td><code>&lt;c:choose&gt;</code> 的子标签，用来判断条件是否成立</td>
+</tr>
+<tr>
+<td><code>&lt;c:otherwise&gt;</code></td>
+<td><code>&lt;c:choose&gt;</code> 的子标签，接在 <code>&lt;c:when&gt;</code> 标签后，当 <code>&lt;c:when&gt;</code> 标签判断为 <code>false</code> 时被执行</td>
+</tr>
+</tbody></table>
+<h2 id="循环"><a href="#循环" class="headerlink" title="循环"></a>循环</h2><table>
+<thead>
+<tr>
+<th>标签</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;c:forEach&gt;</code></td>
+<td>基础迭代标签，接受多种集合类型</td>
+</tr>
+<tr>
+<td><code>&lt;c:forTokens&gt;</code></td>
+<td>根据指定的<strong>分隔符</strong>来分隔内容并迭代输出</td>
+</tr>
+</tbody></table>
+<h2 id="URL-操作"><a href="#URL-操作" class="headerlink" title="URL 操作"></a>URL 操作</h2><table>
+<thead>
+<tr>
+<th>标签</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;c:import&gt;</code></td>
+<td>检索一个绝对或相对 URL，然后将其内容暴露给页面</td>
+</tr>
+<tr>
+<td><code>&lt;c:url&gt;</code></td>
+<td>使用可选的查询参数来创造一个 URL</td>
+</tr>
+<tr>
+<td><code>&lt;c:redirect&gt;</code></td>
+<td>重定向至一个新的 URL</td>
+</tr>
+<tr>
+<td><code>&lt;c:param&gt;</code></td>
+<td>用来给包含或重定向的页面传递参数</td>
+</tr>
+</tbody></table>
+<h1 id="格式化标签库"><a href="#格式化标签库" class="headerlink" title="格式化标签库"></a>格式化标签库</h1><p>用于格式化并输出文本、日期、时间、数字，这里只介绍最最最常用的两个标签。引用方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ taglib prefix&#x3D;&quot;fmt&quot; uri&#x3D;&quot;http:&#x2F;&#x2F;java.sun.com&#x2F;jsp&#x2F;jstl&#x2F;fmt&quot; %&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="格式化数字"><a href="#格式化数字" class="headerlink" title="格式化数字"></a>格式化数字</h2><table>
+<thead>
+<tr>
+<th>标签</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;fmt:formatNumber&gt;</code></td>
+<td>使用指定的格式或精度格式化数字</td>
+</tr>
+</tbody></table>
+<h2 id="格式化日期"><a href="#格式化日期" class="headerlink" title="格式化日期"></a>格式化日期</h2><table>
+<thead>
+<tr>
+<th>标签</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;fmt:formatDate&gt;</code></td>
+<td>使用指定的风格或模式格式化日期和时间</td>
+</tr>
+</tbody></table>
+<h1 id="SQL-标签库"><a href="#SQL-标签库" class="headerlink" title="SQL 标签库"></a>SQL 标签库</h1><p>不常用。引用方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ taglib prefix&#x3D;&quot;sql&quot; uri&#x3D;&quot;http:&#x2F;&#x2F;java.sun.com&#x2F;jsp&#x2F;jstl&#x2F;sql&quot; %&gt;</span><br></pre></td></tr></table></figure>
+
+<h1 id="XML-标签库"><a href="#XML-标签库" class="headerlink" title="XML 标签库"></a>XML 标签库</h1><p>不常用。引用方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ taglib prefix&#x3D;&quot;x&quot; uri&#x3D;&quot;http:&#x2F;&#x2F;java.sun.com&#x2F;jsp&#x2F;jstl&#x2F;xml&quot; %&gt;</span><br></pre></td></tr></table></figure>
+
+<h1 id="函数标签库"><a href="#函数标签库" class="headerlink" title="函数标签库"></a>函数标签库</h1><p>大部分都是通用的字符串处理函数，用于配合 <strong>EL 表达式</strong>使用。引用方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ taglib prefix&#x3D;&quot;fn&quot; uri&#x3D;&quot;http:&#x2F;&#x2F;java.sun.com&#x2F;jsp&#x2F;jstl&#x2F;functions&quot; %&gt;</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>标签</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>fn:contains()</code></td>
+<td>测试输入的字符串是否包含指定的子串</td>
+</tr>
+<tr>
+<td><code>fn:containsIgnoreCase()</code></td>
+<td>测试输入的字符串是否包含指定的子串，大小写不敏感</td>
+</tr>
+<tr>
+<td><code>fn:endsWith()</code></td>
+<td>测试输入的字符串是否以指定的后缀结尾</td>
+</tr>
+<tr>
+<td><code>fn:escapeXml()</code></td>
+<td>跳过可以作为XML标记的字符</td>
+</tr>
+<tr>
+<td><code>fn:indexOf()</code></td>
+<td>返回指定字符串在输入字符串中出现的位置</td>
+</tr>
+<tr>
+<td><code>fn:join()</code></td>
+<td>将数组中的元素合成一个字符串然后输出</td>
+</tr>
+<tr>
+<td><code>fn:length()</code></td>
+<td>返回字符串长度</td>
+</tr>
+<tr>
+<td><code>fn:replace()</code></td>
+<td>将输入字符串中指定的位置替换为指定的字符串然后返回</td>
+</tr>
+<tr>
+<td><code>fn:split()</code></td>
+<td>将字符串用指定的分隔符分隔然后组成一个子字符串数组并返回</td>
+</tr>
+<tr>
+<td><code>fn:startsWith()</code></td>
+<td>测试输入字符串是否以指定的前缀开始</td>
+</tr>
+<tr>
+<td><code>fn:substring()</code></td>
+<td>返回字符串的子集</td>
+</tr>
+<tr>
+<td><code>fn:substringAfter()</code></td>
+<td>返回字符串在指定子串之后的子集</td>
+</tr>
+<tr>
+<td><code>fn:substringBefore()</code></td>
+<td>返回字符串在指定子串之前的子集</td>
+</tr>
+<tr>
+<td><code>fn:toLowerCase()</code></td>
+<td>将字符串中的字符转为小写</td>
+</tr>
+<tr>
+<td><code>fn:toUpperCase()</code></td>
+<td>将字符串中的字符转为大写</td>
+</tr>
+<tr>
+<td><code>fn:trim()</code></td>
+<td>移除首位的空白符</td>
+</tr>
+</tbody></table>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a href="http://www.runoob.com/jsp/jsp-jstl.html" target="_blank" rel="noopener">JSP 标准标签库（JSTL）</a>》</p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2015/05/03/java-el/" class="prev">PREV</a><a href="/2015/05/01/java-jsp/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

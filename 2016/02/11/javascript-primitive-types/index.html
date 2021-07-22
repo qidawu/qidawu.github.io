@@ -1,0 +1,155 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Javascript 基本数据类型 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Javascript 基本数据类型 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Javascript 基本数据类型</h1><div class="post-info">2016-02-11<a href="/tags/前端/" title="前端" class="post-demo">前端</a></div><div class="post-content"><p>尽管 ECMAScript 是一门弱类型语言，但它的内部提供了五种基本数据类型以便开发者使用。下面分别介绍：</p>
+<h1 id="基本数据类型"><a href="#基本数据类型" class="headerlink" title="基本数据类型"></a>基本数据类型</h1><h2 id="Undefined"><a href="#Undefined" class="headerlink" title="Undefined"></a>Undefined</h2><p>在使用 <code>var</code> 声明变量但未对其加以初始化时，这个变量的值就是 <code>undefined</code>。</p>
+<h2 id="Null"><a href="#Null" class="headerlink" title="Null"></a>Null</h2><p>表示一个空对象指针。</p>
+<h2 id="String"><a href="#String" class="headerlink" title="String"></a>String</h2><p>String 类型用于表示 16 位 Unicode 字符组成的字符序列，即字符串。字符串可以由双引号（<code>&quot;&quot;</code>）或单引号（<code>&#39;&#39;</code>）表示，内含转义字符。</p>
+<h2 id="Boolean"><a href="#Boolean" class="headerlink" title="Boolean"></a>Boolean</h2><p>虽然 Boolean 类型只有两个字面值——<code>true</code>、<code>false</code>，但 ECMAScript 中所有类型的值都有与之等价的值。下表给出了转换规则：</p>
+<h3 id="转换规则"><a href="#转换规则" class="headerlink" title="转换规则"></a>转换规则</h3><table>
+<thead>
+<tr>
+<th>数据类型</th>
+<th>转换为 <code>true</code> 的值</th>
+<th>转换为 <code>false</code> 的值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Boolean</td>
+<td><code>true</code></td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td>String</td>
+<td>任何非空字符串</td>
+<td><code>&quot;&quot;</code>（空字符串）</td>
+</tr>
+<tr>
+<td>Number</td>
+<td>任何非零数字值（包括无穷大 <code>Infinity</code>）</td>
+<td><code>0</code>、<code>NaN</code></td>
+</tr>
+<tr>
+<td>Object</td>
+<td>任何对象</td>
+<td><code>null</code></td>
+</tr>
+<tr>
+<td>Undefined</td>
+<td>不适用</td>
+<td><code>undefined</code></td>
+</tr>
+</tbody></table>
+<p>这些转换规则对于理解流控制语句（如 <code>if</code> 语句）、布尔操作符（<code>!</code>、<code>&amp;&amp;</code>、<code>||</code>）自动执行相应的 Boolean 转换非常重要，例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(<span class="string">'false'</span>) &#123;<span class="built_in">console</span>.log(<span class="string">'true'</span>)&#125;</span><br><span class="line"><span class="literal">true</span>    <span class="comment">// 输出 true，因为进行了自动类型转换</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">window</span>.hello;    <span class="comment">// undefined，因为该成员属性不存在</span></span><br><span class="line"><span class="keyword">var</span> foo = <span class="built_in">window</span>.hello || <span class="string">'unknown'</span>;    <span class="comment">// 布尔操作符 || 可以用来填充默认值</span></span><br><span class="line">foo;    <span class="comment">// 值为 'unknown'</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">window</span>.hello.world;    <span class="comment">// 抛出 TypeError 异常，因为尝试从 undefined 的成员属性中取值</span></span><br><span class="line"><span class="keyword">var</span> bar = <span class="built_in">window</span>.hello &amp;&amp; <span class="built_in">window</span>.hello.world;    <span class="comment">// 布尔操作符 &amp;&amp; 可以用来避免该异常</span></span><br><span class="line">bar;    <span class="comment">// 值为 undefined</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Number"><a href="#Number" class="headerlink" title="Number"></a>Number</h2><h3 id="字面量"><a href="#字面量" class="headerlink" title="字面量"></a>字面量</h3><table>
+<thead>
+<tr>
+<th>字面量</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>70</code></td>
+<td>十进制的 70。</td>
+</tr>
+<tr>
+<td><code>-70</code></td>
+<td>十进制的负 70。</td>
+</tr>
+<tr>
+<td><code>070</code></td>
+<td>八进制的 56。八进制字面值的第一位必须是零(<code>0</code>)，然后是八进制数字序列(<code>0~7</code>)。</td>
+</tr>
+<tr>
+<td><code>0xA</code></td>
+<td>十六进制的 10。十六进制字面值的前两位必须是 <code>0x</code>，后跟任何十六进制数字(<code>0~9</code> 及 <code>A~F</code>)。</td>
+</tr>
+<tr>
+<td><code>3.125e7</code></td>
+<td>科学计数法，表示“3.125 乘以 10 的 7 次幂（<code>3.125 * Math.pow(10, 7)</code>）”，即 31250000。推荐使用这种简洁的方式来表示那些极大或极小的数值。</td>
+</tr>
+<tr>
+<td><code>3e-7</code></td>
+<td>科学计数法，表示 0.0000003。默认情况下，ECMASctipt 会将那些小数点后面带有 6 个零以上的浮点数值转换为以 e 表示法表示的数值。</td>
+</tr>
+<tr>
+<td><code>Infinity</code></td>
+<td>如果某次计算的结果得到了一个超出 ECMAScript 数值范围的值，那么该值将被自动转换成特殊的 <code>Infinity</code> 值。该值将无法继续参与下一次的计算，因为 <code>Infinity</code> 不是能够参与计算的数值。要想确定一个数值是不是有穷的（即是否位于最小和最大的数值之间），可以使用 <code>isFinite()</code> 函数进行判断。</td>
+</tr>
+<tr>
+<td><code>NaN</code></td>
+<td>非数值（Not a Number）是一个特殊的数值，用于表示一个本来要返回数值的操作数未返回数值的情况（这样就不会抛出错误了）。ECMAScript 定义了 <code>isNaN()</code> 函数，接收任何类型参数并（调用 <code>Number()</code> 函数）进行 <strong>自动类型转换</strong>，如果转换失败则这个参数“不是数值”。</td>
+</tr>
+</tbody></table>
+<h3 id="浮点数值"><a href="#浮点数值" class="headerlink" title="浮点数值"></a>浮点数值</h3><p>Number 类型使用 IEEE754 格式来表示整数和浮点数值。这种格式有个通病：浮点数值计算会产生 <strong>舍入误差</strong> 的问题，从而导致无法测试 <strong>特定的</strong> 浮点数值，例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (a + b == <span class="number">0.3</span>) &#123; <span class="comment">// 不要做这样的浮点测试！例如 0.1 加 0.2 的结果不是 0.3，而是 0.30000000000000004。</span></span><br><span class="line">    alert(<span class="string">"You got 0.3."</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可见，浮点数值的最高精度虽然有 17 位小数，但在进行算术计算时其精确度远远不如整数。因此建议先将浮点数值转换成整数值进行计算后，再转回浮点数，如此一来就能缓解这个问题。</p>
+<p>此外，由于保存浮点数值需要的内存空间是保存整数值的 <strong>两倍</strong>，因此 ECMAScript 会不失时机地将浮点数值转换为整数值，例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> floatNum1 = <span class="number">1.</span>;    <span class="comment">// 小数点后面没有数字——解析为 1</span></span><br><span class="line"><span class="keyword">var</span> floatNum2 = <span class="number">10.0</span>;  <span class="comment">// 浮点数值本身表示整数——解析为 10</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="数值范围"><a href="#数值范围" class="headerlink" title="数值范围"></a>数值范围</h3><p>由于内存限制，ECMAScript 并不能保存世界上所有的数值，其限制范围下表：</p>
+<table>
+<thead>
+<tr>
+<th>常量</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Number.MIN_VALUE</code></td>
+<td>ECMAScript 能够表示的最小数值，大多数浏览器中为 <code>5e-324</code></td>
+</tr>
+<tr>
+<td><code>Number.MAX_VALUE</code></td>
+<td>ECMAScript 能够表示的最大数值，大多数浏览器中为 <code>1.7976931348623157e+308</code></td>
+</tr>
+</tbody></table>
+<p>如果某次计算的结果得到了一个超出 ECMAScript 数值范围的值，那么该值将被自动转换成特殊的 <code>Infinity</code> 值。该值将无法继续参与下一次的计算，因为 <code>Infinity</code> 不是能够参与计算的数值。要想确定一个数值是不是有穷的（即是否位于最小和最大的数值之间），可以使用 <code>isFinite()</code> 函数进行判断。</p>
+<h3 id="数值转换"><a href="#数值转换" class="headerlink" title="数值转换"></a>数值转换</h3><p>有 3 个函数可以把非数值转换为数值：<code>Number()</code>、<code>parseInt()</code> 和 <code>parseFloat()</code>。第一个函数可以用于任何数据类型，而另两个函数则专门用于把字符串转换成数值。<br>但由于 <code>Number()</code> 函数在转换字符串时比较复杂而且不够合理，因此更常用的是 <code>parseInt()</code> 和 <code>parseFloat()</code> 函数。</p>
+<p><code>parseInt()</code> 函数在转换字符串时，更多的是看其是否符合数值模式：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> num1 = <span class="built_in">parseInt</span>(<span class="string">'  70'</span>);       <span class="comment">// 70（忽略字符串前面的空格，直至找到第一个非空格字符）</span></span><br><span class="line"><span class="keyword">var</span> num2 = <span class="built_in">parseInt</span>(<span class="string">'blue'</span>);       <span class="comment">// NaN（如果第一个字符不是数字字符或者负号，返回 NaN）</span></span><br><span class="line"><span class="keyword">var</span> num3 = <span class="built_in">parseInt</span>(<span class="string">""</span>);           <span class="comment">// NaN（转换空字符串，也返回 NaN）</span></span><br><span class="line"><span class="keyword">var</span> num4 = <span class="built_in">parseInt</span>(<span class="string">"1234blue"</span>);   <span class="comment">// 1234（解析直至遇到一个非数字字符）</span></span><br><span class="line"><span class="keyword">var</span> num5 = <span class="built_in">parseInt</span>(<span class="number">22.5</span>);         <span class="comment">// 22（小数点并不是有效的数字字符）</span></span><br></pre></td></tr></table></figure>
+
+<p>如果字符串中的第一个字符是数字字符，<code>parseInt()</code> 也能够识别出各种整数格式：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> num6 = <span class="built_in">parseInt</span>(<span class="string">"70"</span>);         <span class="comment">// 70(十进制数)</span></span><br><span class="line"><span class="keyword">var</span> num5 = <span class="built_in">parseInt</span>(<span class="string">"070"</span>);        <span class="comment">// 存在分歧，ECMAScript 3 认为是 56 (八进制),ECMAScript 5 认为是 70 (十进制)</span></span><br><span class="line"><span class="keyword">var</span> num3 = <span class="built_in">parseInt</span>(<span class="string">"0xA"</span>);        <span class="comment">// 10(十六进制数)</span></span><br></pre></td></tr></table></figure>
+
+<p>为了消除在使用 <code>parseInt()</code> 函数时可能导致的上述困惑，可以为这个函数提供第二个参数：转换时使用的基数（即多少进制）：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> num1 = <span class="built_in">parseInt</span>(<span class="string">"10"</span>, <span class="number">2</span>);    <span class="comment">// 2 (按二进制解析)</span></span><br><span class="line"><span class="keyword">var</span> num2 = <span class="built_in">parseInt</span>(<span class="string">"10"</span>, <span class="number">8</span>);    <span class="comment">// 8 (按八进制解析)</span></span><br><span class="line"><span class="keyword">var</span> num3 = <span class="built_in">parseInt</span>(<span class="string">"10"</span>, <span class="number">10</span>);   <span class="comment">// 10 (按十进制解析)</span></span><br><span class="line"><span class="keyword">var</span> num4 = <span class="built_in">parseInt</span>(<span class="string">"10"</span>, <span class="number">16</span>);   <span class="comment">// 16 (按十六进制解析)</span></span><br></pre></td></tr></table></figure>
+
+<p>多数情况下，我们要解析的都是十进制数值，因此始终将 10 作为第二个参数是非常必要的。</p>
+<h1 id="基本包装类型"><a href="#基本包装类型" class="headerlink" title="基本包装类型"></a>基本包装类型</h1><p>为了便于操作基本类型值，ECMAScript 还提供了以下 3 个特殊的引用类型，它们都具有与各自的基本类型相应的特殊行为。实际上，每当读取一个基本类型值的时候，后台就会<strong>隐式地</strong>创建一个对应的基本包装类型的对象，从而让我们能够调用一些实用方法来操作这些数据。</p>
+<table>
+<thead>
+<tr>
+<th>字面量</th>
+<th>包装方法</th>
+<th>实用方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>true</code>、<code>false</code></td>
+<td><code>Boolean()</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>70</code> 十进制<br/><code>070</code> 八进制<br/><code>0xA</code> 十六进制<br/><code>3.125e7</code> 科学计数法</td>
+<td><code>Number()</code></td>
+<td><code>toFixed(fractionDigits)</code> 按照指定的小数位四舍五入<br/><code>toExponential(fractionDigits)</code> 科学计数法<br/><code>toPrecision(precision)</code><br/><code>toString(radix)</code> 使用指定基数（即多少进制）将数字转换为字符串</td>
+</tr>
+<tr>
+<td><code>&quot;&quot;</code>、<code>&#39;&#39;</code></td>
+<td><code>String()</code></td>
+<td><code>charAt()</code><br/><code>concat()</code><br/><code>substring()</code><br/><code>indexOf()</code><br/><code>toLowerCase()</code><br/><code>match()</code><br/>……</td>
+</tr>
+</tbody></table>
+<p>不建议<strong>显式地</strong>创建基本包装类型的对象，因为会造成 <code>typeof</code> 操作符判断不符合预期：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typeof</span> <span class="keyword">new</span> <span class="built_in">Boolean</span>(<span class="literal">true</span>)</span><br><span class="line"><span class="string">"object"</span></span><br><span class="line"><span class="keyword">typeof</span> <span class="keyword">new</span> <span class="built_in">Number</span>(<span class="number">70</span>)</span><br><span class="line"><span class="string">"object"</span></span><br><span class="line"><span class="keyword">typeof</span> <span class="keyword">new</span> <span class="built_in">String</span>(<span class="string">''</span>)</span><br><span class="line"><span class="string">"object"</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="快速类型转换"><a href="#快速类型转换" class="headerlink" title="快速类型转换"></a>快速类型转换</h1><p>最后是一些类型转换的小技巧：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> myVar   = <span class="string">"3.14159"</span>,</span><br><span class="line">    str     = <span class="string">""</span>+myVar, <span class="comment">//  to string</span></span><br><span class="line">    int     = ~~myVar,  <span class="comment">//  to integer</span></span><br><span class="line">    float   = <span class="number">1</span>*myVar,  <span class="comment">//  to float</span></span><br><span class="line">    bool    = !!myVar,  <span class="comment">//  to boolean - any string with length and any number except 0 are true</span></span><br><span class="line">    array   = [myVar];  <span class="comment">//  to array</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《JavaScript 高级程序设计》</li>
+<li>《JavaScript 语言精粹》</li>
+<li>《<a href="http://www.w3school.com.cn/js/pro_js_typeconversion.asp" target="_blank" rel="noopener">ECMAScript 类型转换</a>》</li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2016/02/17/javascript-object/" class="prev">PREV</a><a href="/2016/02/10/javascript-intro/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> GNU/Bash 系列（一）什么是 Shell？ · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="GNU/Bash 系列（一）什么是 Shell？ - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">GNU/Bash 系列（一）什么是 Shell？</h1><div class="post-info">2015-03-01<a href="/tags/GNU-Linux/" title="GNU/Linux" class="post-demo">GNU/Linux</a></div><div class="post-content"><h1 id="什么是-Shell-？"><a href="#什么是-Shell-？" class="headerlink" title="什么是 Shell ？"></a>什么是 Shell ？</h1><ul>
+<li>一个命令行解释器，用于将用户输入的命令转换为系统操作；</li>
+<li>Shell 既是交互式命令语言（CMD），也是脚本编程语言（Script）；</li>
+<li>Shell 有很多内置在其源代码中的命令。这些命令是内置的，所以 Shell 不必到磁盘上搜索它们，执行速度因此加快。不同的 Shell 内置命令有所不同；</li>
+</ul>
+<h1 id="有哪些-Shell-？"><a href="#有哪些-Shell-？" class="headerlink" title="有哪些 Shell ？"></a>有哪些 Shell ？</h1><h2 id="GUI-Graphical-User-Interface"><a href="#GUI-Graphical-User-Interface" class="headerlink" title="GUI (Graphical User Interface)"></a>GUI (Graphical User Interface)</h2><ul>
+<li>GNOME</li>
+<li>KDE</li>
+<li>……</li>
+</ul>
+<h2 id="CLI-Command-Line-Interface"><a href="#CLI-Command-Line-Interface" class="headerlink" title="CLI (Command Line Interface)"></a>CLI (Command Line Interface)</h2><p>CLI 实际上是一个程序，比如 /bin/bash 。它是一个实实在在的程序，它打印提示符(PROMPT)，接受用户输入的命令，分析命令序列并执行然后返回结果。</p>
+<ul>
+<li>Bourne Shell (sh)<ul>
+<li>即 sh，是影响最广的 shell 。 1977 年由 Stephen Bourne 在贝尔实验室编写。虽无明文规定，但已成为事实上的标准；</li>
+<li>引入了 shell 通用的、基础的功能，例如管道、变量、条件判断、循环等；</li>
+<li>全部类 Unix 系统，都至少有一个与 sh 兼容的shell；</li>
+<li>sh 一般位于 /bin/sh。目前大部分系统，/bin/sh 都是一个链接，指向一个兼容 sh 的、功能更丰富的 shell，如 bash；</li>
+</ul>
+</li>
+<li>C Shell (csh)<ul>
+<li>即 csh，1978年由 Bill Joy 在伯克利大学毕业后编写；</li>
+<li>Bill Joy，Sun 联合创始人，vi 作者，BSD 作者；</li>
+<li>csh 更加注重交互式使用而非脚本应用，引入了历史功能、别名、目录栈、作业控制等功能；</li>
+</ul>
+</li>
+<li>Bourne Again Shell (bash)<ul>
+<li>即 bash，1989年由 Brian Fox 为 GNU 项目编写。</li>
+<li>综合了 sh、csh、ksh 等各种 shell 的特性；</li>
+<li>名字有双关含义，既是字面上的意思，用于替换 sh，也隐含为了 GNU 而 born again 的意思；</li>
+<li>是 Mac OS X 和大部分 Linux 发行版的默认 shell；</li>
+</ul>
+</li>
+<li>Korn Shell (ksh)</li>
+<li>Z Shell (zsh)</li>
+<li>TENEX C Shell (tcsh)</li>
+<li>……</li>
+</ul>
+<h1 id="GUI-和-CLI-如何切换？"><a href="#GUI-和-CLI-如何切换？" class="headerlink" title="GUI 和 CLI 如何切换？"></a>GUI 和 CLI 如何切换？</h1><p>切换到 tty1 ~ tty6 终端：<code>Ctrl + Alt + [F1 ~ F6]</code></p>
+<p>切换到 GUI：<code>Ctrl + Alt + [F7]</code></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2015/03/05/gnu-bash-shell-invocation/" class="prev">PREV</a><a href="/2015/01/01/more-joel-on-software/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

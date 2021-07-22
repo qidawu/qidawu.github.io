@@ -1,0 +1,1323 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="学习笔记 知识总结 思考感悟"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><ul class="home post-list"><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/05/02/java-jstl/" class="post-title-link">JSP 标准标签库（JSTL）总结</a></h2><div class="post-info">2015-05-02<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><p>JSP 标准标签库（JSP Standard Tag Library）是一个 JSP 标签集合，它封装了 JSP 应用的通用核心功能。</p>
+<p>它的出现，是因为人们开始注重软件的分层设计，不希望在 JSP 页面中出现 JAVA 逻辑代码。同时也由于自定义标签的开发难度较大、不利于技术的标准化，因此产生了 JSTL。</p>
+<p>JSTL 和 EL 的结合，基本可以让页面再无 <code>&lt;% %&gt;</code> 代码。</p>
+<p>JSTL 标准标签库可分为五类：</p>
+<h1 id="核心标签库"><a href="#核心标签库" class="headerlink" title="核心标签库"></a>核心标签库</h1><p>共 14 个，从功能上可以分为 4 类。引用方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ taglib prefix&#x3D;&quot;c&quot; uri&#x3D;&quot;http:&#x2F;&#x2F;java.sun.com&#x2F;jsp&#x2F;jstl&#x2F;core&quot; %&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="表达式控制"><a href="#表达式控制" class="headerlink" title="表达式控制"></a>表达式控制</h2><table>
+<thead>
+<tr>
+<th>标签</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;c:out&gt;</code></td>
+<td>用于显示数据，就像 <code>&lt;%= %&gt;</code>，区别在于 <code>&lt;c:out&gt;</code> 标签可以直接通过 <code>.</code> 操作符来访问属性</td>
+</tr>
+<tr>
+<td><code>&lt;c:set&gt;</code></td>
+<td>用于保存数据</td>
+</tr>
+<tr>
+<td><code>&lt;c:remove&gt;</code></td>
+<td>用于删除数据</td>
+</tr>
+<tr>
+<td><code>&lt;c:catch&gt;</code></td>
+<td>用来处理产生错误的异常状况，并且将错误信息储存起来</td>
+</tr>
+</tbody></table>
+<h2 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h2><table>
+<thead>
+<tr>
+<th>标签</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;c:if&gt;</code></td>
+<td>与我们在一般程序中用的 <code>if</code> 一样</td>
+</tr>
+<tr>
+<td><code>&lt;c:choose&gt;</code></td>
+<td>本身只当做 <code>&lt;c:when&gt;</code> 和 <code>&lt;c:otherwise&gt;</code> 的父标签</td>
+</tr>
+<tr>
+<td><code>&lt;c:when&gt;</code></td>
+<td><code>&lt;c:choose&gt;</code> 的子标签，用来判断条件是否成立</td>
+</tr>
+<tr>
+<td><code>&lt;c:otherwise&gt;</code></td>
+<td><code>&lt;c:choose&gt;</code> 的子标签，接在 <code>&lt;c:when&gt;</code> 标签后，当 <code>&lt;c:when&gt;</code> 标签判断为 <code>false</code> 时被执行</td>
+</tr>
+</tbody></table>
+<h2 id="循环"><a href="#循环" class="headerlink" title="循环"></a>循环</h2><table>
+<thead>
+<tr>
+<th>标签</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;c:forEach&gt;</code></td>
+<td>基础迭代标签，接受多种集合类型</td>
+</tr>
+<tr>
+<td><code>&lt;c:forTokens&gt;</code></td>
+<td>根据指定的<strong>分隔符</strong>来分隔内容并迭代输出</td>
+</tr>
+</tbody></table>
+<h2 id="URL-操作"><a href="#URL-操作" class="headerlink" title="URL 操作"></a>URL 操作</h2><table>
+<thead>
+<tr>
+<th>标签</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;c:import&gt;</code></td>
+<td>检索一个绝对或相对 URL，然后将其内容暴露给页面</td>
+</tr>
+<tr>
+<td><code>&lt;c:url&gt;</code></td>
+<td>使用可选的查询参数来创造一个 URL</td>
+</tr>
+<tr>
+<td><code>&lt;c:redirect&gt;</code></td>
+<td>重定向至一个新的 URL</td>
+</tr>
+<tr>
+<td><code>&lt;c:param&gt;</code></td>
+<td>用来给包含或重定向的页面传递参数</td>
+</tr>
+</tbody></table>
+<h1 id="格式化标签库"><a href="#格式化标签库" class="headerlink" title="格式化标签库"></a>格式化标签库</h1><p>用于格式化并输出文本、日期、时间、数字，这里只介绍最最最常用的两个标签。引用方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ taglib prefix&#x3D;&quot;fmt&quot; uri&#x3D;&quot;http:&#x2F;&#x2F;java.sun.com&#x2F;jsp&#x2F;jstl&#x2F;fmt&quot; %&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="格式化数字"><a href="#格式化数字" class="headerlink" title="格式化数字"></a>格式化数字</h2><table>
+<thead>
+<tr>
+<th>标签</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;fmt:formatNumber&gt;</code></td>
+<td>使用指定的格式或精度格式化数字</td>
+</tr>
+</tbody></table>
+<h2 id="格式化日期"><a href="#格式化日期" class="headerlink" title="格式化日期"></a>格式化日期</h2><table>
+<thead>
+<tr>
+<th>标签</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;fmt:formatDate&gt;</code></td>
+<td>使用指定的风格或模式格式化日期和时间</td>
+</tr>
+</tbody></table>
+<h1 id="SQL-标签库"><a href="#SQL-标签库" class="headerlink" title="SQL 标签库"></a>SQL 标签库</h1><p>不常用。引用方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ taglib prefix&#x3D;&quot;sql&quot; uri&#x3D;&quot;http:&#x2F;&#x2F;java.sun.com&#x2F;jsp&#x2F;jstl&#x2F;sql&quot; %&gt;</span><br></pre></td></tr></table></figure>
+
+<h1 id="XML-标签库"><a href="#XML-标签库" class="headerlink" title="XML 标签库"></a>XML 标签库</h1><p>不常用。引用方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ taglib prefix&#x3D;&quot;x&quot; uri&#x3D;&quot;http:&#x2F;&#x2F;java.sun.com&#x2F;jsp&#x2F;jstl&#x2F;xml&quot; %&gt;</span><br></pre></td></tr></table></figure>
+
+<h1 id="函数标签库"><a href="#函数标签库" class="headerlink" title="函数标签库"></a>函数标签库</h1><p>大部分都是通用的字符串处理函数，用于配合 <strong>EL 表达式</strong>使用。引用方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ taglib prefix&#x3D;&quot;fn&quot; uri&#x3D;&quot;http:&#x2F;&#x2F;java.sun.com&#x2F;jsp&#x2F;jstl&#x2F;functions&quot; %&gt;</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>标签</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>fn:contains()</code></td>
+<td>测试输入的字符串是否包含指定的子串</td>
+</tr>
+<tr>
+<td><code>fn:containsIgnoreCase()</code></td>
+<td>测试输入的字符串是否包含指定的子串，大小写不敏感</td>
+</tr>
+<tr>
+<td><code>fn:endsWith()</code></td>
+<td>测试输入的字符串是否以指定的后缀结尾</td>
+</tr>
+<tr>
+<td><code>fn:escapeXml()</code></td>
+<td>跳过可以作为XML标记的字符</td>
+</tr>
+<tr>
+<td><code>fn:indexOf()</code></td>
+<td>返回指定字符串在输入字符串中出现的位置</td>
+</tr>
+<tr>
+<td><code>fn:join()</code></td>
+<td>将数组中的元素合成一个字符串然后输出</td>
+</tr>
+<tr>
+<td><code>fn:length()</code></td>
+<td>返回字符串长度</td>
+</tr>
+<tr>
+<td><code>fn:replace()</code></td>
+<td>将输入字符串中指定的位置替换为指定的字符串然后返回</td>
+</tr>
+<tr>
+<td><code>fn:split()</code></td>
+<td>将字符串用指定的分隔符分隔然后组成一个子字符串数组并返回</td>
+</tr>
+<tr>
+<td><code>fn:startsWith()</code></td>
+<td>测试输入字符串是否以指定的前缀开始</td>
+</tr>
+<tr>
+<td><code>fn:substring()</code></td>
+<td>返回字符串的子集</td>
+</tr>
+<tr>
+<td><code>fn:substringAfter()</code></td>
+<td>返回字符串在指定子串之后的子集</td>
+</tr>
+<tr>
+<td><code>fn:substringBefore()</code></td>
+<td>返回字符串在指定子串之前的子集</td>
+</tr>
+<tr>
+<td><code>fn:toLowerCase()</code></td>
+<td>将字符串中的字符转为小写</td>
+</tr>
+<tr>
+<td><code>fn:toUpperCase()</code></td>
+<td>将字符串中的字符转为大写</td>
+</tr>
+<tr>
+<td><code>fn:trim()</code></td>
+<td>移除首位的空白符</td>
+</tr>
+</tbody></table>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a href="http://www.runoob.com/jsp/jsp-jstl.html" target="_blank" rel="noopener">JSP 标准标签库（JSTL）</a>》</p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/05/01/java-jsp/" class="post-title-link">JSP 标签总结</a></h2><div class="post-info">2015-05-01<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><p>JSP 有以下三类标签：</p>
+<h1 id="JSP-Directive"><a href="#JSP-Directive" class="headerlink" title="JSP Directive"></a>JSP Directive</h1><p>指令标签用于设置与整个 JSP 页面相关的属性，非常常用。</p>
+<table>
+<thead>
+<tr>
+<th>标签</th>
+<th>标签</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;%@ page ... %&gt;</code></td>
+<td><code>&lt;jsp:directive.page attribute=&quot;value&quot; /&gt;</code></td>
+<td>定义页面的依赖属性，例如脚本语言、页面编码、缓存需求等等</td>
+</tr>
+<tr>
+<td><code>&lt;%@ include ... %&gt;</code></td>
+<td><code>&lt;jsp:directive.include file=&quot;relative url&quot; /&gt;</code></td>
+<td>引入其它文件，例如 JSP、HTML、文本文件</td>
+</tr>
+<tr>
+<td><code>&lt;%@ taglib ... %&gt;</code></td>
+<td><code>&lt;jsp:directive.taglib uri=&quot;uri&quot; prefix=&quot;prefixOfTag&quot; /&gt;</code></td>
+<td>引入标签库，可以是 JSP 标准标签库（JSTL）、也可以是自定义标签库</td>
+</tr>
+</tbody></table>
+<h1 id="JSP-Syntax"><a href="#JSP-Syntax" class="headerlink" title="JSP Syntax"></a>JSP Syntax</h1><p>语法标签是 Java 早期为了便于开发人员在 JSP 页面中书写业务逻辑而设计的，但目前不再建议使用。</p>
+<table>
+<thead>
+<tr>
+<th>标签</th>
+<th>标签</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;% scriptlet %&gt;</code></td>
+<td><code>&lt;jsp:scriptlet&gt; scriptlet &lt;/jsp:scriptlet&gt;</code></td>
+<td>脚本程序，可以包含任意有效的 Java 语句、变量、方法或表达式</td>
+</tr>
+<tr>
+<td><code>&lt;%! declaration %&gt;</code></td>
+<td><code>&lt;jsp:declaration&gt; declaration &lt;/jsp:declaration&gt;</code></td>
+<td>声明语句，可以声明一个或多个变量、方法，供后面的 Java 代码使用</td>
+</tr>
+<tr>
+<td><code>&lt;%= expression %&gt;</code></td>
+<td><code>&lt;jsp:expression&gt; expression &lt;/jsp:expression&gt;</code></td>
+<td>表达式，其结果会被转为字符串并输出到 HTML 页面</td>
+</tr>
+<tr>
+<td><code>&lt;%-- comment --%&gt;</code></td>
+<td></td>
+<td>代码注释</td>
+</tr>
+</tbody></table>
+<p>举个栗子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;%! String output &#x3D; &quot;world&quot;; %&gt;</span><br><span class="line">    </span><br><span class="line">    &lt;% out.println(&quot;Hello &quot; + output); %&gt;</span><br><span class="line">    &lt;br&#x2F;&gt;</span><br><span class="line">    &lt;%&#x3D; &quot;Hello &quot; + output %&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
+
+<p>渲染输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Hello world </span><br><span class="line">Hello world</span><br></pre></td></tr></table></figure>
+
+<p>上例中，虽然结合使用这三种语法标签，可以在 JSP 页面中写出大段的 Java 逻辑代码，但强烈不建议这么做，因为这样会导致前端页面和业务逻辑之间紧耦合，以致后续难以维护。</p>
+<h1 id="JSP-Action"><a href="#JSP-Action" class="headerlink" title="JSP Action"></a>JSP Action</h1><p>函数标签是一些预定义好的行为标签，但不常用。</p>
+<table>
+<thead>
+<tr>
+<th>标签</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;jsp:include&gt;</code></td>
+<td>用于在当前页面中包含静态或动态资源</td>
+</tr>
+<tr>
+<td><code>&lt;jsp:useBean&gt;</code></td>
+<td>寻找和初始化一个 JavaBean 组件</td>
+</tr>
+<tr>
+<td><code>&lt;jsp:setProperty&gt;</code></td>
+<td>设置 JavaBean 组件的值</td>
+</tr>
+<tr>
+<td><code>&lt;jsp:getProperty&gt;</code></td>
+<td>将 JavaBean 组件的值插入到 output 中</td>
+</tr>
+<tr>
+<td><code>&lt;jsp:forward&gt;</code></td>
+<td>从一个 JSP 文件向另一个文件传递一个包含用户请求的 request 对象</td>
+</tr>
+<tr>
+<td><code>&lt;jsp:plugin&gt;</code></td>
+<td>用于在生成的 HTML 页面中包含 Applet 和 JavaBean 对象</td>
+</tr>
+<tr>
+<td><code>&lt;jsp:element&gt;</code></td>
+<td>动态创建一个 XML 元素</td>
+</tr>
+<tr>
+<td><code>&lt;jsp:attribute&gt;</code></td>
+<td>定义动态创建的 XML 元素的属性</td>
+</tr>
+<tr>
+<td><code>&lt;jsp:body&gt;</code></td>
+<td>定义动态创建的 XML 元素的主体</td>
+</tr>
+<tr>
+<td><code>&lt;jsp:text&gt;</code></td>
+<td>用于封装模板数据</td>
+</tr>
+</tbody></table>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/04/26/dnspod/" class="post-title-link">使用 DNSPod 解决 GoDaddy 域名解析不稳定的问题</a></h2><div class="post-info">2015-04-26<a href="/tags/DNS/" title="DNS" class="post-demo">DNS</a><a href="/tags/建站/" title="建站" class="post-demo">建站</a></div><div class="post-content"><p>由于众所周知的原因，GoDaddy 的 Nameservers 有时会被墙，导致其在国内的域名解析服务一直都很不稳定，因此抽空改用了国内的 DNSPod 服务，步骤如下：</p>
+<h1 id="注册-DNSPod-账号"><a href="#注册-DNSPod-账号" class="headerlink" title="注册 DNSPod 账号"></a>注册 DNSPod 账号</h1><p>DNSPod 已并入腾讯，使用 QQ 账号绑定并登录即可。</p>
+<h1 id="添加域名"><a href="#添加域名" class="headerlink" title="添加域名"></a>添加域名</h1><p>添加在域名服务商中购买的域名即可，不带 www 前缀。</p>
+<h1 id="添加-CNAME-记录（canonical-name）"><a href="#添加-CNAME-记录（canonical-name）" class="headerlink" title="添加 CNAME 记录（canonical name）"></a>添加 CNAME 记录（canonical name）</h1><p>这里各人需求不同，设置因人而异。</p>
+<p>对于我的需求而言，需要为域名 <code>cnblog.me</code> 添加两条 <code>CNAME</code> 记录，分别是带 www 前缀和不带的：</p>
+<table>
+<thead>
+<tr>
+<th>主机记录</th>
+<th>记录类型</th>
+<th>记录值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>www</td>
+<td>CNAME</td>
+<td>cynthia903.github.io</td>
+</tr>
+<tr>
+<td>@</td>
+<td>CNAME</td>
+<td>cynthia903.github.io</td>
+</tr>
+</tbody></table>
+<p>什么是主机记录？DNSPod 的备注清晰地描述道，主机记录就是域名前缀，常见用法有：</p>
+<table>
+<thead>
+<tr>
+<th>主机记录</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>www</td>
+<td>解析后的域名为 <a href="http://www.cnblog.me" target="_blank" rel="noopener">www.cnblog.me</a></td>
+</tr>
+<tr>
+<td>@</td>
+<td>直接解析主域名 cnblog.me</td>
+</tr>
+<tr>
+<td>*</td>
+<td>泛解析，匹配其他所有域名 *.cnblog.me</td>
+</tr>
+</tbody></table>
+<h1 id="修改-NS-记录（name-server）"><a href="#修改-NS-记录（name-server）" class="headerlink" title="修改 NS 记录（name server）"></a>修改 NS 记录（name server）</h1><p>什么是 <code>NS</code> 记录？</p>
+<blockquote>
+<p>即域名服务器记录，用于指定该域名由哪个 DNS 服务器进行域名解析。注册域名时，总会有默认的 NS 记录。</p>
+</blockquote>
+<p>接下来我们需要将域名服务商 GoDaddy 默认配置的 <code>NS</code> 记录修改为 DNSPod 提供的 <code>NS</code> 记录，以解决域名解析不稳定的问题。</p>
+<h2 id="记下-DNSPod-的-NS-记录"><a href="#记下-DNSPod-的-NS-记录" class="headerlink" title="记下 DNSPod 的 NS 记录"></a>记下 DNSPod 的 NS 记录</h2><p>DNSPod 默认配置并提供的 <code>NS</code> 记录如下：</p>
+<table>
+<thead>
+<tr>
+<th>主机记录</th>
+<th>记录类型</th>
+<th>记录值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>@</td>
+<td>NS</td>
+<td>f1g1ns1.dnspod.net</td>
+</tr>
+<tr>
+<td>@</td>
+<td>NS</td>
+<td>f1g1ns2.dnspod.net</td>
+</tr>
+</tbody></table>
+<h2 id="修改默认配置的-NS-记录"><a href="#修改默认配置的-NS-记录" class="headerlink" title="修改默认配置的 NS 记录"></a>修改默认配置的 NS 记录</h2><p>进入 GoDaddy 的 NAMESERVER SETTINGS ，SETUP TYPE 默认为 Standard ，并默认配置了一组 <code>NS</code> 记录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ns35.domaincontrol.com</span><br><span class="line">ns36.domaincontrol.com</span><br></pre></td></tr></table></figure>
+
+<p>由于 GoDaddy 默认配置的这组 Nameservers <code>*.domaincontrol.com</code> 被墙，导致域名解析不稳定，需要修改为国内 DNSPod 的 Nameservers 。</p>
+<p>将 SETUP TYPE 切换到 Custom ，并添加 DNSPod 提供的 <code>NS</code> 记录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">f1g1ns1.dnspod.net</span><br><span class="line">f1g1ns2.dnspod.net</span><br></pre></td></tr></table></figure>
+
+<p>修改成功后，域名 <code>cnblog.me</code> 将会使用 DNSPod 提供的域名解析服务。</p>
+<h1 id="DNS-解析测试"><a href="#DNS-解析测试" class="headerlink" title="DNS 解析测试"></a>DNS 解析测试</h1><p>使用 dig 命令测试，可见 <code>www.cnblog.me</code> 的 <code>CNAME</code> 记录、 <code>NS</code> 记录已经配置成功：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ dig +trace www.cnblog.me</span><br><span class="line"></span><br><span class="line">......（此处略过 Root、TLD，只展示权威域名服务器的解析结果）</span><br><span class="line">www.cnblog.me.          600     IN      CNAME   cynthia903.github.io.</span><br><span class="line">cnblog.me.              600     IN      NS      f1g1ns1.dnspod.net.</span><br><span class="line">cnblog.me.              600     IN      NS      f1g1ns2.dnspod.net.</span><br></pre></td></tr></table></figure></div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/04/21/eclipse-default-key-assist/" class="post-title-link">Eclipse 系列之常用默认快捷键</a></h2><div class="post-info">2015-04-21<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><p>常用的 Eclipse 默认快捷键，总结如下：</p>
+<h1 id="源码类"><a href="#源码类" class="headerlink" title="源码类"></a>源码类</h1><p>这一类快捷键是我的最爱，可以极大的提高编程和重构效率。</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Binding</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Quick Fix</td>
+<td>Ctrl+1</td>
+<td>Suggest possible fixes for a problem</td>
+</tr>
+<tr>
+<td>Content Assist</td>
+<td>Alt+/</td>
+<td>内容辅助（代码提示）</td>
+</tr>
+<tr>
+<td>Show Source Quick Menu</td>
+<td>Alt+Shift+S</td>
+<td>重构</td>
+</tr>
+<tr>
+<td>Rename</td>
+<td>Alt+Shift+R</td>
+<td>重命名</td>
+</tr>
+<tr>
+<td>Extract Function</td>
+<td>Alt+Shift+M</td>
+<td>抽取方法</td>
+</tr>
+<tr>
+<td>Organize Imports</td>
+<td>Ctrl+Shift+O</td>
+<td>自动导入类包</td>
+</tr>
+</tbody></table>
+<h1 id="搜索类"><a href="#搜索类" class="headerlink" title="搜索类"></a>搜索类</h1><p>Eclipse 这类 IDE 区别于其它文本编辑器（如 Vim、UE、EP、Notepad2 等）的一大优势是拥有强大的引用和搜索功能。</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Binding</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Incremental Find</td>
+<td>Ctrl+J</td>
+<td>增量搜索</td>
+</tr>
+<tr>
+<td>Incremental Find Reverse</td>
+<td>Ctrl+Shift+J</td>
+<td>反向搜索</td>
+</tr>
+<tr>
+<td>Go to Line</td>
+<td>Ctrl+L</td>
+<td>定位到指定行</td>
+</tr>
+<tr>
+<td>Open Search Dialog</td>
+<td>Ctrl+H</td>
+<td>打开搜索对话框</td>
+</tr>
+<tr>
+<td>Open Resource</td>
+<td>Ctrl+Shift+R</td>
+<td>开发目标资源文件</td>
+</tr>
+<tr>
+<td>Open Call Hierarchy</td>
+<td>Ctrl+Alt+H</td>
+<td>查找指定元素的调用栈 / Open a call hierarchy on the selected element</td>
+</tr>
+<tr>
+<td>Show Occurrences in File Quick Menu</td>
+<td>Ctrl+Shift+U</td>
+<td>在<strong>当前文件</strong>中查找指定元素的引用</td>
+</tr>
+<tr>
+<td>References in Workspace</td>
+<td>Ctrl+Shift+G</td>
+<td>在<strong>工作空间</strong>中查找指定元素的引用</td>
+</tr>
+</tbody></table>
+<h1 id="文本编辑类"><a href="#文本编辑类" class="headerlink" title="文本编辑类"></a>文本编辑类</h1><p>偷懒者必备。</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Binding</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Delete Line</td>
+<td>Ctrl+D</td>
+<td>删除当前行</td>
+</tr>
+<tr>
+<td>Toggle Comment</td>
+<td>Ctrl+/</td>
+<td>注释当前行</td>
+</tr>
+<tr>
+<td>Move Lines Up</td>
+<td>Alt+↑</td>
+<td>将选定行上移</td>
+</tr>
+<tr>
+<td>Move Lines Down</td>
+<td>Alt+↓</td>
+<td>将选定行下移</td>
+</tr>
+<tr>
+<td>Duplicate Lines</td>
+<td>Ctrl+Alt+↑</td>
+<td>复制选定行</td>
+</tr>
+<tr>
+<td>Copy Lines</td>
+<td>Ctrl+Alt+↓</td>
+<td>复制选定行</td>
+</tr>
+<tr>
+<td>To Upper Case</td>
+<td>Ctrl+Shift+X</td>
+<td>将所选区域字母设置为大写</td>
+</tr>
+<tr>
+<td>To Lower Case</td>
+<td>Ctrl+Shift+Y</td>
+<td>将所选区域字母设置为小写</td>
+</tr>
+<tr>
+<td>Toggle Block Selection</td>
+<td>Alt+Shift+A</td>
+<td>块编辑功能 / Toggle block / column selection in the current text editor</td>
+</tr>
+</tbody></table>
+<h1 id="其它类"><a href="#其它类" class="headerlink" title="其它类"></a>其它类</h1><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Binding</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Backward History</td>
+<td>Alt+←</td>
+<td>前一个编辑页面 / Move backward in the editor navigation history</td>
+</tr>
+<tr>
+<td>Forward History</td>
+<td>Alt+→</td>
+<td>后一个编辑页面 / Move forward in the editor navigation history</td>
+</tr>
+<tr>
+<td>Scroll Line Up</td>
+<td>Ctrl+↑</td>
+<td>向上滚动一行文本 / Scroll up one line of text</td>
+</tr>
+<tr>
+<td>Scroll Line Down</td>
+<td>Ctrl+↓</td>
+<td>向下滚动一行文本 / Scroll down one line of text</td>
+</tr>
+<tr>
+<td>Maximize Active View or Editor</td>
+<td>Ctrl+M</td>
+<td>全屏 / Toggles maximize/restore state of active view or editor</td>
+</tr>
+<tr>
+<td>Properties</td>
+<td>Alt+Enter</td>
+<td>Display the properties of the selected item</td>
+</tr>
+</tbody></table>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/04/19/eclipse-customize-key-assist/" class="post-title-link">Eclipse 系列之自定义高效快捷键</a></h2><div class="post-info">2015-04-19<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><blockquote>
+<p>好的快捷键可以提高编码的效率。</p>
+</blockquote>
+<h1 id="第三方解决方案"><a href="#第三方解决方案" class="headerlink" title="第三方解决方案"></a>第三方解决方案</h1><p>曾经使用过 Eclipse 的 Vim 插件 <a href="http://www.viplugin.com/" target="_blank" rel="noopener">viplugin</a> 提升光标移动和文本编辑的效率，但终因一些热键冲突问题而放弃使用了，有兴趣的同学可以参考 《<a href="http://viplugin.com/files/User_Manual_viPlugin.pdf" target="_blank" rel="noopener">viplugin 用户手册</a>》，付费破解参考<a href="http://blog.163.com/thomaskjh@126/blog/static/37082998201231810718341/" target="_blank" rel="noopener">这里</a>。</p>
+<p>其它解决方案还有 <a href="http://vrapper.sourceforge.net/" target="_blank" rel="noopener">vrapper</a>、<a href="http://eclim.org/" target="_blank" rel="noopener">eclim</a> ，可以自行体验。</p>
+<h1 id="我的方案"><a href="#我的方案" class="headerlink" title="我的方案"></a>我的方案</h1><p>经过权衡，还是决定自定义一套属于自己的快捷键。键位主要参考 Vim 和 Bash ，并主要利用闲置的 <code>Alt</code> 键避免冲突，配置总结如下：</p>
+<h2 id="移动光标类"><a href="#移动光标类" class="headerlink" title="移动光标类"></a>移动光标类</h2><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Binding</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Line Up</td>
+<td><code>Alt + K</code></td>
+<td>↑</td>
+</tr>
+<tr>
+<td>Line Down</td>
+<td><code>Alt + J</code></td>
+<td>↓</td>
+</tr>
+<tr>
+<td>Previous Column</td>
+<td><code>Alt + H</code></td>
+<td>←</td>
+</tr>
+<tr>
+<td>Next Column</td>
+<td><code>Alt + L</code></td>
+<td>→</td>
+</tr>
+<tr>
+<td>Line Start</td>
+<td><code>Alt + A</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Line End</td>
+<td><code>Alt + E</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Previous Word</td>
+<td><code>Alt + B</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Next Word</td>
+<td><code>Alt + F</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Go to Next Member</td>
+<td><code>Alt + G</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Go to Previous Member</td>
+<td><code>Alt + Shift + G</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Open Implementation</td>
+<td><code>Alt + Q</code></td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="通用类"><a href="#通用类" class="headerlink" title="通用类"></a>通用类</h2><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Binding</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Delete</td>
+<td><code>Alt + D</code></td>
+</tr>
+<tr>
+<td>Select Enclosing Element</td>
+<td><code>Alt + S</code></td>
+</tr>
+<tr>
+<td>File Search</td>
+<td><code>Ctrl + H</code></td>
+</tr>
+<tr>
+<td>Next View</td>
+<td><code>Alt + V</code></td>
+</tr>
+<tr>
+<td>Rerun JUnit Test</td>
+<td><code>Alt + R</code></td>
+</tr>
+<tr>
+<td>Run Maven Clean</td>
+<td><code>Alt + Shift + X, C</code></td>
+</tr>
+</tbody></table>
+<h2 id="Git-类"><a href="#Git-类" class="headerlink" title="Git 类"></a>Git 类</h2><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Binding</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Pull</td>
+<td><code>Alt + 1</code></td>
+</tr>
+<tr>
+<td>Commit</td>
+<td><code>Alt + 2</code></td>
+</tr>
+<tr>
+<td>Show in History</td>
+<td><code>Alt + 3</code></td>
+</tr>
+<tr>
+<td>Compare with HEAD Revision</td>
+<td><code>Alt + 4</code></td>
+</tr>
+<tr>
+<td>Replace with HEAD Revision</td>
+<td><code>Alt + 5</code></td>
+</tr>
+<tr>
+<td>Show In (Git Repositories)</td>
+<td><code>Alt + 6</code></td>
+</tr>
+</tbody></table>
+<h2 id="SVN-类"><a href="#SVN-类" class="headerlink" title="SVN 类"></a>SVN 类</h2><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Binding</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>更新</td>
+<td><code>Alt + 1</code></td>
+</tr>
+<tr>
+<td>提交</td>
+<td><code>Alt + 2</code></td>
+</tr>
+<tr>
+<td>Show History</td>
+<td><code>Alt + 3</code></td>
+</tr>
+<tr>
+<td>Compare with Local Base Revision</td>
+<td><code>Alt + 4</code></td>
+</tr>
+<tr>
+<td>复原</td>
+<td><code>Alt + 5</code></td>
+</tr>
+</tbody></table>
+<p>注意，Eclipse 有 Bug 在配置完以上 SVN 快捷键之后，快捷键是无法使用的，需要为当前的视图（Perspective）添加一个 SVN 的工具。配置如下：</p>
+<blockquote>
+<p>Window &gt; Customize Perspective… &gt; Tool Bar Visibility</p>
+</blockquote>
+<p>勾选 SVN 即可。</p>
+<h1 id="另辟蹊径的方案"><a href="#另辟蹊径的方案" class="headerlink" title="另辟蹊径的方案"></a>另辟蹊径的方案</h1><p>其实也可以不必局限于 Eclipse 这款 IDE ，热爱 Vim 快捷键的同学可以考虑使用其它 IDE ，如 <a href="http://www.sublimetext.com/" target="_blank" rel="noopener">Sublime Text</a> ，可以原生完美支持 Vim 快捷键，配置如下：</p>
+<blockquote>
+<p>Preferences - Settings - User - “ignored_packages”: []</p>
+</blockquote>
+<p>去掉 [] 里面的 “Vintage” 即可。</p>
+<p>在写 Python 代码时就感觉体验很好，值得一试。</p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/04/19/gnu-bash-shortcut-keys/" class="post-title-link">GUN/Bash 系列（八）快捷键总结</a></h2><div class="post-info">2015-04-19<a href="/tags/GNU-Linux/" title="GNU/Linux" class="post-demo">GNU/Linux</a></div><div class="post-content"><p>下面总结的是 GNU/Bash 中部分最实用的命令名称及默认情况下它们关联的快捷键。更多快捷键请参考 GNU/Bash 文档的 Readline 库。</p>
+<h1 id="移动（Commands-for-Moving）"><a href="#移动（Commands-for-Moving）" class="headerlink" title="移动（Commands for Moving）"></a>移动（Commands for Moving）</h1><table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Command name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Ctrl + A</code></td>
+<td>beginning-of-line</td>
+<td>Move to the start of the current line.</td>
+</tr>
+<tr>
+<td><code>Ctrl + E</code></td>
+<td>end-of-line</td>
+<td>Move to the end of the line.</td>
+</tr>
+<tr>
+<td><code>Ctrl + F</code></td>
+<td>forward-char</td>
+<td>Move forward a character.</td>
+</tr>
+<tr>
+<td><code>Ctrl + B</code></td>
+<td>backward-char</td>
+<td>Move back a character.</td>
+</tr>
+<tr>
+<td><code>Alt + F</code></td>
+<td>forward-word</td>
+<td>Move forward to the end of the next word. Words are composed of alphanumeric characters (letters and digits).</td>
+</tr>
+<tr>
+<td><code>Alt + B</code></td>
+<td>backward-word</td>
+<td>Move back to the start of the current or previous word. Words are composed of alphanumeric characters (letters and digits).</td>
+</tr>
+<tr>
+<td><code>Ctrl + L</code></td>
+<td>clear-screen</td>
+<td>Clear the screen leaving the current line at the top of the screen. With an argument, refresh the current line without clearing the screen.</td>
+</tr>
+</tbody></table>
+<h1 id="操纵历史行（Commands-for-Manipulating-the-History）"><a href="#操纵历史行（Commands-for-Manipulating-the-History）" class="headerlink" title="操纵历史行（Commands for Manipulating the History）"></a>操纵历史行（Commands for Manipulating the History）</h1><table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Command name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Ctrl + P</code></td>
+<td>previous-history</td>
+<td>Fetch the previous command from the history list, moving back in the list.</td>
+</tr>
+<tr>
+<td><code>Ctrl + N</code></td>
+<td>next-history</td>
+<td>Fetch the next command from the history list, moving forward in the list.</td>
+</tr>
+<tr>
+<td><code>Ctrl + R</code></td>
+<td>reverse-search-history</td>
+<td>Search backward starting at the current line and moving `up’ through the history as necessary. This is an incremental search.</td>
+</tr>
+<tr>
+<td><code>Alt + Ctrl + Y</code></td>
+<td>yank-nth-arg</td>
+<td>Insert the first argument to the previous command (usually the second word on the previous line) at point. With an argument n, insert the nth word from the previous command (the words in the previous command begin with word 0). A negative argument inserts the nth word from the end of the previous command. Once the argument n is computed, the argument is extracted as if the “!n” history expansion had been specified.</td>
+</tr>
+</tbody></table>
+<h1 id="改变文本（Commands-for-Changing-Text）"><a href="#改变文本（Commands-for-Changing-Text）" class="headerlink" title="改变文本（Commands for Changing Text）"></a>改变文本（Commands for Changing Text）</h1><table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Command name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Ctrl + D</code></td>
+<td>delete-char</td>
+<td>Delete the character at point. If point is at the beginning of the line, there are no characters in the line, and the last character typed was not bound to delete-char, then return EOF.</td>
+</tr>
+</tbody></table>
+<h1 id="剪切和粘贴（Killing-and-Yanking）"><a href="#剪切和粘贴（Killing-and-Yanking）" class="headerlink" title="剪切和粘贴（Killing and Yanking）"></a>剪切和粘贴（Killing and Yanking）</h1><table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Command name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Ctrl + K</code></td>
+<td>kill-line</td>
+<td>Kill the text from point to the end of the line.</td>
+</tr>
+<tr>
+<td><code>Ctrl + U</code></td>
+<td>backward-kill-line</td>
+<td>Kill backward from point to the beginning of the line.</td>
+</tr>
+<tr>
+<td><code>Alt + D</code></td>
+<td>kill-word</td>
+<td>Kill from point to the end of the current word, or if between words, to the end of the next word. Word boundaries are the same as those used by forward-word.</td>
+</tr>
+<tr>
+<td><code>Ctrl + W</code></td>
+<td>backward-kill-word</td>
+<td>Kill the word behind point, using white space as a word boundary. The killed text is saved on the kill-ring.</td>
+</tr>
+<tr>
+<td><code>Ctrl + Y</code></td>
+<td>yank</td>
+<td>Yank the top of the kill ring into the buffer at point.</td>
+</tr>
+</tbody></table>
+<h1 id="补全（Completing）"><a href="#补全（Completing）" class="headerlink" title="补全（Completing）"></a>补全（Completing）</h1><table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Command name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>TAB</code></td>
+<td>complete</td>
+<td>Attempt to perform completion on the text before point. Bash attempts completion treating the text as a variable (if the text begins with $), username (if the text begins with ~), hostname (if the text begins with @), or command (including aliases and functions) in turn. If none of these produces a match, filename completion is attempted.</td>
+</tr>
+</tbody></table>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a href="http://www.gnu.org/software/bash/manual/bashref.html#Bindable-Readline-Commands" target="_blank" rel="noopener">GNU/Bash Readline Commands</a>》</p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/04/12/godaddy-cname-without-www/" class="post-title-link">GoDaddy 中配置无 www 前缀域名</a></h2><div class="post-info">2015-04-12<a href="/tags/DNS/" title="DNS" class="post-demo">DNS</a><a href="/tags/建站/" title="建站" class="post-demo">建站</a></div><div class="post-content"><p>搭好博客后，在权威域名服务商 GoDaddy 注册了一个新域名使用。当配置无 www 前缀域名时，却遇到了一些配置问题。</p>
+<h1 id="为什么要配置无-www-前缀的域名？"><a href="#为什么要配置无-www-前缀的域名？" class="headerlink" title="为什么要配置无 www 前缀的域名？"></a>为什么要配置无 www 前缀的域名？</h1><p>引述<a href="http://www.zhihu.com/question/20064691" target="_blank" rel="noopener">知乎</a>：</p>
+<blockquote>
+<p>www 是一个二级域名。无 www 才是一级域名。</p>
+<p>拿掉它的原因有两个：</p>
+<ol>
+<li>遵循 Google 的关于域名长度的建议。</li>
+<li>保证网站的某一个页面有且只有一个唯一的 URL 可以访问。</li>
+</ol>
+</blockquote>
+<h1 id="CNAME-配置问题"><a href="#CNAME-配置问题" class="headerlink" title="CNAME 配置问题"></a>CNAME 配置问题</h1><p>@ 记录指没有主机名的域名部份，如 foo.com 。于是想通过 GoDaddy 的 DNS ZONE FILE 配置一条 Host 为 @ 的 CNAME 记录：</p>
+<table>
+<thead>
+<tr>
+<th>Host</th>
+<th>Points To</th>
+<th>TTL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>www</td>
+<td>cynthia903.github.io</td>
+<td>1 Hour</td>
+</tr>
+<tr>
+<td>@</td>
+<td>cynthia903.github.io</td>
+<td>1 Hour</td>
+</tr>
+</tbody></table>
+<p>保存修改时，却报错了：</p>
+<blockquote>
+<p>THESE RECORDS WERE NOT PROCESSED DUE TO ERRORS:</p>
+<p>The specified record already exists.</p>
+<p>CNAME - @</p>
+</blockquote>
+<p>原来按 <a href="http://www.ietf.org/rfc/rfc1034.txt" target="_blank" rel="noopener">rfc1034</a> 规定，是不能对 @ 记录做 CNAME 的，只能做 A 记录。</p>
+<h1 id="301-重定向跳转"><a href="#301-重定向跳转" class="headerlink" title="301 重定向跳转"></a>301 重定向跳转</h1><p>经查询，常见做法是将 foo.com 做 301 重定向跳转到 <a href="http://www.foo.com" target="_blank" rel="noopener">www.foo.com</a> 。GoDaddy 的 Forwarding 配置可以实现该功能：</p>
+<p>CNBLOG.ME</p>
+<table>
+<thead>
+<tr>
+<th>Forward to</th>
+<th>Redirect</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="http://www.cnblog.me" target="_blank" rel="noopener">http://www.cnblog.me</a></td>
+<td>301 (Permanent)</td>
+<td>Forward only</td>
+</tr>
+</tbody></table>
+<h1 id="解析测试"><a href="#解析测试" class="headerlink" title="解析测试"></a>解析测试</h1><h2 id="301-重定向跳转测试"><a href="#301-重定向跳转测试" class="headerlink" title="301 重定向跳转测试"></a>301 重定向跳转测试</h2><p>使用 chrome 的开发者工具（F12 或 Ctrl+Shift+I 打开），访问 cnblog.me</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Method</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="http://cnblog.me/" target="_blank" rel="noopener">http://cnblog.me/</a></td>
+<td>GET</td>
+<td>301 Moved Permanently</td>
+</tr>
+<tr>
+<td><a href="http://www.cnblog.me/" target="_blank" rel="noopener">http://www.cnblog.me/</a></td>
+<td>GET</td>
+<td>200 OK</td>
+</tr>
+</tbody></table>
+<h2 id="DNS-解析测试"><a href="#DNS-解析测试" class="headerlink" title="DNS 解析测试"></a>DNS 解析测试</h2><h3 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h3><p>使用 dig 命令测试，可见 <a href="http://www.cnblog.me" target="_blank" rel="noopener">www.cnblog.me</a> 已经成功 CNAME 到 cynthia903.github.io 。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ dig -t cname www.cnblog.me</span><br><span class="line"></span><br><span class="line">;; QUESTION SECTION:</span><br><span class="line">;www.cnblog.me.                 IN      CNAME</span><br><span class="line"></span><br><span class="line">;; ANSWER SECTION:</span><br><span class="line">www.cnblog.me.          3277    IN      CNAME   cynthia903.github.io.</span><br></pre></td></tr></table></figure>
+
+<h3 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h3><p>使用 nslookup 命令测试：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ nslookup www.cnblog.me</span><br><span class="line">服务器:  cache-b.guangzhou.gd.cn</span><br><span class="line">Address:  202.96.128.166	&#x2F;&#x2F; 当前使用的 DNS 服务器。如果无法解析，可以换用谷歌的试试（nslookup www.cnblog.me 8.8.8.8）</span><br><span class="line"></span><br><span class="line">非权威应答:</span><br><span class="line">名称:    github.map.fastly.net</span><br><span class="line">Address:  199.27.78.133</span><br><span class="line">Aliases:  www.cnblog.me</span><br><span class="line">          cynthia903.github.io</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《<a href="http://serverfault.com/questions/486406/configuring-cname-record-in-godaddy-control-panel" target="_blank" rel="noopener">Configuring “@” CNAME record in GoDaddy control panel</a>》</li>
+</ul>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/04/06/broswer-kernel/" class="post-title-link">浏览器与内核总结</a></h2><div class="post-info">2015-04-06<a href="/tags/前端/" title="前端" class="post-demo">前端</a></div><div class="post-content"><p>工作中需要测试 JavaScript 浏览器兼容性，简单总结如下。</p>
+<h1 id="内核介绍"><a href="#内核介绍" class="headerlink" title="内核介绍"></a>内核介绍</h1><table>
+<thead>
+<tr>
+<th>内核</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Trident</td>
+<td>IE 内核，Trident 内核长期一家独大，很多国内浏览器使用。</td>
+</tr>
+<tr>
+<td>Webkit</td>
+<td>苹果公司自己的内核，也是苹果的 Safari 浏览器使用的内核。Chrome 也曾使用此内核。</td>
+</tr>
+<tr>
+<td>Blink</td>
+<td>2013年4月3日谷歌称将与苹果 Webkit 分道扬镳，将自主研发 Blink 渲染引擎（即浏览器核心），内置于 Chrome 浏览器之中。</td>
+</tr>
+<tr>
+<td>Gecko</td>
+<td>Firefox 使用的内核。</td>
+</tr>
+<tr>
+<td>Presto</td>
+<td>Opera 前内核(已废弃)，现已改用 Webkit 内核。</td>
+</tr>
+</tbody></table>
+<h1 id="浏览器及其内核"><a href="#浏览器及其内核" class="headerlink" title="浏览器及其内核"></a>浏览器及其内核</h1><table>
+<thead>
+<tr>
+<th>浏览器</th>
+<th>IE7</th>
+<th>IE8</th>
+<th>IE9</th>
+<th>IE10</th>
+<th>Webkit</th>
+<th>Gecko</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Internet Explorer 7</td>
+<td>√</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Internet Explorer 8</td>
+<td></td>
+<td>√</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Internet Explorer 9</td>
+<td></td>
+<td></td>
+<td>√</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Internet Explorer 10</td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Google Chrome</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Mozilla Firefox</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+<td></td>
+</tr>
+<tr>
+<td>Apple Safari</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Opera</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+<td></td>
+<td>Opera 放弃自家 Presto 内核转投 WebKit</td>
+</tr>
+<tr>
+<td>360极速浏览器</td>
+<td>√</td>
+<td></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>360安全浏览器</td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>傲游云浏览器</td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+<td></td>
+<td>通过菜单，切换浏览内核：兼容-&gt;极速 操作</td>
+</tr>
+<tr>
+<td>QQ浏览器</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td></td>
+<td>通过兼容性视图切到 IE7，通过启用扩展组件调用 Webkit 内核</td>
+</tr>
+<tr>
+<td>搜狐高速浏览器</td>
+<td>√</td>
+<td></td>
+<td></td>
+<td></td>
+<td>√</td>
+<td></td>
+<td>在地址栏点击切换“高速”或“兼容”模式</td>
+</tr>
+</tbody></table>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《<a href="http://www.feelcss.com/domestic-ie-core-browser-called-ie-version.html" target="_blank" rel="noopener">国内各IE内核浏览器所调用的IE版本</a>》</li>
+<li>《<a href="http://castic.cyscc.org/help/browserdetecter/" target="_blank" rel="noopener">浏览器检测工具</a>》</li>
+</ul>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/04/03/docker-installation-problem/" class="post-title-link">Docker 启动失败问题处理</a></h2><div class="post-info">2015-04-03<a href="/tags/Docker/" title="Docker" class="post-demo">Docker</a></div><div class="post-content"><p>Q1 参加了一场 Docker 技术分享后，发现了 Docker 这个好东西，回头动手安装，打算跑起来体验一番，却遇到了一些蛋疼的问题。</p>
+<h1 id="如何安装-Docker"><a href="#如何安装-Docker" class="headerlink" title="如何安装 Docker"></a>如何安装 Docker</h1><p>Windows 如何安装 Docker？参考 <a href="https://docs.docker.com/installation/windows/" target="_blank" rel="noopener">官网安装教程</a> 。</p>
+<p>由于 Docker 引擎使用了 Linux 特有的内核特性，因此在 Windows 中运行 Docker 需要使用一个轻量级的虚拟机。方便起见，Docker 团队设计了一个名为“Boot2Docker”的辅助程序用于安装所需的虚拟机并用于运行 Docker 进程。</p>
+<p>此外，由于 Docker 对镜像（Image）的增删改查操作都是通过 Git ，因此在 Windows 下，还需要一个 MSYS-git 客户端。</p>
+<p>因此，Boot2Docker 内置：</p>
+<ul>
+<li>Boot2Docker</li>
+<li>Boot2Docker Management Tool</li>
+<li><a href="https://www.virtualbox.org" target="_blank" rel="noopener">VirtualBox</a></li>
+<li><a href="http://msysgit.github.io/" target="_blank" rel="noopener">MSYS-git</a></li>
+</ul>
+<p>需要注意，如果之前本地已经安装过 Git / GitHub for Windows 、VirtualBox ，则无需再安装内置的 MSYS-git、 VirtualBox 。</p>
+<h1 id="VirtualBox-导致的启动失败问题"><a href="#VirtualBox-导致的启动失败问题" class="headerlink" title="VirtualBox 导致的启动失败问题"></a>VirtualBox 导致的启动失败问题</h1><h2 id="初始化（docker-init）失败问题处理"><a href="#初始化（docker-init）失败问题处理" class="headerlink" title="初始化（docker init）失败问题处理"></a>初始化（docker init）失败问题处理</h2><p>安装成功后，使用 Git Shell 运行启动脚本，结果却报错：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ start.sh</span><br><span class="line">copying initial boot2docker.iso (run &quot;boot2docker.exe download&quot; to update)</span><br><span class="line">initializing...</span><br><span class="line">error in run: Failed to initialize machine &quot;boot2docker-vm&quot;: exit status 1</span><br></pre></td></tr></table></figure>
+
+<p>通过阅读 start.sh 脚本，发现卡在了 docker init 初始化这个步骤：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo &#39;initializing...&#39;</span><br><span class="line">.&#x2F;boot2docker.exe init</span><br></pre></td></tr></table></figure>
+
+<p>这时候，通过错误日志或控制台输出排查错误就很关键了，<code>-v</code> 参数可以用于显示详细的命令调用过程：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-v, --verbose&#x3D;false: display verbose command invocations.</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ boot2docker.exe init -v</span><br><span class="line">Boot2Docker-cli version: v1.4.1</span><br><span class="line">Git commit: 43241cb</span><br><span class="line">2015&#x2F;04&#x2F;03 11:57:06 executing: E:\Developer\Oracle\VirtualBox\VBoxManage.exe showvminfo boot2docker-vm --machinereadable</span><br><span class="line">2015&#x2F;04&#x2F;03 11:57:06 executing: E:\Developer\Oracle\VirtualBox\VBoxManage.exe showvminfo boot2docker-vm --machinereadable</span><br><span class="line">2015&#x2F;04&#x2F;03 11:57:06 executing: E:\Developer\Oracle\VirtualBox\VBoxManage.exe list vms</span><br><span class="line">VBoxManage.exe: error: Failed to create the VirtualBox object!</span><br><span class="line">VBoxManage.exe: error: Code E_INVALIDARG (0x80070057) - One or more arguments are invalid (extended info not available)</span><br><span class="line">VBoxManage.exe: error: Most likely, the VirtualBox COM server is not running or failed to start.</span><br><span class="line">error in run: Failed to initialize machine &quot;boot2docker-vm&quot;: exit status 1</span><br></pre></td></tr></table></figure>
+
+<p>通过控制台输出发现，VirtualBox 下的 <code>VBoxManage.exe</code> 运行出错了。</p>
+<p>当时很疑惑，本地使用的是 Docker 内置 VirtualBox ，打开 <code>VirtualBox.exe</code>，同样会报错。</p>
+<p>翻了下 VirtualBox 日志文件，Google 了一番输出错误，貌似跟什么 <a href="http://www.dotcoo.com/virtualbox-uxtheme" target="_blank" rel="noopener">Windows 破解主题的 DLL 文件</a>有关，折腾了一番没能解决。</p>
+<p><a href="http://www.cnblogs.com/tanhangbo/p/4282605.html" target="_blank" rel="noopener">再次搜索</a>，最后发现了两个问题：</p>
+<ol>
+<li>程序兼容性问题导致 VirtualBox 无法打开；</li>
+<li>VirtualBox 版本问题导致虚拟机无法启动；</li>
+</ol>
+<p>第一个问题，通过对 <code>VBoxManage.exe</code>、<code>VBoxManage.exe</code> 右键 - 勾选“以兼容模式运行这个程序”，至少保证打开程序不会报错。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ Oracle&#x2F;VirtualBox&#x2F;VBoxManage.exe list vms</span><br><span class="line">&quot;centos&quot; &#123;440faef3-b83d-4daa-b7ce-3942c03dc580&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第二个问题，通过多个版本的安装/卸载尝试，最后发现在我的电脑使用 VirtualBox 4.3.10 能够正常启动虚拟机。</p>
+<h2 id="启动（docker-start）失败问题处理"><a href="#启动（docker-start）失败问题处理" class="headerlink" title="启动（docker start）失败问题处理"></a>启动（docker start）失败问题处理</h2><p>Docker 成功初始化后，还遇到一个虚拟化失败导致的 VirtualBox 无法启动的问题，报错如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">......</span><br><span class="line">VMSetError: VT-x is disabled in the BIOS.</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+
+<p>打开 BIOS 的 Virtualization Technology (VTx/VTd) 开关，即可解决问题。</p>
+<h1 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h1><p>再次运行 Docker 启动脚本，Docker 终于启动起来了！</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">connecting...</span><br><span class="line">                        ##        .</span><br><span class="line">                  ## ## ##       &#x3D;&#x3D;</span><br><span class="line">               ## ## ## ##      &#x3D;&#x3D;&#x3D;</span><br><span class="line">           &#x2F;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;\___&#x2F; &#x3D;&#x3D;&#x3D;</span><br><span class="line">      ~~~ &#123;~~ ~~~~ ~~~ ~~~~ ~~ ~ &#x2F;  &#x3D;&#x3D;&#x3D;- ~~~</span><br><span class="line">           \______ o          __&#x2F;</span><br><span class="line">             \    \        __&#x2F;</span><br><span class="line">              \____\______&#x2F;</span><br><span class="line"> _                 _   ____     _            _</span><br><span class="line">| |__   ___   ___ | |_|___ \ __| | ___   ___| | _____ _ __</span><br><span class="line">| &#39;_ \ &#x2F; _ \ &#x2F; _ \| __| __) &#x2F; _&#96; |&#x2F; _ \ &#x2F; __| |&#x2F; &#x2F; _ \ &#39;__|</span><br><span class="line">| |_) | (_) | (_) | |_ &#x2F; __&#x2F; (_| | (_) | (__|   &lt;  __&#x2F; |</span><br><span class="line">|_.__&#x2F; \___&#x2F; \___&#x2F; \__|_____\__,_|\___&#x2F; \___|_|\_\___|_|</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a href="http://www.cnblogs.com/tanhangbo/p/4282605.html" target="_blank" rel="noopener">virtualbox 打不开ubuntu解决</a>》</p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2015/04/01/gnu-bash-prompting/" class="post-title-link">GUN/Bash 系列（七）提示符（Prompting）</a></h2><div class="post-info">2015-04-01<a href="/tags/GNU-Linux/" title="GNU/Linux" class="post-demo">GNU/Linux</a></div><div class="post-content"><p>在使用交互式 Bash 时，一个配置得当的命令提示符可以为用户带来不少便利，本文讲解如何配置命令提示符。</p>
+<h1 id="默认提示符"><a href="#默认提示符" class="headerlink" title="默认提示符"></a>默认提示符</h1><p>命令提示符涉及到以下两个环境变量：</p>
+<table>
+<thead>
+<tr>
+<th>环境变量</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>PS1</code></td>
+<td>主提示符，Bash 会在准备好读入一条命令时显示，默认值 <code>\s-\v\$</code></td>
+</tr>
+<tr>
+<td><code>PS2</code></td>
+<td>次提示符，Bash 会在需要更多的输入来完成一条命令时显示，默认值 <code>&gt;</code></td>
+</tr>
+</tbody></table>
+<h1 id="定制提示符"><a href="#定制提示符" class="headerlink" title="定制提示符"></a>定制提示符</h1><p>Bash 允许通过插入一些反斜杠转义的特殊字符来定制这些提示符，常用的转义字符如下：</p>
+<table>
+<thead>
+<tr>
+<th>转义字符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>\h</code></td>
+<td>主机名，第一个 <code>.</code> 之前的部分</td>
+</tr>
+<tr>
+<td><code>\H</code></td>
+<td>主机名</td>
+</tr>
+<tr>
+<td><code>\j</code></td>
+<td>shell 当前管理的作业数量</td>
+</tr>
+<tr>
+<td><code>\l</code></td>
+<td>shell 的终端设备名的基本部分</td>
+</tr>
+<tr>
+<td><code>\n</code></td>
+<td>新行符</td>
+</tr>
+<tr>
+<td><code>\r</code></td>
+<td>回车</td>
+</tr>
+<tr>
+<td><code>\s</code></td>
+<td>shell 的名称， <code>$0</code> 的基本部分 (最后一个斜杠后面的部分)</td>
+</tr>
+<tr>
+<td><code>\u</code></td>
+<td>当前用户的用户名</td>
+</tr>
+<tr>
+<td><code>\v</code></td>
+<td>bash 的版本 (例如，4.3)</td>
+</tr>
+<tr>
+<td><code>\w</code></td>
+<td>当前工作目录</td>
+</tr>
+<tr>
+<td><code>\W</code></td>
+<td>当前工作目录的基本部分</td>
+</tr>
+<tr>
+<td><code>\!</code></td>
+<td>此命令的历史编号</td>
+</tr>
+<tr>
+<td><code>\#</code></td>
+<td>此命令的命令编号</td>
+</tr>
+<tr>
+<td><code>\$</code></td>
+<td>如果有效 UID 为 0，则显示 <code>#</code>, 否则 <code>$</code></td>
+</tr>
+<tr>
+<td><code>\\</code></td>
+<td>一个反斜杠</td>
+</tr>
+</tbody></table>
+<p>除此之外，还有一些不太常用的日期转义字符：</p>
+<table>
+<thead>
+<tr>
+<th>转义字符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>\d</code></td>
+<td>当前日期，格式是 “星期 月份 日” (例如，”Tue May 26”)</td>
+</tr>
+<tr>
+<td><code>\D{format}</code></td>
+<td>自定义日期格式，花括号是必需的</td>
+</tr>
+<tr>
+<td><code>\t</code></td>
+<td>当前时间，采用 24 小时制的 <code>HH:MM:SS</code> 格式</td>
+</tr>
+<tr>
+<td><code>\T</code></td>
+<td>当前时间，采用 12 小时制的 <code>HH:MM:SS</code> 格式</td>
+</tr>
+<tr>
+<td><code>\@</code></td>
+<td>当前时间，采用 12 小时制上午/下午 <code>am/pm</code> 格式</td>
+</tr>
+<tr>
+<td><code>\A</code></td>
+<td>当前时间，采用 24 小时制上午/下午格式</td>
+</tr>
+</tbody></table>
+<h2 id="如何定制"><a href="#如何定制" class="headerlink" title="如何定制"></a>如何定制</h2><p>由于 <code>PS1</code> 默认设置的 <code>\s-\v\$</code> 实在是太废毫无信息量可言，显示如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash-4.3$</span><br></pre></td></tr></table></figure>
+
+<p>因此可以通过修改 <code>~/.bash_profile</code> 文件来定制自己的命令提示符。例如，使用 CentOS 默认设置的 <code>[\u@\h \W]\$</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ vim ~&#x2F;.bash_profile</span><br><span class="line"></span><br><span class="line">export PS1&#x3D;&quot;[\u@\h \w]\$ &quot;</span><br></pre></td></tr></table></figure>
+
+<p>定制后，能够知道当前用户、主机名、工作目录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@BGP-BJ-C-5HL ~]$</span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://www.gnu.org/software/bash/manual/bashref.html#Controlling-the-Prompt" target="_blank" rel="noopener">http://www.gnu.org/software/bash/manual/bashref.html#Controlling-the-Prompt</a></p>
+<p>《<a href="http://www.cnblogs.com/lienhua34/p/5018119.html" target="_blank" rel="noopener">自定义shell终端提示符（例如颜色）</a>》</p>
+</div></article></li></ul><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div class="recent"><h4>最近文章</h4><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2021/02/26/cpp-io-library/">C/C++ 语言系列（十一）I/O 库总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/25/cpp-oop-inheritance-and-polymorphism/">C/C++ 语言系列（十）面向对象编程之继承与多态</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/20/cpp-oop-class/">C/C++ 语言系列（九）面向对象编程之类、类模板、类指针</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/18/cpp-type-aliases/">C/C++ 语言系列（八）复合数据类型之类型别名</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/16/cpp-struct/">C/C++ 语言系列（七）复合数据类型之结构体</a></li></ul></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/page/16/" class="prev">PREV</a><a href="/page/18/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

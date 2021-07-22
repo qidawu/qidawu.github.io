@@ -1,0 +1,135 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> MySQL ACID 事务模型与隔离级别总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="MySQL ACID 事务模型与隔离级别总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">MySQL ACID 事务模型与隔离级别总结</h1><div class="post-info">2019-03-20<a href="/tags/MySQL/" title="MySQL" class="post-demo">MySQL</a></div><div class="post-content"><h1 id="ACID-模型"><a href="#ACID-模型" class="headerlink" title="ACID 模型"></a>ACID 模型</h1><p>维基百科关于 ACID 的定义：</p>
+<blockquote>
+<p>ACID 是<a href="https://en.wikipedia.org/wiki/Database_transaction" target="_blank" rel="noopener">数据库事务</a>的一组属性，旨在即使在发生错误、电源故障等情况下也能保证<strong>数据有效性</strong>。在数据库环境中，一系列满足 ACID 属性的数据库操作（可以视作对数据的单个逻辑操作）称为事务。例如，将资金从某个银行账户转账到另一个银行账户。</p>
+</blockquote>
+<p>下面重点讨论 MySQL <code>InnoDB</code> 存储引擎如何与 ACID 模型进行交互：</p>
+<h2 id="原子性（Atomicity）"><a href="#原子性（Atomicity）" class="headerlink" title="原子性（Atomicity）"></a>原子性（Atomicity）</h2><blockquote>
+<p>一个<a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_transaction" target="_blank" rel="noopener">事务</a>必须被视为一个不可分割的最小工作单元，整个事务中的所有操作要么全部成功<strong>提交</strong>，要么全部失败<strong>回滚</strong>，对于一个事务来说，不可能只执行其中的一部分操作。</p>
+</blockquote>
+<p>相关的 MySQL 功能包括：</p>
+<ul>
+<li>事务的自动提交（<code>autocommit</code>）设置。</li>
+<li><code>START TRANSACTION</code>、<code>COMMIT</code>、<code>ROLLBACK</code> 语句。</li>
+</ul>
+<h2 id="一致性（Consistency）"><a href="#一致性（Consistency）" class="headerlink" title="一致性（Consistency）"></a>一致性（Consistency）</h2><blockquote>
+<p>数据库总是从一个一致性的状态转换到另外一个一致性的状态，即使出现系统崩溃等异常情况。</p>
+</blockquote>
+<p>相关的 MySQL 功能包括：</p>
+<ul>
+<li><code>InnoDB</code> <a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_doublewrite_buffer" target="_blank" rel="noopener">双写缓冲区</a>。</li>
+<li><code>InnoDB</code> <a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_crash_recovery" target="_blank" rel="noopener">崩溃恢复</a>。</li>
+</ul>
+<h2 id="隔离性（Isolation）"><a href="#隔离性（Isolation）" class="headerlink" title="隔离性（Isolation）"></a>隔离性（Isolation）</h2><blockquote>
+<p>隔离性可以防止多个事务并发执行时由于交叉执行而导致的数据不一致问题。事务隔离分为不同级别，详见下述<a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_isolation_level" target="_blank" rel="noopener">隔离级别</a>。</p>
+</blockquote>
+<p>相关的 MySQL 功能包括：</p>
+<ul>
+<li>事务的自动提交（<code>autocommit</code>）设置。</li>
+<li><code>SET TRANSACTION ISOLATION LEVEL</code> 语句。</li>
+</ul>
+<h2 id="持久性（Durability）"><a href="#持久性（Durability）" class="headerlink" title="持久性（Durability）"></a>持久性（Durability）</h2><blockquote>
+<p>一旦事务提交，则其所做的修改会永久保存到数据库中。此时即使系统崩溃、修改的数据也不会丢失。</p>
+</blockquote>
+<p>持久性是个有点模糊的概念，因为实际上持久性也分很多不同的级别。有些持久性策略能够提供非常强的安全保障，而有些则未必。而且不可能有能做到 100% 的持久性保证的策略，否则为何还要做数据库备份？</p>
+<p>与持久性相关的 MySQL 功能比较多，这里不做讨论。</p>
+<h1 id="读现象问题"><a href="#读现象问题" class="headerlink" title="读现象问题"></a>读现象问题</h1><p>我们重点来关注下隔离性。隔离性可以防止多个事务并发执行时由于<strong>交叉执行而导致的数据不一致问题</strong>。因此如果不考虑隔离性，会引发如下问题：</p>
+<h2 id="脏读（Dirty-reads）"><a href="#脏读（Dirty-reads）" class="headerlink" title="脏读（Dirty reads）"></a>脏读（Dirty reads）</h2><p>一个事务能够看到其它事务尚未提交的修改。例如：</p>
+<p><img src="/img/mysql/dirty_read.png" alt="脏读"></p>
+<h2 id="不可重复读（Non-repeatable-reads）"><a href="#不可重复读（Non-repeatable-reads）" class="headerlink" title="不可重复读（Non-repeatable reads）"></a>不可重复读（Non-repeatable reads）</h2><p>一个事务的两次查询返回不同的结果。例如：</p>
+<p><img src="/img/mysql/non_repeatable_read.png" alt="不可重复读"></p>
+<p>有两种策略可以避免不可重复读：</p>
+<ul>
+<li>采用共享锁（s-lock）或排它锁（x-lock），进行加锁读（Locking reads）。</li>
+<li>采用多版本并发控制（MVCC），进行一致性非加锁读（Consistent Non-locking Reads）。</li>
+</ul>
+<h2 id="幻读（Phantom-reads）"><a href="#幻读（Phantom-reads）" class="headerlink" title="幻读（Phantom reads）"></a>幻读（Phantom reads）</h2><p>一个事务的两次查询返回不同的结果集。例如：</p>
+<p><img src="/img/mysql/phantom_read.png" alt="幻读"></p>
+<h1 id="隔离级别"><a href="#隔离级别" class="headerlink" title="隔离级别"></a>隔离级别</h1><p>通过提升事务的隔离级别（Isolation Level），可以逐一解决上述问题。所谓隔离级别，就是在数据库事务中，为保证多个事务<strong>并发读写数据</strong>的正确性而提出的定义，它并不是 MySQL 专有的概念，而是源于 <a href="https://en.wikipedia.org/wiki/American_National_Standards_Institute" target="_blank" rel="noopener">ANSI</a>/<a href="https://en.wikipedia.org/wiki/International_Organization_for_Standardization" target="_blank" rel="noopener">ISO</a> 制定的 <a href="https://en.wikipedia.org/wiki/SQL-92" target="_blank" rel="noopener">SQL-92</a> 标准。</p>
+<p>每种关系型数据库都提供了各自特色的隔离级别实现，虽然在通常的隔离级别定义中是以锁为实现单元，但实际的实现千差万别。以最常见的 MySQL <code>InnoDB</code> 存储引擎为例，它是基于 <a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-multi-versioning.html" target="_blank" rel="noopener">MVCC</a>（Multi-Versioning Concurrency Control）和锁的复合实现，性能较高。MySQL <code>InnoDB</code> 存储引擎的事务隔离级别及其解决问题如下：</p>
+<table>
+<thead>
+<tr>
+<th>隔离级别</th>
+<th>脏读<br/>（Dirty reads）</th>
+<th>不可重复读<br/>（Non-repeatable reads）</th>
+<th>幻读<br/>（Phantom reads）</th>
+<th>SELECT 默认模式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>读未提交<br/>（<code>READ UNCOMMITTED</code>）</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td></td>
+</tr>
+<tr>
+<td>读已提交<br/>（<code>READ COMMITTED</code>）</td>
+<td>×</td>
+<td>√</td>
+<td>√</td>
+<td>使用一致性非加锁读（Consistent Non-locking Reads (MVCC)）<br/>总是使用<strong>最新快照</strong></td>
+</tr>
+<tr>
+<td>可重复读<br/>（<code>REPEATABLE READ</code>）</td>
+<td>×</td>
+<td>×</td>
+<td>×（<code>InnoDB</code> 特有）<br/>使用 gap lock 或 next-key lock</td>
+<td>使用一致性非加锁读（Consistent Non-locking Reads (MVCC)）<br/>同一事务内总是使用<strong>首次快照</strong>，确保可重复读。</td>
+</tr>
+<tr>
+<td>串行化<br/>（<code>SERIALIZABLE</code>）</td>
+<td>×</td>
+<td>×</td>
+<td>×<br/>使用 gap lock 或 next-key lock</td>
+<td>加共享锁读<br/>（S-Locking reads）</td>
+</tr>
+</tbody></table>
+<h2 id="读未提交（READ-UNCOMMITTED）"><a href="#读未提交（READ-UNCOMMITTED）" class="headerlink" title="读未提交（READ UNCOMMITTED）"></a>读未提交（READ UNCOMMITTED）</h2><p>一个事务能够看到其它事务尚未提交的修改，这是最低的隔离水平，允许<strong>脏读</strong>出现。</p>
+<p>这个级别会导致很多问题，从性能上来说，也不会比其它级别好太多，但却缺乏其它级别的很多好处，实际应用中很少使用。</p>
+<h2 id="读已提交（READ-COMMITTED）"><a href="#读已提交（READ-COMMITTED）" class="headerlink" title="读已提交（READ COMMITTED）"></a>读已提交（READ COMMITTED）</h2><p>事务能够看到的数据都是其它事务已经提交的修改，也就是保证不会看到任何中间性状态，因此不会出现脏读问题。但读已提交仍然是比较低的隔离级别，并不保证再次读取时能够获取同样的数据，也就是允许其它事务并发修改数据，允许不可重复读和幻读出现。</p>
+<blockquote>
+<p>Tips: 事务隔离级别越高，就越能保证数据的<strong>完整性</strong>和<strong>一致性</strong>，但同时对并发性能的影响也越大。通常，对于绝大多数的应用程序来说，在非 MySQL 数据库的情况下，可以优先考虑将数据库系统的隔离级别设置为<strong>读已提交</strong>，这能够在避免起码的脏读的同时，保证较好的并发性能。尽管这种事务隔离级别会导致不可重复读、幻读，但较为科学的做法是在可能出现这类问题的个别场合中，由应用程序<strong>主动采取读锁或写锁</strong>来进行事务控制。</p>
+</blockquote>
+<p>MySQL 读已提交的默认行为如下：</p>
+<ul>
+<li><p>同一事务中的<a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_consistent_read" target="_blank" rel="noopener">一致性读取（Consistent read）</a>总是会设置和读取自己的最新<a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_snapshot" target="_blank" rel="noopener">快照（snapshot）</a>，因此会产生不可重复读问题，因为其它事务可能会并发修改数据。</p>
+</li>
+<li><p>对于加锁读、<code>UPDATE</code>、<code>DELETE</code> 语句，<code>InnoDB</code> 仅锁定匹配的索引记录。由于禁用了 gap lock，因此会产生幻读问题，因为其它事务可以在<a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_gap" target="_blank" rel="noopener">间隙（gap）</a>中插入新行。</p>
+<blockquote>
+<p>gap:</p>
+<p>A place in an <code>InnoDB</code> <strong>index</strong> data structure where new values could be inserted. When you lock a set of rows with a statement such as <code>SELECT ... FOR UPDATE</code>, <code>InnoDB</code> can create locks that apply to the gaps as well as the actual values in the index.</p>
+</blockquote>
+<blockquote>
+<p>gap lock:</p>
+<p>A <strong>lock</strong> on a <strong>gap</strong> between index records, or a lock on the gap before the first or after the last index record.</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="可重复读（REPEATABLE-READ）"><a href="#可重复读（REPEATABLE-READ）" class="headerlink" title="可重复读（REPEATABLE READ）"></a>可重复读（REPEATABLE READ）</h2><p>这是 MySQL <code>InnoDB</code> 存储引擎<strong>默认的隔离级别</strong>。</p>
+<ul>
+<li><p>同一事务中的<a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_consistent_read" target="_blank" rel="noopener">一致性读取（Consistent read）</a>总是会读取第一次读取时首次建立的<a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_snapshot" target="_blank" rel="noopener">快照（snapshot）</a>。这意味着如果你在同一事务中发起多个普通（非加锁） <code>SELECT</code> 语句，其查询结果是相互一致的。一致性读取机制保证了同一事务中<strong>可重复读</strong>，避免了不可重复读问题，不管其它事务是否提交了 <code>INSERT</code>、<code>DELETE</code>、<code>UPDATE</code> 操作。如果想每次 <code>SELECT</code> 都返回最新快照，要么隔离级别降为 READ COMMITTED，要么使用加锁读。</p>
+</li>
+<li><p>对于加锁读、<code>UPDATE</code>、<code>DELETE</code> 语句，加锁行为取决于语句是使用具有唯一搜索条件的唯一索引还是范围搜索条件：</p>
+<ul>
+<li><p>对于具有唯一搜索条件的唯一索引， <code>InnoDB</code> 仅锁定匹配的索引记录。例如：</p>
+  <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 事务 T1 的 x-lock 会阻止其它事务加锁读或修改 id = 10 的记录</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">parent</span> <span class="keyword">WHERE</span> <span class="keyword">id</span> = <span class="number">10</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line"><span class="comment">-- 事务 T2 无法修改 id = 10 的记录，直到事务 T1 结束</span></span><br><span class="line"><span class="keyword">UPDATE</span> <span class="keyword">parent</span> <span class="keyword">SET</span> <span class="keyword">name</span> = <span class="string">'Pete'</span> <span class="keyword">WHERE</span> <span class="keyword">id</span> = <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>对于范围搜索条件，<code>InnoDB</code> 使用 <a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_gap_lock" target="_blank" rel="noopener">gap lock</a> 或 <a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_next_key_lock" target="_blank" rel="noopener">next-key lock</a> 锁定扫描到的索引范围， 以阻止其它会话插入被范围所覆盖的<a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_gap" target="_blank" rel="noopener">间隙</a>。这是 <code>InnoDB</code> 和其它一些数据库实现的不同，解决了可重复读级别下的幻读问题。例如：</p>
+  <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 事务 T1 的 gap lock 会阻止其它事务插入 id &gt; 10 的记录</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">parent</span> <span class="keyword">WHERE</span> <span class="keyword">id</span> &gt; <span class="number">10</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line"><span class="comment">-- 事务 T2 无法插入 id &gt; 10 的新记录，直到事务 T1 结束</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">parent</span>(<span class="keyword">id</span>, <span class="keyword">name</span>) <span class="keyword">VALUES</span>(<span class="number">11</span>, <span class="string">'Pete'</span>);</span><br><span class="line"><span class="comment">-- 事务 T2 可以插入 id &lt;= 9 的新记录，无需等待事务 T1</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">parent</span>(<span class="keyword">id</span>, <span class="keyword">name</span>) <span class="keyword">VALUES</span>(<span class="number">9</span>, <span class="string">'Pete'</span>);</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="串行化（SERIALIZABLE）"><a href="#串行化（SERIALIZABLE）" class="headerlink" title="串行化（SERIALIZABLE）"></a>串行化（SERIALIZABLE）</h2><p>并发事务之间的读写操作是串行化的，通常意味着读取需要获取共享锁（读锁），更新需要获取排他锁（写锁），如果 SQL 使用 <code>WHERE</code> 语句，还会获取 gap lock 和 next-key lock，可能导致大量的超时和锁争用的问题。</p>
+<p>这是最高的隔离级别，实际应用中很少使用，只有在非常需要确保数据一致性而且可以接受没有并发的情况下，才会考虑。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《高性能 MySQL》</p>
+<p><a href="https://en.wikipedia.org/wiki/Isolation_(database_systems)#Isolation_levels" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Isolation_(database_systems)#Isolation_levels</a></p>
+<p><a href="https://en.wikipedia.org/wiki/Isolation_(database_systems)#Dirty_reads" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Isolation_(database_systems)#Dirty_reads</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_dirty_read" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_dirty_read</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_non_repeatable_read" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_non_repeatable_read</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_phantom" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_phantom</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/mysql-acid.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/mysql-acid.html</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-locking-transaction-model.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/innodb-locking-transaction-model.html</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2019/03/23/mysql-consistent-nonlocking-reads-with-mvcc/" class="prev">PREV</a><a href="/2019/02/25/mysql-deadlock/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

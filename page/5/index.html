@@ -1,0 +1,759 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="学习笔记 知识总结 思考感悟"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><ul class="home post-list"><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/05/26/hexo-with-travis-ci/" class="post-title-link">Hexo & Travis CI 搭建博客</a></h2><div class="post-info">2019-05-26<a href="/tags/建站/" title="建站" class="post-demo">建站</a></div><div class="post-content"><p>Hexo 博客使用好多年了，总结下日常使用的一些内容。</p>
+<h1 id="Hexo"><a href="#Hexo" class="headerlink" title="Hexo"></a>Hexo</h1><h2 id="安装配置"><a href="#安装配置" class="headerlink" title="安装配置"></a>安装配置</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -g 参数全局安装 Hexo 命令行工具，安装后才可以使用下述 hexo 命令</span></span><br><span class="line">$ npm install -g hexo-cli</span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化本地仓库及 hexo 文件，适用于第一次使用</span></span><br><span class="line">$ hexo init</span><br><span class="line"></span><br><span class="line"><span class="comment"># hexo 基础配置、主题、插件配置等等，详细配置参考官网</span></span><br><span class="line">$ vim _config.yml</span><br><span class="line"></span><br><span class="line"><span class="comment"># 根据 package.json 的声明（hexo 版本及 dependencies 版本）安装所需依赖到当前目录 node_modules</span></span><br><span class="line">$ npm install</span><br></pre></td></tr></table></figure>
+
+<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><p>依赖安装完毕，开始使用 hexo，常用命令如下：</p>
+<p><img src="/img/hexo/hexo_cmd.png" alt="Hexo 常用命令"></p>
+<h1 id="GitHub"><a href="#GitHub" class="headerlink" title="GitHub"></a>GitHub</h1><p>为了方便随时随地可以编写博客，搭建好的本地仓库及其源文件一般会推送到 GitHub 远程仓库中保管，而构建出来的 <code>./public</code> 目录会部署到 GitHub Pages 服务。因此需要在 GitHub 中新建两个仓库：</p>
+<ul>
+<li>仓库一：存放源文件，名字随意</li>
+<li>仓库二：存放构建文件（<code>./public</code>），GitHub Pages 服务要求名字为 <code>yourname.github.io</code></li>
+</ul>
+<h1 id="Travis-CI"><a href="#Travis-CI" class="headerlink" title="Travis CI"></a>Travis CI</h1><p>完成上面两步就可以开始创作了。但毕竟命令还是有些繁琐，因此可以利用持续集成服务代替人工来做重复的事情。引入 Travis CI 后，整体流程如下：</p>
+<p><img src="/img/hexo/github-pages-ci.png" alt="GitHub Pages with CI"></p>
+<p>从上述流程来看，作者只需要完成创作并推送即可，其它构建、部署的事则由 Travis CI 来完成，非常简单。</p>
+<p>下面来看下如何配置：</p>
+<h2 id="GitHub-创建-access-token"><a href="#GitHub-创建-access-token" class="headerlink" title="GitHub 创建 access token"></a>GitHub 创建 access token</h2><p>登录 GitHub - Settings - Developer Settings 选项，找到 Personal access tokens 页面，创建个人 access token，创建时权限 <code>repo</code> 权限和 <code>user:email</code> 权限。</p>
+<h2 id="Travis-CI-仓库配置"><a href="#Travis-CI-仓库配置" class="headerlink" title="Travis CI 仓库配置"></a>Travis CI 仓库配置</h2><ol>
+<li>使用 GitHub 账户登录 <a href="https://travis-ci.org/" target="_blank" rel="noopener">Travis CI</a> 官网并进行 OAuth 授权</li>
+<li>同步仓库一，过程中会在 GitHub 账户下安装 Travis CI 的 GitHub App，用于触发持续集成</li>
+<li>为仓库一设置环境变量：<ul>
+<li><code>GH_TOKEN</code> 值为 GitHub access token</li>
+<li><code>GH_REF</code> 值为 GitHub 仓库二地址</li>
+</ul>
+</li>
+</ol>
+<h2 id="创建-travis-yml-配置"><a href="#创建-travis-yml-配置" class="headerlink" title="创建 .travis.yml 配置"></a>创建 .travis.yml 配置</h2><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 设置语言</span></span><br><span class="line"><span class="attr">language:</span> <span class="string">node_js</span></span><br><span class="line"><span class="comment"># 设置相应的版本，可以指定版本 10，或者使用稳定版 stable</span></span><br><span class="line"><span class="attr">node_js:</span> <span class="string">stable</span></span><br><span class="line"><span class="comment"># 设置只监听哪个分支</span></span><br><span class="line"><span class="attr">branches:</span></span><br><span class="line">  <span class="attr">only:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">master</span></span><br><span class="line"><span class="comment"># 缓存 node_modules 目录，可以节省持续集成的时间</span></span><br><span class="line"><span class="attr">cache:</span></span><br><span class="line">  <span class="attr">directories:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">node_modules</span></span><br><span class="line"><span class="attr">before_install:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">npm</span> <span class="string">install</span> <span class="string">-g</span> <span class="string">hexo-cli</span></span><br><span class="line"><span class="attr">install:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">npm</span> <span class="string">install</span></span><br><span class="line"><span class="attr">script:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">hexo</span> <span class="string">clean</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">hexo</span> <span class="string">g</span></span><br><span class="line"><span class="attr">after_script:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">cd</span> <span class="string">./public</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">git</span> <span class="string">init</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">git</span> <span class="string">config</span> <span class="string">user.name</span> <span class="string">"yourname"</span> <span class="comment"># 修改name</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">git</span> <span class="string">config</span> <span class="string">user.email</span> <span class="string">"youremail"</span> <span class="comment"># 修改email</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">git</span> <span class="string">add</span> <span class="string">.</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">git</span> <span class="string">commit</span> <span class="string">-m</span> <span class="string">"Travis CI Auto Builder"</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">git</span> <span class="string">push</span> <span class="string">--force</span> <span class="string">--quiet</span> <span class="string">"https://$&#123;GH_TOKEN&#125;@$&#123;GH_REF&#125;"</span> <span class="string">master:master</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="自动构建"><a href="#自动构建" class="headerlink" title="自动构建"></a>自动构建</h2><p>创作并推送到仓库一即可，其它构建、部署的事都由 Travis CI 来完成，过程如下：</p>
+<p><img src="/img/hexo/travis_ci.png" alt="Travis CI"></p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/05/21/java8-stream-api/" class="post-title-link">函数式编程系列（三）Java 8 Stream API 总结</a></h2><div class="post-info">2019-05-21<a href="/tags/Java/" title="Java" class="post-demo">Java</a><a href="/tags/函数式编程/" title="函数式编程" class="post-demo">函数式编程</a></div><div class="post-content"><p>本文总结下 Stream API：</p>
+<p><img src="/img/java/lambda/java.util.stream.png" alt="java.util.stream"></p>
+<h1 id="什么是流"><a href="#什么是流" class="headerlink" title="什么是流"></a>什么是流</h1><p>流是从支持数据处理操作的源生成的元素序列，源可以是数组、集合、文件、函数。流不是集合元素，它不是数据结构并不保存数据，它的主要目的在于计算。</p>
+<h1 id="如何生产流"><a href="#如何生产流" class="headerlink" title="如何生产流"></a>如何生产流</h1><h2 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h2><p>通过 <code>Arrays.stream</code> 方法生成流，并且该方法生成的流是数值流（即 <code>IntStream</code> 而不是 <code>Stream&lt;Integer&gt;</code>）。使用数值流可以避免计算过程中的拆箱装箱，提高性能。Stream API 提供了 <code>mapToInt</code>、<code>mapToDouble</code>、<code>mapToLong</code> 三种方式将对象流（<code>Stream&lt;T&gt;</code>）转换成对应的数值流，同时提供了 <code>boxed</code> 方法将数值流转换为对象流：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>[] intArr = <span class="keyword">new</span> <span class="keyword">int</span>[]&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;;</span><br><span class="line">IntStream intStream = Arrays.stream(intArr);</span><br><span class="line"></span><br><span class="line"><span class="keyword">long</span>[] longArr = <span class="keyword">new</span> <span class="keyword">long</span>[]&#123;<span class="number">1L</span>, <span class="number">2L</span>, <span class="number">3L</span>, <span class="number">4L</span>, <span class="number">5L</span>&#125;;</span><br><span class="line">LongStream longStream = Arrays.stream(longArr);</span><br><span class="line"></span><br><span class="line"><span class="keyword">double</span>[] doubleArr = <span class="keyword">new</span> <span class="keyword">double</span>[]&#123;<span class="number">1.0</span>, <span class="number">2.0</span>, <span class="number">3.0</span>, <span class="number">4.0</span>, <span class="number">5.0</span>&#125;;</span><br><span class="line">DoubleStream doubleStream = Arrays.stream(doubleArr);</span><br></pre></td></tr></table></figure>
+
+<h2 id="集合"><a href="#集合" class="headerlink" title="集合"></a>集合</h2><p>通过集合生成，最常用的一种：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Integer&gt; integerList = Arrays.asList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>);</span><br><span class="line">Stream&lt;Integer&gt; stream = integerList.stream();</span><br></pre></td></tr></table></figure>
+
+<h2 id="文件"><a href="#文件" class="headerlink" title="文件"></a>文件</h2><p>通过文件生成，得到的每个流是给定文件中的每一行：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// [1, 2, 3, 4, 5]</span></span><br><span class="line">Stream&lt;String&gt; stream1 = Files.lines(Paths.get(<span class="string">"E:\\data.txt"</span>), Charset.defaultCharset());</span><br><span class="line"></span><br><span class="line"><span class="comment">// [1, 2, 3, 4, 5]</span></span><br><span class="line">BufferedReader reader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> FileReader(<span class="string">"E:\\data.txt"</span>));</span><br><span class="line">Stream&lt;String&gt; stream2 = reader.lines();</span><br></pre></td></tr></table></figure>
+
+<h2 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// []</span></span><br><span class="line">Stream&lt;Integer&gt; stream3 = Stream.empty();</span><br><span class="line"></span><br><span class="line"><span class="comment">// [1, 2, 3, 4, 5]</span></span><br><span class="line">Stream&lt;Integer&gt; stream4 = Stream.of(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// iterate 方法接受两个参数，第一个为初始化值，第二个为进行的函数操作，因为 iterate 生成的流为无限流，因此通过 limit 方法对流进行了截断，只生成 5 个偶数</span></span><br><span class="line"><span class="comment">// [0, 2, 4, 6, 8]</span></span><br><span class="line">Stream&lt;Integer&gt; stream5 = Stream.iterate(<span class="number">0</span>, n -&gt; n + <span class="number">2</span>).limit(<span class="number">5</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// generate 方法接受一个参数，方法参数类型为 Supplier&lt;T&gt; ，由它为流提供值。generate 生成的流也是无限流，因此通过 limit 对流进行了截断</span></span><br><span class="line"><span class="comment">// [0.0819448251044178, 0.9273399484995596, 0.3050941986467305, 0.824966110053092, 0.6101914799225238]</span></span><br><span class="line">Stream&lt;Double&gt; stream6 = Stream.generate(Math::random).limit(<span class="number">5</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用 builder 模式创建流</span></span><br><span class="line"><span class="comment">// [1, 2]</span></span><br><span class="line">Stream&lt;Integer&gt; stream8 = Stream.&lt;Integer&gt;builder().add(<span class="number">1</span>).add(<span class="number">2</span>).build();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用 concat 方法拼接两个流</span></span><br><span class="line"><span class="comment">// [1, 2, 3, 4, 5]</span></span><br><span class="line">Stream&lt;Integer&gt; stream7 = Stream.concat(Stream.of(<span class="number">1</span>, <span class="number">2</span>), Stream.of(<span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>));</span><br></pre></td></tr></table></figure>
+
+<h1 id="流的操作类型"><a href="#流的操作类型" class="headerlink" title="流的操作类型"></a>流的操作类型</h1><h2 id="中间操作"><a href="#中间操作" class="headerlink" title="中间操作"></a>中间操作</h2><p>一个流可以后面跟随零个或多个中间操作。其目的主要是打开流，做出某种程度的数据映射/过滤，然后返回一个新的流，交给下一个操作使用。这类操作都是惰性化的，仅仅调用到这类方法，并没有真正开始流的遍历，真正的遍历需等到终结操作。</p>
+<h2 id="终结操作"><a href="#终结操作" class="headerlink" title="终结操作"></a>终结操作</h2><p>一个流有且只能有一个终结操作，当这个操作执行后，流就被关闭，无法再被操作了。</p>
+<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><h2 id="分组统计"><a href="#分组统计" class="headerlink" title="分组统计"></a>分组统计</h2><p>测试数据如下，需要按 key 分组统计总个数、总和、平均数、最大值、最小值：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Pair&lt;String, Integer&gt;&gt; peoples = Arrays.asList(Pair.of(<span class="string">"Lucy"</span>, <span class="number">10</span>),</span><br><span class="line">                                                    Pair.of(<span class="string">"Lucy"</span>, <span class="number">30</span>),</span><br><span class="line">                                                    Pair.of(<span class="string">"Peter"</span>, <span class="number">18</span>));</span><br></pre></td></tr></table></figure>
+
+<p>方式一，各项单独统计：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// &#123;Lucy=2, Peter=1&#125;</span></span><br><span class="line">Map&lt;String, Long&gt; counting = peoples.stream()</span><br><span class="line">    .collect(Collectors.groupingBy(Pair::getKey, Collectors.counting()));</span><br><span class="line"><span class="comment">// &#123;Lucy=40, Peter=18&#125;</span></span><br><span class="line">Map&lt;String, Integer&gt; summing = peoples.stream()</span><br><span class="line">    .collect(Collectors.groupingBy(Pair::getKey, Collectors.summingInt(Pair::getValue)));</span><br><span class="line"><span class="comment">// &#123;Lucy=20.0, Peter=18.0&#125;</span></span><br><span class="line">Map&lt;String, Double&gt; averaging = peoples.stream()</span><br><span class="line">    .collect(Collectors.groupingBy(Pair::getKey, Collectors.averagingDouble(Pair::getValue)));</span><br><span class="line"><span class="comment">// &#123;Lucy=Optional[(Lucy,30)], Peter=Optional[(Peter,18)]&#125;</span></span><br><span class="line">Map&lt;String, Optional&lt;Pair&lt;String, Integer&gt;&gt;&gt; max = peoples.stream()</span><br><span class="line">    .collect(Collectors.groupingBy(Pair::getKey, Collectors.maxBy(Comparator.comparing(Pair::getValue))));</span><br><span class="line"><span class="comment">// &#123;Lucy=Optional[(Lucy,10)], Peter=Optional[(Peter,18)]&#125;</span></span><br><span class="line">Map&lt;String, Optional&lt;Pair&lt;String, Integer&gt;&gt;&gt; min = peoples.stream()</span><br><span class="line">    .collect(Collectors.groupingBy(Pair::getKey, Collectors.minBy(Comparator.comparing(Pair::getValue))));</span><br></pre></td></tr></table></figure>
+
+<p>方式二，汇总统计：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// &#123;</span></span><br><span class="line"><span class="comment">//   Lucy=IntSummaryStatistics&#123;count=2, sum=40, min=10, average=20.000000, max=30&#125;, </span></span><br><span class="line"><span class="comment">//   Peter=IntSummaryStatistics&#123;count=1, sum=18, min=18, average=18.000000, max=18&#125;</span></span><br><span class="line"><span class="comment">// &#125;</span></span><br><span class="line">Map&lt;String, IntSummaryStatistics&gt; summary = peoples.stream()</span><br><span class="line">    .collect(Collectors.groupingBy(Pair::getKey, Collectors.summarizingInt(Pair::getValue)));</span><br></pre></td></tr></table></figure>
+
+<h2 id="获取列表索引"><a href="#获取列表索引" class="headerlink" title="获取列表索引"></a>获取列表索引</h2><p><code>forEach</code> 方法入参缺少列表索引，无法实现某些场景下的特殊需求：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">elements.forEach(element -&gt; downloadFile(element));</span><br></pre></td></tr></table></figure>
+
+<p>解决方案一，通过 <code>IntStream</code> 获取索引 index：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">IntStream.range(<span class="number">0</span>, elements.size())</span><br><span class="line">        .forEach(index -&gt; downloadFile(elements.get(index), index));</span><br></pre></td></tr></table></figure>
+
+<p>解决方案二，自定义工具类通过 <code>BiConsumer</code> 传参，获取索引 index 和元素 element：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">IterateUtil</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;E&gt; <span class="function"><span class="keyword">void</span> <span class="title">forEach</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">            Iterable&lt;? extends E&gt; elements, BiConsumer&lt;Integer, ? <span class="keyword">super</span> E&gt; action)</span> </span>&#123;</span><br><span class="line">        Objects.requireNonNull(elements);</span><br><span class="line">        Objects.requireNonNull(action);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> index = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (E element : elements) &#123;</span><br><span class="line">            action.accept(index++, element);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用方式</span></span><br><span class="line">IterateUtil.forEach(</span><br><span class="line">    elements, </span><br><span class="line">    (index, element) -&gt; downloadFile(element, index)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h2 id="数组转换"><a href="#数组转换" class="headerlink" title="数组转换"></a>数组转换</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>[] arr = IntStream.of(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>).toArray();</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Object[] objects = Stream.of(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>).toArray();</span><br><span class="line">Integer[] integers = Stream.of(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>).toArray(Integer[]::<span class="keyword">new</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h2><p>《<a href="https://www.baeldung.com/java-lambda-exceptions" target="_blank" rel="noopener">Exceptions in Java 8 Lambda Expressions</a>》</p>
+<p>《<a href="https://www.jianshu.com/p/597a7ccfec25" target="_blank" rel="noopener">Stream 中异常处理的四种方式</a>》</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html</a></p>
+<p><a href="https://docs.oracle.com/javase/tutorial/collections/streams/index.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/tutorial/collections/streams/index.html</a></p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/05/14/java8-optional/" class="post-title-link">函数式编程系列（二）Java 8 Optional API 总结</a></h2><div class="post-info">2019-05-14<a href="/tags/Java/" title="Java" class="post-demo">Java</a><a href="/tags/函数式编程/" title="函数式编程" class="post-demo">函数式编程</a></div><div class="post-content"><p>Java 8 引入了 <code>Optional</code> 类用于解决臭名昭著的空指针异常。它本质上是一个可以为 <code>null</code> 的容器对象，并提供了很多有用的方法，以函数式编程的风格简化 <code>null</code> 处理。</p>
+<p><code>Optional</code> 示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">String nullStr = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 初始化 Optional</span></span><br><span class="line">Optional&lt;String&gt; a = Optional.of(<span class="string">"a"</span>);</span><br><span class="line">Optional&lt;String&gt; b = Optional.empty();</span><br><span class="line">Optional&lt;String&gt; c = Optional.ofNullable(nullStr);</span><br><span class="line"></span><br><span class="line">String s0 = a.get();  <span class="comment">// a</span></span><br><span class="line">String s1 = b.orElse(<span class="string">"other"</span>);  <span class="comment">// other</span></span><br><span class="line">String s2 = b.orElseGet(<span class="keyword">this</span>::someExpensiveOperation);  <span class="comment">// 方法引用的返回值</span></span><br><span class="line">String s3 = b.orElseGet(() -&gt; someExpensiveOperation());  <span class="comment">// lambda 表达式的返回值</span></span><br><span class="line">String s4 = b.orElseThrow(IllegalArgumentException::<span class="keyword">new</span>);  <span class="comment">// 抛异常</span></span><br><span class="line">String s5 = b.orElseThrow(() -&gt; <span class="keyword">new</span> IllegalArgumentException(<span class="string">"非法参数"</span>));  <span class="comment">// 抛异常</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">boolean</span> isPresent = a.isPresent();  <span class="comment">// true</span></span><br><span class="line">a.ifPresent(System.out::println);  <span class="comment">// a</span></span><br><span class="line">a.filter(String::isEmpty).ifPresent(System.out::println);  <span class="comment">// 条件不匹配，无打印</span></span><br><span class="line">a.map(String::toUpperCase).ifPresent(System.out::println);  <span class="comment">// 映射为大写字母 A 并打印</span></span><br></pre></td></tr></table></figure>
+
+<p>上述示例中，<code>Optional</code> 几个关键方法主要使用到这几个函数式接口：</p>
+<ul>
+<li><code>orElseGet</code> 使用到： <code>java.util.function.Supplier</code></li>
+<li><code>orElseThrow</code> 使用到： <code>java.util.function.Supplier</code></li>
+<li><code>ifPresent</code> 使用到：<code>java.util.function.Consumer</code></li>
+<li><code>filter</code> 使用到：<code>java.util.function.Predicate</code></li>
+<li><code>map</code> 使用到：<code>java.util.function.Function</code></li>
+</ul>
+<p><code>Optional</code> 几个关键方法的源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Optional</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Return the value if present, otherwise invoke &#123;<span class="doctag">@code</span> other&#125; and return</span></span><br><span class="line"><span class="comment">     * the result of that invocation.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> T <span class="title">orElseGet</span><span class="params">(Supplier&lt;? extends T&gt; other)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> value != <span class="keyword">null</span> ? value : other.get();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Return the contained value, if present, otherwise throw an exception</span></span><br><span class="line"><span class="comment">     * to be created by the provided supplier.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> &lt;X extends Throwable&gt; <span class="function">T <span class="title">orElseThrow</span><span class="params">(Supplier&lt;? extends X&gt; exceptionSupplier)</span> <span class="keyword">throws</span> X </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (value != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> value;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">throw</span> exceptionSupplier.get();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * If a value is present, invoke the specified consumer with the value,</span></span><br><span class="line"><span class="comment">     * otherwise do nothing.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ifPresent</span><span class="params">(Consumer&lt;? <span class="keyword">super</span> T&gt; consumer)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (value != <span class="keyword">null</span>)</span><br><span class="line">            consumer.accept(value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * If a value is present, and the value matches the given predicate,</span></span><br><span class="line"><span class="comment">     * return an &#123;<span class="doctag">@code</span> Optional&#125; describing the value, otherwise return an</span></span><br><span class="line"><span class="comment">     * empty &#123;<span class="doctag">@code</span> Optional&#125;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Optional&lt;T&gt; <span class="title">filter</span><span class="params">(Predicate&lt;? <span class="keyword">super</span> T&gt; predicate)</span> </span>&#123;</span><br><span class="line">        Objects.requireNonNull(predicate);</span><br><span class="line">        <span class="keyword">if</span> (!isPresent())</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            <span class="keyword">return</span> predicate.test(value) ? <span class="keyword">this</span> : empty();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * If a value is present, apply the provided mapping function to it,</span></span><br><span class="line"><span class="comment">     * and if the result is non-null, return an &#123;<span class="doctag">@code</span> Optional&#125; describing the</span></span><br><span class="line"><span class="comment">     * result.  Otherwise return an empty &#123;<span class="doctag">@code</span> Optional&#125;.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span>&lt;U&gt; Optional&lt;U&gt; <span class="title">map</span><span class="params">(Function&lt;? <span class="keyword">super</span> T, ? extends U&gt; mapper)</span> </span>&#123;</span><br><span class="line">        Objects.requireNonNull(mapper);</span><br><span class="line">        <span class="keyword">if</span> (!isPresent())</span><br><span class="line">            <span class="keyword">return</span> empty();</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> Optional.ofNullable(mapper.apply(value));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/05/07/java8-lambda/" class="post-title-link">函数式编程系列（一）Java 8 Lambda 表达式总结</a></h2><div class="post-info">2019-05-07<a href="/tags/Java/" title="Java" class="post-demo">Java</a><a href="/tags/函数式编程/" title="函数式编程" class="post-demo">函数式编程</a></div><div class="post-content"><h1 id="Lambda-表达式"><a href="#Lambda-表达式" class="headerlink" title="Lambda 表达式"></a>Lambda 表达式</h1><p>Lambda 表达式总结：</p>
+<p><img src="/img/java/lambda/lambda.png" alt="lambda"></p>
+<p>Java 8 为函数式编程新增的重点 API：</p>
+<p><img src="/img/java/lambda/api.png" alt="api"></p>
+<h1 id="函数式接口"><a href="#函数式接口" class="headerlink" title="函数式接口"></a>函数式接口</h1><p>函数式接口是只有一个抽象方法的接口，作为 Lambda 表达式和方法引用的<a href="http://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html#target-typing" target="_blank" rel="noopener">目标类型</a>。</p>
+<p>JDK 8 新增了 9 组共 43 个通用型函数式接口，位于 <code>java.util.function</code> 包下，用来支持 Java 的函数式编程。接口如此之多的原因有二：</p>
+<ul>
+<li><p>为了支持不同的参数个数。如 <code>UnaryOperator&lt;T&gt;</code> 仅支持一个参数，而 <code>BinaryOperator&lt;T&gt;</code> 支持两个参数。这一点从接口命名及函数签名也能看出：</p>
+<ul>
+<li><code>Unary</code> 一元</li>
+<li><code>Binary</code> 二元</li>
+<li><code>Ternary</code> 三元</li>
+<li><code>Quaternary</code> 四元</li>
+<li>……</li>
+</ul>
+</li>
+<li><p>泛型不支持原始数据类型。而在面对大数据量的流式 API 运算时，为了解决包装类在自动拆装箱的性能消耗，引入了 <code>int</code>、<code>long</code>、<code>Double</code> 原始数据类型的函数式接口。</p>
+<blockquote>
+<p>千万不要用带包装类型的基础函数接口来代替基本类型的函数接口。虽然可行，但它破坏了第 61 条的规则“基本类型优于装箱基本类型”。使用装箱基本类型进行批量操作处理，最终会导致致命的性能问题。——《Effective Java》</p>
+</blockquote>
+</li>
+</ul>
+<p>这些接口统计如下：</p>
+<table>
+<thead>
+<tr>
+<th>接口</th>
+<th>函数签名</th>
+<th>范例</th>
+<th>范例</th>
+<th>基本类型特化</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Predicate&lt;T&gt;</code></td>
+<td><code>boolean test(T t)</code></td>
+<td><code>String::isEmpty</code></td>
+<td>符合某个条件吗？</td>
+<td><code>IntPredicate</code><br/><code>LongPredicate</code><br/><code>DoublePredicate</code></td>
+</tr>
+<tr>
+<td><code>BiPredicate&lt;T, U&gt;</code></td>
+<td><code>boolean test(T t, U u)</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Supplier&lt;T&gt;</code></td>
+<td><code>T get()</code></td>
+<td><code>Instant::now</code></td>
+<td>无参的工厂方法</td>
+<td><code>BooleanSupplier</code><br/><code>IntSupplier</code><br/><code>LongSupplier</code><br/><code>DoubleSupplier</code></td>
+</tr>
+<tr>
+<td><code>Consumer&lt;T&gt;</code></td>
+<td><code>void accept(T t)</code></td>
+<td><code>System.out::println</code></td>
+<td>输出一个值</td>
+<td><code>IntConsumer</code><br/><code>LongConsumer</code><br/><code>DoubleConsumer</code></td>
+</tr>
+<tr>
+<td><code>BiConsumer&lt;T, U&gt;</code></td>
+<td><code>void accept(T t, U u)</code></td>
+<td></td>
+<td></td>
+<td><code>ObjIntConsumer&lt;T&gt;</code><br/><code>ObjLongConsumer&lt;T&gt;</code><br/><code>ObjDoubleConsumer&lt;T&gt;</code></td>
+</tr>
+<tr>
+<td><code>Function&lt;T, R&gt;</code></td>
+<td><code>R apply(T t)</code></td>
+<td><code>Arrays::asList</code></td>
+<td>类型转换</td>
+<td><code>IntFunction&lt;R&gt;</code><br/><code>IntToLongFunction</code><br/><code>IntToDoubleFunction</code><br/><code>LongFunction&lt;R&gt;</code><br/><code>LongToIntFunction</code><br/><code>LongToDoubleFunction</code><br/><code>DoubleFunction&lt;R&gt;</code><br/><code>DoubleToIntFunction</code><br/><code>DoubleToLongFunction</code><br/><code>ToIntFunction&lt;T&gt;</code><br/><code>ToLongFunction&lt;T&gt;</code><br/><code>ToDoubleFunction&lt;T&gt;</code></td>
+</tr>
+<tr>
+<td><code>BiFunction&lt;T, U, R&gt;</code></td>
+<td><code>R apply(T t, U u)</code></td>
+<td></td>
+<td></td>
+<td><code>ToIntBiFunction&lt;T, U&gt;</code><br/><code>ToLongBiFunction&lt;T, U&gt;</code><br/><code>ToDoubleBiFunction&lt;T, U&gt;</code></td>
+</tr>
+<tr>
+<td><code>UnaryOperator&lt;T&gt;</code></td>
+<td><code>T apply(T t)</code></td>
+<td><code>String::toUpperCase</code></td>
+<td>格式转换</td>
+<td><code>IntUnaryOperator</code><br/><code>LongUnaryOperator</code><br/><code>DoubleUnaryOperator</code></td>
+</tr>
+<tr>
+<td><code>BinaryOperator&lt;T&gt;</code></td>
+<td><code>T apply(T t1, T t2)</code></td>
+<td><code>BigInteger::add</code></td>
+<td>求两个数的加减乘除</td>
+<td><code>IntBinaryOperator</code><br/><code>LongBinaryOperator</code><br/><code>DoubleBinaryOperator</code></td>
+</tr>
+</tbody></table>
+<p>以上接口都标注了 <code>@FunctionalInterface</code>。这是 Java 8 为函数式接口引入的一个新注解，有两个目的：</p>
+<ul>
+<li>告诉这个接口及其文档的读者，这个接口是针对 Lambda 设计的；</li>
+<li>用于编译级错误检查。加上该注解，当你写的接口不符合函数式接口定义的时候，编译器会报错。该注解会强制 <code>javac</code> 检查一个接口是否符合函数式接口的标准。如果该注释添加给一个枚举类型、类或另一个注解，<strong>或者接口包含不止一个抽象方法</strong>，<code>javac</code> 就会报错。重构代码时，使用它能很容易发现问题，因此建议必须始终用 <code>@FunctionalInterface</code> 注解对自己编写的函数式接口进行标注。</li>
+</ul>
+<p>此外，函数式接口允许：</p>
+<ul>
+<li>函数式接口里允许定义默认方法，因为默认方法不是抽象方法，其有一个默认实现，所以是符合函数式接口的定义的。</li>
+<li>函数式接口里允许定义静态方法，因为静态方法不能是抽象方法，是一个已经实现了的方法，所以是符合函数式接口的定义的。</li>
+<li>函数式接口里允许定义 <code>java.lang.Object</code> 里的 <code>public</code> 方法。</li>
+</ul>
+<h1 id="方法引用"><a href="#方法引用" class="headerlink" title="方法引用"></a>方法引用</h1><p>方法引用通过方法的名字来指向一个方法，可以使语言的构造更紧凑简洁，进一步减少冗余代码，尤其是 Lambda 表达式。</p>
+<p>方法引用使用一对冒号 <code>::</code>。</p>
+<p>下面对比下方法引用简化 Lambda 表达式的例子：</p>
+<table>
+<thead>
+<tr>
+<th>方法引用类型</th>
+<th>方法引用范例</th>
+<th>Lambda 表达式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>静态</td>
+<td><code>Integer::parseInt</code></td>
+<td><code>str -&gt; Integer.parseInt(str)</code></td>
+</tr>
+<tr>
+<td>有限制</td>
+<td><code>Instant.now()::isAfter</code></td>
+<td><code>Instant then = Instant.now();</code><br/><code>t -&gt; then.isAfter(t)</code></td>
+</tr>
+<tr>
+<td>无限制</td>
+<td><code>String::toLowerCase</code></td>
+<td><code>str -&gt; str.toLowerCase()</code></td>
+</tr>
+<tr>
+<td>类构造器</td>
+<td><code>TreeMap&lt;K, V&gt;::new</code></td>
+<td><code>() -&gt; new TreeMap&lt;K, V&gt;</code></td>
+</tr>
+<tr>
+<td>数组构造器</td>
+<td><code>int[]::new</code></td>
+<td><code>len -&gt; new int[len]</code></td>
+</tr>
+</tbody></table>
+<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><p>这里对比 JavaScript 和 Java 两门语言的例子，方便对比学习。</p>
+<h2 id="JavaScript-箭头函数"><a href="#JavaScript-箭头函数" class="headerlink" title="JavaScript 箭头函数"></a>JavaScript 箭头函数</h2><p>在 JavaScript 语言中，<strong>函数是一等公民</strong>（参考<a href="[https://llh911001.gitbooks.io/mostly-adequate-guide-chinese/content/ch2.html#%E4%B8%BA%E4%BD%95%E9%92%9F%E7%88%B1%E4%B8%80%E7%AD%89%E5%85%AC%E6%B0%91](https://llh911001.gitbooks.io/mostly-adequate-guide-chinese/content/ch2.html#为何钟爱一等公民)">为何钟爱一等公民</a>、<a href="https://www.zhihu.com/question/67652709" target="_blank" rel="noopener">知乎</a>）。ES6 新特性允许使用“箭头”（<code>=&gt;</code>）定义函数，语法简洁，使用如下：</p>
+<p>没有参数，需要空括号：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> f = <span class="function"><span class="params">()</span> =&gt;</span> <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 等同于</span></span><br><span class="line"><span class="keyword">var</span> f = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123; <span class="keyword">return</span> <span class="number">5</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 5</span></span><br><span class="line"><span class="keyword">var</span> result = f();</span><br></pre></td></tr></table></figure>
+
+<p>一个参数，无需括号：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> f = <span class="function"><span class="params">v</span> =&gt;</span> v;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 等同于</span></span><br><span class="line"><span class="keyword">var</span> f = <span class="function"><span class="keyword">function</span> (<span class="params">v</span>) </span>&#123; <span class="keyword">return</span> v; &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 10</span></span><br><span class="line"><span class="keyword">var</span> result = f(<span class="number">10</span>);</span><br></pre></td></tr></table></figure>
+
+<p>多个参数，需要括号：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> sum = <span class="function">(<span class="params">num1, num2</span>) =&gt;</span> num1 + num2;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 等同于</span></span><br><span class="line"><span class="keyword">var</span> sum = <span class="function"><span class="keyword">function</span>(<span class="params">num1, num2</span>) </span>&#123; <span class="keyword">return</span> num1 + num2; &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 20</span></span><br><span class="line"><span class="keyword">var</span> result = sum(<span class="number">10</span>, <span class="number">10</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+<p>箭头函数的一个用处是<strong>简化回调函数</strong>：</p>
+<p>例子 1：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 正常函数写法</span></span><br><span class="line">[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>].forEach(<span class="function"><span class="keyword">function</span> (<span class="params">x</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(x);</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 箭头函数写法，结果 1 2 3</span></span><br><span class="line">[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>].forEach(<span class="function"><span class="params">x</span> =&gt;</span> <span class="built_in">console</span>.log(x));</span><br></pre></td></tr></table></figure>
+
+<p>例子 2：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 正常函数写法</span></span><br><span class="line"><span class="keyword">var</span> result = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>].map(<span class="function"><span class="keyword">function</span> (<span class="params">x</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> x * x;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 箭头函数写法，结果 [1, 4, 9]</span></span><br><span class="line"><span class="keyword">var</span> result = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>].map(<span class="function"><span class="params">x</span> =&gt;</span> x * x);</span><br></pre></td></tr></table></figure>
+
+<p>例子 3：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 正常函数写法</span></span><br><span class="line"><span class="keyword">var</span> result = [<span class="number">2</span>, <span class="number">3</span>, <span class="number">1</span>].sort(<span class="function"><span class="keyword">function</span> (<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> a - b;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 箭头函数写法，结果 [1, 2, 3]</span></span><br><span class="line"><span class="keyword">var</span> result = [<span class="number">2</span>, <span class="number">3</span>, <span class="number">1</span>].sort(<span class="function">(<span class="params">a, b</span>) =&gt;</span> a - b);</span><br></pre></td></tr></table></figure>
+
+<p>例子 4：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 正常函数写法</span></span><br><span class="line"><span class="keyword">var</span> result = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>].filter(<span class="function"><span class="keyword">function</span> (<span class="params">x</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> x &gt; <span class="number">1</span>;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 箭头函数写法，结果 [2, 3]</span></span><br><span class="line"><span class="keyword">var</span> result = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>].filter(<span class="function"><span class="params">x</span> =&gt;</span> x &gt; <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Java-Lambda-表达式"><a href="#Java-Lambda-表达式" class="headerlink" title="Java Lambda 表达式"></a>Java Lambda 表达式</h2><p>然而在 Java 语言中，函数并非一等公民。但可以利用 Lambda 表达式 + 函数式接口来模拟 JavaScript 类似的语法，对比如下：</p>
+<p>没有参数，需要空括号：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">IntSupplier f = () -&gt; <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 5</span></span><br><span class="line"><span class="keyword">int</span> result = f.getAsInt();</span><br></pre></td></tr></table></figure>
+
+<p>一个参数，无需括号：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ToIntFunction&lt;Integer&gt; f = i -&gt; i;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 10</span></span><br><span class="line"><span class="keyword">int</span> result = f.applyAsInt(<span class="number">10</span>);</span><br></pre></td></tr></table></figure>
+
+<p>多个参数，需要括号：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">IntBinaryOperator sum = (num1, num2) -&gt; num1 + num2;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用方法引用进一步简化语法</span></span><br><span class="line"><span class="comment">// IntBinaryOperator sum = Integer::sum;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 20</span></span><br><span class="line"><span class="keyword">int</span> result = sum.applyAsInt(<span class="number">10</span>, <span class="number">10</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+<p>Lambda 表达式同样可以<strong>简化回调函数</strong>：</p>
+<p>例子 1：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1 2 3</span></span><br><span class="line">IntStream.of(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>).forEach(x -&gt; System.out.println(x));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用方法引用进一步简化语法</span></span><br><span class="line"><span class="comment">// IntStream.of(1, 2, 3).forEach(System.out::println);</span></span><br></pre></td></tr></table></figure>
+
+<p>例子 2：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// [1, 4, 9]</span></span><br><span class="line"><span class="keyword">int</span>[] result = IntStream.of(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>).map(x -&gt; x * x).toArray();</span><br></pre></td></tr></table></figure>
+
+<p>例子 3：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// [1, 2, 3]</span></span><br><span class="line"><span class="keyword">int</span>[] result = Stream.of(<span class="number">2</span>, <span class="number">3</span>, <span class="number">1</span>)</span><br><span class="line">    .sorted((a, b) -&gt; a - b)</span><br><span class="line">    .mapToInt(Integer::intValue)</span><br><span class="line">    .toArray();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用方法引用进一步简化语法</span></span><br><span class="line"><span class="comment">// int[] result = Stream.of(2, 3, 1)</span></span><br><span class="line"><span class="comment">//     .sorted(Comparator.naturalOrder())</span></span><br><span class="line"><span class="comment">//     .mapToInt(Integer::intValue)</span></span><br><span class="line"><span class="comment">//     .toArray();</span></span><br></pre></td></tr></table></figure>
+
+<p>例子 4：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// [2, 3]</span></span><br><span class="line"><span class="keyword">int</span>[] result = IntStream.of(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>).filter(x -&gt; x &gt; <span class="number">1</span>).toArray();</span><br></pre></td></tr></table></figure>
+
+<h1 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h1><ul>
+<li>Java 8 引入了 <code>Optional</code> 类用于解决臭名昭著的空指针异常。它本质上是一个可以为 <code>null</code> 的容器对象，并提供了很多有用的方法，以函数式编程的风格简化 <code>null</code> 处理。</li>
+<li>Stream API 是一种基于函数式编程的模型，用于增强集合处理。</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html</a></p>
+<p><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html</a></p>
+<p><a href="https://docs.oracle.com/javase/tutorial/collections/streams/index.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/tutorial/collections/streams/index.html</a></p>
+<p>《Effective Java 第三版》：</p>
+<ul>
+<li>第 42 条：Lambda 优先于匿名类</li>
+<li>第 43 条：方法引用优先于 Lambda</li>
+<li>第 44 条：坚持使用标准的函数式接口（包括基本数据类型的函数式接口）</li>
+<li>第 45 条：谨慎使用 Stream（必要时也需要使用 <code>Iterator</code> 外部迭代器）</li>
+<li>第 46 条：优先选择 Stream 中无副作用的函数（使用收集器 <code>Collectors</code> 而不是 <code>forEach</code>）</li>
+<li>第 47 条：Stream 要优先用 Collection 作为返回类型</li>
+<li>第 48 条：谨慎使用 Stream 并行</li>
+</ul>
+<p>《Java 8 函数式编程》</p>
+<p>《Java 8 实战》</p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/03/27/mysql-transaction-autocommit/" class="post-title-link">MySQL 事务自动提交机制总结</a></h2><div class="post-info">2019-03-27<a href="/tags/MySQL/" title="MySQL" class="post-demo">MySQL</a></div><div class="post-content"><h1 id="事务的自动提交机制"><a href="#事务的自动提交机制" class="headerlink" title="事务的自动提交机制"></a>事务的自动提交机制</h1><p>在 <code>InnoDB</code>，所有用户活动都发生在事务中。</p>
+<p><code>InnoDB</code> 默认采用事务<a href="https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_autocommit" target="_blank" rel="noopener">自动提交</a>（<code>autocommit</code>）机制。也就是说，如果不是显式开启一个事务，则每条 SQL 语句都<strong>形成独立事务</strong>。如果该语句执行后没有返回错误，MySQL 会自动执行 <code>COMMIT</code>。但如果该语句返回错误，则根据<a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-error-handling.html" target="_blank" rel="noopener">错误情况</a>执行 <code>COMMIT</code> 或 <code>ROLLBACK</code>。</p>
+<p>如何修改当前会话的提交模式？</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> <span class="keyword">VARIABLES</span> <span class="keyword">LIKE</span> <span class="string">'AUTOCOMMIT'</span>;</span><br><span class="line">+<span class="comment">---------------+-------+</span></span><br><span class="line">| Variable_name | Value |</span><br><span class="line">+<span class="comment">---------------+-------+</span></span><br><span class="line">| autocommit    | ON    |</span><br><span class="line">+<span class="comment">---------------+-------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--1 或者 ON 表示启用， 0 或者 OFF 表示禁用</span></span><br><span class="line"><span class="keyword">SET</span> AUTOCOMMIT = <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<p>注意：</p>
+<ul>
+<li>关闭后，会话将始终开启一个事务。直到你显式提交或回滚该事务后，一个新事务又被开启。</li>
+<li>如果一个关闭了 <code>autocommit</code> 的会话没有显式提交事务，然后会话被关闭，MySQL 将回滚该事务。</li>
+<li>有一些命令，在执行之后会强制执行 <code>COMMIT</code> 提交当前的活动事务。例如：<ul>
+<li><code>ALTER TABLE</code></li>
+<li><code>LOCK TABLES</code></li>
+</ul>
+</li>
+</ul>
+<h1 id="提交多语句事务"><a href="#提交多语句事务" class="headerlink" title="提交多语句事务"></a>提交多语句事务</h1><p>如何在一个事务中组合多条 SQL 语句（multiple-statement transaction）？有两种方式：</p>
+<ol>
+<li><p>方式一：显式关闭当前会话的 <code>autocommit</code>，然后提交或回滚事务。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> autocommit=<span class="number">0</span>;</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">parent</span> <span class="keyword">VALUES</span> (<span class="number">10</span>, <span class="string">'Heikki'</span>);</span><br><span class="line"><span class="keyword">COMMIT</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>方式二：如果不想关闭 <code>autocommit</code>，可以通过 <a href="https://dev.mysql.com/doc/refman/5.7/en/commit.html" target="_blank" rel="noopener"><code>START TRANSACTION</code></a> 或 <a href="https://dev.mysql.com/doc/refman/5.7/en/commit.html" target="_blank" rel="noopener"><code>BEGIN</code></a> 语句显式开启事务，然后通过 <a href="https://dev.mysql.com/doc/refman/5.7/en/commit.html" target="_blank" rel="noopener"><code>COMMIT</code></a>或 <a href="https://dev.mysql.com/doc/refman/5.7/en/commit.html" target="_blank" rel="noopener"><code>ROLLBACK</code></a> 语句显式结束事务。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">START</span> <span class="keyword">TRANSACTION</span>;</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">parent</span> <span class="keyword">VALUES</span> (<span class="number">15</span>, <span class="string">'John'</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">parent</span> <span class="keyword">VALUES</span> (<span class="number">20</span>, <span class="string">'Paul'</span>);</span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> <span class="keyword">parent</span> <span class="keyword">WHERE</span> b = <span class="string">'Heikki'</span>;</span><br><span class="line"><span class="keyword">ROLLBACK</span>;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>最终结果：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">parent</span>;</span><br><span class="line">+<span class="comment">------+--------+</span></span><br><span class="line">|  id  | name   |</span><br><span class="line">+<span class="comment">------+--------+</span></span><br><span class="line">|  10  | Heikki |</span><br><span class="line">+<span class="comment">------+--------+</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="在事务中混合使用存储引擎问题"><a href="#在事务中混合使用存储引擎问题" class="headerlink" title="在事务中混合使用存储引擎问题"></a>在事务中混合使用存储引擎问题</h1><p>MySQL 服务器层不管理事务，事务是由下层的存储引擎实现的。所以在同一个事务中，使用多种存储引擎是不可靠的。</p>
+<p>如果在事务中混合使用了事务型和非事务型的表（例如 <code>InnoDB</code> 和 <code>MyISAM</code> 表），可能会有意想不到的情况发生。请看下例：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--引入一张 MyISAM 表</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`people`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">bigint</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  <span class="string">`last_name`</span> <span class="built_in">varchar</span>(<span class="number">50</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`first_name`</span> <span class="built_in">varchar</span>(<span class="number">50</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=MyISAM;</span><br></pre></td></tr></table></figure>
+
+<p>示例一，在事务中混合使用存储引擎，出现报错：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">START</span> <span class="keyword">TRANSACTION</span>;</span><br><span class="line"><span class="comment">--执行成功</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">parent</span>(<span class="keyword">name</span>) <span class="keyword">VALUES</span>(<span class="string">'Heikki'</span>);</span><br><span class="line"><span class="comment">--执行失败</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> people(last_name, first_name) <span class="keyword">VALUES</span>(<span class="string">'pete'</span>, <span class="string">'Lee'</span>);</span><br><span class="line">1785 - When @@GLOBAL.ENFORCE_GTID_CONSISTENCY = 1, updates to non-transactional tables can only be done in either autocommitted statements or single-statement transactions, and never in the same statement as updates to transactional tables.</span><br></pre></td></tr></table></figure>
+
+<p>示例二，当事务回滚，非事务型的表上的变更无法撤销，这会导致数据库处于不一致的状态，这种情况很难修复，事务的最终结果将无法确定。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">START</span> <span class="keyword">TRANSACTION</span>;</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> people(last_name, first_name) <span class="keyword">VALUES</span>(<span class="string">'pete'</span>, <span class="string">'Lee'</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">parent</span>(<span class="keyword">name</span>) <span class="keyword">VALUES</span>(<span class="string">'Heikki'</span>);</span><br><span class="line"><span class="comment">--parent表（InnoDB）回滚成功，people表（MyISAM）回滚失败</span></span><br><span class="line"><span class="keyword">ROLLBACK</span>;</span><br></pre></td></tr></table></figure>
+
+<p>所以，为每张表选择合适的存储引擎非常重要。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《高性能 MySQL》</p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-consistent-read.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/innodb-consistent-read.html</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/sql-syntax-transactions.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/sql-syntax-transactions.html</a></p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/03/26/mysql-transaction-characteristics/" class="post-title-link">MySQL 事务实操总结</a></h2><div class="post-info">2019-03-26<a href="/tags/MySQL/" title="MySQL" class="post-demo">MySQL</a></div><div class="post-content"><p>前文总结了 MySQL 事务的一些概念，下面总结下如何进行实操。</p>
+<h1 id="开启事务、提交与回滚"><a href="#开启事务、提交与回滚" class="headerlink" title="开启事务、提交与回滚"></a>开启事务、提交与回滚</h1><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">START</span> <span class="keyword">TRANSACTION</span></span><br><span class="line">    [transaction_characteristic [, transaction_characteristic] ...]</span><br><span class="line"></span><br><span class="line">transaction_characteristic: &#123;</span><br><span class="line">    <span class="keyword">WITH</span> <span class="keyword">CONSISTENT</span> <span class="keyword">SNAPSHOT</span></span><br><span class="line">  | <span class="keyword">READ</span> WRITE</span><br><span class="line">  | <span class="keyword">READ</span> <span class="keyword">ONLY</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line"><span class="keyword">COMMIT</span></span><br><span class="line"><span class="keyword">ROLLBACK</span></span><br><span class="line"><span class="keyword">SET</span> autocommit = &#123;<span class="number">0</span> | <span class="number">1</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<p>主要语法作用如下：</p>
+<ul>
+<li><code>START TRANSACTION</code> 或 <code>BEGIN</code> 开启新的事务。</li>
+<li><code>COMMIT</code> 提交当前事务，使其更改持久化。</li>
+<li><code>ROLLBACK</code> 回滚当前事务，取消其更改。</li>
+<li><code>SET autocommit</code> 禁用或启用当前会话的默认自动提交模式。</li>
+</ul>
+<p><code>START TRANSACTION</code> 是标准的 SQL 语法，推荐使用。它支持以下 <code>BEGIN</code> 语法所不支持的修饰符：</p>
+<ul>
+<li><code>WITH CONSISTENT SNAPSHOT</code> 在事务开启同时创建快照（一致性视图），主要用于可重复读（RR）。</li>
+<li><code>READ WRITE</code> 读写模式，默认值。</li>
+<li><code>READ ONLY</code> 只读模式，有助于提升存储引擎的性能表现。</li>
+</ul>
+<h1 id="SET-TRANSACTION-语法"><a href="#SET-TRANSACTION-语法" class="headerlink" title="SET TRANSACTION 语法"></a>SET TRANSACTION 语法</h1><p>可以通过 <a href="https://dev.mysql.com/doc/refman/5.7/en/set-transaction.html" target="_blank" rel="noopener">SET TRANSACTION</a> 语句设置事务的特性，包括隔离级别和读写模式：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> [<span class="keyword">GLOBAL</span> | <span class="keyword">SESSION</span>] <span class="keyword">TRANSACTION</span></span><br><span class="line">    transaction_characteristic [, transaction_characteristic] ...</span><br><span class="line"></span><br><span class="line">transaction_characteristic: &#123;</span><br><span class="line">    <span class="keyword">ISOLATION</span> <span class="keyword">LEVEL</span> <span class="keyword">level</span></span><br><span class="line">  | access_mode</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">level</span>: &#123;</span><br><span class="line">     REPEATABLE <span class="keyword">READ</span></span><br><span class="line">   | <span class="keyword">READ</span> COMMITTED</span><br><span class="line">   | <span class="keyword">READ</span> UNCOMMITTED</span><br><span class="line">   | <span class="keyword">SERIALIZABLE</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">access_mode: &#123;</span><br><span class="line">     <span class="keyword">READ</span> WRITE</span><br><span class="line">   | <span class="keyword">READ</span> <span class="keyword">ONLY</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="事务特性范围（作用域）"><a href="#事务特性范围（作用域）" class="headerlink" title="事务特性范围（作用域）"></a>事务特性范围（作用域）</h2><p>您可以设置事务特性的作用域为全局、当前会话或仅针对下一个事务，其优先级为事务 &gt; 会话 &gt; 全局：</p>
+<ul>
+<li><p>使用 <code>GLOBAL</code> 关键字：</p>
+<ul>
+<li>全局应用于所有后续会话。</li>
+<li>现有会话不受影响。</li>
+<li>全局设置要求 <a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_super" target="_blank" rel="noopener">SUPER</a> 权限。</li>
+</ul>
+</li>
+<li><p>使用 <code>SESSION</code> 关键字：</p>
+<ul>
+<li>应用于当前会话中执行的所有后续事务。</li>
+<li>不影响正在进行的事务。</li>
+</ul>
+</li>
+<li><p>没有 <code>SESSION</code> 或  <code>GLOBAL</code> 关键字：</p>
+<ul>
+<li><p>仅应用于当前会话中执行的下一个事务。</p>
+</li>
+<li><p>后续事务将恢复为当前会话的默认值。</p>
+</li>
+<li><p>事务中不允许使用该语句：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">START</span> <span class="keyword">TRANSACTION</span>;</span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">TRANSACTION</span> <span class="keyword">ISOLATION</span> <span class="keyword">LEVEL</span> <span class="keyword">SERIALIZABLE</span>;</span><br><span class="line">ERROR 1568 (25001): Transaction characteristics can't be changed while a transaction is in progress</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+<p>语法总结如下：</p>
+<table>
+<thead>
+<tr>
+<th>语法</th>
+<th>作用域</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SET GLOBAL TRANSACTION <em>transaction_characteristic</em></td>
+<td>Global</td>
+</tr>
+<tr>
+<td>SET SESSION TRANSACTION <em>transaction_characteristic</em></td>
+<td>Session</td>
+</tr>
+<tr>
+<td>SET TRANSACTION <em>transaction_characteristic</em></td>
+<td>Next transaction only</td>
+</tr>
+</tbody></table>
+<h2 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h2><p>MySQL 能够识别所有的四个事务隔离级别，<code>InnoDB</code> 引擎也支持所有的隔离级别。可以使用 <code>ISOLATION LEVEL level</code> 子句进行设置：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> <span class="keyword">TRANSACTION</span> <span class="keyword">ISOLATION</span> <span class="keyword">LEVEL</span> <span class="keyword">READ</span> UNCOMMITTED; <span class="comment">--读未提交</span></span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">TRANSACTION</span> <span class="keyword">ISOLATION</span> <span class="keyword">LEVEL</span> <span class="keyword">READ</span> COMMITTED; <span class="comment">--读已提交</span></span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">TRANSACTION</span> <span class="keyword">ISOLATION</span> <span class="keyword">LEVEL</span> REPEATABLE <span class="keyword">READ</span>; <span class="comment">--可重复读</span></span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">TRANSACTION</span> <span class="keyword">ISOLATION</span> <span class="keyword">LEVEL</span> <span class="keyword">SERIALIZABLE</span>; <span class="comment">--串行化</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="事务读写模式"><a href="#事务读写模式" class="headerlink" title="事务读写模式"></a>事务读写模式</h2><p>MySQL 支持两种事务读写模式，其设置方式如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> <span class="keyword">TRANSACTION</span> <span class="keyword">READ</span> WRITE; <span class="comment">--读写模式，默认值</span></span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">TRANSACTION</span> <span class="keyword">READ</span> <span class="keyword">ONLY</span>; <span class="comment">--只读模式，有助于提升存储引擎的性能表现</span></span><br></pre></td></tr></table></figure>
+
+<p>如果要单独为某个事务指定读写模式，搭配 <code>START TRANSACTION</code> 使用。</p>
+<h1 id="SET-语法"><a href="#SET-语法" class="headerlink" title="SET 语法"></a>SET 语法</h1><p>也可以通过 <a href="https://dev.mysql.com/doc/refman/5.7/en/set-variable.html" target="_blank" rel="noopener"><code>SET</code></a> 语句直接进行各种变量赋值，语法总结如下：</p>
+<table>
+<thead>
+<tr>
+<th>语法</th>
+<th>作用域</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SET GLOBAL <em>var_name</em> = <em>value</em></td>
+<td>Global</td>
+</tr>
+<tr>
+<td>SET @@GLOBAL.<em>var_name</em> = <em>value</em></td>
+<td>Global</td>
+</tr>
+<tr>
+<td>SET SESSION <em>var_name</em> = <em>value</em></td>
+<td>Session</td>
+</tr>
+<tr>
+<td>SET @@SESSION.<em>var_name</em> = <em>value</em></td>
+<td>Session</td>
+</tr>
+<tr>
+<td>SET <em>var_name</em> = <em>value</em></td>
+<td>Session</td>
+</tr>
+<tr>
+<td>SET @@<em>var_name</em> = <em>value</em></td>
+<td>Next transaction only</td>
+</tr>
+</tbody></table>
+<p>变量的查询语法如下，例如 <a href="https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_transaction_isolation" target="_blank" rel="noopener"><code>transaction_isolation</code></a> 和 <a href="https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_transaction_read_only" target="_blank" rel="noopener"><code>transaction_read_only</code></a> ：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> @@GLOBAL.transaction_isolation, @@GLOBAL.transaction_read_only;</span><br><span class="line"><span class="keyword">SELECT</span> @@SESSION.transaction_isolation, @@SESSION.transaction_read_only;</span><br></pre></td></tr></table></figure>
+
+<h1 id="启动时设置"><a href="#启动时设置" class="headerlink" title="启动时设置"></a>启动时设置</h1><p>上面介绍的两种语法都是用于运行时设置，下面介绍两种方式用于在服务启动时设置：</p>
+<h2 id="命令行参数"><a href="#命令行参数" class="headerlink" title="命令行参数"></a>命令行参数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">--transaction-isolation&#x3D;REPEATABLE-READ</span><br><span class="line">--transaction-read-only&#x3D;OFF</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">transaction-isolation &#x3D; REPEATABLE-READ</span><br><span class="line">transaction-read-only &#x3D; OFF</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://dev.mysql.com/doc/refman/5.7/en/commit.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/commit.html</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/set-transaction.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/set-transaction.html</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/set-variable.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/set-variable.html</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-performance-ro-txn.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/innodb-performance-ro-txn.html</a></p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/03/23/mysql-consistent-nonlocking-reads-with-mvcc/" class="post-title-link">MySQL 多版本并发控制（MVCC）总结</a></h2><div class="post-info">2019-03-23<a href="/tags/MySQL/" title="MySQL" class="post-demo">MySQL</a></div><div class="post-content"><h1 id="本文大纲"><a href="#本文大纲" class="headerlink" title="本文大纲"></a>本文大纲</h1><p><img src="/img/mysql/tx_isolation.png" alt="Transaction Isolation"></p>
+<h1 id="事务的隔离性"><a href="#事务的隔离性" class="headerlink" title="事务的隔离性"></a>事务的隔离性</h1><p>上文提到，数据库的事务隔离性，主要解决以下问题：</p>
+<ul>
+<li>防止多个事务并发执行时由于交叉执行而导致的数据不一致问题。</li>
+<li>解决同一事务内的多次相同查询，数据不一致问题。</li>
+</ul>
+<p>有哪些数据不一致的情况？</p>
+<ul>
+<li>脏读</li>
+<li>不可重复读</li>
+<li>幻读</li>
+</ul>
+<p>为了数据不一致问题，引入了四个隔离级别，随着隔离级别的提升，可以解决上述更多情况。它们所使用的 <code>SELECT</code> 模式分别如下：</p>
+<table>
+<thead>
+<tr>
+<th>隔离级别</th>
+<th>SELECT 默认模式</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>读未提交<br/><code>READ UNCOMMITTED</code></td>
+<td>/</td>
+<td></td>
+</tr>
+<tr>
+<td>读已提交<br/><code>READ COMMITTED</code></td>
+<td>使用一致性非加锁读（Consistent Non-locking Reads）<br/>总是使用<strong>最新快照</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>可重复读<br/><code>REPEATABLE READ</code></td>
+<td>使用一致性非加锁读（Consistent Non-locking Reads）<br/>同一事务内总是使用<strong>首次快照</strong>，确保可重复读。</td>
+<td>一致性读取不会在它访问的数据上加任何锁，因此其它事务可以自由地同时修改那些数据，同一份数据在 undo log 会存在<strong>多份历史版本</strong>。（即通过多版本并发控制（MVCC）实现可重复读）</td>
+</tr>
+<tr>
+<td>串行化<br/><code>SERIALIZABLE</code></td>
+<td>加共享锁读<br/>（S-Locking reads）</td>
+<td>加锁读会给数据加共享锁，其它事务读取时可以继续加共享锁，但修改会阻塞等待以获取排它锁，保证读写的串行化，因此同一份数据只存在<strong>一份当前版本</strong>。（即通过读写锁实现可重复读）</td>
+</tr>
+</tbody></table>
+<h1 id="InnoDB-可重复读实现"><a href="#InnoDB-可重复读实现" class="headerlink" title="InnoDB 可重复读实现"></a>InnoDB 可重复读实现</h1><p>下面重点看下 MySQL InnoDB 如何实现可重复读这个隔离级别。它使用了一致性非加锁读（Consistent Non-locking Reads）实现多版本并发控制（MVCC），这种方法不会在它访问的数据上设置任何锁，因此其它事务可以自由地同时修改那些表，并发性能高。</p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>下图展示了两个事务并发执行时，最终会出现的五种情况：</p>
+<p><img src="/img/mysql/consistent-read-examples.png" alt="consistent read examples"></p>
+<p>即：</p>
+<blockquote>
+<p>事务的可重复读的能力是怎么实现的？</p>
+<p>可重复读的核心就是一致性读（consistent read）；而事务更新数据的时候，只能用当前读（current read）。如果当前的记录的行锁被其他事务占用的话，就需要进入锁等待。</p>
+</blockquote>
+<h2 id="Current-Read"><a href="#Current-Read" class="headerlink" title="Current Read"></a>Current Read</h2><p>数据库快照适用于同一事务内的 <code>SELECT</code> 语句，而不一定适用于 DML 语句。不同事务间的增删改操作还是会相互影响的，因为 DML 与 SELECT 语句不同，使用的是 <em>current read</em>。例如：</p>
+<ul>
+<li><p>尽管事务 A 创建一致性视图时查不到 <code>xyz</code> 记录，但如果此后其它事务插入了 <code>xyz</code> 记录并提交事务，事务 A 仍然可以将它们删除：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(c1) <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> c1 = <span class="string">'xyz'</span>;</span><br><span class="line"><span class="comment">-- Returns 0: no rows match.</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> c1 = <span class="string">'xyz'</span>;</span><br><span class="line"><span class="comment">-- Deletes several rows recently committed by other transaction.</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>尽管事务 A 创建一致性视图时查不到 <code>abc</code> 记录，但如果此后其它事务插入了 <code>abc</code> 记录并提交事务，事务 A 仍然可以修改这些记录，并看到本事务内的修改：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(c2) <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> c2 = <span class="string">'abc'</span>;</span><br><span class="line"><span class="comment">-- Returns 0: no rows match.</span></span><br><span class="line"><span class="keyword">UPDATE</span> t1 <span class="keyword">SET</span> c2 = <span class="string">'cba'</span> <span class="keyword">WHERE</span> c2 = <span class="string">'abc'</span>;</span><br><span class="line"><span class="comment">-- Affects 10 rows: another txn just committed 10 rows with 'abc' values.</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(c2) <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> c2 = <span class="string">'cba'</span>;</span><br><span class="line"><span class="comment">-- Returns 10: this txn can now see the rows it just updated.</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="Consistent-Read-实现原理"><a href="#Consistent-Read-实现原理" class="headerlink" title="Consistent Read 实现原理"></a>Consistent Read 实现原理</h2><p>Consistent Read 实现依赖于 Undo Log 和 Consistent Read-View。</p>
+<h3 id="Undo-Log-是什么？"><a href="#Undo-Log-是什么？" class="headerlink" title="Undo Log 是什么？"></a>Undo Log 是什么？</h3><blockquote>
+<p>A storage area that holds copies of data modified by active <strong>transactions</strong>. If another transaction needs to see the original data (as part of a <strong>consistent read</strong> operation), the unmodified data is retrieved from this storage area.</p>
+<p>In MySQL 5.6 and MySQL 5.7, you can use the <a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-parameters.html#sysvar_innodb_undo_tablespaces" target="_blank" rel="noopener"><code>innodb_undo_tablespaces</code></a> variable have undo logs reside in <strong>undo tablespaces</strong>, which can be placed on another storage device such as an <strong>SSD</strong>. In MySQL 8.0, undo logs reside in two default undo tablespaces that are created when MySQL is initialized, and additional undo tablespaces can be created using <a href="https://dev.mysql.com/doc/refman/5.7/en/create-tablespace.html" target="_blank" rel="noopener"><code>CREATE UNDO TABLESPACE</code></a> syntax.</p>
+<p>The undo log is split into separate portions, the <strong>insert undo buffer</strong> and the <strong>update undo buffer</strong>.</p>
+</blockquote>
+<h3 id="Consistent-Read-View-是什么？"><a href="#Consistent-Read-View-是什么？" class="headerlink" title="Consistent Read-View 是什么？"></a>Consistent Read-View 是什么？</h3><blockquote>
+<p>在实现上， InnoDB 为每个事务构造了一个数组，用来保存这个事务启动瞬间，当前正在“活跃”的所有事务 ID。“活跃”指的就是，启动了但还没提交。</p>
+<p>数组里面事务 ID 的最小值记为低水位，当前系统里面已经创建过的事务 ID 的最大值加 1 记为高水位。</p>
+<p>这个视图数组和高水位，就组成了当前事务的一致性视图（consistent read-view）。</p>
+<p>这个视图数组把所有的 row trx_id 分成了几种不同的情况。如下图：</p>
+</blockquote>
+<p><img src="/img/mysql/consistent-read-view.png" alt="consistent-read-view"></p>
+<p>以下表事务为例，对于当前事务 105 来说，一致性视图为：<code>[100,103,104,105],106</code>，其中低水位为 <code>100</code>，高水位为 <code>106</code>。这些事务分布如上图。</p>
+<table>
+<thead>
+<tr>
+<th>row trx_id</th>
+<th>committed?</th>
+<th>remark</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>100</td>
+<td>N</td>
+<td></td>
+</tr>
+<tr>
+<td>101</td>
+<td>Y</td>
+<td></td>
+</tr>
+<tr>
+<td>102</td>
+<td>Y</td>
+<td></td>
+</tr>
+<tr>
+<td>103</td>
+<td>N</td>
+<td></td>
+</tr>
+<tr>
+<td>104</td>
+<td>N</td>
+<td></td>
+</tr>
+<tr>
+<td>105</td>
+<td>N</td>
+<td>current trx</td>
+</tr>
+</tbody></table>
+<p>对于当前事务 ID <code>105</code>，根据以下流程图，就只能看到已提交事务 <code>1-99</code>, <code>101</code>, <code>102</code></p>
+<p><img src="/img/mysql/consistent-read-process.png" alt="consistent read process"></p>
+<p><strong>数据版本的可见性规则，就是基于数据的 row trx_id 和这个一致性视图的对比结果得到的。</strong>假如事务 ID <code>100-104</code> 依次修改了同一份数据（如上图右），虽然数据当前版本为 <code>104</code>，但对于当前事务 ID <code>105</code> 来说，也只能看到版本链上事务 ID <code>102</code> 提交的数据版本。</p>
+<h2 id="如何查看最新快照"><a href="#如何查看最新快照" class="headerlink" title="如何查看最新快照"></a>如何查看最新快照</h2><p>如果要查看最新快照，可以通过以下三个方法：</p>
+<ul>
+<li>使用 <code>READ COMMITTED</code> 隔离级别</li>
+<li>提交当前事务并发起新查询，刷新时间点</li>
+<li>使用加锁读（读锁或写锁）</li>
+</ul>
+<p>下例展示了第二种方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">             Session A              Session B</span><br><span class="line"></span><br><span class="line">           START TRANSACTION;     START TRANSACTION;</span><br><span class="line">time</span><br><span class="line">|          SELECT * FROM t;</span><br><span class="line">|          empty set</span><br><span class="line">|                                 INSERT INTO t VALUES (1, 2);</span><br><span class="line">|</span><br><span class="line">v          SELECT * FROM t;</span><br><span class="line">           empty set</span><br><span class="line">                                  COMMIT;</span><br><span class="line"></span><br><span class="line">           SELECT * FROM t;</span><br><span class="line">           empty set</span><br><span class="line"></span><br><span class="line">           COMMIT;</span><br><span class="line"></span><br><span class="line">           SELECT * FROM t;</span><br><span class="line">           ---------------------</span><br><span class="line">           |    1    |    2    |</span><br><span class="line">           ---------------------</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《高性能 MySQL》</p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-multi-versioning.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/innodb-multi-versioning.html</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-consistent-read.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/innodb-consistent-read.html</a></p>
+<p><a href="https://time.geekbang.org/column/article/70562" target="_blank" rel="noopener">https://time.geekbang.org/column/article/70562</a></p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/03/20/mysql-transaction-model/" class="post-title-link">MySQL ACID 事务模型与隔离级别总结</a></h2><div class="post-info">2019-03-20<a href="/tags/MySQL/" title="MySQL" class="post-demo">MySQL</a></div><div class="post-content"><h1 id="ACID-模型"><a href="#ACID-模型" class="headerlink" title="ACID 模型"></a>ACID 模型</h1><p>维基百科关于 ACID 的定义：</p>
+<blockquote>
+<p>ACID 是<a href="https://en.wikipedia.org/wiki/Database_transaction" target="_blank" rel="noopener">数据库事务</a>的一组属性，旨在即使在发生错误、电源故障等情况下也能保证<strong>数据有效性</strong>。在数据库环境中，一系列满足 ACID 属性的数据库操作（可以视作对数据的单个逻辑操作）称为事务。例如，将资金从某个银行账户转账到另一个银行账户。</p>
+</blockquote>
+<p>下面重点讨论 MySQL <code>InnoDB</code> 存储引擎如何与 ACID 模型进行交互：</p>
+<h2 id="原子性（Atomicity）"><a href="#原子性（Atomicity）" class="headerlink" title="原子性（Atomicity）"></a>原子性（Atomicity）</h2><blockquote>
+<p>一个<a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_transaction" target="_blank" rel="noopener">事务</a>必须被视为一个不可分割的最小工作单元，整个事务中的所有操作要么全部成功<strong>提交</strong>，要么全部失败<strong>回滚</strong>，对于一个事务来说，不可能只执行其中的一部分操作。</p>
+</blockquote>
+<p>相关的 MySQL 功能包括：</p>
+<ul>
+<li>事务的自动提交（<code>autocommit</code>）设置。</li>
+<li><code>START TRANSACTION</code>、<code>COMMIT</code>、<code>ROLLBACK</code> 语句。</li>
+</ul>
+<h2 id="一致性（Consistency）"><a href="#一致性（Consistency）" class="headerlink" title="一致性（Consistency）"></a>一致性（Consistency）</h2><blockquote>
+<p>数据库总是从一个一致性的状态转换到另外一个一致性的状态，即使出现系统崩溃等异常情况。</p>
+</blockquote>
+<p>相关的 MySQL 功能包括：</p>
+<ul>
+<li><code>InnoDB</code> <a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_doublewrite_buffer" target="_blank" rel="noopener">双写缓冲区</a>。</li>
+<li><code>InnoDB</code> <a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_crash_recovery" target="_blank" rel="noopener">崩溃恢复</a>。</li>
+</ul>
+<h2 id="隔离性（Isolation）"><a href="#隔离性（Isolation）" class="headerlink" title="隔离性（Isolation）"></a>隔离性（Isolation）</h2><blockquote>
+<p>隔离性可以防止多个事务并发执行时由于交叉执行而导致的数据不一致问题。事务隔离分为不同级别，详见下述<a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_isolation_level" target="_blank" rel="noopener">隔离级别</a>。</p>
+</blockquote>
+<p>相关的 MySQL 功能包括：</p>
+<ul>
+<li>事务的自动提交（<code>autocommit</code>）设置。</li>
+<li><code>SET TRANSACTION ISOLATION LEVEL</code> 语句。</li>
+</ul>
+<h2 id="持久性（Durability）"><a href="#持久性（Durability）" class="headerlink" title="持久性（Durability）"></a>持久性（Durability）</h2><blockquote>
+<p>一旦事务提交，则其所做的修改会永久保存到数据库中。此时即使系统崩溃、修改的数据也不会丢失。</p>
+</blockquote>
+<p>持久性是个有点模糊的概念，因为实际上持久性也分很多不同的级别。有些持久性策略能够提供非常强的安全保障，而有些则未必。而且不可能有能做到 100% 的持久性保证的策略，否则为何还要做数据库备份？</p>
+<p>与持久性相关的 MySQL 功能比较多，这里不做讨论。</p>
+<h1 id="读现象问题"><a href="#读现象问题" class="headerlink" title="读现象问题"></a>读现象问题</h1><p>我们重点来关注下隔离性。隔离性可以防止多个事务并发执行时由于<strong>交叉执行而导致的数据不一致问题</strong>。因此如果不考虑隔离性，会引发如下问题：</p>
+<h2 id="脏读（Dirty-reads）"><a href="#脏读（Dirty-reads）" class="headerlink" title="脏读（Dirty reads）"></a>脏读（Dirty reads）</h2><p>一个事务能够看到其它事务尚未提交的修改。例如：</p>
+<p><img src="/img/mysql/dirty_read.png" alt="脏读"></p>
+<h2 id="不可重复读（Non-repeatable-reads）"><a href="#不可重复读（Non-repeatable-reads）" class="headerlink" title="不可重复读（Non-repeatable reads）"></a>不可重复读（Non-repeatable reads）</h2><p>一个事务的两次查询返回不同的结果。例如：</p>
+<p><img src="/img/mysql/non_repeatable_read.png" alt="不可重复读"></p>
+<p>有两种策略可以避免不可重复读：</p>
+<ul>
+<li>采用共享锁（s-lock）或排它锁（x-lock），进行加锁读（Locking reads）。</li>
+<li>采用多版本并发控制（MVCC），进行一致性非加锁读（Consistent Non-locking Reads）。</li>
+</ul>
+<h2 id="幻读（Phantom-reads）"><a href="#幻读（Phantom-reads）" class="headerlink" title="幻读（Phantom reads）"></a>幻读（Phantom reads）</h2><p>一个事务的两次查询返回不同的结果集。例如：</p>
+<p><img src="/img/mysql/phantom_read.png" alt="幻读"></p>
+<h1 id="隔离级别"><a href="#隔离级别" class="headerlink" title="隔离级别"></a>隔离级别</h1><p>通过提升事务的隔离级别（Isolation Level），可以逐一解决上述问题。所谓隔离级别，就是在数据库事务中，为保证多个事务<strong>并发读写数据</strong>的正确性而提出的定义，它并不是 MySQL 专有的概念，而是源于 <a href="https://en.wikipedia.org/wiki/American_National_Standards_Institute" target="_blank" rel="noopener">ANSI</a>/<a href="https://en.wikipedia.org/wiki/International_Organization_for_Standardization" target="_blank" rel="noopener">ISO</a> 制定的 <a href="https://en.wikipedia.org/wiki/SQL-92" target="_blank" rel="noopener">SQL-92</a> 标准。</p>
+<p>每种关系型数据库都提供了各自特色的隔离级别实现，虽然在通常的隔离级别定义中是以锁为实现单元，但实际的实现千差万别。以最常见的 MySQL <code>InnoDB</code> 存储引擎为例，它是基于 <a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-multi-versioning.html" target="_blank" rel="noopener">MVCC</a>（Multi-Versioning Concurrency Control）和锁的复合实现，性能较高。MySQL <code>InnoDB</code> 存储引擎的事务隔离级别及其解决问题如下：</p>
+<table>
+<thead>
+<tr>
+<th>隔离级别</th>
+<th>脏读<br/>（Dirty reads）</th>
+<th>不可重复读<br/>（Non-repeatable reads）</th>
+<th>幻读<br/>（Phantom reads）</th>
+<th>SELECT 默认模式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>读未提交<br/>（<code>READ UNCOMMITTED</code>）</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td></td>
+</tr>
+<tr>
+<td>读已提交<br/>（<code>READ COMMITTED</code>）</td>
+<td>×</td>
+<td>√</td>
+<td>√</td>
+<td>使用一致性非加锁读（Consistent Non-locking Reads (MVCC)）<br/>总是使用<strong>最新快照</strong></td>
+</tr>
+<tr>
+<td>可重复读<br/>（<code>REPEATABLE READ</code>）</td>
+<td>×</td>
+<td>×</td>
+<td>×（<code>InnoDB</code> 特有）<br/>使用 gap lock 或 next-key lock</td>
+<td>使用一致性非加锁读（Consistent Non-locking Reads (MVCC)）<br/>同一事务内总是使用<strong>首次快照</strong>，确保可重复读。</td>
+</tr>
+<tr>
+<td>串行化<br/>（<code>SERIALIZABLE</code>）</td>
+<td>×</td>
+<td>×</td>
+<td>×<br/>使用 gap lock 或 next-key lock</td>
+<td>加共享锁读<br/>（S-Locking reads）</td>
+</tr>
+</tbody></table>
+<h2 id="读未提交（READ-UNCOMMITTED）"><a href="#读未提交（READ-UNCOMMITTED）" class="headerlink" title="读未提交（READ UNCOMMITTED）"></a>读未提交（READ UNCOMMITTED）</h2><p>一个事务能够看到其它事务尚未提交的修改，这是最低的隔离水平，允许<strong>脏读</strong>出现。</p>
+<p>这个级别会导致很多问题，从性能上来说，也不会比其它级别好太多，但却缺乏其它级别的很多好处，实际应用中很少使用。</p>
+<h2 id="读已提交（READ-COMMITTED）"><a href="#读已提交（READ-COMMITTED）" class="headerlink" title="读已提交（READ COMMITTED）"></a>读已提交（READ COMMITTED）</h2><p>事务能够看到的数据都是其它事务已经提交的修改，也就是保证不会看到任何中间性状态，因此不会出现脏读问题。但读已提交仍然是比较低的隔离级别，并不保证再次读取时能够获取同样的数据，也就是允许其它事务并发修改数据，允许不可重复读和幻读出现。</p>
+<blockquote>
+<p>Tips: 事务隔离级别越高，就越能保证数据的<strong>完整性</strong>和<strong>一致性</strong>，但同时对并发性能的影响也越大。通常，对于绝大多数的应用程序来说，在非 MySQL 数据库的情况下，可以优先考虑将数据库系统的隔离级别设置为<strong>读已提交</strong>，这能够在避免起码的脏读的同时，保证较好的并发性能。尽管这种事务隔离级别会导致不可重复读、幻读，但较为科学的做法是在可能出现这类问题的个别场合中，由应用程序<strong>主动采取读锁或写锁</strong>来进行事务控制。</p>
+</blockquote>
+<p>MySQL 读已提交的默认行为如下：</p>
+<ul>
+<li><p>同一事务中的<a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_consistent_read" target="_blank" rel="noopener">一致性读取（Consistent read）</a>总是会设置和读取自己的最新<a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_snapshot" target="_blank" rel="noopener">快照（snapshot）</a>，因此会产生不可重复读问题，因为其它事务可能会并发修改数据。</p>
+</li>
+<li><p>对于加锁读、<code>UPDATE</code>、<code>DELETE</code> 语句，<code>InnoDB</code> 仅锁定匹配的索引记录。由于禁用了 gap lock，因此会产生幻读问题，因为其它事务可以在<a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_gap" target="_blank" rel="noopener">间隙（gap）</a>中插入新行。</p>
+<blockquote>
+<p>gap:</p>
+<p>A place in an <code>InnoDB</code> <strong>index</strong> data structure where new values could be inserted. When you lock a set of rows with a statement such as <code>SELECT ... FOR UPDATE</code>, <code>InnoDB</code> can create locks that apply to the gaps as well as the actual values in the index.</p>
+</blockquote>
+<blockquote>
+<p>gap lock:</p>
+<p>A <strong>lock</strong> on a <strong>gap</strong> between index records, or a lock on the gap before the first or after the last index record.</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="可重复读（REPEATABLE-READ）"><a href="#可重复读（REPEATABLE-READ）" class="headerlink" title="可重复读（REPEATABLE READ）"></a>可重复读（REPEATABLE READ）</h2><p>这是 MySQL <code>InnoDB</code> 存储引擎<strong>默认的隔离级别</strong>。</p>
+<ul>
+<li><p>同一事务中的<a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_consistent_read" target="_blank" rel="noopener">一致性读取（Consistent read）</a>总是会读取第一次读取时首次建立的<a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_snapshot" target="_blank" rel="noopener">快照（snapshot）</a>。这意味着如果你在同一事务中发起多个普通（非加锁） <code>SELECT</code> 语句，其查询结果是相互一致的。一致性读取机制保证了同一事务中<strong>可重复读</strong>，避免了不可重复读问题，不管其它事务是否提交了 <code>INSERT</code>、<code>DELETE</code>、<code>UPDATE</code> 操作。如果想每次 <code>SELECT</code> 都返回最新快照，要么隔离级别降为 READ COMMITTED，要么使用加锁读。</p>
+</li>
+<li><p>对于加锁读、<code>UPDATE</code>、<code>DELETE</code> 语句，加锁行为取决于语句是使用具有唯一搜索条件的唯一索引还是范围搜索条件：</p>
+<ul>
+<li><p>对于具有唯一搜索条件的唯一索引， <code>InnoDB</code> 仅锁定匹配的索引记录。例如：</p>
+  <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 事务 T1 的 x-lock 会阻止其它事务加锁读或修改 id = 10 的记录</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">parent</span> <span class="keyword">WHERE</span> <span class="keyword">id</span> = <span class="number">10</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line"><span class="comment">-- 事务 T2 无法修改 id = 10 的记录，直到事务 T1 结束</span></span><br><span class="line"><span class="keyword">UPDATE</span> <span class="keyword">parent</span> <span class="keyword">SET</span> <span class="keyword">name</span> = <span class="string">'Pete'</span> <span class="keyword">WHERE</span> <span class="keyword">id</span> = <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>对于范围搜索条件，<code>InnoDB</code> 使用 <a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_gap_lock" target="_blank" rel="noopener">gap lock</a> 或 <a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_next_key_lock" target="_blank" rel="noopener">next-key lock</a> 锁定扫描到的索引范围， 以阻止其它会话插入被范围所覆盖的<a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_gap" target="_blank" rel="noopener">间隙</a>。这是 <code>InnoDB</code> 和其它一些数据库实现的不同，解决了可重复读级别下的幻读问题。例如：</p>
+  <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 事务 T1 的 gap lock 会阻止其它事务插入 id &gt; 10 的记录</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">parent</span> <span class="keyword">WHERE</span> <span class="keyword">id</span> &gt; <span class="number">10</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line"><span class="comment">-- 事务 T2 无法插入 id &gt; 10 的新记录，直到事务 T1 结束</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">parent</span>(<span class="keyword">id</span>, <span class="keyword">name</span>) <span class="keyword">VALUES</span>(<span class="number">11</span>, <span class="string">'Pete'</span>);</span><br><span class="line"><span class="comment">-- 事务 T2 可以插入 id &lt;= 9 的新记录，无需等待事务 T1</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">parent</span>(<span class="keyword">id</span>, <span class="keyword">name</span>) <span class="keyword">VALUES</span>(<span class="number">9</span>, <span class="string">'Pete'</span>);</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="串行化（SERIALIZABLE）"><a href="#串行化（SERIALIZABLE）" class="headerlink" title="串行化（SERIALIZABLE）"></a>串行化（SERIALIZABLE）</h2><p>并发事务之间的读写操作是串行化的，通常意味着读取需要获取共享锁（读锁），更新需要获取排他锁（写锁），如果 SQL 使用 <code>WHERE</code> 语句，还会获取 gap lock 和 next-key lock，可能导致大量的超时和锁争用的问题。</p>
+<p>这是最高的隔离级别，实际应用中很少使用，只有在非常需要确保数据一致性而且可以接受没有并发的情况下，才会考虑。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《高性能 MySQL》</p>
+<p><a href="https://en.wikipedia.org/wiki/Isolation_(database_systems)#Isolation_levels" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Isolation_(database_systems)#Isolation_levels</a></p>
+<p><a href="https://en.wikipedia.org/wiki/Isolation_(database_systems)#Dirty_reads" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Isolation_(database_systems)#Dirty_reads</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_dirty_read" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_dirty_read</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_non_repeatable_read" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_non_repeatable_read</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_phantom" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_phantom</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/mysql-acid.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/mysql-acid.html</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-locking-transaction-model.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/innodb-locking-transaction-model.html</a></p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/02/25/mysql-deadlock/" class="post-title-link">MySQL 死锁问题分析总结</a></h2><div class="post-info">2019-02-25<a href="/tags/MySQL/" title="MySQL" class="post-demo">MySQL</a></div><div class="post-content"><p>死锁是指两个或多个事务在同一资源上相互占用，并请求锁定对方占用的资源，从而导致恶性循环的现象。</p>
+<p>为了解决这种问题，数据库系统实现了各种<strong>死锁检测</strong>和<strong>死锁超时</strong>机制。越复杂的系统，比如 <code>InnoDB</code> 存储引擎，越能检测到死锁的循环依赖，并立即返回一个错误。这种解决方式很有效，否则死锁会导致出现非常慢的查询。还有一种解决方式，就是当查询的时间达到锁等待超时的设定后放弃锁请求，例如：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1205 - <span class="keyword">Lock</span> <span class="keyword">wait</span> <span class="keyword">timeout</span> exceeded; try restarting transaction</span><br></pre></td></tr></table></figure>
+
+<p><code>InnoDB</code> 目前处理死锁的方法是，<strong>将持有最少行级排它锁的事务进行回滚</strong>，这是相对比较简单的死锁回滚算法。</p>
+<p>锁的行为和顺序是和存储引擎相关的。以同样的顺序执行语句，有些存储引擎会产生死锁，有些则不会。死锁的产生有双重原因：</p>
+<ol>
+<li>有些是因为真正的数据冲突，这种情况通常很难避免。</li>
+<li>有些则完全是由于存储引擎的实现方式导致的。</li>
+</ol>
+<p><strong>死锁发生以后，只有部分或者完全回滚其中一个事务，才能打破死锁。</strong>对于事务型的系统，这是无法避免的，所以应用程序在设计时必须考虑如何处理死锁。大多数情况下只需要重新执行因死锁回滚的事务即可。</p>
+<p>同时，为了避免产生死锁问题，根源在于程序设计时要注意不同事务间 SQL 语句的执行顺序，避免互相锁住对方的资源。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-deadlocks.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/innodb-deadlocks.html</a></p>
+</div></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/2019/02/22/mysql-locking-and-index/" class="post-title-link">MySQL 锁粒度与索引总结</a></h2><div class="post-info">2019-02-22<a href="/tags/MySQL/" title="MySQL" class="post-demo">MySQL</a></div><div class="post-content"><h1 id="锁的粒度"><a href="#锁的粒度" class="headerlink" title="锁的粒度"></a>锁的粒度</h1><p>所谓的锁粒度，就是在<strong>锁的开销</strong>和<strong>数据的安全性</strong>之间寻求平衡，这种平衡当然也会影响到性能：</p>
+<blockquote>
+<p>一种提高共享资源并发性的方式就是让锁定对象更有<strong>选择性</strong>。尽量只锁定需要修改的部分数据，而不是所有资源。更理想的方式是，只对会修改的数据片进行精确的锁定。任何时候，在给定的资源上，锁定的数据量越少，则系统的并发程度越高，只要相互之间不发生冲突即可。</p>
+<p>问题是加锁也需要消耗资源。锁的各种操作，包括获得锁、检查锁是否已经解除、释放锁等，都会增加系统的开销。如果系统花费大量的时间来管理锁，而不是存取数据，那么系统的性能可能会因此受到影响。</p>
+</blockquote>
+<p><code>InnoDB</code> 存储引擎目前有以下两种锁粒度：</p>
+<h2 id="表锁"><a href="#表锁" class="headerlink" title="表锁"></a>表锁</h2><p>表锁（Table Lock）是 MySQL 中最基本的锁粒度，并且是开销最小的粒度。<code>MyISAM</code> 存储引擎仅支持表锁。</p>
+<h2 id="行锁"><a href="#行锁" class="headerlink" title="行锁"></a>行锁</h2><p>行锁（Row Lock）可以最大程度的支持并发处理，同时也带来了最大的锁开销。行锁只在存储引擎层实现，而不在 MySQL 服务器层。<code>InnoDB</code> 存储引擎支持行锁级别。</p>
+<h1 id="锁粒度与索引的关系"><a href="#锁粒度与索引的关系" class="headerlink" title="锁粒度与索引的关系"></a>锁粒度与索引的关系</h1><p>以一个例子总结锁粒度与索引的关系：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`child`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">bigint</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  <span class="string">`parent_id`</span> <span class="built_in">bigint</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`name`</span> <span class="built_in">varchar</span>(<span class="number">255</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>),</span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`idx_parent_id`</span> (<span class="string">`parent_id`</span>) <span class="keyword">USING</span> BTREE</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span>;</span><br></pre></td></tr></table></figure>
+
+<p>1、<code>InnoDB</code> 行锁是通过<strong>给索引上的索引项加锁</strong>来实现的，只有通过索引条件检索数据，<code>InnoDB</code> 才使用行锁，否则，<code>InnoDB</code> 将使用表锁：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--开启事务 T1</span></span><br><span class="line"><span class="keyword">START</span> <span class="keyword">TRANSACTION</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">--查看执行计划，全表扫描（type=ALL）</span></span><br><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">child</span> <span class="keyword">WHERE</span> <span class="keyword">name</span> = <span class="string">'D'</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+------+---------+------+------+-------------+</span></span><br><span class="line">| id | select_type | table | type | possible_keys | key  | key_len | ref  | rows | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+------+---------+------+------+-------------+</span></span><br><span class="line">|  1 | SIMPLE      | child | ALL  | NULL          | NULL | NULL    | NULL |    5 | Using where |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+------+---------+------+------+-------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--执行查询，加表锁</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">child</span> <span class="keyword">WHERE</span> <span class="keyword">name</span> = <span class="string">'D'</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line">+<span class="comment">----+-----------+------+</span></span><br><span class="line">| id | parent_id | name |</span><br><span class="line">+<span class="comment">----+-----------+------+</span></span><br><span class="line">|  4 |         3 | D    |</span><br><span class="line">+<span class="comment">----+-----------+------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--开启事务 T2</span></span><br><span class="line"><span class="keyword">START</span> <span class="keyword">TRANSACTION</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">--查看执行计划，命中索引 idx_parent_id	</span></span><br><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">child</span> <span class="keyword">WHERE</span> parent_id = <span class="number">4</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+---------------+---------+-------+------+-------+</span></span><br><span class="line">| id | select_type | table | type | possible_keys | key           | key_len | ref   | rows | Extra |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+---------------+---------+-------+------+-------+</span></span><br><span class="line">|  1 | SIMPLE      | child | ref  | idx_parent_id | idx_parent_id | 8       | const |    1 | NULL  |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+---------------+---------+-------+------+-------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--执行查询，由于事务 T1 加了表锁，事务 T2 对 parent_id = 4 索引项的行锁被阻塞，一直等待</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">child</span> <span class="keyword">WHERE</span> parent_id = <span class="number">4</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
+
+<p>2、由于 MySQL 的行锁是针对索引加的锁，不是针对记录加的锁，所以虽然是访问不同行的记录，但是如果是<strong>使用相同的索引键，是会出现锁冲突的</strong>。应用设计的时候要注意这一点：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--开启事务 T1</span></span><br><span class="line"><span class="keyword">START</span> <span class="keyword">TRANSACTION</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">--查看执行计划，命中索引 idx_parent_id</span></span><br><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">child</span> <span class="keyword">WHERE</span> parent_id = <span class="number">2</span> <span class="keyword">AND</span> <span class="keyword">name</span> = <span class="string">'A'</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+---------------+---------+-------+------+-------------+</span></span><br><span class="line">| id | select_type | table | type | possible_keys | key           | key_len | ref   | rows | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+---------------+---------+-------+------+-------------+</span></span><br><span class="line">|  1 | SIMPLE      | child | ref  | idx_parent_id | idx_parent_id | 8       | const |    2 | Using where |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+---------------+---------+-------+------+-------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--执行查询</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">child</span> <span class="keyword">WHERE</span> parent_id = <span class="number">2</span> <span class="keyword">AND</span> <span class="keyword">name</span> = <span class="string">'A'</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line">+<span class="comment">----+-----------+------+</span></span><br><span class="line">| id | parent_id | name |</span><br><span class="line">+<span class="comment">----+-----------+------+</span></span><br><span class="line">|  1 |         2 | A    |</span><br><span class="line">+<span class="comment">----+-----------+------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--开启事务 T2</span></span><br><span class="line"><span class="keyword">START</span> <span class="keyword">TRANSACTION</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">--查看执行计划，命中索引 idx_parent_id</span></span><br><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">child</span> <span class="keyword">WHERE</span> parent_id = <span class="number">2</span> <span class="keyword">AND</span> <span class="keyword">name</span> = <span class="string">'C'</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+---------------+---------+-------+------+-------------+</span></span><br><span class="line">| id | select_type | table | type | possible_keys | key           | key_len | ref   | rows | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+---------------+---------+-------+------+-------------+</span></span><br><span class="line">|  1 | SIMPLE      | child | ref  | idx_parent_id | idx_parent_id | 8       | const |    2 | Using where |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+---------------+---------+-------+------+-------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 执行查询，虽然 T1、T2 访问不同行的记录，但由于使用了相同的索引键 parent_id = 2，出现锁冲突，从而阻塞，一直等待</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">child</span> <span class="keyword">WHERE</span> parent_id = <span class="number">2</span> <span class="keyword">AND</span> <span class="keyword">name</span> = <span class="string">'C'</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
+
+<p>3、当表有多个索引的时候，不同的事务可以使用不同的索引锁定不同的行，另外，不论是使用主键索引、唯一索引或普通索引，<code>InnoDB</code> 都会使用<strong>行锁</strong>来对数据加锁。</p>
+<p>4、即便在条件中使用了索引字段，但是否使用索引来检索数据是由 MySQL 通过判断不同执行计划的代价来决定的，如果 MySQL 认为全表扫描效率更高，比如对一些很小的表，它就不会使用索引，这种情况下 <code>InnoDB</code> 将使用表锁，而不是行锁。因此，在分析锁冲突时，别忘了检查 SQL 的执行计划，以确认是否真正使用了索引：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--开启事务 T1</span></span><br><span class="line"><span class="keyword">START</span> <span class="keyword">TRANSACTION</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">--查看执行计划，虽然使用了索引 idx_parent_id，但 MySQL 认为全表扫描效率更高，因此实际上没有使用索引</span></span><br><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">child</span> <span class="keyword">WHERE</span> parent_id = <span class="number">2</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+------+---------+------+------+-------------+</span></span><br><span class="line">| id | select_type | table | type | possible_keys | key  | key_len | ref  | rows | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+------+---------+------+------+-------------+</span></span><br><span class="line">|  1 | SIMPLE      | child | ALL  | idx_parent_id | NULL | NULL    | NULL |    5 | Using where |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+------+---------+------+------+-------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--虽然使用了索引 idx_parent_id，但由于进行了全表扫描，因此实际使用表锁</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">child</span> <span class="keyword">WHERE</span> parent_id = <span class="number">2</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line">+<span class="comment">----+-----------+------+</span></span><br><span class="line">| id | parent_id | name |</span><br><span class="line">+<span class="comment">----+-----------+------+</span></span><br><span class="line">|  1 |         2 | A    |</span><br><span class="line">|  2 |         2 | C    |</span><br><span class="line">|  3 |         2 | C    |</span><br><span class="line">+<span class="comment">----+-----------+------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--开启事务 T2</span></span><br><span class="line"><span class="keyword">START</span> <span class="keyword">TRANSACTION</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">--执行查询，由于事务 T1 加了表锁，事务 T2 对 parent_id = 4 索引项的行锁被阻塞，一直等待</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">child</span> <span class="keyword">WHERE</span> parent_id = <span class="number">4</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《高性能 MySQL》</p>
+</div></article></li></ul><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div class="recent"><h4>最近文章</h4><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2021/02/26/cpp-io-library/">C/C++ 语言系列（十一）I/O 库总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/25/cpp-oop-inheritance-and-polymorphism/">C/C++ 语言系列（十）面向对象编程之继承与多态</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/20/cpp-oop-class/">C/C++ 语言系列（九）面向对象编程之类、类模板、类指针</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/18/cpp-type-aliases/">C/C++ 语言系列（八）复合数据类型之类型别名</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/02/16/cpp-struct/">C/C++ 语言系列（七）复合数据类型之结构体</a></li></ul></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/page/4/" class="prev">PREV</a><a href="/page/6/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Javascript 引用类型之 Array · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Javascript 引用类型之 Array - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Javascript 引用类型之 Array</h1><div class="post-info">2016-02-18<a href="/tags/前端/" title="前端" class="post-demo">前端</a></div><div class="post-content"><h1 id="Array"><a href="#Array" class="headerlink" title="Array"></a>Array</h1><p>除了 <code>Object</code> 之外，<code>Array</code> 类型恐怕是 ECMAScript 中最常用的类型了。ECMAScript 的数组特点如下：</p>
+<ul>
+<li>数组是有序列表；</li>
+<li>数组的每一项可以保存不同类型的数据；</li>
+<li>数组的大小可以动态调整，可以随着数据的添加自动增长以容纳新增数据。</li>
+</ul>
+<h2 id="创建方式"><a href="#创建方式" class="headerlink" title="创建方式"></a>创建方式</h2><p>创建 <code>Array</code> 实例的方式有两种。第一种是使用 <code>Array</code> 构造函数：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> colors = <span class="keyword">new</span> <span class="built_in">Array</span>();    <span class="comment">// 创建一个空数组</span></span><br><span class="line"><span class="keyword">var</span> colors = <span class="keyword">new</span> <span class="built_in">Array</span>(<span class="number">20</span>);    <span class="comment">// 创建 length 值为 20 的数组</span></span><br><span class="line"><span class="keyword">var</span> colors = <span class="keyword">new</span> <span class="built_in">Array</span>(<span class="string">"red"</span>, <span class="string">"blue"</span>, <span class="string">"green"</span>);    <span class="comment">// 创建一个包含 3 个字符串值的数组</span></span><br></pre></td></tr></table></figure>
+
+<p>另一种方式是使用数组字面量表示法：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> colors = [];    <span class="comment">// 创建一个空数组</span></span><br><span class="line"><span class="keyword">var</span> colors = [<span class="string">"red"</span>, <span class="string">"blue"</span>, <span class="string">"green"</span>];    <span class="comment">// 创建一个包含 3 个字符串的数组</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="常用方法"><a href="#常用方法" class="headerlink" title="常用方法"></a>常用方法</h2><p>针对数组有很多常用方法：</p>
+<h3 id="栈、队列方法"><a href="#栈、队列方法" class="headerlink" title="栈、队列方法"></a>栈、队列方法</h3><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>push()</code></td>
+<td>入栈（向数组的末尾添加一个或更多元素，并返回新的长度）</td>
+</tr>
+<tr>
+<td><code>pop()</code></td>
+<td>出栈（删除并返回数组的最后一个元素）</td>
+</tr>
+<tr>
+<td><code>unshift()</code></td>
+<td>向数组的开头添加一个或更多元素，并返回新的长度。</td>
+</tr>
+<tr>
+<td><code>shift()</code></td>
+<td>出队（删除并返回数组的第一个元素）</td>
+</tr>
+</tbody></table>
+<h3 id="重排序方法"><a href="#重排序方法" class="headerlink" title="重排序方法"></a>重排序方法</h3><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>sort()</code></td>
+<td>按升序排列数组项</td>
+</tr>
+<tr>
+<td><code>reverse()</code></td>
+<td>反转数组项的顺序</td>
+</tr>
+</tbody></table>
+<h3 id="操作方法"><a href="#操作方法" class="headerlink" title="操作方法"></a>操作方法</h3><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>concat()</code></td>
+<td>拼接并返回新数组</td>
+</tr>
+<tr>
+<td><code>slice()</code></td>
+<td>裁剪并返回新数组</td>
+</tr>
+</tbody></table>
+<h3 id="拼接方法"><a href="#拼接方法" class="headerlink" title="拼接方法"></a>拼接方法</h3><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>join()</code></td>
+<td>把数组的所有元素放入一个字符串。元素通过指定的分隔符进行分隔。</td>
+</tr>
+<tr>
+<td><code>toString()</code></td>
+<td>把数组转换为字符串，并返回结果。</td>
+</tr>
+<tr>
+<td><code>toLocaleString()</code></td>
+<td>把数组转换为本地字符串，并返回结果。</td>
+</tr>
+</tbody></table>
+<h3 id="位置方法"><a href="#位置方法" class="headerlink" title="位置方法"></a>位置方法</h3><p>ECMAScript 5 新增的方法：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>indexOf()</code></td>
+<td>查询特定项在数组的起始索引</td>
+</tr>
+<tr>
+<td><code>lastIndexOf()</code></td>
+<td>查询特定项在数组的结束索引</td>
+</tr>
+</tbody></table>
+<h3 id="迭代方法"><a href="#迭代方法" class="headerlink" title="迭代方法"></a>迭代方法</h3><p>ECMAScript 5 新增的方法：</p>
+<p><code>every()</code> 和 <code>some()</code> 是一组相似的方法，用于查询数组中的项是否满足某个条件：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>every()</code></td>
+<td>对数组中的每一项运行给定函数，如果该函数对每一项都返回 <code>true</code>，则返回 <code>true</code>。</td>
+</tr>
+<tr>
+<td><code>some()</code></td>
+<td>对数组中的每一项运行给定函数，如果该函数对任一项返回 <code>true</code>，则返回 <code>true</code>。</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>filter()</code></td>
+<td>对数组中的每一项运行给定函数，返回该函数会返回 <code>true</code> 的项组成的数组。</td>
+</tr>
+<tr>
+<td><code>map()</code></td>
+<td>对数组中的每一项运行给定函数，返回每次函数调用的结果组成的数组。</td>
+</tr>
+<tr>
+<td><code>forEach()</code></td>
+<td>对数组中的每一项运行给定函数。这个方法没有返回值。</td>
+</tr>
+</tbody></table>
+<p>这些数组方法通过执行不同的操作，可以大大方便处理数组的任务。</p>
+<h3 id="归并方法"><a href="#归并方法" class="headerlink" title="归并方法"></a>归并方法</h3><p>ECMAScript 5 新增的方法：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>reduce()</code></td>
+<td>从数组的第一项开始，逐个遍历到最后，执行给定的归并函数。</td>
+</tr>
+<tr>
+<td><code>reduceRight()</code></td>
+<td>从数组的最后一项开始，向前遍历到第一项，执行给定的归并函数。</td>
+</tr>
+</tbody></table>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《JavaScript 高级程序设计》</li>
+<li>《<a href="https://www.runoob.com/w3cnote/es6-array.html" target="_blank" rel="noopener">ES6 数组</a>》</li>
+<li>《<a href="https://www.w3school.com.cn/jsref/jsref_obj_array.asp" target="_blank" rel="noopener">JavaScript Array 对象</a>》</li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2016/02/19/javascript-data-types-determine/" class="prev">PREV</a><a href="/2016/02/17/javascript-object/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

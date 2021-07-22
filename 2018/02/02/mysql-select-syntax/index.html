@@ -1,0 +1,144 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> MySQL SELECT 语法总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="MySQL SELECT 语法总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">MySQL SELECT 语法总结</h1><div class="post-info">2018-02-02<a href="/tags/MySQL/" title="MySQL" class="post-demo">MySQL</a></div><div class="post-content"><h1 id="基础语法"><a href="#基础语法" class="headerlink" title="基础语法"></a>基础语法</h1><p><code>SELECT</code> 基础语法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">SELECT</span><br><span class="line">    [ALL | DISTINCT]</span><br><span class="line">    select_expr [, select_expr ...]</span><br><span class="line">    [</span><br><span class="line">      FROM table_references</span><br><span class="line">      [WHERE where_condition]</span><br><span class="line">      [GROUP BY &#123;col_name | expr | position&#125;</span><br><span class="line">        [ASC | DESC], ... [WITH ROLLUP]]</span><br><span class="line">      [HAVING where_condition]</span><br><span class="line">      [ORDER BY &#123;col_name | expr | position&#125;</span><br><span class="line">        [ASC | DESC], ...]</span><br><span class="line">      [LIMIT &#123;[offset,] row_count | row_count OFFSET offset&#125;]</span><br><span class="line">      [</span><br><span class="line">        INTO OUTFILE &#39;file_name&#39;</span><br><span class="line">          [CHARACTER SET charset_name]</span><br><span class="line">          export_options</span><br><span class="line">        | INTO DUMPFILE &#39;file_name&#39;</span><br><span class="line">        | INTO var_name [, var_name]</span><br><span class="line">      ]</span><br><span class="line">      [FOR UPDATE | LOCK IN SHARE MODE]</span><br><span class="line">    ]</span><br></pre></td></tr></table></figure>
+
+<p><code>SELECT</code> 语句可用于检索单个、多个、所有列（星号 <code>*</code> 通配符）。每个 <em>select_expr</em> 表示您想要检索的列。必须至少有一个 <em>select_expr</em>。</p>
+<h2 id="去重"><a href="#去重" class="headerlink" title="去重"></a>去重</h2><p>修饰符 <code>ALL</code> 和 <code>DISTINCT</code> 用于指定<strong>重复行是否应该返回（是否去重）</strong>，作用于所有的列，而不仅仅是跟在其后的那一列。例如 <code>SELECT DISTINCT vend_id, prod_price</code> ，除非指定的两列完全相同，否则所有的行都会被检索出来。</p>
+<table>
+<thead>
+<tr>
+<th>修饰符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ALL</code></td>
+<td>默认值，指定应返回所有匹配的行，包括重复项。</td>
+</tr>
+<tr>
+<td><code>DISTINCT</code></td>
+<td>指定从结果集中删除重复的行。</td>
+</tr>
+</tbody></table>
+<h2 id="检索表"><a href="#检索表" class="headerlink" title="检索表"></a>检索表</h2><p><em>table_references</em> 指示检索表，其语法可参考 <a href="https://dev.mysql.com/doc/refman/5.7/en/join.html" target="_blank" rel="noopener">JOIN语法</a>。<code>SELECT</code> 也可以不使用 <code>FROM</code> 子句而用来检索计算出的行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SELECT 1 + 1;</span><br><span class="line"> -&gt; 2</span><br></pre></td></tr></table></figure>
+
+<p>也可以使用 <code>FROM DUAL</code> 指定虚拟表，MySQL 会忽略这个子句。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SELECT 1 + 1 FROM DUAL;</span><br><span class="line"> -&gt; 2</span><br></pre></td></tr></table></figure>
+
+<h2 id="过滤数据"><a href="#过滤数据" class="headerlink" title="过滤数据"></a>过滤数据</h2><p><code>WHERE</code> 子句用于过滤数据，<em>where_condition</em> 可以使用以下表达式语法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">expr:</span><br><span class="line">    expr OR expr</span><br><span class="line">  | expr || expr</span><br><span class="line">  | expr XOR expr</span><br><span class="line">  | expr AND expr</span><br><span class="line">  | expr &amp;&amp; expr</span><br><span class="line">  | NOT expr</span><br><span class="line">  | ! expr</span><br><span class="line">  | boolean_primary IS [NOT] &#123;TRUE | FALSE | UNKNOWN&#125;</span><br><span class="line">  | boolean_primary</span><br><span class="line"></span><br><span class="line">boolean_primary:</span><br><span class="line">    boolean_primary IS [NOT] NULL</span><br><span class="line">  | boolean_primary &lt;&#x3D;&gt; predicate</span><br><span class="line">  | boolean_primary comparison_operator predicate</span><br><span class="line">  | boolean_primary comparison_operator &#123;ALL | ANY&#125; (subquery)</span><br><span class="line">  | predicate</span><br><span class="line"></span><br><span class="line">comparison_operator: &#x3D; | &gt;&#x3D; | &gt; | &lt;&#x3D; | &lt; | &lt;&gt; | !&#x3D;</span><br><span class="line"></span><br><span class="line">predicate:</span><br><span class="line">    bit_expr [NOT] IN (subquery)</span><br><span class="line">  | bit_expr [NOT] IN (expr [, expr] ...)</span><br><span class="line">  | bit_expr [NOT] BETWEEN bit_expr AND predicate</span><br><span class="line">  | bit_expr SOUNDS LIKE bit_expr</span><br><span class="line">  | bit_expr [NOT] LIKE simple_expr [ESCAPE simple_expr]</span><br><span class="line">  | bit_expr [NOT] REGEXP bit_expr</span><br><span class="line">  | bit_expr</span><br><span class="line"></span><br><span class="line">bit_expr:</span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">simple_expr:</span><br><span class="line">  ...</span><br></pre></td></tr></table></figure>
+
+<p><code>LIKE</code> 可使用以下通配符：</p>
+<table>
+<thead>
+<tr>
+<th>通配符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>%</code></td>
+<td>匹配多个字符</td>
+</tr>
+<tr>
+<td><code>_</code></td>
+<td>匹配单个字符</td>
+</tr>
+<tr>
+<td><code>[]</code></td>
+<td>匹配一个字符集</td>
+</tr>
+</tbody></table>
+<h2 id="排序数据"><a href="#排序数据" class="headerlink" title="排序数据"></a>排序数据</h2><p><code>ORDER BY</code> 子句用于排序，使用以下关键字进行升序或降序排序，要注意关键字只应用于直接位于其前面的列名。如果想在多个列上进行降序排序，必须对每一列指定 <code>DESC</code> 关键字。</p>
+<table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ASC</code></td>
+<td>升序排序（默认）</td>
+</tr>
+<tr>
+<td><code>DESC</code></td>
+<td>降序排序</td>
+</tr>
+</tbody></table>
+<h2 id="限制结果集"><a href="#限制结果集" class="headerlink" title="限制结果集"></a>限制结果集</h2><p><code>LIMIT</code> 子句可用于限制 <code>SELECT</code> 语句返回的结果集：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM tbl LIMIT 5;     # Retrieve first 5 rows, equivalent to LIMIT 0, 5</span><br><span class="line">SELECT * FROM tbl LIMIT 5,10;  # Retrieve rows 6-15</span><br><span class="line">SELECT * FROM tbl LIMIT 5 OFFSET 10;  # Retrieve rows 11-15</span><br></pre></td></tr></table></figure>
+
+<h2 id="汇总数据"><a href="#汇总数据" class="headerlink" title="汇总数据"></a>汇总数据</h2><p>我们经常需要汇总数据而不用把它们实际检索出来，为此 SQL 提供了五个聚集函数（aggregate function）。使用这些函数，SQL 查询可用于检索数据，以便分析和报表生成。这种类型的检索例子有：</p>
+<ul>
+<li>确定表中行数（或者满足某个条件或包含某个特定值的行数）；</li>
+<li>获得表中某些行的和；</li>
+<li>找出表列（或所有行或某些特定的行）的最大值、最小值、平均值。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>聚集函数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>COUNT()</code></td>
+<td>返回某列的行数，忽略 <code>NULL</code> 值。<code>COUNT(*)</code> 则包含 <code>NULL</code> 值。</td>
+</tr>
+<tr>
+<td><code>AVG()</code></td>
+<td>返回某列的平均值，忽略 <code>NULL</code> 值。</td>
+</tr>
+<tr>
+<td><code>MAX()</code></td>
+<td>返回某列的最大值，忽略 <code>NULL</code> 值。</td>
+</tr>
+<tr>
+<td><code>MIN()</code></td>
+<td>返回某列的最小值，忽略 <code>NULL</code> 值。</td>
+</tr>
+<tr>
+<td><code>SUM()</code></td>
+<td>返回某列值之和，忽略 <code>NULL</code> 值。</td>
+</tr>
+</tbody></table>
+<p>修饰符 <code>ALL</code> 和 <code>DISTINCT</code> 可用于指定重复行是否应该返回。例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 返回特定供应商所提供产品的平均价格</span><br><span class="line">SELECT AVG(prod_price) AS avg_price</span><br><span class="line">FROM Products</span><br><span class="line">WHERE vend_id &#x3D; &#39;DLL01&#39;;</span><br><span class="line"> -&gt; 3.8650</span><br><span class="line"></span><br><span class="line"># 同上，但平均值只考虑各个不同的价格</span><br><span class="line">SELECT AVG(DISTINCT prod_price) AS avg_price</span><br><span class="line">FROM Products</span><br><span class="line">WHERE vend_id &#x3D; &#39;DLL01&#39;;</span><br><span class="line"> -&gt; 4.2400</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，使用了 <code>DISTINCT</code> 后的 <em>avg_price</em> 会比较高，因为此例子中有多个物品具有相同的较低价格，排除它们提升了平均价格。</p>
+<p><code>SELECT</code> 语句也可根据需要同时使用多个聚集函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SELECT COUNT(*) AS num_items,</span><br><span class="line">       MIN(prod_price) AS price_min,</span><br><span class="line">       MAX(prod_price) AS price_max,</span><br><span class="line">       AVG(prod_price) AS price_avg</span><br><span class="line">FROM Products;</span><br></pre></td></tr></table></figure>
+
+<h2 id="分组数据"><a href="#分组数据" class="headerlink" title="分组数据"></a>分组数据</h2><p><code>GROUP BY</code> 子句用于分组数据，注意：</p>
+<ul>
+<li><code>GROUP BY</code> 子句可以包含任意数目的列，因而可以对分组进行嵌套，更细致地进行数据分组。</li>
+<li>如果在 <code>GROUP BY</code> 子句中嵌套了分组，数据将在最后指定的分组上进行汇总。换句话说，在建立分组时，指定的所有列都一起计算（所以不能从个别的列取回数据）。</li>
+<li><code>GROUP BY</code> 子句中列出的每一列都必须是检索列或有效的表达式（但不能是聚集函数）。如果在 <code>SELECT</code> 中使用表达式，则必须在 <code>GROUP BY</code> 子句中指定相同的表达式。不能使用别名。</li>
+<li>除聚集计算语句外，<code>SELECT</code> 语句中的每一列都必须在 <code>GROUP BY</code> 子句中给出。否则，如果 <code>SELECT</code> 语句中出现了 <code>GROUP BY</code> 中没有的列，假如该分组内的条目数大于 1，这样的列显示的内容为第一个条目的值。</li>
+<li>如果分组列中包含具有 <code>NULL</code> 值的行，则 <code>NULL</code> 将作为一个分组返回。如果列中有多行 <code>NULL</code> 值，它们将分为一组。</li>
+</ul>
+<p><code>GROUP BY</code> 可以搭配使用 <code>HAVING</code> 过滤分组。<code>HAVING</code> 和 <code>WHERE</code> 的差别在于，<code>WHERE</code> 对分组前的数据进行过滤， <code>HAVING</code> 对分组后的数据进行过滤。</p>
+<h1 id="加锁读"><a href="#加锁读" class="headerlink" title="加锁读"></a>加锁读</h1><p><code>InnoDB</code> 支持两种类型的 <a href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_locking_read" target="_blank" rel="noopener">加锁读（Locking Reads）</a>，为事务操作提供额外的<strong>安全性</strong>：</p>
+<ul>
+<li><code>SELECT ... LOCK IN SHARE MODE</code> 设置<strong>共享（<em>S</em>）锁</strong></li>
+<li><code>SELECT ... FOR UPDATE</code> 设置<strong>排它（<em>X</em>）锁</strong></li>
+</ul>
+<p>详情请参考《<a href="/2018/10/20/mysql-locking/">MySQL 锁机制总结</a>》。</p>
+<h1 id="UNION-子句"><a href="#UNION-子句" class="headerlink" title="UNION 子句"></a>UNION 子句</h1><p>语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> ...</span><br><span class="line"><span class="keyword">UNION</span> [<span class="keyword">ALL</span> | <span class="keyword">DISTINCT</span>] <span class="keyword">SELECT</span> ...</span><br><span class="line">[<span class="keyword">UNION</span> [<span class="keyword">ALL</span> | <span class="keyword">DISTINCT</span>] <span class="keyword">SELECT</span> ...]</span><br></pre></td></tr></table></figure>
+
+<p><code>UNION</code> 将来自多个 <code>SELECT</code> 语句的结果合并为一个结果集，结果集列名取自第一条 <code>SELECT</code> 语句的列名。</p>
+<p><code>UNION</code> 或 <code>UNION DISTINCT</code> 去重，而 <code>UNION ALL</code> 则不去重。</p>
+<p>要为单独的一条 <code>SELECT</code> 语句应用 <code>ORDER BY</code> 或 <code>LIMIT</code> 子句，需要将子句放在包含 <code>SELECT</code> 的括号内，例如：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">SELECT</span> a <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> a=<span class="number">10</span> <span class="keyword">AND</span> B=<span class="number">1</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> a <span class="keyword">LIMIT</span> <span class="number">10</span>)</span><br><span class="line"><span class="keyword">UNION</span></span><br><span class="line">(<span class="keyword">SELECT</span> a <span class="keyword">FROM</span> t2 <span class="keyword">WHERE</span> a=<span class="number">11</span> <span class="keyword">AND</span> B=<span class="number">2</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> a <span class="keyword">LIMIT</span> <span class="number">10</span>);</span><br></pre></td></tr></table></figure>
+
+<p>反之，如要应用到整个 <code>UNION</code> 结果集，则在单个 <code>SELECT</code> 语句后面加上括号，并在最后一个语句后面加上子句，例如：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">SELECT</span> a <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> a=<span class="number">10</span> <span class="keyword">AND</span> B=<span class="number">1</span>)</span><br><span class="line"><span class="keyword">UNION</span></span><br><span class="line">(<span class="keyword">SELECT</span> a <span class="keyword">FROM</span> t2 <span class="keyword">WHERE</span> a=<span class="number">11</span> <span class="keyword">AND</span> B=<span class="number">2</span>)</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> a <span class="keyword">LIMIT</span> <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《MySQL 必知必会》</p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/select.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/select.html</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-locking-reads.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/innodb-locking-reads.html</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2018/02/03/java-jdbc-driver/" class="prev">PREV</a><a href="/2018/01/26/mysql-datetime/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Git 实战系列（一）Git 安装与配置 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Git 实战系列（一）Git 安装与配置 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Git 实战系列（一）Git 安装与配置</h1><div class="post-info">2015-08-03<a href="/tags/Git/" title="Git" class="post-demo">Git</a></div><div class="post-content"><p>要想 Git 用得爽，首先要安装与配置好。</p>
+<h1 id="如何选择版本？"><a href="#如何选择版本？" class="headerlink" title="如何选择版本？"></a>如何选择版本？</h1><h2 id="Git-1-x"><a href="#Git-1-x" class="headerlink" title="Git 1.x"></a>Git 1.x</h2><p>旧版本，不再维护。</p>
+<h2 id="Git-2-x"><a href="#Git-2-x" class="headerlink" title="Git 2.x"></a>Git 2.x</h2><p>新版本，推荐使用。不向下兼容 1.x。</p>
+<h1 id="如何安装？"><a href="#如何安装？" class="headerlink" title="如何安装？"></a>如何安装？</h1><h2 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h2><p>需要安装 Git for Windows 的客户端 <a href="https://github.com/msysgit/msysgit" target="_blank" rel="noopener">msysgit</a>。推荐使用 <a href="http://git-scm.com/download/wint" target="_blank" rel="noopener">绿色便携版</a> ，优势如下：</p>
+<ul>
+<li>无需安装，无需写注册表，无需管理员权限；</li>
+<li>可以从任意目录运行，甚至 U 盘；</li>
+</ul>
+<p>与安装版的区别：</p>
+<ul>
+<li>不提供右键上下文菜单（如 <code>Git GUI Here</code>、<code>Git Bash Here</code>），因为该功能需要写入注册表；</li>
+<li>不修改环境变量 <code>%path%</code> ，因此无法在命令行工具 <code>cmd</code> 中直接运行 <code>git.exe</code> 和 <code>gitk.exe</code>，解决办法：<ul>
+<li>推荐使用自带的 <code>Git Bash</code> （类 Unix Shell）或 <code>Git Cmd</code> 进行替代；</li>
+<li>或将 <code>%GIT_HOME%\cmd</code> 目录永久加入环境变量 <code>%path%</code> （如果只想在当前会话中临时使用，只需在 <code>cmd</code> 中运行 <code>set path=%GIT_HOME%\cmd;%path%</code> 即可），然后运行 <code>git --help</code> 测试配置效果；</li>
+</ul>
+</li>
+</ul>
+<h2 id="Linux-Unix"><a href="#Linux-Unix" class="headerlink" title="Linux / Unix"></a>Linux / Unix</h2><p>使用包管理 apt-get 或 yum 即可。</p>
+<h2 id="OS-X"><a href="#OS-X" class="headerlink" title="OS X"></a>OS X</h2><p>Homebrew 是最快最便捷的安装方式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo brew install git</span><br></pre></td></tr></table></figure>
+
+<h1 id="如何配置？"><a href="#如何配置？" class="headerlink" title="如何配置？"></a>如何配置？</h1><p>Git 相关的配置文件有三个：</p>
+<ol>
+<li><code>/etc/gitconfig</code> 包含了适用于系统所有用户和所有项目的值。</li>
+<li><code>~/.gitconfig</code> 只适用于当前登录用户的配置。</li>
+<li>Git 项目中的 <code>.git/config</code> 适用于特定 Git 项目的配置。</li>
+</ol>
+<p>对于同一配置项，三个配置文件的优先级是 3 &gt; 2 &gt;1。</p>
+<h2 id="配置提交作者"><a href="#配置提交作者" class="headerlink" title="配置提交作者"></a>配置提交作者</h2><p>开始使用 Git 之前，第一件重要的事情就是配置提交作者，配置后就可以愉快的开始使用 Git 了。更多配置请参考 <a href="http://git-scm.com/docs/git-config" target="_blank" rel="noopener">这里</a> 。</p>
+<p>首先做如下检查：</p>
+<h3 id="全局配置"><a href="#全局配置" class="headerlink" title="全局配置"></a>全局配置</h3><p>使用 <code>--global</code> 查看或修改全局配置文件 <code>~/.gitconfig</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git config -l | grep user</span><br></pre></td></tr></table></figure>
+
+<p>如果返回为空表示未配置，需要配置如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global user.name <span class="string">"你的姓名"</span></span><br><span class="line">$ git config --global user.email <span class="string">"你的邮箱"</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="项目配置"><a href="#项目配置" class="headerlink" title="项目配置"></a>项目配置</h3><p>如果需要单独修改项目配置文件 <code>.git/config</code>，去掉 <code>--global</code> 参数即可，或者直接打开该文件添加：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[user]</span><br><span class="line">name &#x3D; who</span><br><span class="line">email &#x3D; who@where.com</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置格式化与空白"><a href="#配置格式化与空白" class="headerlink" title="配置格式化与空白"></a>配置格式化与空白</h2><blockquote>
+<p>格式化与空白是许多开发人员在协作时，特别是在跨平台情况下，遇到的令人头疼的细小问题。由于编辑器的不同或者Windows程序员在跨平台项目中的文件行尾加入了回车换行符，一些细微的空格变化会不经意地进入大家合作的工作或提交的补丁中。不用怕，Git 的一些配置选项会帮助你解决这些问题。</p>
+</blockquote>
+<h3 id="core-autocrlf"><a href="#core-autocrlf" class="headerlink" title="core.autocrlf"></a>core.autocrlf</h3><p>Git 在你提交时<strong>自动地</strong>把行结束符 CRLF 转换成 LF，而在签出代码时把 LF 转换成 CRLF。假如团队成员只在 Windows 上写程序，可以关闭此功能，避免 Git 自动格式化代码后干扰代码对比：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global core.autocrlf <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="core-whitespace"><a href="#core-whitespace" class="headerlink" title="core.whitespace"></a>core.whitespace</h3><p>Git 预先设置了一些选项来探测和修正空白问题，配置方法待补充。</p>
+<h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><p>Git 长期使用上的一点不便，解决方案仅供参考。</p>
+<h2 id="中文乱码显示问题"><a href="#中文乱码显示问题" class="headerlink" title="中文乱码显示问题"></a>中文乱码显示问题</h2><ol>
+<li><p>打开 GitBash（git-bash.exe）后，对窗口右键-&gt;Options-&gt;Text-&gt;Locale 改为 <code>zh_CN</code>，Character set 改为 <code>GBK</code> ;</p>
+</li>
+<li><p>键入exit退出关闭再打开即可。</p>
+</li>
+</ol>
+<h2 id="配置工作目录"><a href="#配置工作目录" class="headerlink" title="配置工作目录"></a>配置工作目录</h2><p>Git 默认使用程序运行目录作为工作目录，这会带来使用上的不便。解决办法是新建 <code>.bashrc</code> 文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim ~/.bashrc</span><br></pre></td></tr></table></figure>
+
+<p>添加一行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 请将 /d/Repos/ 替换成你的仓库目录</span></span><br><span class="line"><span class="built_in">cd</span> /d/Repos/</span><br></pre></td></tr></table></figure>
+
+<p>即可自动切换到本地仓库所在目录。</p>
+<h2 id="配置-SSH-代理和密钥"><a href="#配置-SSH-代理和密钥" class="headerlink" title="配置 SSH 代理和密钥"></a>配置 SSH 代理和密钥</h2><p>另一个潜在的问题是运行 <code>Git Bash</code> 并拉取远程仓库提示错误：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Could not open a connection to your authentication agent.</span><br></pre></td></tr></table></figure>
+
+<p>这是因为 <code>ssh-agent</code> 未随 <code>bash</code> 一起启动。你可以每次都手工启动，或推荐编写脚本自启动。</p>
+<p>新建 <code>.bashrc</code> 文件，并添加如下代码：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="keyword">if</span> [ -f ~/.agent.env ]; <span class="keyword">then</span></span><br><span class="line">  . ~/.agent.env &gt;/dev/null</span><br><span class="line">  <span class="built_in">kill</span> -15 <span class="variable">$SSH_AGENT_PID</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"Starting ssh-agent..."</span></span><br><span class="line"><span class="built_in">eval</span> `ssh-agent |tee ~/.agent.env`</span><br><span class="line">ssh-add ~/.ssh/github_rsa</span><br></pre></td></tr></table></figure>
+
+<p>这将会自启动 <code>ssh-agent</code> 并添加指定私钥。 <code>ssh-agent</code> 是一个密钥管理器，运行 <code>ssh-agent</code> 以后，使用 <code>ssh-add</code> 将指定私钥交给 <code>ssh-agent</code> 保管，其它程序（例如 git）在需要身份认证的时候，可以将认证申请交给 <code>ssh-agent</code> 来代为完成整个认证过程。</p>
+<p>那么以后每次运行 <code>Git Bash</code> 的时候，就会看到输出效果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Starting ssh-agent...</span><br><span class="line">Agent pid 8828</span><br><span class="line">Identity added: ~/.ssh/github_rsa</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《<a href="http://best-windows.vlaurie.com/environment-variables.html" target="_blank" rel="noopener">How To Use Environment Variables in Windows</a>》</li>
+<li>《<a href="http://linux.101hacks.com/unix/ssh-add/" target="_blank" rel="noopener">Unix / Linux ssh-add Command Examples to Add SSH Key to Agent</a>》</li>
+<li>《<a href="http://git-scm.com/book/zh/v1/%E8%87%AA%E5%AE%9A%E4%B9%89-Git-%E9%85%8D%E7%BD%AE-Git" target="_blank" rel="noopener">自定义 Git - 配置 Git</a>》</li>
+<li>《<a href="https://github.com/msysgit/msysgit/tags" target="_blank" rel="noopener">Git for Windows 1.x 归档版本下载地址</a>》</li>
+</ul>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2015/08/04/git-log/" class="prev">PREV</a><a href="/2015/05/17/optimizing-hexo-speed/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>

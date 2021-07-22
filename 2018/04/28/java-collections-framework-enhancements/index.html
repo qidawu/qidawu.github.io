@@ -1,0 +1,126 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title> Java 集合框架系列（四）各版本功能增强总结 · Qida's Blog</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Java 集合框架系列（四）各版本功能增强总结 - Qida's Blog"><meta name="keywords"><meta name="author" content="Qida's Blog"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="https://qidawu.github.io/atom.xml" title="Qida's Blog"><meta name="generator" content="Hexo 4.2.1"></head><body><header><div class="header row"> <a href="/" class="logo-link"><img src="/images/logo.png"></a><a href="/" class="title-link">Qida's Blog</a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><div id="postAr" class="post"><article class="post-block"><h1 class="post-title">Java 集合框架系列（四）各版本功能增强总结</h1><div class="post-info">2018-04-28<a href="/tags/Java/" title="Java" class="post-demo">Java</a></div><div class="post-content"><p>Java 集合框架并不是一蹴而就写成的，也是经过了好多个版本迭代的演进与发展，才走到今天。本文总结下集合框架各版本的功能增强。</p>
+<h1 id="Java-SE-9"><a href="#Java-SE-9" class="headerlink" title="Java SE 9"></a>Java SE 9</h1><p><code>List</code>、<code>Set</code> 和 <code>Map</code> 接口中，新的静态工厂方法可以创建这些集合的<em>不可变实例（immutable）</em>，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; list = List.of(<span class="string">"apple"</span>, <span class="string">"orange"</span>, <span class="string">"banana"</span>);</span><br><span class="line">Set&lt;String&gt; set = Set.of(<span class="string">"aggie"</span>, <span class="string">"alley"</span>, <span class="string">"steely"</span>);</span><br><span class="line">Map&lt;String, String&gt; map = Map.of(<span class="string">"A"</span>, <span class="string">"Apple"</span>, <span class="string">"B"</span>, <span class="string">"Boy"</span>, <span class="string">"C"</span>, <span class="string">"Cat"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>参考：<a href="https://www.linuxidc.com/Linux/2017-10/147683.htm" target="_blank" rel="noopener">https://www.linuxidc.com/Linux/2017-10/147683.htm</a></p>
+<h1 id="Java-SE-8"><a href="#Java-SE-8" class="headerlink" title="Java SE 8"></a>Java SE 8</h1><ul>
+<li><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html" target="_blank" rel="noopener">Lambda 表达式</a></li>
+<li>Stream API，参考《<a href="https://mp.weixin.qq.com/s/adKZrOe6nFEmuADHijsAtA" target="_blank" rel="noopener">Java 8 中处理集合的优雅姿势——Stream</a>》</li>
+<li><a href="https://docs.oracle.com/javase/tutorial/collections/streams/" target="_blank" rel="noopener">聚合操作</a>，例如 <code>forEach</code></li>
+<li>作为 <a href="http://openjdk.java.net/jeps/180" target="_blank" rel="noopener">JEP 180</a> 提案的成果，<code>HashMap</code>、<code>LinkedHashMap</code>、<code>ConcurrentHashMap</code> 的性能得到提升。当出现大量散列冲突时，值将存储在红黑树而不是链表，以提升查找性能。</li>
+</ul>
+<h1 id="Java-SE-7"><a href="#Java-SE-7" class="headerlink" title="Java SE 7"></a>Java SE 7</h1><ul>
+<li>新增一个集合接口：<code>TransferQueue</code>，以及实现类 <code>LinkedTransferQueue</code>。</li>
+<li>为 <code>Map</code> 及其派生实现类引入了一个性能改进的替代版散列函数（但在 Java SE 8 已被移除并取代）。</li>
+</ul>
+<h1 id="Java-SE-6"><a href="#Java-SE-6" class="headerlink" title="Java SE 6"></a>Java SE 6</h1><p>新增几个集合接口：</p>
+<ul>
+<li><code>Deque</code></li>
+<li><code>BlockingDeque</code></li>
+<li><code>NavigableSet</code></li>
+<li><code>NavigableMap</code></li>
+<li><code>ConcurrentNavigableMap</code></li>
+</ul>
+<p>新增几个集合实现类：</p>
+<ul>
+<li><code>ArrayDeque</code></li>
+<li><code>ConcurrentSkipListSet</code></li>
+<li><code>ConcurrentSkipListMap</code></li>
+<li><code>LinkedBlockingDeque</code></li>
+<li><code>AbstractMap.SimpleEntry</code></li>
+<li><code>AbstractMap.SimpleImmutableEntry</code></li>
+</ul>
+<p>现有实现类增强：</p>
+<ul>
+<li><code>LinkedList</code> 实现 <code>Deque</code> 接口</li>
+<li><code>TreeSet</code> 实现 <code>NavigableSet</code> 接口</li>
+<li><code>TreeMap</code> 实现 <code>NavigableMap</code> 接口</li>
+</ul>
+<p><code>Collections</code> 工具类新增两个适配器方法：</p>
+<ul>
+<li><code>newSetFromMap(Map)</code> 根据 <code>Map</code> 的通用实现创建一个 <code>Set</code> 的通用实现</li>
+<li><code>asLifoQueue(Deque)</code> 以后进先出（Lifo）队列的形式返回 <code>Deque</code> 的视图。</li>
+</ul>
+<p><code>Arrays</code> 工具类新增两个方法：</p>
+<ul>
+<li><code>copyOf</code></li>
+<li><code>copyOfRange</code></li>
+</ul>
+<h1 id="Java-SE-5"><a href="#Java-SE-5" class="headerlink" title="Java SE 5"></a>Java SE 5</h1><p>三个新增的<strong>语法糖</strong>显著增强了集合框架：</p>
+<ul>
+<li><p>泛型：为集合框架添加编译时类型安全，并在读取元素时不再需要做类型转换。</p>
+</li>
+<li><p>自动装箱/拆箱：往集合插入元素时自动装箱（将原始数据类型转换为对应的包装类型），读取元素时自动拆箱。</p>
+</li>
+<li><p>增强 <code>for</code> 循环：迭代集合时不再需要显式迭代器（<code>Iterator</code>）。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 数组迭代</span></span><br><span class="line">String[] strArray = &#123;<span class="string">"apple"</span>, <span class="string">"orange"</span>, <span class="string">"banana"</span>&#125;;</span><br><span class="line"><span class="keyword">for</span> (String s : strArray) &#123;</span><br><span class="line">    System.out.println(s);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// List 迭代</span></span><br><span class="line">List&lt;String&gt; strList = Arrays.asList(<span class="string">"apple"</span>, <span class="string">"orange"</span>, <span class="string">"banana"</span>);</span><br><span class="line"><span class="keyword">for</span> (String s : strList) &#123;</span><br><span class="line">    System.out.println(s);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>通用实现与并发实现：</p>
+<ul>
+<li>新增三个集合接口：<ul>
+<li><code>Queue</code></li>
+<li><code>BlockingQueue</code></li>
+<li><code>ConcurrentMap</code></li>
+</ul>
+</li>
+<li>新增几个 <code>Queue</code> 实现类：<ul>
+<li><code>PriorityQueue</code></li>
+<li><code>ConcurrentLinkedQueue</code></li>
+<li><code>LinkedList</code> 实现 <code>Queue</code> 接口</li>
+<li><code>AbstractQueue</code> 抽象类实现</li>
+</ul>
+</li>
+<li>新增五个 <code>BlockingQueue</code> 实现类，位于 <code>java.util.concurrent</code> 包下：<ul>
+<li><code>LinkedBlockingQueue</code></li>
+<li><code>ArrayBlockingQueue</code></li>
+<li><code>PriorityBlockingQueue</code></li>
+<li><code>DelayQueue</code></li>
+<li><code>SynchronousQueue</code></li>
+</ul>
+</li>
+<li>新增一个 <code>ConcurrentMap</code> 实现类：<ul>
+<li><code>ConcurrentHashMap</code></li>
+</ul>
+</li>
+</ul>
+<p>特殊实现：</p>
+<ul>
+<li>新增两个特殊用途的 <code>List</code> 和 <code>Set</code> 实现类，用于读远大于写以及迭代无法线程同步的情况：<ul>
+<li><code>CopyOnWriteArrayList</code></li>
+<li><code>CopyOnWriteArraySet</code></li>
+</ul>
+</li>
+<li>新增两个特殊用途的 <code>Set</code> 和 <code>Map</code> 实现类，用于枚举：<ul>
+<li><code>EnumSet</code></li>
+<li><code>EnumMap</code></li>
+</ul>
+</li>
+</ul>
+<p>包装器实现：</p>
+<ul>
+<li>新增一位包装器实现家族的新成员 <code>Collections.checkedInterface</code> ，主要用于通用集合。</li>
+</ul>
+<p><code>Collections</code> 工具类新增三个通用算法和一个 <code>Comparator</code> 转换器：</p>
+<ul>
+<li><code>frequency(Collection&lt;?&gt; c, Object o)</code> 计算指定元素在指定集合中出现的次数。</li>
+<li><code>disjoint(Collection&lt;?&gt; c1, Collection&lt;?&gt; c2)</code> 求两个集合是否不相交。</li>
+<li><code>addAll(Collection&lt;? super T&gt; c, T... a)</code> 将指定数组中的所有元素添加到指定集合的便捷方法。</li>
+<li><code>Comparator&lt;T&gt; reverseOrder(Comparator&lt;T&gt; cmp)</code> 反向排序。</li>
+</ul>
+<p><code>Arrays</code> 工具类新增下列方法：</p>
+<ul>
+<li><code>hashCode</code>、<code>toString</code></li>
+<li><code>deepEquals</code>、<code>deepHashCode</code>、<code>deepToString</code> 用于多维数组</li>
+</ul>
+<h1 id="Java-SE-1-4"><a href="#Java-SE-1-4" class="headerlink" title="Java SE 1.4"></a>Java SE 1.4</h1><ul>
+<li><code>Collections</code> 工具类新增几个新方法，例如 ：<ul>
+<li><code>replaceAll(List list, Object oldVal, Object newVal)</code> 查找替换。</li>
+</ul>
+</li>
+<li>新增标记接口 <code>RandomAccess</code>。</li>
+<li>新增集合实现类 <code>LinkedHashMap</code>、<code>LinkedHashSet</code>。内部使用散列表 + 双向链表（按插入顺序排序）。</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://openjdk.java.net/jeps/180" target="_blank" rel="noopener">http://openjdk.java.net/jeps/180</a></p>
+</div></article></div><div class="right-container"><div class="widget"><div class="tagcloud"><h4>标签云</h4><a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/GNU-Linux/" style="font-size: 16.67px;">GNU/Linux</a> <a href="/tags/Git/" style="font-size: 17.5px;">Git</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MySQL/" style="font-size: 19.17px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Redis/" style="font-size: 10.83px;">Redis</a> <a href="/tags/Spring/" style="font-size: 15.83px;">Spring</a> <a href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">函数式编程</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 18.33px;">前端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">响应式编程</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 12.5px;">安全</a> <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" style="font-size: 11.67px;">并发编程</a> <a href="/tags/%E5%BB%BA%E7%AB%99/" style="font-size: 13.33px;">建站</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 12.5px;">管理</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 14.17px;">读书笔记</a> <a href="/tags/%E9%87%91%E8%9E%8D/" style="font-size: 12.5px;">金融</a></div></div><div class="widget"><div id="arAnchorBar"></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/2018/05/01/java-collections-iterator/" class="prev">PREV</a><a href="/2018/04/21/java-collections-framework-concurrent-impl/" class="next">NEXT</a></div><div class="copyright"><p>© 2014 - 2021 <a href="https://github.com/qidawu" target="_blank">Qida's Blog</a></p><p>Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <br> and <a href="https://github.com/Bulandent/hexo-theme-bubuzou" target="_blank">hexo-theme-bubuzou</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="/scripts/jquery-1.8.2.min.js"></script><script src="https://cdn1.lncld.net/static/js/av-mini-0.6.10.js"></script><script src="/scripts/hit-kounter-lc-0.2.0.js"></script><script src="/scripts/arAnchor.js"></script><script src="/scripts/main.js"></script></body></html>
