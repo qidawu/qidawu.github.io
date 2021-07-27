@@ -1,6 +1,6 @@
 ---
 title: Spring Bean 生命周期与作用域总结
-date: 2017-06-03 22:20:33
+date: 2017-06-19 22:20:33
 updated:
 tags: [Java, Spring]
 typora-root-url: ..
@@ -96,6 +96,40 @@ public class OssUtil {
 9. `ApplicationContextAware (org.springframework.context)`
 
 ![](/img/spring/spring-bean-lifecycle-2.jpg)
+
+### 例子
+
+通过 `ApplicationContextAware` 注入 `ApplicationContext`，用以主动获取 Bean：
+
+![](/img/spring/getBean.png)
+
+```java
+@Service
+public class XxxHandlerFactoryBean implements ApplicationContextAware {
+
+    private final Map<String, Class<?>> map = new HashMap<>();
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        // 通过注解获取 Beans
+        Map<String, Object> beans = applicationContext.getBeansWithAnnotation(PayMethod.class);
+        beans.forEach((beanName, bean) -> {
+            Class<?> beanClass = bean.getClass();
+            PayMethod payMethod = beanClass.getAnnotation(PayMethod.class);
+            map.put(payMethod.code(), beanClass);
+        });
+    }
+
+    public Class<?> getBeanClass(String code) {
+        Class<?> aClass = map.get(code);
+        if (aClass == null) {
+            throw new NotImplementedException("Not Implemented");
+        }
+        return aClass;
+    }
+
+}
+```
 
 # Bean 的作用域
 
