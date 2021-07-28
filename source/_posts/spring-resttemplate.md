@@ -59,16 +59,18 @@ public class HttpApiService {
             // GET 请求，请求参数作为 query parameter 放到 url
             if (httpMethod == HttpMethod.GET) {
                 uri = getUri(body);
+                // 请求参数不能放到 HttpEntity，因为 GET 请求的话不会带上 request body（因为底层 HttpURLConnection#setDoOutput(false)）
                 httpEntity = new HttpEntity<>(requestHeaders);
             }
-            // POST 请求，请求参数作为 request body
+            // POST 请求，请求参数作为 request body 而不放到 url
             else {
                 uri = getUri(null);
-                // 如果 body 类型为 MultiValueMap：
+                // POST 表单，request body 类型必须为 MultiValueMap：
                 //   Writing [{key=[value]}] with org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter
-                // 否则：
+                //   MultiValueMap 参数最终会转为形如：key1=value1&key2=value2&...
+                // POST JSON：
                 //   Writing [ReqDTO(key=value)] with org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
-                //   对方 Controller 方法入参标注 @RequestBody 接收整个请求体
+                //   对方 Controller 方法入参需标注 @RequestBody，以接收整个 request body
                 httpEntity = new HttpEntity<>(body, requestHeaders);
             }
 
@@ -76,8 +78,10 @@ public class HttpApiService {
             if (HttpStatus.OK.equals(response.getStatusCode())) {
                 log.info(response.getBody());
             }
-        } catch (HttpClientErrorException e) {
-            log.error("HTTP 请求异常，状态码：{}", e.getRawStatusCode(), e);
+        } catch (ResourceAccessException e) {
+            log.error("TCP 连接建立失败", e);
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            log.error("HTTP 请求失败，状态码：{}", e.getRawStatusCode(), e);
         }
     }
 
@@ -90,6 +94,8 @@ public class HttpApiService {
 }
 ```
 
+## CURL 形式
+
 GET 请求：
 
 ```bash
@@ -97,7 +103,7 @@ curl --location --request GET 'http://rootUrl/path?key=value' \
 --header 'Content-Type: application/x-www-form-urlencoded'
 ```
 
-POST 请求（`AllEncompassingFormHttpMessageConverter`）：
+POST 表单（`AllEncompassingFormHttpMessageConverter`）：
 
 ```bash
 curl --location --request POST 'http://rootUrl/path' \
@@ -105,7 +111,7 @@ curl --location --request POST 'http://rootUrl/path' \
 --data-urlencode 'key=value'
 ```
 
-POST 请求（`MappingJackson2HttpMessageConverter`）：
+POST JSON（`MappingJackson2HttpMessageConverter`）：
 
 ```bash
 curl --location --request POST 'http://rootUrl/path' \
@@ -115,7 +121,7 @@ curl --location --request POST 'http://rootUrl/path' \
 }'
 ```
 
-# 异常处理
+## 异常处理
 
 潜在的非受检异常如下：
 
@@ -133,6 +139,10 @@ curl --location --request POST 'http://rootUrl/path' \
 
 * ...
 
+# UML 解析
+
+![RestTemplate UML](/img/spring/resttemplate/RestTemplate_UML.png)
+
 # 参考
 
 https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/client/RestTemplate.html
@@ -144,3 +154,25 @@ https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframe
 https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/converter/HttpMessageConverter.html
 
 > Strategy interface for converting from and to HTTP requests and responses.
+
+https://docs.oracle.com/javase/8/docs/api/java/net/URL.html
+
+> Class `URL` represents a Uniform Resource Locator, a pointer to a "resource" on the World Wide Web. A resource can be something as simple as a file or a directory, or it can be a reference to a more complicated object, such as a query to a database or to a search engine. More information on the types of URLs and their formats can be found at: [Types of URL](http://web.archive.org/web/20051219043731/http://archive.ncsa.uiuc.edu/SDG/Software/Mosaic/Demo/url-primer.html)
+
+https://docs.oracle.com/javase/8/docs/api/java/net/URLConnection.html
+
+> The abstract class `URLConnection` is the superclass of all classes that represent a communications link between the application and a `URL`. Instances of this class can be used both to read from and to write to the resource referenced by the `URL`.
+
+https://docs.oracle.com/javase/8/docs/api/java/net/HttpURLConnection.html
+
+> A `URLConnection` with support for HTTP-specific features. See [the spec](http://www.w3.org/pub/WWW/Protocols/) for details.
+
+https://docs.oracle.com/javase/8/docs/api/java/net/Socket.html
+
+> This class implements client sockets (also called just "sockets"). A socket is an endpoint for communication between two machines.
+> 
+> The actual work of the socket is performed by an instance of the `SocketImpl` class. An application, by changing the socket factory that creates the socket implementation, can configure itself to create sockets appropriate to the local firewall.
+
+https://docs.oracle.com/javase/8/docs/api/java/net/SocketImpl.html
+
+> The abstract class `SocketImpl` is a common superclass of all classes that actually implement sockets. It is used to create both client and server sockets.
