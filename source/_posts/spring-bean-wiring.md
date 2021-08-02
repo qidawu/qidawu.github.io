@@ -181,3 +181,5 @@ https://en.wikipedia.org/wiki/Dependency_injection
 《[IoC模式（依赖、依赖倒置、依赖注入、控制反转）](https://www.cnblogs.com/fuchongjundream/p/3873073.html)》
 
 《[`@Autowired`, `@Resource`, `@Inject` 这几个关于Spring 依赖注入的问题你清楚吗？](https://juejin.cn/post/6844904056230690824)》
+
+《[注解 `@Autowired` 是如何实现的？](https://blog.csdn.net/topdeveloperr/article/details/87971446)》

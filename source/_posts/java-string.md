@@ -90,6 +90,8 @@ StringEscapeUtils.unescapeJson("{hello: \"world\"}");
 
 《[几张图轻松理解 `String.intern()`](https://blog.csdn.net/tyyking/article/details/82496901)》
 
+《[再议String-字符串常量池与String.intern()](https://mp.weixin.qq.com/s/vkP-JXMs12i1QBVdnI4KJQ)》
+
 《[字符串常量池深入解析](https://blog.csdn.net/weixin_40304387/article/details/81071816)》
 
 《[JVM 常量池、运行时常量池、字符串常量池](https://www.cnblogs.com/natian-ws/p/10749164.html)》

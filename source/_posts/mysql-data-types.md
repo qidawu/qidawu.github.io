@@ -271,3 +271,5 @@ https://dev.mysql.com/doc/refman/5.7/en/column-count-limit.html
 《[MySQL数据类型：UNSIGNED注意事项](https://www.cnblogs.com/blankqdb/archive/2012/11/03/blank_qdb.html)》
 
 《[MySQL 5.6时间数据类型功能获得改进](http://tech.it168.com/a2013/1013/1544/000001544067.shtml)》
+
+《[一只天价股票把纳斯达克系统搞“崩了”!](https://mp.weixin.qq.com/s/Zc2X-K7SCXEJq_EhgAI8ig)》

@@ -300,4 +300,6 @@ https://beanvalidation.org/
 
 http://hibernate.org/validator/
 
-[后台表单校验（JSR303）](https://blog.csdn.net/qq2413273056/article/details/84378194)
+《[后台表单校验（JSR303）](https://blog.csdn.net/qq2413273056/article/details/84378194)》
+
+《[Spring Boot参数校验以及分组校验的使用](https://mp.weixin.qq.com/s/x6_mNdtb6i2XmTiyz4kXrg)》

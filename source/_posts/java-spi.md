@@ -195,3 +195,6 @@ Java SPI 实际上是“**基于接口的编程＋策略模式＋配置文件**�
 # 参考
 
 https://www.jianshu.com/p/46b42f7f593c
+
+《[JDK/Dubbo/Spring 三种 SPI 机制，谁更好？](https://mp.weixin.qq.com/s/ZiNL5DBeZSKzCIjqXU8Kuw)》
+
