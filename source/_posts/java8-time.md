@@ -235,6 +235,9 @@ LocalDate date1 = LocalDate.ofEpochDay(0);
 // 通过静态方法创建实例
 LocalDate date2 = LocalDate.parse("2007-12-03");
 
+// 通过时间戳创建实例
+LocalDateTime.ofEpochSecond(timestamp, 0, ZoneOffset.of("+08:00"))
+
 // 合并日期和时间
 LocalDateTime dateTime = date.atTime(time);
 LocalDateTime dateTime1 = time.atDate(date);

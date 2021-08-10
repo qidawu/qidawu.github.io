@@ -96,6 +96,10 @@ List<IdName> idNames = Arrays.asList(
 // [IdName(id=1, name=Tom), IdName(id=2, name=Ben), IdName(id=2, name=Allen), IdName(id=3, name=Pete)]
 idNames.sort(Comparator.comparing(IdName::getId));
 
+// 根据 ID 升序，null 值在后
+// [IdName(id=1, name=Tom), IdName(id=2, name=Ben), IdName(id=2, name=Allen), IdName(id=3, name=Pete)]
+idNames.sort(Comparator.comparing(IdName::getId, Comparator.nullsLast(Comparator.naturalOrder())));
+
 // 根据 ID、Name 复合排序（升序）
 // [IdName(id=1, name=Tom), IdName(id=2, name=Allen), IdName(id=2, name=Ben), IdName(id=3, name=Pete)]
 idNames.sort(Comparator.comparing(IdName::getId)

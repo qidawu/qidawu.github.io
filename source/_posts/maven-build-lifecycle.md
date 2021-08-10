@@ -48,6 +48,8 @@ Phase 虽然很多，但其中带连字符 (`pre-*`, `post-*`, or `process-*`) �
 
 如何运行一个 Phase？使用命令 `mvn phase`。运行时，首先由该 phase 确定对应的生命周期。然后从生命周期的第一个 Phase 开始，**按顺序**运行到该 phase。
 
+如果要跳过测试，参数如下：`mvn package -DskipTests`
+
 ## 目标（Goal）
 
 Phase 是一个逻辑概念，本身并不包含任何构建信息，运行 Phase 时，只是运行绑定到该 Phase 的 Goal。
