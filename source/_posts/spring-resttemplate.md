@@ -129,6 +129,16 @@ curl --location --request POST 'http://rootUrl/path' \
 
   ![ResourceAccessException](/img/spring/resttemplate/ResourceAccessException.png)
 
+* `java.net.SocketException: Bad file descriptor (Write failed)`
+
+  ```java
+  java.net.SocketException: Bad file descriptor (Write failed)
+  	at java.net.SocketOutputStream.socketWrite0(Native Method) ~[?:1.8.0_271]
+  	at java.net.SocketOutputStream.socketWrite(SocketOutputStream.java:111) ~[?:1.8.0_271]
+  	at java.net.SocketOutputStream.write(SocketOutputStream.java:155) ~[?:1.8.0_271]
+    ...
+  ```
+
 * Exception thrown when an HTTP 4xx is received.
 
   ![HttpClientErrorException](/img/spring/resttemplate/HttpClientErrorException.png)
@@ -155,6 +165,8 @@ https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframe
 
 > Strategy interface for converting from and to HTTP requests and responses.
 
+
+
 https://docs.oracle.com/javase/8/docs/api/java/net/URL.html
 
 > Class `URL` represents a Uniform Resource Locator, a pointer to a "resource" on the World Wide Web. A resource can be something as simple as a file or a directory, or it can be a reference to a more complicated object, such as a query to a database or to a search engine. More information on the types of URLs and their formats can be found at: [Types of URL](http://web.archive.org/web/20051219043731/http://archive.ncsa.uiuc.edu/SDG/Software/Mosaic/Demo/url-primer.html)
@@ -163,9 +175,15 @@ https://docs.oracle.com/javase/8/docs/api/java/net/URLConnection.html
 
 > The abstract class `URLConnection` is the superclass of all classes that represent a communications link between the application and a `URL`. Instances of this class can be used both to read from and to write to the resource referenced by the `URL`.
 
+`URLConnection` 的继承结构如下：
+
+![URLConnection](/img/java/net/URLConnection.png)
+
 https://docs.oracle.com/javase/8/docs/api/java/net/HttpURLConnection.html
 
 > A `URLConnection` with support for HTTP-specific features. See [the spec](http://www.w3.org/pub/WWW/Protocols/) for details.
+
+
 
 https://docs.oracle.com/javase/8/docs/api/java/net/Socket.html
 
@@ -176,3 +194,35 @@ https://docs.oracle.com/javase/8/docs/api/java/net/Socket.html
 https://docs.oracle.com/javase/8/docs/api/java/net/SocketImpl.html
 
 > The abstract class `SocketImpl` is a common superclass of all classes that actually implement sockets. It is used to create both client and server sockets.
+
+当通过 `Socket` 类的默认无参构造方法 `new Socket()` 创建 socket 对象时，其底层实现如下图。从下图可见，将会创建抽象类 `SocketImpl` 的默认实现类 `SocksSocketImpl`：
+
+![Default implementation of SocketImpl](/img/java/net/SocketImpl.png)
+
+而 `SocksSocketImpl` 的继承结构如下。
+
+![](/img/java/net/Socket.png)
+
+`Socket` 类提供了 `getOutputStream()`、`getInputStream()` 方法，其底层实现获取 `AbstractPlainSocketImpl` 的两个私有成员变量，如下：
+
+* `java.net.SocketInputSteram`，核心方法：
+
+  ![SocketInputStream#socketRead0](/img/java/net/SocketInputStream_socketRead0.png)
+
+* `java.net.SocketOutputStream`，核心方法：
+
+  ![SocketOutputStream#socketWrite0](/img/java/net/SocketOutputStream_socketWrite0.png)
+
+  这两个类的继承结构如下：
+
+
+![java.net.SocketInputSteram & java.net.SocketOutputStream](/img/java/net/SocketInputSteram_SocketOutputStream.png)
+
+
+
+https://docs.oracle.com/javase/8/docs/api/java/io/FileDescriptor.html
+
+> Instances of the file descriptor class serve as an opaque handle to the underlying machine-specific structure representing an open file, an open socket, or another source or sink of bytes. The main practical use for a file descriptor is to create a `FileInputStream` or `FileOutputStream` to contain it.
+>
+> Applications should not create their own file descriptors.
+
