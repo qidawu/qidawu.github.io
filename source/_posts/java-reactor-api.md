@@ -1,12 +1,12 @@
 ---
-title: 响应式编程系列（三）Reactor Operator API 总结
+title: 响应式编程系列（三）Reactor 操作符总结
 date: 2020-08-25 21:48:49
 updated:
 tags: [响应式编程, Java]
 typora-root-url: ..
 ---
 
-Reactive Streams 规范并未提供任何运算符（Operators），而 Reactor 框架的核心价值之一就是提供了丰富的运算符。从简单的转换、过滤到复杂的编排和错误处理，涉及方方面面。
+Reactive Streams 规范并未提供任何操作符（Operators），而 Reactor 框架的核心价值之一就是提供了丰富的操作符。从简单的转换、过滤到复杂的编排和错误处理，涉及方方面面。
 
 推荐通过参考文档而不是 JavaDoc 来学习 Mono/Flux API 和 Operator 操作符。参考：["which operator do I need?" appendix](https://projectreactor.io/docs/core/release/reference/docs/index.html#which-operator)
 
@@ -189,17 +189,23 @@ https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html
   - and I want a default value if the sequence is empty: [Flux#single(T)](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#single-T-)
   - and I accept an empty sequence as well: [Flux#singleOrEmpty](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#singleOrEmpty--)
 
-### 调试
+### 监听事件
+
+![Reactive callback](/img/java/reactive-stream/reactive-stream/process_of_reactive_stream_2.png)
 
 | 方法                    | 注释                                                         |
 | ----------------------- | ------------------------------------------------------------ |
-| `doOnNext`              | Add behavior triggered when the `Mono` emits a data successfully. |
-| `doOnSuccess`           | Add behavior triggered when the `Mono` completes successfully.<br/>* `null` : completed without data<br/>* `T`: completed with data |
-| `doOnError`             | Add behavior triggered when the `Mono` completes with an error. |
-| `doAfterSuccessOrError` | Add behavior triggered after the `Mono` terminates, either by completing downstream successfully or with an error. The arguments will be null depending on success, success with data and error:<br/>* `null`, `null` : completed without data<br/>* `T`, `null` : completed with data<br/>* `null`, `Throwable` : failed with/without data |
 | `doOnSubscribe`         | Add behavior triggered when the `Mono` is subscribed.        |
 | `doOnCancel`            | Add behavior triggered when the `Mono` is cancelled.         |
 | `doOnRequest`           | Add behavior triggering a `LongConsumer` when the Mono receives any request. |
+| `doOnNext`              | Add behavior triggered when the `Mono` emits a data successfully. |
+| `doOnSuccess`           | Add behavior triggered when the `Mono` completes successfully.<br/>* `null` : completed without data<br/>* `T`: completed with data |
+| `doOnError`             | Add behavior triggered when the `Mono` completes with an error. |
+| `doOnTerminate`         | completion or error                                          |
+| `doAfterTerminate`      | completion or error but **after** it has been propagated downstream |
+| `doAfterSuccessOrError` | Add behavior triggered after the `Mono` terminates, either by completing downstream successfully or with an error. The arguments will be null depending on success, success with data and error:<br/>* `null`, `null` : completed without data<br/>* `T`, `null` : completed with data<br/>* `null`, `Throwable` : failed with/without data |
+| `doOnEach`              | I want to know of all events each represented as [Signal](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Signal.html) object in a callback outside the sequence: `doOnEach` |
+| `doFinally`             | any terminating condition (complete, error, cancel):         |
 
 | 方法        | 注释                                                         |
 | ----------- | ------------------------------------------------------------ |

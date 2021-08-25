@@ -116,30 +116,32 @@ Reactive Streams 规范
 * https://en.wikipedia.org/wiki/Reactive_Streams
 * https://zhuanlan.zhihu.com/p/41342507
 
-http://openjdk.java.net/jeps/266
+ReactiveX 系列
 
-http://reactivex.io/
+* http://reactivex.io/
+* https://github.com/ReactiveX
+  * RxJava、RxKotlin、RxSwift、RxAndroid、RxJS、RxPY、RxGo、…
+    * 《Reactive Programming with RxJava》
+    * 《[如何选择操作符？ - RxSwift](https://beeth0ven.github.io/RxSwift-Chinese-Documentation/content/decision_tree.html)》
 
-* 《Reactive Programming with RxJava》
+Reactor 框架
 
-[Reactor 框架](https://projectreactor.io/)
-
+* https://projectreactor.io/
 * 实现 Reactive Streams 规范，并扩展大量特性
 
+Spring
 
+* https://spring.io/reactive
+* [Web on Reactive Stack - Spring](https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html)
+  * 基于 Reactor 框架实现
+  * 默认基于 Netty 作为应用服务器
+  * 好处：能够以固定的线程来处理高并发（充分发挥机器的性能）
+  * 提供 API：
+    * Spring WebFlux
+    * WebClient
+    * WebSockets
+    * Testing
+    * RSocket
+    * Reactive Libraries
 
-https://spring.io/reactive
-
-[Web on Reactive Stack - Spring](https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html)
-
-* 基于 Reactor 框架实现
-* 默认基于 Netty 作为应用服务器
-* 好处：能够以固定的线程来处理高并发（充分发挥机器的性能）
-* 提供 API：
-  * Spring WebFlux
-  * WebClient
-  * WebSockets
-  * Testing
-  * RSocket
-  * Reactive Libraries
-
+http://openjdk.java.net/jeps/266
