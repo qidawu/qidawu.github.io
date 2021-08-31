@@ -22,7 +22,9 @@ typora-root-url: ..
    using new_type_name = existing_type ;
    ```
 
-`existing_type` 可以是任何类型，无论是基本类型还是复合类型，例如：
+`existing_type` 可以是任何类型，无论是基本类型还是复合类型：
+
+例子一：
 
 | `typedef`                    | `using`                      |
 | ---------------------------- | ---------------------------- |
@@ -30,6 +32,20 @@ typora-root-url: ..
 | `typedef unsigned int WORD;` | `using WORD = unsigned int;` |
 | `typedef char * pChar;`      | `using pChar = char *;`      |
 | `typedef char field [50]; `  | `using field = char [50]; `  |
+
+例子二，下面两种定义结构体类型的方式是等价的：
+
+```C++
+struct product {
+  int weight;
+  double price;
+};
+
+typedef struct  {
+  int weight;
+  double price;
+} product;
+```
 
 `new_type_name` 作为该类型的别名，用法如下：
 

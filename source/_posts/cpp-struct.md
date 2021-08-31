@@ -68,65 +68,81 @@ typora-root-url: ..
   (*p).weight;   // 3
 ```
 
-# 结构体作为参数传值
+例子 2：
 
-完整例子：
-
-```C
+```C++
 #include <iostream>
 using namespace std;
 
 struct product {
   int weight;
   double price;
-} melon, lemon;
-
-void show(product prd) {
-  cout << "weight: " << prd.weight << " price: " << prd.price << endl;
-}
+};
 
 void test() {
-  melon.weight = 1;
-  melon.price = 2;
-  show(melon);  // weight: 1 price: 2
-}
-
-void test2() {
   product apple;
   apple.weight = 3;
   apple.price = 4;
-  show(apple);  // weight: 3 price: 4
-}
-
-void test3() {
-  product banana[3];
-  for (int i = 0; i < 3; i++) {
-    banana[i].weight = i;
-    banana[i].price = i;
-    
-    // weight: 0 price: 0
-    // weight: 1 price: 1
-    // weight: 2 price: 2
-    show(banana[i]);
-  }
-}
-
-void test4() {
-  product apple;
-  apple.weight = 3;
-  apple.price = 4;
-
   product * p_apple = &apple;
-  show(*p_apple);                                   // weight: 3 price: 4
-  cout << "weight: " << (*p_apple).weight << endl;  // weight: 3
-  cout << "weight: " << p_apple->weight << endl;    // weight: 3
+
+  cout << "weight: " << (*p_apple).weight << endl;                // weight: 3
+  cout << "weight: " << p_apple->weight << endl;                  // weight: 3
+
+  cout << "address of apple: " << p_apple << endl;                // address of apple: 0x7ffee256b5b0
+  cout << "address of weight: " << &p_apple->weight << endl;      // address of weight: 0x7ffee256b5b0
+  cout << "address of price: " << &p_apple->price << endl;        // address of price: 0x7ffee256b5b8
+  cout << "size of weight: " << sizeof(p_apple->weight) << endl;  // size of weight: 4
+  cout << "size of price: " << sizeof(p_apple->price) << endl;    // size of price: 8
 }
 
 int main() {
   test();
-  test2();
-  test3();
-  test4();
+  return 0;
+}
+```
+
+# 结构体作为函数参数
+
+支持三种方式的传参：
+
+* 传值
+* 传引用
+* 传址
+
+```C++
+#include <iostream>
+using namespace std;
+
+struct product {
+  int weight;
+  double price;
+} lemon;
+
+// 传值
+void show(product prd) {
+  cout << "weight: " << prd.weight << " price: " << prd.price << endl;
+}
+
+// 传引用
+void show2(product &prd) {
+  cout << "weight: " << prd.weight << " price: " << prd.price << endl;
+}
+
+// 传址
+void show3(product * prd) {
+  cout << "weight: " << prd->weight << " price: " << prd->price << endl;
+}
+
+void test() {
+  lemon.weight = 1;
+  lemon.price = 2;
+  show(lemon);    // weight: 1 price: 2
+  show2(lemon);   // weight: 1 price: 2
+  show3(&lemon);  // weight: 1 price: 2
+}
+
+int main() {
+  test();
   return 0;
 }
 ```
