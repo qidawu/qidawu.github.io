@@ -8,7 +8,7 @@ typora-root-url: ..
 
 Reactive Streams 规范并未提供任何操作符（Operators），而 Reactor 框架的核心价值之一就是提供了丰富的操作符。从简单的转换、过滤到复杂的编排和错误处理，涉及方方面面。
 
-推荐通过参考文档而不是 JavaDoc 来学习 Mono/Flux API 和 Operator 操作符。参考：["which operator do I need?" appendix](https://projectreactor.io/docs/core/release/reference/docs/index.html#which-operator)
+推荐通过参考文档而不是 JavaDoc 来学习 Mono/Flux API 和 Operator 操作符。参考：[Appendix A: Which operator do I need?](https://projectreactor.io/docs/core/release/reference/docs/index.html#which-operator)
 
 # 注意点
 
@@ -95,7 +95,7 @@ https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html
 
   - into an arbitrary container: [collect](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#collect-java.util.stream.Collector-)
 
-  - into the size of the sequence: [count](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#count--)
+  - into the size of the sequence: [count](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#count--) (`Mono.empty()` 不计入 `count`)
 
   - by applying a function between each element (eg. running sum): [reduce](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#reduce-A-java.util.function.BiFunction-)
     
@@ -199,13 +199,18 @@ https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html
 | `doOnCancel`            | Add behavior triggered when the `Mono` is cancelled.         |
 | `doOnRequest`           | Add behavior triggering a `LongConsumer` when the Mono receives any request. |
 | `doOnNext`              | Add behavior triggered when the `Mono` emits a data successfully. |
+| do on Complete ...      |                                                              |
 | `doOnSuccess`           | Add behavior triggered when the `Mono` completes successfully.<br/>* `null` : completed without data<br/>* `T`: completed with data |
+| `doOnComplete`          | Add behavior triggered when the `Flux` completes successfully. |
 | `doOnError`             | Add behavior triggered when the `Mono` completes with an error. |
 | `doOnTerminate`         | completion or error                                          |
 | `doAfterTerminate`      | completion or error but **after** it has been propagated downstream |
 | `doAfterSuccessOrError` | Add behavior triggered after the `Mono` terminates, either by completing downstream successfully or with an error. The arguments will be null depending on success, success with data and error:<br/>* `null`, `null` : completed without data<br/>* `T`, `null` : completed with data<br/>* `null`, `Throwable` : failed with/without data |
-| `doOnEach`              | I want to know of all events each represented as [Signal](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Signal.html) object in a callback outside the sequence: `doOnEach` |
 | `doFinally`             | any terminating condition (complete, error, cancel):         |
+| all events ...          |                                                              |
+| `doOnEach`              | I want to know of all events each represented as [Signal](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Signal.html) object in a callback outside the sequence: `doOnEach` |
+
+调试类：
 
 | 方法        | 注释                                                         |
 | ----------- | ------------------------------------------------------------ |
@@ -215,12 +220,13 @@ https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html
 
 ![mono_od](/img/java/reactive-stream/reactor/mono/mono_do.png)
 
-### 错误处理
+### 异常处理
 
-Two ways to recover from errors:
+对于异常处理，Reactor 除了默认的立刻抛出异常的处理方式之外，还提供三类处理方式：
 
-* by falling back
-* by retrying
+* 简单记录日志（`doOnError`）
+* recover from errors **by falling back** (`onErrorReturn`、`onErrorResume`)
+* recover from errors **by retrying** (`retry`、`retryWhen`)
 
 | 方法                        | 注释                                                         | 描述                                                      |
 | --------------------------- | ------------------------------------------------------------ | --------------------------------------------------------- |
@@ -234,6 +240,15 @@ Two ways to recover from errors:
 
 
 ![mono_error](/img/java/reactive-stream/reactor/mono/mono_error.png)
+
+受检异常处理：
+
+> 非受检异常会被 Reactor 传播，而受检异常必须被用户代码 try catch ，为了让受检异常被 Reactor 的异常传播机制和异常处理机制支持，可以使用如下步骤处理：
+>
+> 1.  try catch 之后，使用 `Exceptions.propagate` 将受检异常包装为非受检异常并重新抛出传播出去。
+> 2. `onError` 回调等异常处理操作获取到异常之后，可以调用 `Exceptions.unwrap` 取得原受检异常。
+
+参考：https://projectreactor.io/docs/core/release/reference/index.html#error.handling
 
 ## 终结操作
 
