@@ -157,15 +157,17 @@ Maven 用户可以继承 `spring-boot-starter-parent` POM 项目以获得合理�
 
 `spring-boot-maven-plugin` 插件内置[几个 goal](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals)，如下：
 
-| Goal                                                         | Description                                                  | 备注 |
-| :----------------------------------------------------------- | :----------------------------------------------------------- | ---- |
-| [spring-boot:build-image](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-build-image) | Package an application into a OCI image using a buildpack.   |      |
-| [spring-boot:build-info](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-build-info) | Generate a `build-info.properties` file based on the content of the current `MavenProject`. |      |
-| [spring-boot:help](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-help) | Display help information on spring-boot-maven-plugin. Call `mvn spring-boot:help -Ddetail=true -Dgoal=<goal-name>` to display parameter details. |      |
-| [spring-boot:repackage](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-repackage) | Repackage existing JAR and WAR archives so that they can be executed from the command line using `java -jar`. With `layout=NONE` can also be used simply to package a JAR with nested dependencies (and no main class, so not executable). | 常用 |
-| [spring-boot:run](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-run) | Run an application in place.                                 | 常用 |
-| [spring-boot:start](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-start) | Start a spring application. Contrary to the `run` goal, this does not block and allows other goals to operate on the application. This goal is typically used in integration test scenario where the application is started before a test suite and stopped after. |      |
-| [spring-boot:stop](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-stop) | Stop an application that has been started by the "start" goal. Typically invoked once a test suite has completed. |      |
+![spring-boot-maven-plugin](/img/spring/spring-boot/spring-boot-maven-plugin.png)
+
+| Goal                                                         | Description                                                  |
+| :----------------------------------------------------------- | :----------------------------------------------------------- |
+| [spring-boot:build-image](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-build-image) | Package an application into a OCI image using a buildpack.   |
+| [spring-boot:build-info](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-build-info) | Generate a `build-info.properties` file based on the content of the current `MavenProject`. |
+| [spring-boot:help](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-help) | Display help information on spring-boot-maven-plugin. Call `mvn spring-boot:help -Ddetail=true -Dgoal=<goal-name>` to display parameter details. |
+| [spring-boot:repackage](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-repackage) | Repackage existing JAR and WAR archives so that they can be executed from the command line using `java -jar`. With `layout=NONE` can also be used simply to package a JAR with nested dependencies (and no main class, so not executable). |
+| [spring-boot:run](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-run) | Run an application in place.                                 |
+| [spring-boot:start](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-start) | Start a spring application. Contrary to the `run` goal, this does not block and allows other goals to operate on the application. This goal is typically used in integration test scenario where the application is started before a test suite and stopped after. |
+| [spring-boot:stop](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-stop) | Stop an application that has been started by the "start" goal. Typically invoked once a test suite has completed. |
 
 参考：
 
@@ -174,13 +176,22 @@ Maven 用户可以继承 `spring-boot-starter-parent` POM 项目以获得合理�
 
 ## 项目运行方式一
 
-使用 `spring-boot-maven-plugin` 插件自带的命令 `mvn spring-boot:run`，快速编译并运行。
+Goal `spring-boot:run` 用于快速编译并运行 Spring Boot 应用，常用于本地开发环境。命令：
+
+```bash
+$ mvn spring-boot:run
+```
 
 ## 项目运行方式二
 
-先将项目打包成一个可执行的 jar/war 包，使用命令：`mvn package spring-boot:repackage`。
+Goal `spring-boot:repackage` 用于重新打包现有的 jar/war 包，以便可以通过 `java -jar` 命令运行。常用于生产环境。命令：
 
-使用插件打包好的 jar 包内会内嵌一个容器，你可以像运行任何其它应用程序一样运行它：
+```bash
+# Phase package 先将项目打包成一个 jar/war 包，再通过 Goal spring-boot:repackage 重新打包
+$ mvn package spring-boot:repackage
+```
+
+重新打包后的 jar 包会内嵌一个 Servlet 容器，你可以像运行任何其它应用程序一样运行它：
 
 ```bash
 $ java -jar target/myapplication-0.0.1-SNAPSHOT.jar
@@ -193,6 +204,14 @@ $ java -jar -spring.profiles.active=prod target/myapplication-0.0.1-SNAPSHOT.jar
 ```
 
 ## 项目运行方式三
+
+通过在 jar 中添加启动脚本，为 *nix 系统制作一个完全可执行的 jar。常用于生产环境。
+
+更多信息参考：
+
+https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-repackage-parameters-details-executable
+
+[7.3 Installing Spring Boot Applications](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing)
 
 > In addition to running Spring Boot applications by using `java -jar`, it is also possible to make **fully executable** applications for Unix systems. A fully executable jar can be executed like any other executable binary or it can be [registered with `init.d` or `systemd`](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services). This helps when installing and managing Spring Boot applications in common production environments.
 >
@@ -212,20 +231,44 @@ $ java -jar -spring.profiles.active=prod target/myapplication-0.0.1-SNAPSHOT.jar
 >
 > You can then run your application by typing `./my-application.jar` (where `my-application` is the name of your artifact). The directory containing the jar is used as your application’s working directory.
 
-更多信息参考：[7.3 Installing Spring Boot Applications](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing)
+### Unix/Linux Services
 
-* Unix/Linux Services
-  * Installation as an `init.d` Service (System V)
-  * Installation as a `systemd` Service (`systemd` is the successor of the System V init system and is now being used by many modern Linux distributions.)
-  * Customizing the Startup Script
+* Installation as an `init.d` Service (System V)
 
-### 在运行时自定义脚本项
+* Installation as a `systemd` Service
 
-> For items of the script that need to be customized *after* the jar has been written, you can use environment variables or a [config file](https://docs.spring.io/spring-boot/docs/current/reference/html/deployment.html#deployment.installing.nix-services.script-customization.when-running.conf-file).
->
-> The [following environment properties](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services.script-customization.when-running) are supported with the default script.
+   > `systemd` is the successor of the System V init system and is now being used by many modern Linux distributions.
 
-更多信息参考：[7.3.2 Unix/Linux Services - Customizing a Script When It Runs](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services.script-customization.when-running)
+* Customizing the Startup Script
+   * [Customizing the Start Script When It Is Written](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services.script-customization.when-written)
+   
+   * [Customizing a Script When It Runs](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services.script-customization.when-running)
+   
+     > For items of the script that need to be customized *after* the jar has been written, you can use environment variables or a [config file](https://docs.spring.io/spring-boot/docs/current/reference/html/deployment.html#deployment.installing.nix-services.script-customization.when-running.conf-file).
+     >
+     > The [following environment properties](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services.script-customization.when-running) are supported with the default script.
+   
+     例如：
+   
+     ```
+     MODE=service
+     identity=my-application
+     JAVA_OPTS="-Dspring.profiles.active=prod"
+     PID_FOLDER=./
+     LOG_FOLDER=./
+     ```
+
+### 脚本命令
+
+当 config file 中，设置 `MODE=service`，`./my-application.jar` 可执行命令如下：
+
+> You can explicitly set it to `service` so that the `stop|start|status|restart` commands work or to `run` if you want to run the script in the foreground.
+
+* `status` 查看运行状态和 PID（Started、Running、Stoped、Not running）
+* `stop` 优雅停止应用
+* `force-stop` 强制停止应用
+* `start` 启动应用
+* `restart` 重启应用
 
 # 外部配置
 
