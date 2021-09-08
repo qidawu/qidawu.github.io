@@ -321,6 +321,18 @@ KEY `idx_taskno_rcode_rstatus` (`channel_task_no`,`reconciliation_code`,`reconci
 
 例如：[索引下推优化（ICP）](https://dev.mysql.com/doc/refman/5.7/en/index-condition-pushdown-optimization.html)
 
+> `EXPLAIN` output shows `Using index condition` in the `Extra` column when Index Condition Pushdown is used. It does not show `Using index` because that does not apply when full table rows must be read.
+>
+> - ICP is used for the `range`, `ref`, `eq_ref`, and `ref_or_null` access methods when there is a need to access full table rows.
+> - For `InnoDB` tables, ICP is used only for secondary indexes. The goal of ICP is to reduce the number of full-row reads and thereby reduce I/O operations. For `InnoDB` clustered indexes, the complete record is already read into the `InnoDB` buffer. Using ICP in this case does not reduce I/O.
+> - ...
+>
+> ICP can reduce the number of times the storage engine must **access the base table** and the number of times the MySQL server must **access the storage engine**.
+
+查询 ICP 是否开启：`SELECT @@GLOBAL.optimizer_switch`，注意 `index_condition_pushdown` 标记：
+
+> index_merge=on,index_merge_union=on,index_merge_sort_union=on,index_merge_intersection=on,engine_condition_pushdown=on,index_condition_pushdown=on,mrr=on,mrr_cost_based=on,block_nested_loop=on,batched_key_access=off,materialization=on,semijoin=on,loosescan=on,firstmatch=on,duplicateweedout=on,subquery_materialization_cost_based=on,use_index_extensions=on,condition_fanout_filter=on,derived_merge=on
+
 ## Using temporary
 
 MySQL 需要创建一张临时表来处理查询。通常发生于查询包含 `DISTINCT`、`GROUP BY` 或 `ORDER BY` 子句等需要数据去重的场景。出现这种情况一般是要进行优化的，首先想到的是用索引进行优化。

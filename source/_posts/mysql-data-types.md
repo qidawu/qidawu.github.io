@@ -22,7 +22,7 @@ MySQL 支持的数据类型非常多，选择正确的数据类型对于获得�
 
 * 使用日期与时间类型，而不是字符串来存储日期和时间，以便排序和格式转换。
 
-* 使用整型，而不是字符串来存储 IP 地址。MySQL 提供了两个函数来处理 IP 地址：
+* 使用无符号整型，而不是字符串来存储 IP 地址。MySQL 提供了两个函数来处理 IP 地址：
 
   ```sql
   -- 使用 INT unsigned 类型存储（存储范围：0 ~ 2^32-1）
@@ -273,3 +273,5 @@ https://dev.mysql.com/doc/refman/5.7/en/column-count-limit.html
 《[MySQL 5.6时间数据类型功能获得改进](http://tech.it168.com/a2013/1013/1544/000001544067.shtml)》
 
 《[一只天价股票把纳斯达克系统搞“崩了”!](https://mp.weixin.qq.com/s/Zc2X-K7SCXEJq_EhgAI8ig)》
+
+《[如果要存ip地址，用什么数据类型比较好？](https://mp.weixin.qq.com/s/n2vEImxO_AfE28H9dETw4A)》
