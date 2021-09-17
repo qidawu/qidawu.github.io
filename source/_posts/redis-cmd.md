@@ -23,32 +23,32 @@ typora-root-url: ..
 * WEB 集群下的 Session 共享：
 
     ```bash
-    SET key value
+    $ SET key value
     ```
     
 * 分布式锁：
 
     ```bash
     -- 返回 1 表示加锁成功，0 表示加锁失败
-    SETNX key value
-    SET key value NX
+    $ SETNX key value
+    $ SET key value NX
 
     -- 解锁
-    DEL key
+    $ DEL key
     ```
 
 * 全局计数器：
 
   ```bash
-  INCR key
-  DECR key
+  $ INCR key
+  $ DECR key
   ```
 
 * 分布式流水号：
 
     ```bash
-    INCR key
-    INCRBY key
+    $ INCR key
+    $ INCRBY key
     ```
     
 
@@ -90,9 +90,9 @@ public synchronized int nextId() {
 
 双端队列。
 
-![redis_lists](/img/redis/redis_lists.png)
+![redis_lists](/img/cache/redis/redis_lists.png)
 
-|                    | 左                                                           | 右                                                           |
+| 队列操作           | 左                                                           | 右                                                           |
 | ------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | 入队               | `LPUSH` key element [element ...]<br/>`LPUSHX` key element [element ...] | `RPUSH` key element [element ...]<br/>`RPUSHX` key element [element ...] |
 | 出队               | `LPOP` key                                                   | `RPOP` key                                                   |
@@ -112,8 +112,8 @@ public synchronized int nextId() {
 使用场景：
 
 * Stack (FILO): `LPUSH` + `LPOP`
-* Queue (FIFO): `LPUSH` + `RPOP`，实现消息流
-* Blocking Queue (FIFO): `LPUSH` + `BRPOP`
+* Queue (FIFO): `LPUSH` + `RPOP`，实现简单的消息队列
+* Unbounded Blocking Queue (FIFO): `LPUSH` + `BRPOP`
 
 ## Sets
 
@@ -121,7 +121,7 @@ public synchronized int nextId() {
 
 集合操作：
 
-|                                    | 命令                                             |
+| 集合操作                           | 命令                                             |
 | ---------------------------------- | ------------------------------------------------ |
 | 添加元素                           | `SADD` key member [member ...]                   |
 | 移除元素                           | `SREM` key member [member ...]                   |
@@ -134,68 +134,78 @@ public synchronized int nextId() {
 
 集合运算：
 
-|                          | 命令                                    |
-| ------------------------ | --------------------------------------- |
-| 移动指定元素到另一个集合 | `SMOVE` source destination member       |
-| 求交集                   | `SINTER` key [key ...]                  |
-| 求交集，并保存结果       | `SINTERSTORE` destination key [key ...] |
-| 求并集                   | `SUNION` key [key ...]                  |
-| 求并集，并保存结果       | `SUNIONSTORE` destination key [key ...] |
-| 求差集                   | `SDIFF` key [key ...]                   |
-| 求差集，并保存结果       | `SDIFFSTORE` destination key [key ...]  |
+| 集合运算                           | 数学符号 | 命令                                    |
+| ---------------------------------- | -------- | --------------------------------------- |
+| 移动指定元素到另一个集合           |          | `SMOVE` source destination member       |
+| 求交集（Intersection）             | ∩        | `SINTER` key [key ...]                  |
+| 求交集（Intersection），并保存结果 | ∩        | `SINTERSTORE` destination key [key ...] |
+| 求并集（Union）                    | ∪        | `SUNION` key [key ...]                  |
+| 求并集（Union），并保存结果        | ∪        | `SUNIONSTORE` destination key [key ...] |
+| 求差集（Difference）               | −        | `SDIFF` key [key ...]                   |
+| 求差集（Difference），并保存结果   | −        | `SDIFFSTORE` destination key [key ...]  |
 
 使用场景：
 
+* 去重
+
+  ```bash
+  $ SADD key member [member ...]
+  ```
+  
 * 抽奖：
 
   ```bash
-  -- 随机抽奖
-  SRANDMEMBER key [count]
+  # 随机抽奖（只抽一次）
+  $ SRANDMEMBER key [count]
   
-  -- 随机抽取一二三等奖
-  SPOP key [count]
+  # 随机抽取一二三等奖
+  $ SPOP key [count]
   ```
 
 * 社交应用的关注模型：
 
   ```bash
-  -- 我关注的人
-  SMEMBERS key
+  # 我关注的人
+  $ SMEMBERS key
   
-  -- 求共同关注
-  SINTER key [key ...]
+  # 求共同关注
+  $ SINTER key [key ...]
   
-  -- 我关注的人也关注 ta
+  # 我关注的人也关注 ta
   foreach(member in 我关注的人) {
-    -- 我每个关注的人，他们关注的人中，是否有 ta
-    SISMEMBER ((SMEMBERS key) of member) ta
+    # 我每个关注的人，他们关注的人中，是否有 ta
+    $ SISMEMBER member_关注的人 ta
   }
   
-  -- 我可能认识的人
+  # 我可能认识的人
   foreach(member in 我关注的人) {
-    -- 我每个关注的人，他们关注的人中，有我可能认识的人
-    SDIFF ((SMEMBERS key) of member) 我关注的人
+    # 我每个关注的人，他们关注的人中，有我还没关注的
+    $ SDIFF member_关注的人 我关注的人
   }
   ```
 
 * 商品筛选
 
   ```bash
-  -- 1、分类筛选维度，每个维度的每个值都为一个集合
-  -- 2、将商品按维度按值加入对应集合
-  -- 3、多选筛选条件，求交集
-  SINTER key [key ...]
+  # 1、分类筛选维度，每个维度都为一个集合
+  # 2、将商品按维度加入所属集合
+  # 3、多选筛选条件时，求交集
+  $ SINTER key [key ...]
   
-  -- 4、根据交集 member，获取商品详情（O(1) 时间复杂度）
+  # 4、根据交集 member，获取商品详情（O(1) 时间复杂度）
   foreach member {
-    -- 每个 field 为商品属性
-    HGETALL member
+    # 每个 field 为商品属性
+    $ HGETALL member
   }
   ```
 
 ## Sorted Sets
 
 有序集合。
+
+使用场景：
+
+* Top K（例如排行榜）。实现思路：利用集合的三大特性之一——互异性，进行去重，相同元素只进行计数。最后按计数结果对集合进行倒序排序，取前 N 个元素。
 
 # 其它命令
 
