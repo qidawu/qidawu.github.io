@@ -82,6 +82,10 @@ Reference
 >
 > JDK 8 和 JDK 11 是 LTS 版本，再下一个就到 2021 年发布的 JDK 17。
 
+参考《[JDK 历代版本变化](https://github.com/JavaMilk/JDKHistory)》
+
+> 根据 JEP-320 的内容，计划于 2018 年 9 月发布的 JDK 11 将不包括 Java EE 模块：JAX-WS（ JSR-224 ）、JAXB（ JSR-222 ）、JAF（ JSR-925 ）、Commons Annotations（ JSR-250 ）和 JTA（ JSR-907 ），而这些模块已在 JDK 中存在了多年。计划在 JDK 11 中移除的四个 Java EE 模块最终将进入 EE4J。
+
 常见 JDK 版本：
 
 * OracleJDK 商业版
@@ -112,8 +116,6 @@ Reference
 
   * ...
 
-参考《[JDK 历代版本变化](https://github.com/JavaMilk/JDKHistory)》
-
 ## JVM
 
 除了官方 HotSpotVM、GraalVM 实现，其它厂商实现如下：
@@ -128,24 +130,53 @@ Reference
 
 参考：《[Java EE 规范重命名为 Jakarta EE](https://www.infoq.cn/article/62TVY0c7ANAm*rjdzKfj)》
 
-- Jakarta 9（2019 及以后）使用 jakarta 命名空间。
+- Jakarta EE 9 使用 jakarta 命名空间。《[Jakarta EE 9 Milestone 1 发布 从 javax.* 过渡到 jakarta.*](https://www.cnbeta.com/articles/soft/996081.htm)》
 - Java EE 5（2005）到 Java EE 8（2017）使用 javax 命名空间。
 - Java EE 4 使用 javax 命名空间。
 
-| 规范                                                         | 创建组织                                                     |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| Java EE 1.3 (JSR-058)                                        | Java Community Process                                       |
-| Java EE 1.4 (JSR-151)                                        | Java Community Process                                       |
-| [Java EE 5 (JSR-244)](https://docs.oracle.com/javaee/5/)     | Java Community Process                                       |
-| [Java EE 6 (JSR-316)](https://docs.oracle.com/javaee/6/)     | Java Community Process                                       |
-| [Java EE 7 (JSR-342)](https://docs.oracle.com/javaee/7/index.html) | Java Community Process                                       |
-| Java EE 8 (JSR-366)                                          | Java Community Process                                       |
-| [Jakarta EE 8](https://jakarta.ee/release/8/)                | Jakarta EE Platform Specification Project with guidance provided by the [Jakarta EE Working Group](https://jakarta.ee/) |
-| [Jakarta EE 9](https://jakarta.ee/release/9/)                | Jakarta EE Platform Specification Project with guidance provided by the [Jakarta EE Working Group](https://jakarta.ee/) |
+| 规范                                                         | 创建组织                                                     | 发布时间     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------ |
+| Java EE 1.3 (JSR-058)                                        | Java Community Process                                       |              |
+| Java EE 1.4 (JSR-151)                                        | Java Community Process                                       |              |
+| [Java EE 5](https://docs.oracle.com/javaee/5/) (JSR-244)     | Java Community Process                                       | 2005         |
+| [Java EE 6](https://docs.oracle.com/javaee/6/) (JSR-316)     | Java Community Process                                       | 2007         |
+| [Java EE 7](https://docs.oracle.com/javaee/7/index.html) ([JSR-342](http://jcp.org/en/jsr/summary?id=342)) | Java Community Process                                       | May 28, 2013 |
+| [Java EE 8](https://github.com/javaee/javaee-spec) ([JSR-366](http://jcp.org/en/jsr/summary?id=366)) | Java Community Process                                       | Aug 21, 2017 |
+| [Jakarta EE 8](https://jakarta.ee/release/8/)                | Jakarta EE Platform Specification Project with guidance provided by the [Jakarta EE Working Group](https://jakarta.ee/) | 2019.9       |
+| [Jakarta EE 9](https://jakarta.ee/release/9/)                | Jakarta EE Platform Specification Project with guidance provided by the [Jakarta EE Working Group](https://jakarta.ee/) | 2020.9       |
 
 ## Java EE
 
 Java Platform, Enterprise Edition
+
+
+
+Java EE 和 Spring 之间复杂的关系：
+
+> Spring 诞生于 2004 年，由 Rod Johnson 发起，作为对 J2EE（Java 2 Platform，Enterprise Edition）和 EJB 2 复杂性的反击。从那个时候开始，Spring 和 Java EE 之间就没有停止过竞争，并彼此影响对方：
+>
+> * Spring（以及 Hibernate）的出现刺激了 Java EE 社区，促使他们推出了 EJB 3 和 JAP 1.0。
+> * Spring Batch 直接影响到了 Batch 规范（JSR 352）。
+> * Spring Dependency Injection 启发了 CDI（Context and Dependency Injection）。
+> * Spring 恰到好处地使用了 J2EE 和 Java EE 中的某些标准，如 Servlet、JMS 和 JPA。
+> * Spring 5 宣称兼容 Java EE 8。
+>
+> 从 2006 年开始，Java EE 也将提升易用性和对开发者的友好放在首位，但在演进速度方面还是很慢，主要有两个原因：
+>
+> * JCP 制定规范需要很长时间：即使是一个轻量级的规范，也需要多方参与，需要更长的时间才能达成一致。
+> * 实现和认证：在规范发布之后，需要几个月时间才能找到符合认证的应用服务器。
+>
+> 而最近，这方面的差距在加大：
+>
+> * Spring Boot 将“以约定代替配置（Convention Over Configuration）”的原则发挥到了极致，进一步提升易用性。
+> * Spring Cloud 利用 Netflix 的开源组件解决了与云原生应用开发相关的问题，如服务注册、服务发现、弹性、负载均衡、监控……
+> * Spring 5 将响应式编程（Reactive Programming）提升为一等公民。
+>
+> Java EE 在这方面的速度要慢的多。在 2013 年发布 Java EE 7 之后，经历了一段消停期。2016 年，在社区的压力下，Oracle 才发布了一个新的路线图。
+>
+> Java EE 8 发布于 2017 年 9 月，虽然人们对其期望甚高，但并非革命性的。人们还是把更多的目光投向了 Java EE 9，期望下一个版本会有更多的创新。
+>
+> 与此同时，Eclipse 基金会于 2016 年中启动 Microprofile.io 项目，旨在以微服务架构为基准来优化企业版 Java，以此来推动 Java EE 生态系统的发展。Microprofile 1.0 涵盖了 JAX-RS 2.0、CDI 1.2 和 JSON-P 1.0，1.2 版本于 2017 年 9 月发布，加入了更多特性，如配置、容错、JWT、度量指标和健康检测，2.0 版本有望与 Java EE 8 看齐。
 
 ## Jakarta EE
 
