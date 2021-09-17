@@ -87,7 +87,7 @@ Reactor Core 还提供了 `org.reactivestreams.Subscriber` 接口的实现类，
 
 不过一般不会直接使用该实现类，而是使用 `Mono`、`Flux` 提供的 `subscribe` 方法（如下图），并传入 Lambda 表达式语句（代码即参数），由方法的实现负责将参数封装为 `Subscriber` 接口的实现类，供消费使用：
 
-![reactor_subscribe](/img/java/reactive-stream/reactor/reactor_subscribe.png)
+![mono_subscribe](/img/java/reactive-stream/reactor/mono/mono_subscribe.png)
 
 响应式编程，如 Reactor 旨在解决 JVM 上传统异步编程带来的缺点、以及编程范式上从命令式过渡到响应式编程：
 

@@ -193,22 +193,22 @@ https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html
 
 ![Reactive callback](/img/java/reactive-stream/reactive-stream/process_of_reactive_stream_2.png)
 
-| 方法                    | 注释                                                         |
-| ----------------------- | ------------------------------------------------------------ |
-| `doOnSubscribe`         | Add behavior triggered when the `Mono` is subscribed.        |
-| `doOnCancel`            | Add behavior triggered when the `Mono` is cancelled.         |
-| `doOnRequest`           | Add behavior triggering a `LongConsumer` when the Mono receives any request. |
-| `doOnNext`              | Add behavior triggered when the `Mono` emits a data successfully. |
-| do on Complete ...      |                                                              |
-| `doOnSuccess`           | Add behavior triggered when the `Mono` completes successfully.<br/>* `null` : completed without data<br/>* `T`: completed with data |
-| `doOnComplete`          | Add behavior triggered when the `Flux` completes successfully. |
-| `doOnError`             | Add behavior triggered when the `Mono` completes with an error. |
-| `doOnTerminate`         | completion or error                                          |
-| `doAfterTerminate`      | completion or error but **after** it has been propagated downstream |
-| `doAfterSuccessOrError` | Add behavior triggered after the `Mono` terminates, either by completing downstream successfully or with an error. The arguments will be null depending on success, success with data and error:<br/>* `null`, `null` : completed without data<br/>* `T`, `null` : completed with data<br/>* `null`, `Throwable` : failed with/without data |
-| `doFinally`             | any terminating condition (complete, error, cancel):         |
-| all events ...          |                                                              |
-| `doOnEach`              | I want to know of all events each represented as [Signal](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Signal.html) object in a callback outside the sequence: `doOnEach` |
+| 方法                        | 注释                                                         |
+| --------------------------- | ------------------------------------------------------------ |
+| `doOnSubscribe`             | Add behavior triggered when the `Mono` is subscribed.        |
+| `doOnCancel`                | Add behavior triggered when the `Mono` is cancelled.         |
+| `doOnRequest`               | Add behavior triggering a `LongConsumer` when the Mono receives any request. |
+| `doOnNext`                  | Add behavior triggered when the `Mono` emits a data successfully. |
+| do on Complete ...          |                                                              |
+| `doOnSuccess`               | Add behavior triggered when the `Mono` completes successfully.<br/>* `null` : completed without data<br/>* `T`: completed with data |
+| `doOnComplete`              | Add behavior triggered when the `Flux` completes successfully. |
+| `doOnError`                 | Add behavior triggered when the `Mono` completes with an error. |
+| `doOnTerminate`             | completion or error                                          |
+| `doAfterTerminate`          | completion or error but **after** it has been propagated downstream |
+| `doFinally`                 | any terminating condition (complete, error, cancel).         |
+| ~~`doAfterSuccessOrError`~~ | Deprecated, will be removed in 3.5.0. Prefer using `doAfterTerminate` or `doFinally`<br/><br/>Add behavior triggered after the `Mono` terminates, either by completing downstream successfully or with an error. The arguments will be null depending on success, success with data and error:<br/>* `null`, `null` : completed without data<br/>* `T`, `null` : completed with data<br/>* `null`, `Throwable` : failed with/without data |
+| all events ...              |                                                              |
+| `doOnEach`                  | I want to know of all events each represented as [Signal](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Signal.html) object in a callback outside the sequence: `doOnEach` |
 
 调试类：
 
@@ -253,6 +253,8 @@ https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html
 ## 终结操作
 
 ### 订阅
+
+![mono_subscribe](/img/java/reactive-stream/reactor/mono/mono_subscribe.png)
 
 ### 阻塞返回结果
 
