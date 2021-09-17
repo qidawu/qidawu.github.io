@@ -28,7 +28,7 @@ typora-root-url: ..
 
 # 自定义线程池
 
-## 源码解析
+## 继承关系
 
 `Executor` 接口的实现类如下：
 
@@ -38,7 +38,9 @@ typora-root-url: ..
 
 ![ThreadPoolExecutor](/img/java/concurrent/Executor.png)
 
-`ThreadPoolExecutor` 类的成员变量：
+## 成员变量
+
+`ThreadPoolExecutor` 类的成员变量如下：
 
 ```java
 /**
@@ -127,37 +129,7 @@ private static final RuntimePermission shutdownPerm =
     new RuntimePermission("modifyThread");
 ```
 
-`ThreadPoolExecutor` 提供了四个构造方法，以参数最多的为例：
-
-```java
-public ThreadPoolExecutor(int corePoolSize,
-                          int maximumPoolSize,
-                          long keepAliveTime,
-                          TimeUnit unit,
-                          BlockingQueue<Runnable> workQueue,
-                          ThreadFactory threadFactory,
-                          RejectedExecutionHandler handler) {
-    // 参数校验
-    if (corePoolSize < 0 || maximumPoolSize <= 0 || maximumPoolSize < corePoolSize || keepAliveTime < 0)
-        throw new IllegalArgumentException();
-    if (workQueue == null || threadFactory == null || handler == null)
-        throw new NullPointerException();
-
-    this.acc = System.getSecurityManager() == null ? null : AccessController.getContext();
-    this.corePoolSize = corePoolSize;
-    this.maximumPoolSize = maximumPoolSize;
-    this.workQueue = workQueue;
-    this.keepAliveTime = unit.toNanos(keepAliveTime);
-    this.threadFactory = threadFactory;
-    this.handler = handler;
-}
-```
-
-下面分别介绍源码中涉及的重要属性。
-
-## 重要属性
-
-作为一个线程池，有两个关键属性：
+作为一个线程池，首先有两个关键属性：
 
 * 线程池状态 `runState`
 * 工作线程数 `workerCnt`
@@ -185,9 +157,9 @@ runState workerCnt                       runState workerCnt
 private static int ctlOf(int rs, int wc) { return rs | wc; }
 
 // 或运算符(|)规则：1|1=1
-//                 1|0=1
-//                 0|1=1
-//                 0|0=0
+//                1|0=1
+//                0|1=1
+//                0|0=0
 // 以初始化参数 ctlOf(RUNNING, 0) 为例：
   11100000000000000000000000000000
 | 00000000000000000000000000000000
@@ -252,8 +224,8 @@ private static int workerCountOf(int c)  { return c & CAPACITY; }
 注意：
 
 - 整个线程池的基本执行过程：创建核心线程（Core Thread） > 任务排队 > 创建临时线程（Temp Thread）。
-- 如果将 `maximumPoolSize` 设置为基本的无界值（如 Integer.MAX_VALUE），可能会创建大量的线程，从而导致 OOM。因此要限定 `maximumPoolSize` 的大小。
-- 如果将 `corePoolSize` 和 `maximumPoolSize` 设置为相同值，则创建了 Fixed 固定大小的线程池。
+- 如果将 `maximumPoolSize` 设置为无界值（如 Integer.MAX_VALUE），可能会创建大量的线程，从而导致 OOM。因此务必要限定 `maximumPoolSize` 的大小。
+- 如果将 `corePoolSize` 和 `maximumPoolSize` 设置为相同值，则创建了 Fixed 固定大小的线程池，无法弹性扩容，只能排队。
 
 ### 线程工厂
 
@@ -314,6 +286,94 @@ public interface RejectedExecutionHandler {
 ```
 
 ![work_flow_of_execute_method](/img/java/concurrent/work_flow_of_execute_method.png)
+
+## 构造方法
+
+`ThreadPoolExecutor` 提供了四个构造方法，以参数最多的为例：
+
+```java
+public ThreadPoolExecutor(int corePoolSize,
+                          int maximumPoolSize,
+                          long keepAliveTime,
+                          TimeUnit unit,
+                          BlockingQueue<Runnable> workQueue,
+                          ThreadFactory threadFactory,
+                          RejectedExecutionHandler handler) {
+    // 参数校验
+    if (corePoolSize < 0 || maximumPoolSize <= 0 || maximumPoolSize < corePoolSize || keepAliveTime < 0)
+        throw new IllegalArgumentException();
+    if (workQueue == null || threadFactory == null || handler == null)
+        throw new NullPointerException();
+
+    this.acc = System.getSecurityManager() == null ? null : AccessController.getContext();
+    this.corePoolSize = corePoolSize;
+    this.maximumPoolSize = maximumPoolSize;
+    this.workQueue = workQueue;
+    this.keepAliveTime = unit.toNanos(keepAliveTime);
+    this.threadFactory = threadFactory;
+    this.handler = handler;
+}
+```
+
+## 钩子方法
+
+`java.util.concurrent.ThreadPoolExecutor` 提供了三个钩子方法，参考 [Hook methods](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ThreadPoolExecutor.html)：
+
+> This class provides `protected` overridable [`beforeExecute(Thread, Runnable)`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ThreadPoolExecutor.html#beforeExecute-java.lang.Thread-java.lang.Runnable-) and [`afterExecute(Runnable, Throwable)`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ThreadPoolExecutor.html#afterExecute-java.lang.Runnable-java.lang.Throwable-) methods that are called before and after execution of each task. These can be used to manipulate the execution environment; for example, reinitializing ThreadLocals, gathering statistics, or adding log entries. Additionally, method [`terminated()`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ThreadPoolExecutor.html#terminated--) can be overridden to perform any special processing that needs to be done once the Executor has fully terminated.
+
+钩子方法在源码中的调用如下：
+
+```java
+final void runWorker(Worker w) {
+
+  ...
+
+  beforeExecute(wt, task);
+  Throwable thrown = null;
+  try {
+    task.run();
+  } catch (RuntimeException x) {
+    thrown = x; throw x;
+  } catch (Error x) {
+    thrown = x; throw x;
+  } catch (Throwable x) {
+    thrown = x; throw new Error(x);
+  } finally {
+    afterExecute(task, thrown);
+  }
+
+  ...
+
+}
+```
+
+例子：[利用钩子方法清理 MDC 上下文](https://www.baeldung.com/mdc-in-log4j-2-logback#mdc-and-thread-pools)
+
+```java
+public class MdcAwareThreadPoolExecutor extends ThreadPoolExecutor {
+
+    public MdcAwareThreadPoolExecutor(int corePoolSize, 
+      int maximumPoolSize, 
+      long keepAliveTime, 
+      TimeUnit unit, 
+      BlockingQueue<Runnable> workQueue, 
+      ThreadFactory threadFactory, 
+      RejectedExecutionHandler handler) {
+        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, handler);
+    }
+
+    /**
+     * Use ThreadPoolExecutor hooks and perform necessary cleanups after each execution.
+     */
+    @Override
+    protected void afterExecute(Runnable r, Throwable t) {
+        System.out.println("Cleaning the MDC context");
+        MDC.clear();
+        org.apache.log4j.MDC.clear();
+        ThreadContext.clearAll();
+    }
+}
+```
 
 # 使用工厂类创建线程池
 
