@@ -168,7 +168,11 @@ synchronizedNavigableMap
 
 ## 队列
 
-`Queue` 的常用方法差别如下：
+`Queue` 接口的继承关系及提供的方法如下：
+
+![Queue 接口提供的方法](/img/java/collection/methods_of_collection.png)
+
+`Queue` 的六个方法差别如下：
 
 |             | *Throws exception*                                           | *Returns special value*                                      |
 | ----------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
