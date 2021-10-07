@@ -1,37 +1,59 @@
 ---
-title: Java 集合框架系列（八）散列表常用场景总结
-date: 2018-05-20 22:29:30
+title: Java 集合框架系列（六）Map 接口的使用场景总结
+date: 2018-05-13 22:29:30
 updated:
-tags: Java
+tags: [Java, 数据结构]
 typora-root-url: ..
 ---
 
-本文总结了几种散列表的常用场景，例如：
+`java.util.Map` 用于映射键值对（map keys to values）。
 
-* 如何有序遍历散列表；
+本文总结了几种 `Map` 的使用场景，例如：
+
+* 如何实现有序遍历；
 * 如何实现缓存淘汰策略；
 * 如何解决海量数据的 Top K 问题。
 * ...
 
-# 遍历 API
+# 实现有序遍历
 
-Java 提供了下面几种 API 用于遍历散列表：
+## 集合视图
 
-## 内部循环 API
+`Map` 接口提供了三种集合视图（*collection views*）：
+
+![Map Views](/img/java/collection/Map_views.png)
+
+> 注意：从 `keySet()` 返回类型可知，由于受限于 `Set` 的三大特性之一「互异性」，`Map` 不能包含重复的键（Key）。两个键重复与否取决于 [`equals`](https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#equals-java.lang.Object-) 与[`hashCode()`](https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#hashCode--) 方法。
+
+> Many methods in Collections Framework interfaces are defined in terms of the [`equals`](https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#equals-java.lang.Object-) method. For example, the specification for the [`containsKey(Object key)`](https://docs.oracle.com/javase/8/docs/api/java/util/Map.html#containsKey-java.lang.Object-) method says: "returns `true` if and only if this map contains a mapping for a key `k` such that `(key==null ? k==null : key.equals(k))`." This specification should *not* be construed to imply that invoking `Map.containsKey` with a non-null argument `key` will cause `key.equals(k)` to be invoked for any key `k`. Implementations are free to implement optimizations whereby the `equals` invocation is avoided, for example, by first comparing the hash codes of the two keys. (The [`Object.hashCode()`](https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#hashCode--) specification guarantees that two objects with unequal hash codes cannot be equal.) More generally, implementations of the various Collections Framework interfaces are free to take advantage of the specified behavior of underlying [`Object`](https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html) methods wherever the implementor deems it appropriate.
+
+## 遍历 API
+
+Java 提供了下面几种 API 用于遍历 `Map` 接口的三种集合视图（*collection views*）：
+
+> The *order* of a map is defined as the order in which the iterators on the map's *collection views* return their elements. Some map implementations, like the `TreeMap` class, make specific guarantees as to their order; others, like the `HashMap` class, do not.
+
+### 内部循环 API
 
 ```java
+// key 遍历
 map.forEach((key, value) -> {});
 ```
 
-## 外部循环 API
+### 外部循环 API
 
 ```java
-// key 迭代
+// key 遍历
 for (String key : map.keySet()) {}
 
-// value 迭代
+// value 遍历
 for (String value : map.values()) {}
 
+// entry 遍历
+for (Map.Entry<String, String> entry : map.entrySet()) {}
+```
+
+```java
 // entry 显式迭代器
 Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
 while (it.hasNext()) {
@@ -44,21 +66,15 @@ for (Map.Entry<String, String> entry : map.entrySet()) {}
 
 ![map_entryset](/img/java/collection/map_entryset.png)
 
-# 排序方式
+## 遍历顺序
 
-众所周知，散列表这种动态数据结构虽然支持非常高效的数据插入、删除、查找操作（时间复杂度都为常数阶 `O(1)`），但由于散列表中的数据都是**通过散列函数打乱之后无序存储的**，因此散列表遍历结果是无序的，例如 `HashMap`。
+遍历顺序取决于 `Map` 接口使用了何种**数据结构**实现。
 
-有两种有序遍历的解决方案：
-
-* 实现排序算法。每当我们希望按照某种顺序遍历散列表中的数据时，自行将散列表中的数据拷贝到数组中，然后通过某种排序算法完成排序，再进行遍历。但如此一来，效率势必会很低。
-
-* 设计一种复合型数据结构，将散列表与红黑树（例如 `TreeMap`）、与链表（例如 `LinkedHashMap`）、或者与跳表结合在一起，实现某种排序，从而达到有序遍历。
-
-## 无序
+### 无序（no order）
 
 ```java
     /**
-     * HashMap 按散列函数（取余）后的顺序进行排序
+     * HashMap 按散列函数（取余运算）后的顺序进行排序
      *
      * (32, 1), 32 % 16 = 0
      * (16, 2), 16 % 16 = 0
@@ -78,11 +94,19 @@ for (Map.Entry<String, String> entry : map.entrySet()) {}
     }
 ```
 
-## 按自然顺序
+众所周知，散列表这种动态数据结构虽然支持非常高效的数据插入、删除、查找操作（时间复杂度都为常数阶 `O(1)`），但由于散列表中的数据都是**通过散列函数打乱之后无序存储的**，因此散列表遍历结果是无序的，例如 `HashMap`。
+
+有两种有序遍历的解决方案：
+
+* 实现排序算法。每当我们希望按照某种顺序遍历散列表中的数据时，自行将散列表中的数据拷贝到数组中，然后通过某种排序算法完成排序，再进行遍历。但如此一来，效率势必会很低。
+
+* 设计一种复合型数据结构，例如将散列表与红黑树（例如 `TreeMap` 实现）、与链式队列（例如 `LinkedHashMap` 实现）、或者与跳表结合在一起，实现某种排序，从而达到有序遍历。
+
+### 按自然顺序（natual order）
 
 ```java
     /**
-     * TreeMap 按自然顺序进行排序
+     * TreeMap 按自然顺序进行排序（红黑树实现）
      * 
      * (4, 5)
      * (15, 3)
@@ -92,7 +116,9 @@ for (Map.Entry<String, String> entry : map.entrySet()) {}
      */
     @Test
     public void testTreeMap() {
-        TreeMap<Integer, String> map = new TreeMap<>();
+        // Map<Integer, String> map = new TreeMap<>((o1, o2) -> o1.compareTo(o2));
+        // Map<Integer, String> map = new TreeMap<>(Comparator.naturalOrder());
+        Map<Integer, String> map = new TreeMap<>();
         map.put(32, "1");
         map.put(16, "2");
         map.put(15, "3");
@@ -102,7 +128,9 @@ for (Map.Entry<String, String> entry : map.entrySet()) {}
     }
 ```
 
-## 按插入顺序
+排序由键（Key）的自然顺序决定，通过 `Comparator` 或 `Comparable`。
+
+### 按插入顺序（insertion order）
 
 ```java
     /**
@@ -126,7 +154,7 @@ for (Map.Entry<String, String> entry : map.entrySet()) {}
     }
 ```
 
-## 按访问顺序
+### 按访问顺序（access order）
 
 ```java
     /**
@@ -152,6 +180,40 @@ for (Map.Entry<String, String> entry : map.entrySet()) {}
         map.forEach((key, value) -> log.info("({}, {})", key, value));
     }
 ```
+
+## 数据结构实现
+
+### HashMap
+
+参考：《[Map 接口的散列表实现总结](/2018/05/16/java-collections-hashmap/)》
+
+### TreeMap
+
+红黑树实现。
+
+### LinkedHashMap
+
+`LinkedHashMap` 继承自 `HashMap`，是一种复合型数据结构。它在散列表的基础上，通过维护一个**有界队列（双向链表实现）**来实现「键值对」排序。
+
+> 注意：`LinkedHashMap` 中的“Linked”实际上是指「链式队列」，而非指用链表法解决散列冲突。
+
+这种行为适用于一些特定应用场景，例如：构建一个空间占用敏感的有限资源池，按某种淘汰策略自动淘汰「过期」元素：
+
+| 排序方式   | 使用场景               |
+| ---------- | ---------------------- |
+| 按插入顺序 | 实现 FIFO 缓存淘汰策略 |
+| 按访问顺序 | 实现 LRU 缓存淘汰策略  |
+
+通过源码分析，`LinkedHashMap` 继承自 `HashMap`，同时 `LinkedHashMap` 的节点 `Entry` 也继承自 `HashMap` 的 `Node`，并且在此基础上增加了两个属性：
+
+* 前驱节点 `Entry<K, V> before`
+* 后继节点 `Entry<K, V> after`
+
+![LinkedHashMap Entry](/img/java/collection/LinkedHashMap_Entry.png)
+
+通过这两个属性就可以维护一条有序排列的双向链表，如下图：
+
+![LinkedHashMap Entry](/img/java/collection/LinkedHashMap_Entry_sorted.png)
 
 # 缓存淘汰策略实现
 
@@ -299,31 +361,30 @@ After sorted by statistics desc:
 (6, 5)
 ```
 
-# 数据结构实现
+# 解码 Huffman coding
 
-## TreeMap
+参考维基百科 [Huffman coding](https://en.wikipedia.org/wiki/Huffman_coding) 的定义：
 
-红黑树。
+> In [computer science](https://en.wikipedia.org/wiki/Computer_science) and [information theory](https://en.wikipedia.org/wiki/Information_theory), a **Huffman code** is a particular type of optimal [prefix code](https://en.wikipedia.org/wiki/Prefix_code) that is commonly used for [lossless data compression](https://en.wikipedia.org/wiki/Lossless_data_compression).
 
-## LinkedHashMap
+前缀编码（[prefix code](https://en.wikipedia.org/wiki/Prefix_code)） 的定义：
 
-`LinkedHashMap` 继承自 `HashMap`，是一种复合型数据结构。它在 `HashMap` 的基础上，通过维护一个**队列（双向链表）**来进行元素排序，从而实现以下两种排序方式：
+> 如果在一个编码方案中，任何一个编码都不是其它任何编码的前缀（最左子串），则称该编码是前缀编码。前缀编码可以保证对压缩数据进行解码时不产生二义性，确保正确解码。
+>
+> 前缀编码有两种编码方案：
+>
+> * 等长编码方案（[fixed-length coding](https://en.wikipedia.org/wiki/Prefix_code#Techniques)）
+> * 不等长编码方案（[variable-length coding](https://en.wikipedia.org/wiki/Variable-length_code)）
+>
+> Huffman coding 是一种最优前缀编码，属于不等长编码方案。
 
-| 排序方式   | 使用场景                 |
-| ---------- | ------------------------ |
-| 按插入顺序 | 可实现 FIFO 缓存淘汰策略 |
-| 按访问顺序 | 可实现 LRU 缓存淘汰策略  |
+参考：https://www.csdn.net/tags/MtTaMgysMjE3NjItYmxvZwO0O0OO0O0O.html
 
-通过源码分析，`LinkedHashMap` 继承自 `HashMap`，同时 `LinkedHashMap` 的节点 `Entry` 也继承自 `HashMap` 的 `Node`，并且在此基础上增加了两个属性：
 
-* 前驱节点 `Entry<K, V> before`
-* 后继节点 `Entry<K, V> after`
 
-![LinkedHashMap Entry](/img/java/collection/LinkedHashMap_Entry.png)
+题目：已知字符对应的前缀编码表，给定一串编码，将其解码为字符串。
 
-通过这两个属性就可以维护一条有序排列的双向链表，如下图：
-
-![LinkedHashMap Entry](/img/java/collection/LinkedHashMap_Entry_sorted.png)
+解答：https://blog.csdn.net/qq_45273552/article/details/109176832
 
 # 参考
 

@@ -1,8 +1,8 @@
 ---
-title: Java 集合框架系列（三）并发实现总结
-date: 2018-04-21 23:40:10
+title: Java 集合框架系列（八）并发实现总结
+date: 2018-05-25 23:40:10
 updated:
-tags: Java
+tags: [Java, 数据结构, 并发编程]
 typora-root-url: ..
 ---
 
@@ -11,7 +11,7 @@ typora-root-url: ..
 * 方案一：为集合通用实现添加线程同步功能。`Collections` 工具类提供了称为[*同步包装器（synchronization wrappers）*](https://docs.oracle.com/javase/8/docs/api/java/util/Collections.html#synchronizedCollection-java.util.Collection-)的静态工厂方法可用于向许多非线程同步的集合添加同步行为。
 * 方案二：使用并发集合。Java SE 提供了各种并发友好的集合接口和实现类。这些接口和类性能优于*同步包装器（synchronization wrappers）*，提供了并发编程中经常需要的各种功能。
 
-# 同步包装器
+# 线程同步包装器
 
 `Collections` 工具类提供如下静态工厂方法：
 

@@ -235,7 +235,7 @@ private static int workerCountOf(int c)  { return c & CAPACITY; }
 
 ### 阻塞队列
 
-阻塞队列的使用详见另一篇《[Java 集合框架系列（三）并发实现总结](/2018/04/21/java-collections-framework-concurrent-impl/)》。
+阻塞队列的使用详见另一篇《[Java 集合框架系列（八）并发实现总结](/2018/05/25/java-collections-framework-concurrent-impl/)》。
 
 ![work_queue](/img/java/concurrent/work_queue.png)
 

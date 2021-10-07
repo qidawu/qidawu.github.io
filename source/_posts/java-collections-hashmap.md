@@ -1,8 +1,8 @@
 ---
-title: Java 集合框架系列（七）散列表之 HashMap 实现总结
+title: Java 集合框架系列（七）Map 接口的散列表实现总结
 date: 2018-05-16 22:29:30
 updated:
-tags: Java
+tags: [Java, 数据结构]
 typora-root-url: ..
 ---
 

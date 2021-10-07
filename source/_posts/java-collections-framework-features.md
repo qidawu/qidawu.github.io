@@ -2,7 +2,7 @@
 title: Java 集合框架系列（二）集合特性总结
 date: 2018-04-14 09:13:11
 updated:
-tags: Java
+tags: [Java, 数据结构]
 typora-root-url: ..
 ---
 
@@ -199,6 +199,10 @@ Pair.of("left", "right")
 ```
 
 ![methods_of_Pair_and_Triple](/img/java/collection/methods_of_Pair_and_Triple.png)
+
+# 线程同步/非同步
+
+参考[线程同步包装器](/2018/05/25/java-collections-framework-concurrent-impl/)
 
 # 随机/顺序访问
 

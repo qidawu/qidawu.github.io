@@ -2,7 +2,7 @@
 title: Java 集合框架系列（一）框架总结
 date: 2018-04-10 22:19:15
 updated:
-tags: Java
+tags: [Java, 数据结构]
 typora-root-url: ..
 ---
 
@@ -107,7 +107,7 @@ typora-root-url: ..
 
 ## 并发实现
 
-为高并发使用而设计的实现。详见另一篇《Java 并发集合总结》。
+为高并发使用而设计的实现。详见另一篇《并发实现总结》。
 
 ## 特殊实现
 
@@ -120,7 +120,7 @@ typora-root-url: ..
 * `EnumSet`
 * `EnumMap`
 
-## 适配器实现
+## 适配器实现（Adaptor）
 
 将某个集合接口适配成另一个：
 
@@ -142,7 +142,7 @@ typora-root-url: ..
   Arrays.asList(...)
   ```
 
-## 包装器实现
+## 包装器实现（Wrapper）
 
 用于其它集合实现的功能增强：
 

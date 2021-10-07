@@ -1,8 +1,8 @@
 ---
-title: Java 集合框架系列（五）Iterator API 总结
+title: Java 集合框架系列（四）Iterator API 总结
 date: 2018-05-01 23:46:35
 updated:
-tags: Java
+tags: [Java, 数据结构]
 typora-root-url: ..
 ---
 
