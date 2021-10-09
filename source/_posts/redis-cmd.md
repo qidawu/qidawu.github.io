@@ -2,7 +2,7 @@
 title: Redis 实战系列（一）常用数据结构及使用场景总结
 date: 2019-06-05 17:13:35
 updated:
-tags: Redis
+tags: [Redis, 数据结构]
 typora-root-url: ..
 ---
 
@@ -76,15 +76,15 @@ public synchronized int nextId() {
 
 |                           | 单个                                                         | 批量                                          |
 | ------------------------- | ------------------------------------------------------------ | --------------------------------------------- |
-| 获取                      | `HGET` key field<br/>`HSCAN` key cursor [MATCH pattern] [COUNT count]<br/>`HSTRLEN` key field | `HMGET` key field [field ...]                 |
 | 获取所有 fields           | `HKEYS` key                                                  |                                               |
 | 获取所有 values           | `HVALS` key                                                  |                                               |
 | 获取所有 fields 和 values | `HGETALL` key                                                |                                               |
+| 获取 field 的个数         | `HLEN` key                                                   |                                               |
 | 判断 field 是否存在       | `HEXISTS` key field                                          |                                               |
-| 获取 field 个数           | `HLEN` key                                                   |                                               |
-| 设值                      | `HSET` key field value [field value ...]<br/>`HSETNX` key field value | ~~`HMSET` key field value [field value ...]~~ |
-| 原子递增、递减            | `HINCRBY` key field increment<br/>`HINCRBYFLOAT` key field increment |                                               |
-| 删除 fields               | `HDEL` key field [field ...]                                 |                                               |
+| 删除 field                | `HDEL` key field [field ...]                                 |                                               |
+| 获取 field 的 value       | `HGET` key field<br/>`HSCAN` key cursor [MATCH pattern] [COUNT count]<br/>`HSTRLEN` key field | `HMGET` key field [field ...]                 |
+| 设置 field 的 value       | `HSET` key field value [field value ...]<br/>`HSETNX` key field value | ~~`HMSET` key field value [field value ...]~~ |
+| 原子递增、递减指定 field  | `HINCRBY` key field increment<br/>`HINCRBYFLOAT` key field increment |                                               |
 
 ## Lists
 
