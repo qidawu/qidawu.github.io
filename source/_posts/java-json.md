@@ -6,7 +6,11 @@ tags: Java
 typora-root-url: ..
 ---
 
-# JsonNode 的使用
+# FasterXML Jackson
+
+https://github.com/FasterXML/jackson
+
+## JsonNode 的使用
 
 `com.fasterxml.jackson.databind.JsonNode` 表示一个 JSON 节点，可以通过 `ObjectMapper#readTree` 方法解析出来，也可以通过 `JsonNode` 的子类 API 自定义构建：
 
@@ -39,7 +43,7 @@ log.info(jsonNode.get("hello").findValuesAsText("key").toString());
 // value3
 log.info(jsonNode.get("test").get("key3").asText());
 ```
-# ObjectMapper 工具类
+## ObjectMapper 工具类
 
 ```java
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -173,7 +177,7 @@ public final class JsonUtils {
 }
 ```
 
-# JavaType 的使用
+## JavaType 的使用
 
 工具类的方法 `fromJsonToList`，使用了方法 `OBJECT_MAPPER.getTypeFactory().constructParametricType(...)`，其值调试如下：
 
@@ -183,7 +187,7 @@ public final class JsonUtils {
 
 ![JavaType](/img/java/jackson/JavaType.png)
 
-# 使用例子
+## 使用例子
 
 本例中，我们需要获取以下两个方法的泛型返回值中的实际类型参数 `XxxRespDTO` 的 `Class` 类型，以用于 JSON 转换：
 
@@ -234,21 +238,21 @@ private Object getObject(Method method, String json) {
 
 这种用法常常出现在框架之中。下面来看下调试效果：
 
-## 接口一
+### 接口一
 
 下图展示了变量 `returnType` 为参数化类型 `ParameterizedType`，其实际类型参数 `type` 为 `Class` 类型，值为 `XxxRespDTO` ：
 
 ![JsonNode](/img/java/jackson/ObjectMapper_example.png)
 
-## 接口二
+### 接口二
 
 下图展示了变量 `returnType` 的实际类型参数 `type` 与接口一为 `Class` 类型不同，接口二为 `ParameterizedType` 参数化类型，值为 `List<XxxRespDTO>`：
 
 ![](/img/java/jackson/ObjectMapper_example_2.png)
 
-# 常见报错
+## 常见报错
 
-## Unrecognized field, not marked as ignorable
+### Unrecognized field, not marked as ignorable
 
 该错误的意思是说，不能够识别的字段没有标示为可忽略。出现该问题的原因就是 JSON 中包含了目标 Java 对象没有的属性。
 
@@ -258,3 +262,22 @@ private Object getObject(Method method, String json) {
 2. `@JsonIgnoreProperties(ignoreUnknown = true)` 在目标对象的类级别上加上该注解和属性，则 Jackson 在反序列化的时候，会忽略该目标对象不存在的属性。
 3. 全局 `DeserializationFeature` 配置
    `objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false)` 配置该 `objectMapper` 在反序列化时，忽略目标对象没有的属性。凡是使用该 `objectMapper` 反序列化时，都会拥有该特性。
+
+# Google Gson
+
+https://github.com/google/gson
+
+```java
+JsonObject jsonObject = new JsonObject();
+jsonObject.addProperty("time", LocalDateTime.now().toString());
+jsonObject.addProperty("ip", ip);
+jsonObject.addProperty("rspMillis", rspMillis);
+jsonObject.addProperty("rspCode", rspCode);
+jsonObject.addProperty("method", method);
+jsonObject.addProperty("path", uriPath);
+// Deprecated
+// new JsonParser().parse(jsonTrace);
+jsonObject.add("body", JsonParser.parseString(jsonTrace));
+requestJsonLogger.info(jsonObject.toString());
+```
+
