@@ -43,8 +43,16 @@ relative_link: false
 future: true
 highlight:
   enable: true
+  auto_detect: false
   line_number: true
-  tab_replace:
+  tab_replace: ''
+  wrap: true
+  hljs: false
+prismjs:
+  enable: false
+  preprocess: true
+  line_number: true
+  tab_replace: ''
 
 # Category & Tag
 default_category: uncategorized
@@ -86,7 +94,7 @@ sitemap:
 
 ## Themes: http://hexo.io/themes/
 # theme: landscape
-theme: bubuzou
+theme: next
 stylus: 
   compress: true
 
