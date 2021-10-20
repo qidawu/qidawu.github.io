@@ -6,36 +6,49 @@ tags: [C/C++]
 typora-root-url: ..
 ---
 
-# VS Code 插件安装
+# 环境准备
 
-打开 VScode，进入 `Extensions` 模块，搜索以下扩展并安装： 
+打开 VScode，进入 `Extensions`，二选一搜索并安装以下扩展：
 
-* C/C++
-* C/C++ Clang Command Adapter
-* C++ Intellisense
-* Code Runner
+## 方式一：官方插件 C/C++
 
-安装完成后，扩展将会自动激活。此时**重启** VScode。 
+[Using Clang in Visual Studio Code](https://code.visualstudio.com/docs/cpp/config-clang-mac) 教程指引如何使用官方插件 [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) 进行构建与调试。
 
-# Hello world 测试
+按教程配置 `.vscode` 文件夹的三个文件：
 
-新建一个 `.cpp` 文件，输入如下代码： 
+- `tasks.json` （编译器构建设置）
+- `launch.json` （调试器设置）
+- `c_cpp_properties.json` （编译器路径和 IntelliSense 设置）
 
-```C++
-#include <iostream>
-int main() {
-    std::cout << "hello, world\n";
-    return 0;
-}
+`⇧⌘B` 编译源文件：
+
+```bash
+/usr/bin/clang++ -std=c++17 -stdlib=libc++ -g /Users/wuqd/Documents/workspace/cpp/HelloWorld.cpp -o /Users/wuqd/Documents/workspace/cpp/HelloWorld.out
 ```
 
-点击 **运行** 按钮，`Terminal` 显示编译如下：
+编译成功后：
 
-````
-g++ HelloWorld.cpp -o HelloWorld
-````
+* 可以在「终端」输入 `./HelloWorld.out` 以直接运行编译文件；
 
-编译完成后，运行并输出如下：`hello, world`。至此，配置全部完成。 
+* 还可以按 `F5` 调试。
+
+## 方式二：三方插件 Code Runner
+
+安装第三方插件：[Code Runner](https://marketplace.visualstudio.com/items?itemName=formulahendry.code-runner)
+
+`settings.json` 新增配置如下，将编译文件的后缀名改为 `.out`，以便 .gitignore：
+
+```json
+    "code-runner.executorMap": {
+      "cpp": "cd $dir && g++ $fileName -o $fileNameWithoutExt.out && $dir$fileNameWithoutExt.out"
+    }
+```
+
+`⌃⌥N` 编译并运行：
+
+```bash
+cd "/Users/wuqd/Documents/workspace/cpp/" && g++ HelloWorld.cpp -o HelloWorld.out && "/Users/wuqd/Documents/workspace/cpp/"HelloWorld.out
+```
 
  # 常见问题
 
@@ -83,6 +96,8 @@ https://www.cnblogs.com/kingsonfu/p/11010086.html
 
 # 参考
 
+[Using Clang in Visual Studio Code](https://code.visualstudio.com/docs/cpp/config-clang-mac)
+
 http://www.cplusplus.com/doc/tutorial/introduction/
 
 [C++ 在线编译器](http://www.dooccn.com/cpp/)
@@ -90,3 +105,8 @@ http://www.cplusplus.com/doc/tutorial/introduction/
 [C++ Insights](https://cppinsights.io/)
 
 [C++ Compiler Explorer](https://gcc.godbolt.org/)
+
+VSCode 其它插件推荐：
+
+* C/C++ Clang Command Adapter
+* C++ Intellisense
