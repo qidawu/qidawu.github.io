@@ -1,5 +1,5 @@
 ---
-title: Java 集合框架系列（六）Map 接口的使用场景总结
+title: Java 集合框架系列（七）Map 接口的使用场景总结
 date: 2018-05-13 22:29:30
 updated:
 tags: [Java, 数据结构]
@@ -21,11 +21,15 @@ typora-root-url: ..
 
 `Map` 接口提供了三种集合视图（*collection views*）：
 
-![Map Views](/img/java/collection/Map_views.png)
+![Map Views](/img/java/collection/map/Map_views.png)
 
 > 注意：从 `keySet()` 返回类型可知，由于受限于 `Set` 的三大特性之一「互异性」，`Map` 不能包含重复的键（Key）。两个键重复与否取决于 [`equals`](https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#equals-java.lang.Object-) 与[`hashCode()`](https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#hashCode--) 方法。
 
 > Many methods in Collections Framework interfaces are defined in terms of the [`equals`](https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#equals-java.lang.Object-) method. For example, the specification for the [`containsKey(Object key)`](https://docs.oracle.com/javase/8/docs/api/java/util/Map.html#containsKey-java.lang.Object-) method says: "returns `true` if and only if this map contains a mapping for a key `k` such that `(key==null ? k==null : key.equals(k))`." This specification should *not* be construed to imply that invoking `Map.containsKey` with a non-null argument `key` will cause `key.equals(k)` to be invoked for any key `k`. Implementations are free to implement optimizations whereby the `equals` invocation is avoided, for example, by first comparing the hash codes of the two keys. (The [`Object.hashCode()`](https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#hashCode--) specification guarantees that two objects with unequal hash codes cannot be equal.) More generally, implementations of the various Collections Framework interfaces are free to take advantage of the specified behavior of underlying [`Object`](https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html) methods wherever the implementor deems it appropriate.
+
+`hashCode` 需要遵循以下规则：
+
+![equals_and_hashcode](/img/java/collection/map/alibaba_equals_and_hashcode.png)
 
 ## 遍历 API
 
@@ -64,7 +68,7 @@ while (it.hasNext()) {
 for (Map.Entry<String, String> entry : map.entrySet()) {}
 ```
 
-![map_entryset](/img/java/collection/map_entryset.png)
+![map_entryset](/img/java/collection/map/alibaba_map_entryset.png)
 
 ## 遍历顺序
 
@@ -106,7 +110,7 @@ for (Map.Entry<String, String> entry : map.entrySet()) {}
 
 ```java
     /**
-     * TreeMap 按自然顺序进行排序（红黑树实现）
+     * TreeMap 按自然顺序进行排序（红黑树实现，查找的时间复杂度为 O(log(n))）
      * 
      * (4, 5)
      * (15, 3)
@@ -209,11 +213,11 @@ for (Map.Entry<String, String> entry : map.entrySet()) {}
 * 前驱节点 `Entry<K, V> before`
 * 后继节点 `Entry<K, V> after`
 
-![LinkedHashMap Entry](/img/java/collection/LinkedHashMap_Entry.png)
+![LinkedHashMap Entry](/img/java/collection/map/LinkedHashMap_Entry.png)
 
 通过这两个属性就可以维护一条有序排列的双向链表，如下图：
 
-![LinkedHashMap Entry](/img/java/collection/LinkedHashMap_Entry_sorted.png)
+![LinkedHashMap Entry](/img/java/collection/map/LinkedHashMap_Entry_sorted.png)
 
 # 缓存淘汰策略实现
 

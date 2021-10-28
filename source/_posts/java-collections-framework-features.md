@@ -250,7 +250,7 @@ Pair.of("left", "right")
 
 参考手册：
 
-![map_element_of_null](/img/java/collection/map_element_of_null.png)
+![map_element_of_null](/img/java/collection/map/alibaba_map_element_of_null.png)
 
 ## 类型限制
 

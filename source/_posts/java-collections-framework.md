@@ -58,11 +58,11 @@ typora-root-url: ..
 
 其它集合接口基于 `java.util.Map`，不是真正的集合。但是，这些接口包含集合视图（*collection-view*）操作，使得它们可以作为集合进行操作。
 
-![Map](/img/java/collection/Map.png)
+![Map](/img/java/collection/map/Map.png)
 
 `java.util.Map` 接口的方法如下:
 
-![Map methods](/img/java/collection/Map_methods.png)
+![Map methods](/img/java/collection/map/Map_methods.png)
 
 # 集合实现类
 
@@ -80,7 +80,7 @@ typora-root-url: ..
 
 `java.util.Map` 的通用实现如下：
 
-![map_impl](/img/java/collection/map_impl.JPG)
+![map_impl](/img/java/collection/map/Map_impl.jpg)
 
 集合接口的主要实现，命名通常形如 <*Implementation-style*><*Interface*>。通用实现类汇总如下（左列为接口，表头为数据结构）：
 

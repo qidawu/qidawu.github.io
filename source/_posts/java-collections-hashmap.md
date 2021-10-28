@@ -1,20 +1,33 @@
 ---
-title: Java 集合框架系列（七）Map 接口的散列表实现总结
+title: Java 集合框架系列（八）Map 接口的散列表实现总结
 date: 2018-05-16 22:29:30
 updated:
 tags: [Java, 数据结构]
 typora-root-url: ..
 ---
 
-散列表是一种通过散列函数可以快速定位数据的数据结构。散列表利用了数组支持按照下标随机访问数据的时候，时间复杂度为 O(1) 的特性，**所以散列表其实就是数组的一种扩展，由数组演化而来**。可以说，如果没有数组，就没有散列表。
+# 散列表
 
 散列表的要点总结如下：
 
-![keynote_of_hash_table](/img/java/collection/keynote_of_hash_table.png)
+- 数据元素的 `key` 和存储位置之间建立的对应关系 `H` 称为**散列函数（Hash function）**。
+- 用 `key` 通过**散列函数**获取存储位置的这种存储方式构造的存储结构称为**散列表（Hash table）**。
+- 这一映射过程称为**散列（Hash）**。
+- 如果选定了某个散列函数 `H` 及相应的散列表 `L`，则对每个数据元素 `X`，函数值 `H(X.key)` 就是 `X` 在散列表 `L` 中的存储位置，这个存储位置也称为**散列地址（Hash code）**。
+- 理想情况下，应用的散列函数使每个 `key` 与散列地址是一一对应的，但在实际应用中，这种情况很少出现。设有散列函数 `H` 和 `key1`、`key2`，若 `key1 ≠ key2`，但是 `H(key1) = H(key2)`，则称这种现象为**散列沖突（Hash collision）**，且称 `key1`、`key2`是相对于 `H` 的**同义词**。
+- 因为，散列函数是从 `key` 集合到地址集合的映像，所以在一般情况下，冲突只能尽可能减少而不能完全避免。因此，采用散列技术时需要考虑两个问题：
+  1. 如何构造（选择）“均匀的” 散列函数？
+  2. 用什么方法有效地解決冲突？
 
-# 节点设计
+![HashTable Keynote](/img/data-structure/hashtable/hashtable_keynote.png)
 
-散列表的节点设计如下：
+# HashMap
+
+## 节点设计
+
+`HashMap` 的节点设计如下图：
+
+![Entry](/img/java/collection/map/Map_Entry.png)
 
 | 接口和类                        | 描述                                                         |
 | ------------------------------- | ------------------------------------------------------------ |
@@ -23,13 +36,11 @@ typora-root-url: ..
 | `java.util.LinkedHashMap#Entry` | 单链表节点实现，并在此基础上增加了前驱节点 `before`、后继节点 `after` 以实现节点的**顺序遍历**。 |
 | `java.util.HashMap#TreeNode`    | 红黑树节点实现，用于解决**散列冲突**。同时为了避免链表过长及散列表碰撞攻击，如果节点数超过 8 个，则进行树化 `treeifyBin`，避免大量散列冲突导致散列表退化成单链表，导致查询时间复杂度从 `O(1)` 退化成 `O(n)。` |
 
-![Entry](/img/java/collection/Map_Entry.png)
+### 单链表节点实现
 
-## 单链表节点实现
+单链表节点的散列表结构如下图，散列函数为 `index=hash(key) % 16`，链地址法解决散列冲突后，结果如下：
 
-单链表节点的散列表结构如下，下图体现了单链表节点 `key` 和 `next` 属性：
-
-![hashtable_examples](/img/java/collection/hashtable_examples.png)
+![HashTable Collision resolution](/img/data-structure/hashtable/hashtable_collision_resolution_separate_chaining.png)
 
 源码如下：
 
@@ -78,7 +89,7 @@ typora-root-url: ..
     }
 ```
 
-## 红黑树节点实现
+### 红黑树节点实现
 
 源码如下：
 
@@ -104,11 +115,11 @@ typora-root-url: ..
     }
 ```
 
-# 常量及字段
+## 常量及字段
 
-![HashMap_fields](/img/java/collection/HashMap_fields.png)
+![HashMap_fields](/img/java/collection/map/HashMap_fields.png)
 
-## 常量值
+### 常量值
 
 ```java
     /**
@@ -164,7 +175,7 @@ typora-root-url: ..
     static final int MIN_TREEIFY_CAPACITY = 64;
 ```
 
-## 字段
+### 字段
 
 ```java
     /**
@@ -224,13 +235,13 @@ typora-root-url: ..
 * `size` 散列表实际存储的键值对数量，如果 `size > threshold` 则对 hash `table` 进行双倍扩容（resize）,并对原数组每个元素进行重新散列（rehash）。
 * `modCount` 修改次数。
 
-![fields_of_hash_table](/img/java/collection/fields_of_hash_table.png)
+![HashTable Dynamic resizing](/img/data-structure/hashtable/hashtable_dynamic_resizing.png)
 
-# 构造方法
+## 构造方法
 
 构造方法的参数主要用于指定数组的初始容量 `initialCapacity`、装载因子 `loadFactor`，并计算扩容阈值 `threshold`。
 
-![HashMap_constructors](/img/java/collection/HashMap_constructors.png)
+![HashMap_constructors](/img/java/collection/map/HashMap_constructors.png)
 
 ```java
     /**
@@ -290,11 +301,11 @@ typora-root-url: ..
     }
 ```
 
-## 初始容量
+### 初始容量
 
 在集合初始化时，建议指定 `initialCapacity` 初始容量：
 
-![map_constructor](/img/java/collection/map_constructor.png)
+![map_constructor](/img/java/collection/map/alibaba_map_constructor.png)
 
 如果不想手工计算初始容量 `initialCapacity`，可以使用 Guava 的静态工厂方法 `Maps.newHashMapWithExpectedSize`，源码如下：
 
@@ -338,7 +349,7 @@ typora-root-url: ..
 
 不管是通过手工指定还是通过 Guava 的静态工厂方法，计算出来的初始容量都只是一个参考值。因为在随后 `resize` 会重新计算。
 
-## 扩容阈值
+### 扩容阈值
 
 第一个构造方法中调用了 `tableSizeFor` 方法，用于产生一个大于等于 `initialCapacity` 的最小的 2 的整数次幂。做法是通过右移操作让每一位都变为 1，最后 +1 变成 2 的 n 次幂：
 
@@ -357,15 +368,19 @@ typora-root-url: ..
     }
 ```
 
-# 关键私有方法
+## 关键私有方法
 
-## hash
+### hash
 
 在 `HashMap` 源码中，散列函数是分三步走的：
 
-第一步，获取 `hashcode`。`hashCode` 需要遵循以下规则：
+#### hashcode
 
-![equals_and_hashcode](/img/java/collection/equals_and_hashcode.png)
+第一步，获取 `key` 的 `hashcode`。`hashCode` 需要遵循以下规则：
+
+![equals_and_hashcode](/img/java/collection/map/alibaba_equals_and_hashcode.png)
+
+#### 扰动函数
 
 第二步，hash 值的计算，源码如下：
 
@@ -394,7 +409,11 @@ typora-root-url: ..
 
 该函数也叫扰动函数：先获取 32 位长度的 hashCode，再进行高 16 位与低 16 位异或，在低位加入高位特征，目的是减少碰撞冲突的概率。
 
-第三步，在更新、插入或删除的时候，计算 Key 被映射到的桶的位置：
+参考：《[HashMap 扰动函数解读](https://blog.csdn.net/supercmd/article/details/100042302)》
+
+#### 除留余数法
+
+第三步，在更新、插入或删除的时候，计算 Key 被映射到哪个 bucket：
 
 ```java
 // capacity 表示 table.length
@@ -431,30 +450,11 @@ int hash(Object key) {
 }
 ```
 
-## resize
-
-用于初始化或扩容散列表。
-
-```java
-    /**
-     * Initializes or doubles table size.  If null, allocates in
-     * accord with initial capacity target held in field threshold.
-     * Otherwise, because we are using power-of-two expansion, the
-     * elements from each bin must either stay at same index, or move
-     * with a power of two offset in the new table.
-     *
-     * @return the table
-     */
-    final Node<K,V>[] resize() {
-        ...
-    }
-```
-
-## putVal
+### putVal
 
 `putVal` 的核心流程如下：
 
-![putval_of_hashmap](/img/java/collection/putval_of_hashmap.png)
+![putval_of_hashmap](/img/java/collection/map/HashMap_putval.png)
 
 一些关键代码分析：
 
@@ -567,7 +567,7 @@ int hash(Object key) {
     }
 ```
 
-## getNode
+### getNode
 
 关键的 `getNode` 查找节点方法：
 
@@ -603,7 +603,7 @@ int hash(Object key) {
     }
 ```
 
-## removeNode
+### removeNode
 
 关键的 `removeNode` 删除节点方法：
 
@@ -657,9 +657,28 @@ int hash(Object key) {
     }
 ```
 
-# 常用方法
+### resize
 
-## 设值
+用于初始化或扩容散列表。
+
+```java
+    /**
+     * Initializes or doubles table size.  If null, allocates in
+     * accord with initial capacity target held in field threshold.
+     * Otherwise, because we are using power-of-two expansion, the
+     * elements from each bin must either stay at same index, or move
+     * with a power of two offset in the new table.
+     *
+     * @return the table
+     */
+    final Node<K,V>[] resize() {
+        ...
+    }
+```
+
+## 常用方法
+
+### 设值
 
 主要使用到了关键的 `hash`、`putVal`、`resize` 方法：
 
@@ -715,7 +734,7 @@ int hash(Object key) {
     }
 ```
 
-## 查找和替换
+### 查找和替换
 
 下面这组方法都使用到了关键的 `getNode` 方法查找指定节点：
 
@@ -778,7 +797,7 @@ int hash(Object key) {
     }
 ```
 
-## 删除节点
+### 删除节点
 
 ```java
     @Override
@@ -794,7 +813,7 @@ int hash(Object key) {
     }
 ```
 
-## 清空 map
+### 清空 map
 
 ```java
     @Override
@@ -811,7 +830,7 @@ int hash(Object key) {
     }
 ```
 
-## Java 8 新增方法
+### Java 8 新增方法
 
 Java 8 为 `Map` 接口引入了一组新的 `default` 默认方法，如下：
 
@@ -828,7 +847,7 @@ java.util.Map#compute
 java.util.Map#merge
 ```
 
-我们重点看下其中几个，
+我们重点看下其中几个：
 
 `putIfAbsent` 和 `computeIfAbsent`：
 
@@ -877,7 +896,7 @@ Integer newValue2 = ipStats.compute(300000000, (key, oldValue) -> {
 log.info("result is {}", ipStats.toString());
 ```
 
-## 使用 Guava 快速创建 Map
+### 使用 Guava 快速创建 Map
 
 创建不可变的 Map：
 
@@ -900,8 +919,6 @@ https://en.wikipedia.org/wiki/Hash_table
 《[散列函数设计：除留余数法](http://www.nowamagic.net/academy/detail/3008040)》
 
 
-
-https://docs.oracle.com/javase/8/docs/api/index.html
 
 《[Java中hash算法细述](https://blog.csdn.net/majinggogogo/article/details/80260400)》
 
