@@ -120,7 +120,7 @@ free(q);
 
 ## 基本运算
 
-![栈](/img/data-structure/list/stack.png)
+![栈](/img/data-structure/list/stack_impl.png)
 
 ## 使用场景
 
@@ -132,6 +132,6 @@ free(q);
 
 ## 基本运算
 
-![队列](/img/data-structure/list/queue.png)
+![队列](/img/data-structure/list/queue_impl.png)
 
 ## 使用场景

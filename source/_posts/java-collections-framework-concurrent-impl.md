@@ -1,5 +1,5 @@
 ---
-title: Java 集合框架系列（八）并发实现总结
+title: Java 集合框架系列（九）并发实现总结
 date: 2018-05-25 23:40:10
 updated:
 tags: [Java, 数据结构, 并发编程]
@@ -166,60 +166,13 @@ synchronizedNavigableMap
 
 ![concurrent_collections](/img/java/collection/concurrent_collections.png)
 
-## 队列
+## 阻塞队列
 
-`Queue` 接口的继承关系及提供的方法如下：
+![Queue_implementations](/img/java/collection/queue/queue_impl.png)
 
-![Queue 接口提供的方法](/img/java/collection/methods_of_collection.png)
+参考：《[线性表之 Queue 实现总结](/2018/05/12/java-collections-queue/)》
 
-`Queue` 的六个方法差别如下：
-
-|             | *Throws exception*                                           | *Returns special value*                                      |
-| ----------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| **Insert**  | [`add(e)`](https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html#add-E-) | [`offer(e)`](https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html#offer-E-) |
-| **Remove**  | [`remove()`](https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html#remove--) | [`poll()`](https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html#poll--) |
-| **Examine** | [`element()`](https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html#element--) | [`peek()`](https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html#peek--) |
-
-有两种并发队列实现，阻塞队列、并发队列（非阻塞式）：
-
-![Queue_implementations](/img/java/collection/queue_impl.png)
-
-### 阻塞队列
-
-`BlockingQueue` 扩展自 `Queue` 接口，主要新增了两组接口（下表后两列），其常用方法差别如下：
-
-|             | *Throws exception*                                           | *Returns Special value*                                      | *Times out*                                                  | *Blocks*                                                     |
-| ----------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| **Insert**  | [`add(e)`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html#add-E-) | [`offer(e)`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html#offer-E-) | [`offer(e, time, unit)`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html#offer-E-long-java.util.concurrent.TimeUnit-) | [`put(e)`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html#put-E-) |
-| **Remove**  | [`remove()`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html#remove-java.lang.Object-) | [`poll()`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html#poll-long-java.util.concurrent.TimeUnit-) | [`poll(time, unit)`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html#poll-long-java.util.concurrent.TimeUnit-) | [`take()`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html#take--) |
-| **Examine** | [`element()`](https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html#element--) | [`peek()`](https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html#peek--) | *not applicable*                                             | *not applicable*                                             |
-
-`ThreadPoolExecutor` 目前使用了 `BlockingQueue` 的这些方法：
-
-* 入队 `offer(e)`
-* 出队 `poll(time, unit)` 或 `take()`
-
-阻塞队列 `BlockingQueue` 的实现如下：
-
-* 有界队列（数组实现）：
-  * `ArrayBlockingQueue`，基于数组实现的有界阻塞队列。
-
-* 无界队列（链表实现）：
-  * `LinkedBlockingQueue`，基于链表实现的可选无界阻塞队列。默认用于 `Executors.newFixedThreadPool(...)` 和 `newSingleThreadExecutor(...)`。
-  * `LinkedTransferQueue`
-  * `PriorityBlockingQueue`，基于堆实现（底层是数组）的具有优先级的无界阻塞队列。
-  * `DelayedQueue`
-
-* 无容量队列：
-  * `SynchronousQueue`，无容量阻塞队列，每个插入操作都必须等待另一个线程的移除操作，反之亦然。默认用于 `Executors.newCachedThreadPool(...)`。
-
-![BlockingQueue](/img/java/collection/BlockingQueue_implementations.png)
-
-阻塞双端队列 `BlockingDeque` 的实现如下：
-
-![BlockingDeque_implementations](/img/java/collection/BlockingDeque_implementations.png)
-
-### 并发队列（非阻塞）
+## 并发队列（非阻塞实现）
 
 `ConcurrentLinkedQueue`
 
@@ -241,8 +194,3 @@ synchronizedNavigableMap
 
 * `ConcurrentSkipListMap`
 
-# 参考
-
-https://blog.csdn.net/way2016/article/details/93380850
-
-https://www.cnblogs.com/gujiande/p/9485493.html
