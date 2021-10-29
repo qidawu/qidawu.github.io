@@ -9,7 +9,13 @@ typora-root-url: ..
 
 # 逻辑结构
 
-## 无向图（Undirected Graph）
+## 图的种类
+
+维基百科对图（Graph）的定义：
+
+> A graph is made up of *[vertices](https://en.wikipedia.org/wiki/Vertex_(graph_theory))* (also called *nodes* or *points*) which are connected by *[edges](https://en.wikipedia.org/wiki/Glossary_of_graph_theory_terms#edge)* (also called *links* or *lines*). A distinction is made between **undirected graphs**, where edges link two vertices symmetrically, and **directed graphs**, where edges link two vertices asymmetrically.
+
+### 无向图（Undirected Graph）
 
 ![无向图](/img/data-structure/graph/undirected_graph.png)
 
@@ -19,7 +25,7 @@ $$
 C^2_n=n(n-1)/2
 $$
 
-## 有向图（Directed Graph）
+### 有向图（Directed Graph）
 
 ![有向图](/img/data-structure/graph/directed_graph.png)
 
@@ -29,11 +35,40 @@ $$
 P^2_n=n(n-1)
 $$
 
-## 带权图（Weighted Graph）
+### 带权图（Weighted Graph）
 
 ![带权图](/img/data-structure/graph/weighted_graph.png)
 
 边或弧上带有权值的图，也称为**网（network）**。
+
+维基百科对网（network）的定义：
+
+> In [computer science](https://en.wikipedia.org/wiki/Computer_science) and [network science](https://en.wikipedia.org/wiki/Network_science), network theory is a part of [graph theory](https://en.wikipedia.org/wiki/Graph_theory): a network can be defined as a graph in which nodes and/or edges have attributes (e.g. names).
+
+图（graph）是高度抽象后的逻辑结构，而网（network）在此之上可以通过在顶点（vertex）和边（edge）上增加属性来包含更多的信息，更偏重于对实际问题的建模。
+
+## 图的相关术语
+
+https://en.wikipedia.org/wiki/Glossary_of_graph_theory
+
+### 连通分量
+
+无向图中的**极大连通子图（Maximal connected subgraph）**称为原图的[连通分量（Connected Components）](https://en.wikipedia.org/wiki/Component_(graph_theory))。
+
+![连通分量](/img/data-structure/graph/connected_components.png)
+
+连通图只有一个极大连通子图，就是它本身。
+
+What's the difference between Adjacency and Connectivity ?
+
+> 在无向图中，邻接是点与点或者边与边之间的关系。在无向图中，如果两个点之间至少有一条边相连，则称这两个点是邻接的。同样，如果两条边有共同的顶点，则两条边也是邻接的。关联是点与边之自的关系。一个点如果是一条边的顶点之一，则称为点与该边关联。
+
+* https://en.wikipedia.org/wiki/Connectivity_(graph_theory)
+* https://en.wikipedia.org/wiki/Glossary_of_graph_theory#adjacent
+
+### 生成树
+
+
 
 # 存储结构
 
@@ -189,14 +224,6 @@ https://en.wikipedia.org/wiki/Breadth-first_search
 
 使用场景例如：社交网络（Social Network）、知识图谱（Knowledge Graph）、...
 
-## 连通分量
-
-无向图中的**极大连通子图（Maximal connected subgraph）**称为原图的[连通分量（Connected Components）](https://en.wikipedia.org/wiki/Component_(graph_theory))。
-
-![连通分量](/img/data-structure/graph/connected_components.png)
-
-连通图只有一个极大连通子图，就是它本身。
-
 ## 最小生成树
 
 如果无向图中，任意两个顶点都连通，称为**连通图（Connected Graph）**。如下图：
@@ -288,15 +315,7 @@ https://en.wikipedia.org/wiki/A*_search_algorithm
 
 https://en.wikipedia.org/wiki/Graph_theory
 
-https://en.wikipedia.org/wiki/Glossary_of_graph_theory
-
-What's the difference between Adjacency and Connectivity ?
-
-> 在无向图中，邻接是点与点或者边与边之间的关系。在无向图中，如果两个点之间至少有一条边相连，则称这两个点是邻接的。同样，如果两条边有共同的顶点，则两条边也是邻接的。关联是点与边之自的关系。一个点如果是一条边的顶点之一，则称为点与该边关联。
-
-* https://en.wikipedia.org/wiki/Connectivity_(graph_theory)
-* https://en.wikipedia.org/wiki/Glossary_of_graph_theory#adjacent
-
+https://en.wikipedia.org/wiki/Network_theory
 
 《[30 | 图的表示：如何存储微博、微信等社交网络中的好友关系？](https://time.geekbang.org/column/article/70537)》
 

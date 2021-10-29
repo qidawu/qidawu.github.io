@@ -287,6 +287,8 @@ https://slidetodoc.com/left-childright-sibling-representation-instructor-prof-jy
 
 https://en.wikipedia.org/wiki/Huffman_tree
 
+《[灵光一现的创造 霍夫曼编码](http://www.360doc.com/content/21/0927/19/32196507_997366430.shtml)》
+
 ## 查找
 
 ### 二叉查找树（Binary Search Tree, BST）

@@ -153,4 +153,8 @@ https://www.cs.usfca.edu/~galles/visualization/Algorithms.html
 
 https://www.bigocheatsheet.com
 
-[逻辑结构与物理结构](https://baozoulin.gitbook.io/-data-structure/chapter1/12-luo-ji-jie-gou-yu-wu-li-jie-gou)
+https://the-algorithms.com/
+
+[数据结构与算法教程 C 语言版教程](http://data.biancheng.net/)
+
+[Techie Delight](https://www.techiedelight.com/)
