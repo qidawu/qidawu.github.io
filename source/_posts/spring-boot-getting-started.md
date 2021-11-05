@@ -5,6 +5,22 @@ updated:
 tags: [Java, Spring]
 ---
 
+# 版本情况
+
+截止 2021.9，Spring Boot 的最新版本情况：
+
+|                             版本                             |  发布时间  | 停止维护时间 |
+| :----------------------------------------------------------: | :--------: | :----------: |
+|                            2.7.0                             |  2022/05   |      -       |
+|                            2.6.0                             | 2021/12/18 |      -       |
+| [2.5.x](https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247530679&idx=1&sn=32b3a0458c269df212556c1620ee93fa&scene=21#wechat_redirect) | 2021/05/20 |  2023/02/20  |
+| [2.4.x](https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247514253&idx=1&sn=7bb0d45039d35740981e98858f550647&scene=21#wechat_redirect) | 2020/12/12 |  2022/08/12  |
+| [2.3.x](https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247496866&idx=2&sn=6304a068d392d05ab86caf0c4fe2c514&scene=21#wechat_redirect) | 2020/05/15 |  2022/02/15  |
+| [2.2.x](https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247489065&idx=1&sn=3efba2d3ab5894f30158507154db6af5&scene=21#wechat_redirect) |  2019/10   |  已停止维护  |
+| [2.1.x](https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247487615&idx=1&sn=87e870f0d3e9b359bb3912d39d8a4c45&scene=21#wechat_redirect) |  2018/10   |  已停止维护  |
+| [2.0.x](https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247485347&idx=1&sn=ff480a238c6cb84c1bb8363272781b43&scene=21#wechat_redirect) |  2018/03   |  已停止维护  |
+| [1.5.x](https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247485192&idx=1&sn=915e013ebb0ce4166c685d1747fdd47c&scene=21#wechat_redirect) |  2017/01   |  已停止维护  |
+
 # 搭建项目
 
 有几种方式可以搭建基于 Spring Boot 的项目：
