@@ -8,7 +8,7 @@ typora-root-url: ..
 
 本文总结下 Stream API：
 
-![java.util.stream](/img/java/lambda/java.util.stream.png)
+![java.util.stream](/img/java/lambda/stream_api.png)
 
 # 什么是流
 
