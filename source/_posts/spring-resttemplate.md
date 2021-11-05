@@ -129,6 +129,8 @@ curl --location --request POST 'http://rootUrl/path' \
 
   ![ResourceAccessException](/img/spring/resttemplate/ResourceAccessException.png)
 
+* `java.net.SocketTimeoutException: Read timed out`
+
 * `java.net.SocketException: Bad file descriptor (Write failed)`
 
   ```java
