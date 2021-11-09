@@ -10,11 +10,21 @@ typora-root-url: ..
 
 MySQL 支持的数据类型非常多，选择正确的数据类型对于获得高性能至关重要。不管存储哪种类型的数据，下面几个简单的原则都有助于作出更好的选择。
 
-## 更小的通常更好
+## Smaller is usually better
+
+更小的通常更好：
+
+> In general, try to use the smallest data type that can correctly store and represent your data. Smaller data types are usually faster, because they use less space on the disk, in memory, and in the CPU cache. They also generally require fewer CPU cycles to process.
+>
+> Make sure you don’t underestimate the range of values you need to store, though, because increasing the data type range in multiple places in your schema can be a painful and time-consuming operation. If you’re in doubt as to which is the best data type to use, choose the smallest one that you don’t think you’ll exceed. (If the system is not very busy or doesn’t store much data, or if you’re at an early phase in the design process, you can change it easily later.)
 
 更小的数据类型通常更快，因为占用更少的磁盘、内存和 CPU 缓存，并且处理时需要的 CPU 周期也更少。
 
-## 简单就好
+## Simple is good
+
+简单就好：
+
+> Fewer CPU cycles are typically required to process operations on simpler data types. For example, integers are cheaper to compare than characters, because character sets and collations (sorting rules) make character comparisons complicated. Here are two examples: you should store dates and times in MySQL’s builtin types instead of as strings, and you should use integers for IP addresses. We discuss these topics further later.
 
 简单数据类型的操作通常需要更少的 CPU 周期、索引性能更好。例如，整型比字符操作代价更低，因为字符集和校对规则（排序规则）使得字符比整型更复杂。
 
@@ -69,9 +79,23 @@ MySQL 支持的数据类型非常多，选择正确的数据类型对于获得�
   +------------------------------------------+--------------+-------------------+
   ```
 
-## 避免使用 NULL
+## Avoid `NULL` if possible
 
-`NULL` 列使得 MySQL 索引、索引统计和值比较都更复杂。可为 `NULL` 的列会使用更多的存储空间（例如当可为 `NULL` 的列被索引时，每个索引记录需要一个额外的字节），在 MySQL 里也需要特殊处理。如果计划在列上建索引，应该尽量避免。
+避免使用 `NULL`：
+
+> A lot of tables include nullable columns even when the application does not need to store `NULL` (the absence of a value), merely because it’s the default. It’s usually best to specify columns as `NOT NULL` unless you intend to store `NULL` in them.
+>
+> It’s harder for MySQL to optimize queries that refer to nullable columns, because they make indexes, index statistics, and value comparisons more complicated. A nullable column uses more storage space and requires special processing inside MySQL. When a nullable column is indexed, it requires an extra byte per entry and can even cause a fixed-size index (such as an index on a single integer column) to be converted to a variable-sized one in MyISAM.
+>
+> The performance improvement from changing `NULL` columns to `NOT NULL` is usually small, so don’t make it a priority to find and change them on an existing schema unless you know they are causing problems. However, if you’re planning to index columns, avoid making them nullable if possible.
+>
+> There are exceptions, of course. For example, it’s worth mentioning that InnoDB stores `NULL` with a single bit, so it can be pretty space-efficient for sparsely populated data. This doesn’t apply to MyISAM, though.
+
+`NULL` 列使得 MySQL 索引、索引统计和值比较都更复杂。值可为 `NULL` 的列会使用更多的存储空间（例如当可为 `NULL` 的列被索引时，每个索引记录需要一个额外的字节），在 MySQL 里也需要特殊处理。如果计划在列上建索引，应该尽量避免。
+
+**你应该用 0、一个特殊的值或者一个空串代替 NULL值。** 
+
+参考：《[一千个不用 Null 的理由](https://my.oschina.net/leejun2005/blog/1342985)》
 
 #  常用数据类型
 
@@ -156,7 +180,7 @@ salary DECIMAL(5,2)
 
 ## 字符串类型
 
-### CHAR 和 VARCHAR 类型
+### `CHAR` 和 `VARCHAR` 类型
 
 下列表格中，*M* 表示字符长度，*L* 表示实际字节存储长度。这两种类型很相似，但它们被存储和检索的方式不同。它们的最大字节长度 *L* 和尾部空格是否保留也不同。
 
@@ -178,7 +202,7 @@ salary DECIMAL(5,2)
 | `'abcd'`     | `'abcd'`  | 4 bytes  | `'abcd'`     | 5 bytes  |
 | `'abcdefgh'` | `'abcd'`  | 4 bytes  | `'abcd'`     | 5 bytes  |
 
-### BLOB 和 TEXT 类型
+### `BLOB` 和 `TEXT` 类型
 
 `TEXT` 表示二进制字符串（字节字符串），没有排序规则或字符集。`BLOB` 表示非二进制字符串（字符串），有排序规则、字符集。与其它类型不同，MySQL 把每个 `BLOB` 和 `TEXT` 值当做一个独立的对象处理。存储引擎在存储时通常会做特殊处理。当 `BLOB` 和 `TEXT` 值太大时，InnoDB 会使用专门的“外部”存储区域来进行存储，**此时每个值在行内需要 1~4 个字节存储一个指针，然后在外部存储区域存储实际的值**。它们的最大字节长度如下：
 
@@ -268,9 +292,11 @@ https://dev.mysql.com/doc/refman/5.7/en/data-types.html
 
 https://dev.mysql.com/doc/refman/5.7/en/column-count-limit.html
 
-《[MySQL数据类型：UNSIGNED注意事项](https://www.cnblogs.com/blankqdb/archive/2012/11/03/blank_qdb.html)》
+《[MySQL 数据类型：UNSIGNED 注意事项](https://www.cnblogs.com/blankqdb/archive/2012/11/03/blank_qdb.html)》
 
-《[MySQL 5.6时间数据类型功能获得改进](http://tech.it168.com/a2013/1013/1544/000001544067.shtml)》
+《[MySQL 数据类型：二进制类型](https://blog.csdn.net/u011794238/article/details/50962702)》
+
+《[MySQL 5.6 时间数据类型功能获得改进](http://tech.it168.com/a2013/1013/1544/000001544067.shtml)》
 
 《[一只天价股票把纳斯达克系统搞“崩了”!](https://mp.weixin.qq.com/s/Zc2X-K7SCXEJq_EhgAI8ig)》
 
