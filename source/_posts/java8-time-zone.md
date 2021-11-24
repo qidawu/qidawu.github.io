@@ -18,7 +18,13 @@ typora-root-url: ..
 
 时区的处理是新版日期与时间 API 新增的重要功能，且 API 被极大简化。新的 `java.time.ZoneId` 类是老版本 `java.util.TimeZone` 类的替代品。它的设计目标就是要让用户无需为时区处理的复杂和繁琐而操心，比如处理夏令时（DST）问题。
 
-每个特定的 `ZoneId` 对象都有一个地区 ID 标识。地区 ID 格式为“`{区域}/{城市}`”，这些地区集合的设定都由 [IANA  的时区数据库](https://www.iana.org/time-zones)提供。静态工厂方法构造如下：
+每个特定的 `ZoneId` 对象都有一个地区 ID 标识。地区 ID 格式为“`{区域}/{城市}`”，这些地区集合的设定都由 [IANA  的时区数据库](https://www.iana.org/time-zones)提供。可以输出如下：
+
+```java
+ZoneId.getAvailableZoneIds().forEach(System.out::println);
+```
+
+`ZoneId` 的静态工厂方法构造如下：
 
 ```java
 // 获取服务器所在时区的 ZoneId，例如 Asia/Shanghai 为 UTC+8

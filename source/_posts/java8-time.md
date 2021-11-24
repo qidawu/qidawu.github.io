@@ -382,6 +382,12 @@ assertEquals(System.currentTimeMillis(), timestamp); // true
 Instant instant2 = Instant.ofEpochMilli(timestamp); // 2019-07-07T11:07:42.814Z
 ```
 
+时间字符串转 `Instant`：
+
+```java
+Instant.from(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse("2001-07-04T12:08:56+05:30"));
+```
+
 创建副本并修改：
 
 ```java
@@ -496,6 +502,8 @@ long days2 = period.get(ChronoUnit.DAYS);
 
 创建格式器最简单的方法是通过它[预定义的格式器](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#predefined)常量，定义如下：
 
+![DateTimeFormatter常量](/img/java/time/DateTimeFormatter常量.png)
+
 | Formatter                                                    | Description                                              | Example                                   |
 | :----------------------------------------------------------- | :------------------------------------------------------- | :---------------------------------------- |
 | [`ofLocalizedDate(dateStyle)`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ofLocalizedDate-java.time.format.FormatStyle-) | Formatter with date style from the locale                | '2011-12-03'                              |
@@ -518,11 +526,15 @@ long days2 = period.get(ChronoUnit.DAYS);
 | [`ISO_INSTANT`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_INSTANT) | Date and Time of an Instant                              | '2011-12-03T10:15:30Z'                    |
 | [`RFC_1123_DATE_TIME`](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#RFC_1123_DATE_TIME) | RFC 1123 / RFC 822                                       | 'Tue, 3 Jun 2008 11:05:30 GMT'            |
 
-![DateTimeFormatter常量](/img/java/time/DateTimeFormatter常量.png)
+例子：
 
 ```java
 // 2021-02-01
 LocalDateTime.now().format(DateTimeFormatter.ISO_DATE);
+// 2021-02-01T09:55:54.846Z（注意：UTC+00:00 输出为 Z，需要自行 replace）
+ZonedDateTime.now(ZoneId.of("Europe/London")).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+// 2021-02-01T16:43:46+07:00
+ZonedDateTime.now(ZoneId.of("Asia/Jakarta")).truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 ```
 
 ## 自定义 Pattern
@@ -586,6 +598,7 @@ LocalDateTime.parse("01/01/1999", dtf);
 
 * 《Java 8 实战》
 * Java SE Docs
-* 《[LocalDate、LocalDateTime与timestamp、Date的转换](https://www.jianshu.com/p/b4629857fc6f)》
+* [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339)
 * 《[Parsing and Formatting (The Java™ Tutorials > Date Time > Standard Calendar)](https://docs.oracle.com/javase/tutorial/datetime/iso/format.html)》
 * 《[`uuuu` versus `yyyy` in `DateTimeFormatter` formatting pattern codes in Java?](https://stackoverflow.com/questions/41177442/uuuu-versus-yyyy-in-datetimeformatter-formatting-pattern-codes-in-java)》
+* 《[LocalDate、LocalDateTime与timestamp、Date的转换](https://www.jianshu.com/p/b4629857fc6f)》
