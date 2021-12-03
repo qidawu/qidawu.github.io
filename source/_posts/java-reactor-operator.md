@@ -193,22 +193,23 @@ https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html
 
 ![Reactive callback](/img/java/reactive-stream/reactive-stream/process_of_reactive_stream_2.png)
 
-| 方法                        | 注释                                                         |
-| --------------------------- | ------------------------------------------------------------ |
-| `doOnSubscribe`             | Add behavior triggered when the `Mono` is subscribed.        |
-| `doOnCancel`                | Add behavior triggered when the `Mono` is cancelled.         |
-| `doOnRequest`               | Add behavior triggering a `LongConsumer` when the Mono receives any request. |
-| `doOnNext`                  | Add behavior triggered when the `Mono` emits a data successfully. |
-| do on Complete ...          |                                                              |
-| `doOnSuccess`               | Add behavior triggered when the `Mono` completes successfully.<br/>* `null` : completed without data<br/>* `T`: completed with data |
-| `doOnComplete`              | Add behavior triggered when the `Flux` completes successfully. |
-| `doOnError`                 | Add behavior triggered when the `Mono` completes with an error. |
-| `doOnTerminate`             | completion or error                                          |
-| `doAfterTerminate`          | completion or error but **after** it has been propagated downstream |
-| `doFinally`                 | any terminating condition (complete, error, cancel).         |
-| ~~`doAfterSuccessOrError`~~ | Deprecated, will be removed in 3.5.0. Prefer using `doAfterTerminate` or `doFinally`<br/><br/>Add behavior triggered after the `Mono` terminates, either by completing downstream successfully or with an error. The arguments will be null depending on success, success with data and error:<br/>* `null`, `null` : completed without data<br/>* `T`, `null` : completed with data<br/>* `null`, `Throwable` : failed with/without data |
-| all events ...              |                                                              |
-| `doOnEach`                  | I want to know of all events each represented as [Signal](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Signal.html) object in a callback outside the sequence: `doOnEach` |
+| 方法                        | 入参                                                         | 注释                                                         |
+| --------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| `doOnSubscribe`             | `Consumer<? super Subscription>`                             | Add behavior triggered when the `Mono` is subscribed.        |
+| `doOnCancel`                | `Runnable`                                                   | Add behavior triggered when the `Mono` is cancelled.         |
+| `doOnRequest`               | `LongConsumer`                                               | Add behavior triggering a `LongConsumer` when the Mono receives any request. |
+| `doOnNext`                  | `Consumer<? super T>`                                        | Add behavior triggered when the `Mono` emits a data successfully. |
+| do on Complete ...          |                                                              |                                                              |
+| `doOnComplete`              | `Runnable`                                                   | Add behavior triggered when the `Flux` completes successfully. |
+| `doOnSuccess`               | `Consumer<? super T>`                                        | Add behavior triggered when the `Mono` completes successfully.<br/>* `null` : completed without data<br/>* `T`: completed with data |
+| `doOnError`                 | `Consumer<? super Throwable>`<br/>`Class<E>, Consumer<? super E>`<br/>`Predicate<? super Throwable>, Consumer<? super Throwable>` | Add behavior triggered when the `Mono` completes with an error. |
+| `doOnTerminate`             | `Runnable`                                                   | completion or error                                          |
+| `doAfterTerminate`          | `Runnable`                                                   | completion or error but **after** it has been propagated downstream |
+| `doFinally`                 | `Consumer<SignalType>`                                       | any terminating condition (complete, error, cancel).<br/>    |
+| ~~`doOnSuccessOrError`~~    |                                                              | **Deprecated**, will be removed in 3.5.0. Prefer using [`doOnNext(Consumer)`](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#doOnNext-java.util.function.Consumer-), [`doOnError(Consumer)`](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#doOnError-java.util.function.Consumer-), [`doOnTerminate(Runnable)`](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#doOnTerminate-java.lang.Runnable-) or [`doOnSuccess(Consumer)`](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#doOnSuccess-java.util.function.Consumer-). <br/>Add behavior triggered when the `Mono` terminates, either by completing successfully or with an error.<br/>* `nul`l, `null` : completing without data<br/>* `T`, `null` : completing with data<br/>* `null`, `Throwable` : failing with/without data |
+| ~~`doAfterSuccessOrError`~~ |                                                              | **Deprecated**, will be removed in 3.5.0. Prefer using [`doAfterTerminate(Runnable)`](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#doAfterTerminate-java.lang.Runnable-) or [`doFinally(Consumer)`](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#doFinally-java.util.function.Consumer-).<br/><br/>Add behavior triggered after the `Mono` terminates, either by completing downstream successfully or with an error. The arguments will be null depending on success, success with data and error:<br/>* `null`, `null` : completed without data<br/>* `T`, `null` : completed with data<br/>* `null`, `Throwable` : failed with/without data |
+| all events ...              |                                                              |                                                              |
+| `doOnEach`                  | `Consumer<? super Signal<T>>`                                | I want to know of all events each represented as [Signal](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Signal.html) object in a callback outside the sequence: `doOnEach` |
 
 调试类：
 
@@ -217,8 +218,6 @@ https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html
 | `log`       | Observe all Reactive Streams signals and trace them using `Logger` support. Default will use `Level.INFO` and java.util.logging. If **SLF4J** is available, it will be used instead. |
 | `timestamp` | If this `Mono` is valued, emit a `Tuple2` pair of T1 the current clock time in millis (as a `Long` measured by the parallel Scheduler) and T2 the emitted data (as a T). |
 | `elapsed`   |                                                              |
-
-![mono_od](/img/java/reactive-stream/reactor/mono/mono_do.png)
 
 ### 异常处理
 
@@ -231,10 +230,10 @@ https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html
 | 方法                        | 注释                                                         | 描述                                                      |
 | --------------------------- | ------------------------------------------------------------ | --------------------------------------------------------- |
 | `error`                     | Create a `Mono` that terminates with the specified error immediately after being subscribed to. | 创建异常流。                                              |
+| `onErrorMap`                | Transform any error emitted by this `Mono` by synchronously applying a function to it.<br/>Transform an error emitted by this `Mono` by synchronously applying a function to it <u>if the error matches the given type.</u> Otherwise let the error pass through.<br/>Transform an error emitted by this `Mono` by synchronously applying a function to it <u>if the error matches the given predicate.</u> Otherwise let the error pass through. | catching an exception and wrapping and re-throwing        |
 | `onErrorReturn`             | Simply emit a captured fallback value when <u>any error</u> is observed on this `Mono`.<br/>Simply emit a captured fallback value when <u>an error of the specified type</u> is observed on this `Mono`.<br/>Simply emit a captured fallback value when <u>an error matching the given predicate</u> is observed on this `Mono`. | catching an exception and falling back to a default value |
 | `onErrorResume`             | Subscribe to a fallback publisher when <u>any error</u> occurs, using a function to choose the fallback depending on the error.<br/>Subscribe to a fallback publisher when <u>an error matching the given type</u> occurs.<br/>Subscribe to a fallback publisher when <u>an error matching a given predicate</u> occurs. | catching an exception and falling back to another `Mono`  |
-| `onErrorContinue`           |                                                              |                                                           |
-| `onErrorMap`                | Transform any error emitted by this `Mono` by synchronously applying a function to it.<br/>Transform an error emitted by this `Mono` by synchronously applying a function to it <u>if the error matches the given type.</u> Otherwise let the error pass through.<br/>Transform an error emitted by this `Mono` by synchronously applying a function to it <u>if the error matches the given predicate.</u> Otherwise let the error pass through. | catching an exception and wrapping and re-throwing        |
+| `onErrorContinue`           | Let compatible operators **upstream** recover from errors by dropping the incriminating element from the sequence and continuing with subsequent elements. |                                                           |
 | `retry()`<br/>`retry(long)` | Re-subscribes to this `Mono` sequence if it signals any error, indefinitely.<br/>Re-subscribes to this `Mono` sequence if it signals any error, for a fixed number of times. | retrying with a simple policy (max number of attempts)    |
 | `retryWhen`                 |                                                              |                                                           |
 
