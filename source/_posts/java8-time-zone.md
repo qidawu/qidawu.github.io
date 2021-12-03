@@ -331,9 +331,32 @@ Timestamp.valueOf(localDateTime);
 
 * 《Java 8 实战》
 * Java SE Docs
+
+时区：
+
 * [协调世界时（UTC） - 维基百科](https://zh.wikipedia.org/wiki/%E5%8D%8F%E8%B0%83%E4%B8%96%E7%95%8C%E6%97%B6)
-* [时区转换器：计算世界各个时区的时差](https://www.zeitverschiebung.net/cn/)
 * https://time.is/UTC
+* [时区转换器：计算世界各个时区的时差](https://www.zeitverschiebung.net/cn/)
 * [Time Zone Converter](http://www.timezoneconverter.com/cgi-bin/zoneinfo)
+
+时区数据库：
+
+* [IANA  的时区数据库](https://www.iana.org/time-zones)
+
 * [《Java时区数据库与IANA数据》](https://www.coder.work/article/6269420)
+
+* https://www.infoq.cn/article/S7iIaYMTOecZowBxBCY3
+
+  > 时区设置背后有一组大量关于全球许多代表性地点时间历史信息的代码和数据，这些代码和数据被称为**时区数据库**（即 tz、tzdata 或 zoneinfo），该数据库会定期进行更新以反映各政治实体对时区边界、UTC 差值和夏令时规则的更改。对 tz 的更新遵循 BCP 175 流程进行管理。
+  >
+  > 尽管大多数计算机用户从未听说过时区数据库，但 tz 数据库对全世界的计算机非常重要。所有基于 Linux 和 Mac 的计算机都是从一个极其重要的数据库（时区数据库）中提取时区。目前，使用该数据库的项目包括：the GNU C Library (used in GNU/Linux), Android, FreeBSD, NetBSD, OpenBSD, Chromium OS, Cygwin, MariaDB, MINIX, MySQL, webOS, AIX, BlackBerry 10, iOS, macOS, Microsoft Windows, OpenVMS, Oracle Database, Oracle Solaris 等。
+  >
+  > **tz 数据库背后，一个人在维护**
+  >
+  > tz 数据库由 David Olson 创立，收集了自 1970 年以来被广泛认可的民用时钟的时区信息。2011 年，互联网域名与数字地址分配机构 ICANN 接管了这个被全球电脑和网站广泛使用的时区数据库，该机构通常只赞助对互联网发展非常重要的项目，
+  >
+  > 现在，具体的维护工作由互联网分配号码管理局（Internet Assigned Numbers Authority， IANA）负责。Paul Eggert 是时区数据库的项目负责人，该职位被称为 TZ 协调员。
+
+其它：
+
 * [《Mysql JDBC里的useTimezone参数是做什么用的？》](https://segmentfault.com/q/1010000000262788)
