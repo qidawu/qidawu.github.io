@@ -253,13 +253,13 @@ class IdGenerator {
 位运算符如下：
 
 ```
-&：按位与。
-|：按位或。
-~：按位非。
-^：按位异或。
-<<：左位移运算符（M << n = M * 2^n）。
->>：右位移运算符（M >> n = M / 2*n）。
->>>：无符号右移运算符。
+&：按位与
+|：按位或
+~：按位非
+^：按位异或
+<<：左位移（M << n = M * 2^n）
+>>：右位移（M >> n = M / 2*n）
+>>>：无符号右移
 ```
 
 例如，Java 中求 key 应当放到散列表的哪个位置（offset）：
@@ -277,7 +277,8 @@ static final int getOffset(Object key, int length)
 参考：
 
 * [《Java 位运算符 &、|、^、~、<<、>>、>>>》](https://www.cnblogs.com/SunArmy/p/9837348.html)
-* [《异或的用途》](https://blog.csdn.net/qq_39705793/article/details/81237005)
+* [《按位异或的用途》](https://blog.csdn.net/qq_39705793/article/details/81237005)
+* 《按位与的用途：[子网划分](https://www.cloudflare.com/zh-cn/learning/network-layer/what-is-a-subnet/)（IP 地址与子网掩码做与运算求子网地址）》
 
 # UNIX 时间戳
 
