@@ -92,6 +92,12 @@ feed:
 sitemap:
   path: sitemap.xml
 
+search:
+  path: search.xml
+  field: post
+  content: true
+  format: html
+
 ## Themes: http://hexo.io/themes/
 # theme: landscape
 theme: next
