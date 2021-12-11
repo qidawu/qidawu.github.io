@@ -1,6 +1,6 @@
 ---
 title: JSON 框架系列之 Jackson 总结
-date: 2017-02-10 22:09:48
+date: 2020-12-10 22:09:48
 updated:
 tags: Java
 typora-root-url: ..
@@ -337,3 +337,5 @@ List<XxxRespDTO> data = new Gson().fromJson(json, new TypeToken<ArrayList<XxxRes
 https://www.baeldung.com/category/json/jackson/
 
 https://www.baeldung.com/jackson-vs-gson
+
+https://github.com/qidawu/java-api-test/tree/master/src/main/java/json
