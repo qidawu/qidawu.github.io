@@ -26,6 +26,16 @@ $ vim _config.yml
 $ npm install
 ```
 
+## 主题
+
+NexT
+
+https://github.com/next-theme/hexo-theme-next
+
+https://theme-next.js.org/pisces/
+
+https://hexo-next.readthedocs.io/zh_CN/latest/
+
 ## 常用命令
 
 依赖安装完毕，开始使用 hexo，常用命令如下：

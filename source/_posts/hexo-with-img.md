@@ -12,7 +12,7 @@ typora-root-url: ..
 
 首先，在 hexo 博客 source 目录下新建 img 目录，即：`hexo/source/img`
 
-然后，在文章的图片引用处使用该路径即可，例如：`![mono_create](/img/java/reactive/reactor/mono/mono_create.png)`
+然后，在文章的图片引用处使用该路径即可，例如：`![example](/img/example.png)`
 
 最后，`hexo g` 构建出 `./public` 目录，发现 `img` 在该目录之中。`hexo s` 启动服务后，确认能够成功引用图片。
 
