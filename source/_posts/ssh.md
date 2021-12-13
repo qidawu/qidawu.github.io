@@ -1,8 +1,8 @@
 ---
-title: SSH 协议及其实现总结
+title: 应用层协议之 SSH 及其实现总结
 date: 2016-10-06 17:42:15
 updated:
-tags: 安全
+tags: [计算机网络, 安全]
 ---
 
 # 连接协议对比
@@ -11,19 +11,19 @@ tags: 安全
 
 * SSH2（默认，相对于SSH1进行了加密算法的改进，使用最广泛）
 * SSH1
-* Telnet
+* [Telnet](https://en.wikipedia.org/wiki/Telnet)
 * Telnet/SSL
 * Rlogin
 * Serial
 * TAPI
 
-在出现 SSH 之前，系统管理员需要登入远程服务器执行系统管理任务时，都是用 `telnet` 来实现的，telnet 协议采用明文密码传送，在传送过程中对数据也不加密，很容易被不怀好意的人在网络上监听到密码。
+在出现 SSH 之前，系统管理员需要登入远程服务器执行系统管理任务时，都是用 `telnet` 来实现的，telnet 协议底层使用 TCP 协议，端口号 `23`，采用明文密码传送，在传送过程中对数据也不加密，很容易被不怀好意的人在网络上监听到密码。
 
 同样，在 SSH 工具出现之前 R 系列命令也很流行（由于这些命令都以字母 r 开头，故把这些命令合称为 R 系列命令，R 是 remote 的意思），比如 `rexec` 是用来执行远程服务器上的命令的，和 `telnet` 的区别是 `telnet` 需要先登录远程服务器再实行相关的命令，而 R 系列命令可以把登录和执行命令并登出系统的操作整合在一起。这样就不需要为在远程服务器上执行一个命令而特地登录服务器了。
 
 SSH 全称 Secure SHell，顾名思义就是非常安全的 shell 的意思，SSH 协议是 IETF（Internet Engineering Task Force） 的 Network Working Group 所制定的一种协议。SSH 的主要目的是用来**取代传统的 telnet 和 R 系列命令**（`rlogin`、`rsh`、`rexec` 等）远程登录和远程执行命令的工具，实现对远程登录和远程执行命令加密。防止由于网络监听而出现的密码泄漏，对系统构成威胁。
 
-SSH 是一种加密协议，不仅在登录过程中对密码进行加密传送，而且对登录后执行的命令的数据也进行加密，这样即使别人在网络上监听并截获了你的数据包，他也看不到其中的内容。SSH 协议底层使用 TCP 协议，端口号 22。
+SSH 是一种加密协议，不仅在登录过程中对密码进行加密传送，而且对登录后执行的命令的数据也进行加密，这样即使别人在网络上监听并截获了你的数据包，他也看不到其中的内容。SSH 协议底层使用 TCP 协议，端口号 `22`。
 
 # 鉴权方式对比
 
@@ -217,6 +217,36 @@ SSH 相关文件和配置：
 | ~/.ssh/config          | 用户配置文件，可以通过 `man ssh_config` 命令查看帮助。       |
 | /etc/ssh/ssh_config    | 系统配置文件                                                 |
 
+# OpenSSL
+
+[OpenSSL](https://www.openssl.org/) 加密库 ( `libcrypto`) 实现了各种 Internet 标准中使用的各种加密算法。该库提供的服务被 TLS 和 CMS 的 OpenSSL 实现使用，它们也被用于实现许多其它第三方产品和协议。
+
+该库的功能包括对称加密、公钥加密、密钥协商、证书处理、加密散列函数、加密伪随机数生成器、消息身份验证代码 (MAC)、密钥派生函数 (KDF) 和各种实用程序。
+
+## Generate Private and Public Key
+
+https://www.openssl.org/docs/man3.0/man1/openssl.html
+
+1. Create Private Key
+
+```bash
+openssl genrsa -out rsa_private_key.pem 2048
+```
+
+2. Generate Public Key
+
+```bash
+openssl rsa -in rsa_private_key.pem -out rsa_public_key.pem -pubout
+```
+
+3. Encode Private Key to [PKCS#8](https://en.wikipedia.org/wiki/PKCS_8)
+
+```bash
+openssl pkcs8 -topk8 -in rsa_private_key.pem -out pkcs8_rsa_private_key.pem -nocrypt
+```
+
+For signature, please use pkcs8_rsa_private_key.pem (result of step 3).
+
 # rsync
 
 批量 `scp` 的缺点是会全量同步，且删除行为无法同步，可以用 `rsync` 命令优化：
@@ -274,6 +304,10 @@ deleting resmarket/static/site/v1/img/banner/web-banner-20170716.jpg
 ```
 
 # 参考
+
+https://en.wikipedia.org/wiki/Telnet
+
+https://en.wikipedia.org/wiki/Secure_Shell
 
 《[5 Unix / Linux ssh-add Command Examples to Add SSH Key to Agent](http://linux.101hacks.com/unix/ssh-add/)》
 
