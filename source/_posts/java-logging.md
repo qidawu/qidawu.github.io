@@ -8,39 +8,43 @@ typora-root-url: ..
 
 日志门面：
 
-- Apache Commons Logging 是 Apache Commons 的一个开源项目。官网：https://commons.apache.org/proper/commons-logging/
+- Apache Commons Logging (JCL) 是 Apache Commons 的一个开源项目。官网：https://commons.apache.org/proper/commons-logging/
 - SLF4J 全称为 Simple Logging Facade for Java，即 Java 简单日志门面。官网：http://www.slf4j.org/
-
-日志实现
-
-- java.util.logging (JUL)
-- logback。http://logback.qos.ch/
-- ~~Log4j 1.x。https://logging.apache.org/log4j/1.2/~~ (On August 5, 2015 the Logging Services Project Management Committee announced that Log4j 1.x had reached end of life)
-- Log4j 2.x。https://logging.apache.org/log4j/2.x/
 
 # 日志门面——SLF4J
 
 优点：
 
-- 通过依赖配置，在编译期静态绑定真正的日志实现库。
+- 通过依赖配置，在编译期静态绑定真正的日志框架库。
+
+  > [**What has changed in SLF4J version 2.0.0?**](http://www.slf4j.org/faq.html#changesInVersion200)
+  >
+  > More visibly, slf4j-api now relies on the [ServiceLoader](https://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html) mechanism to find its logging backend. SLF4J 1.7.x and earlier versions relied on the static binder mechanism which is no loger honored by slf4j-api version 2.0.x. More specifically, when initializing the `LoggerFactory` class will no longer search for the `StaticLoggerBinder` class on the class path.
+  >
+  > Instead of "bindings" now `org.slf4j.LoggerFactory` searches for "providers". These ship for example with *slf4j-nop-2.0.x.jar*, *slf4j-simple-2.0.x.jar* or *slf4j-jdk14-2.0.x.jar*.
 
 - 不需要使用 `logger.isDebugEnabled()` 来解决日志因为字符拼接产生的性能问题。SLF4J 的方式是使用 `{}` 作为字符串替换符。
 
-- 提供了很多桥接方案，以便灵活替换日志库。如下：
+- 提供了很多[桥接方案](http://www.slf4j.org/manual.html#swapping)，以便灵活替换日志库。
 
-  ![SLF4J](/img/java/logging/SLF4J.png)
 
 缺点：
 
-- 旧版不支持 Lambda 表达式（slf4j-api-2.0.0-alpha 支持但还未 GA）。Log4j 2.4 及以上版本支持 Java 8 Lambda，参考 [1](https://logging.apache.org/log4j/2.x/manual/api.html#LambdaSupport)、[2](https://www.baeldung.com/log4j-2-lazy-logging)，例如：
+- 旧版不支持 Lambda 表达式（slf4j-api-2.0.0-alpha 支持但还未 GA）。但日志框架 Log4j 2.4 及以上版本支持 Java 8 Lambda，参考 [1](https://logging.apache.org/log4j/2.x/manual/api.html#LambdaSupport)、[2](https://www.baeldung.com/log4j-2-lazy-logging)，例如：
 
   ```java
   logger.debug("This {} and {} with {} ", () -> this, () -> that, () -> compute());
   ```
 
-# 日志实现——Logback
+## SLF4J bindings
 
-## 引入依赖
+http://www.slf4j.org/manual.html#swapping
+
+![concrete bindings](/img/java/logging/concrete-bindings.png)
+
+### Logback
+
+http://logback.qos.ch/
 
 推荐使用 SLF4J bound to logback-classic 的经典组合：
 
@@ -55,10 +59,87 @@ typora-root-url: ..
 传递依赖如下：
 
 ```
-logback-classic: 1.2.3 [compile]
-  logback-core: 1.2.3 [compile]
-  slf4j-api: 1.7.25 [compile]
+ch.qos.logback:logback-classic:jar:1.2.3:compile
++- ch.qos.logback:logback-core:jar:1.2.3:compile
+\- org.slf4j:slf4j-api:jar:1.7.25:compile
 ```
+
+### Log4j 2.x
+
+https://logging.apache.org/log4j/2.x/
+
+需引入适配层依赖：
+
+```XML
+<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl -->
+<dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-slf4j-impl</artifactId>
+    <version>2.16.0</version>
+</dependency>
+```
+
+传递依赖如下：
+
+```
+org.apache.logging.log4j:log4j-slf4j-impl:jar:2.16.0:compile
++- org.slf4j:slf4j-api:jar:1.7.25:compile
++- org.apache.logging.log4j:log4j-api:jar:2.16.0:compile
+\- org.apache.logging.log4j:log4j-core:jar:2.16.0:runtime
+```
+
+参考：
+
+* 《[试试这款性能最强的日志框架 Log4j 2](https://mp.weixin.qq.com/s/HCbTSvacZCwwleCdbrcGMw)》
+* 《[突发！Log4j 2 爆“核弹级”漏洞，Flink、Kafka等至少十多个项目受影响](https://mp.weixin.qq.com/s/Yq9k1eBquz3mM1sCinneiA)》
+* 《[Log4j2再发新版本2.16.0，完全删除Message Lookups的支持，加固漏洞防御！](https://mp.weixin.qq.com/s/lTlZ_vAy0_Vo15UpFl4jSw)》
+
+### Log4j 1.x
+
+https://logging.apache.org/log4j/1.2/
+
+> On August 5, 2015 the Logging Services Project Management Committee announced that Log4j 1.x had reached end of life.
+
+需引入适配层依赖：
+
+```XML
+<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 -->
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-log4j12</artifactId>
+    <version>1.7.32</version>
+</dependency>
+```
+
+传递依赖如下：
+
+```
+org.slf4j:slf4j-log4j12:jar:1.7.32:compile
++- org.slf4j:slf4j-api:jar:1.7.32:compile
+\- log4j:log4j:jar:1.2.17:compile
+```
+
+### java.util.logging (JUL)
+
+需引入适配层依赖：
+
+```XML
+<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-jdk14 -->
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-jdk14</artifactId>
+    <version>1.7.32</version>
+</dependency>
+```
+
+传递依赖如下：
+
+```
+org.slf4j:slf4j-jdk14:jar:1.7.32:compile
+\- org.slf4j:slf4j-api:jar:1.7.32:compile
+```
+
+# 日志框架——Logback
 
 ## 配置 Appenders
 
