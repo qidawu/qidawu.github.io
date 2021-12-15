@@ -1,13 +1,5 @@
-<!-- https://www.npmjs.com/package/hexo-tag-cloud -->
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
 <!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
 {% if site.tags.length > 1 %}
-  <script type="text/javascript" charset="utf-8" src="{{ url_for('/js/tagcloud.js') }}"></script>
-  <script type="text/javascript" charset="utf-8" src="{{ url_for('/js/tagcanvas.js') }}"></script>
-  <div class="widget-wrap">
-    <div id="myCanvasContainer" class="widget tagcloud">
-      <canvas width="250" height="250" id="resCanvas" style="width:100%">
-        {{ list_tags() }}
-      </canvas>
-    </div>
-  </div>
+  {{ list_tags(site.tags, {orderby: 'length', order: 'desc', amount: 12}) }}
 {% endif %}
