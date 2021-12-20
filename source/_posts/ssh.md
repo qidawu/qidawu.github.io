@@ -3,6 +3,7 @@ title: 应用层协议之 SSH 及其实现总结
 date: 2016-10-06 17:42:15
 updated:
 tags: [计算机网络, 安全]
+typora-root-url: ..
 ---
 
 # 连接协议对比
@@ -223,6 +224,8 @@ SSH 相关文件和配置：
 
 该库的功能包括对称加密、公钥加密、密钥协商、证书处理、加密散列函数、加密伪随机数生成器、消息身份验证代码 (MAC)、密钥派生函数 (KDF) 和各种实用程序。
 
+![OpenSSL](https://wizardzines.com/comics/openssl/openssl.png)
+
 ## Generate Private and Public Key
 
 https://www.openssl.org/docs/man3.0/man1/openssl.html
@@ -314,3 +317,11 @@ https://en.wikipedia.org/wiki/Secure_Shell
 [《rsync同步的艺术》–linux命令五分钟系列之四十二](http://roclinux.cn/?p=2643)
 
 《[ssh keygen 中生成的 randomart image 是什么](https://www.jianshu.com/p/c6a7ffe01ac3)》
+
+![SSH](https://wizardzines.com/comics/ssh/ssh.png)
+
+https://wizardzines.com/comics/ssh/
+
+![OpenSSL](https://wizardzines.com/comics/openssl/openssl.png)
+
+https://wizardzines.com/comics/openssl/

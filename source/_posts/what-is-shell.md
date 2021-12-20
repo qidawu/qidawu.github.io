@@ -5,6 +5,8 @@ updated:
 tags: GNU/Linux
 ---
 
+![What's a shell](https://wizardzines.com/comics/shell/shell.png)
+
 # 什么是 Shell ？
 
 * 一个命令行解释器，用于将用户输入的命令转换为系统操作；

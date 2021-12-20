@@ -16,6 +16,8 @@ GNU/CoreUtils 的 Text utilities 提供了一些便利的文本处理命令，�
 
 ## grep
 
+![grep](https://wizardzines.com/comics/grep/grep.png)
+
 `grep` 命令使用正则表达式以行为单位进行文本搜索（global search regular expression(RE) and print out the line），其命令格式如下：
 
 ```
@@ -102,6 +104,8 @@ cut [选项] [范围] [文本文件]
 
 ## sort
 
+![sort&uniq](https://wizardzines.com/comics/sort-uniq/sort-uniq.png)
+
 `sort` 命令以行为单位，用于对文本文件内容进行**排序**。其命令格式如下：
 
 ```
@@ -160,6 +164,10 @@ wc [选项] [文本文件]
 | ------------------------- | -------------------------------- |
 | `-a, --append`            | 附加到既有文件的后面，而非覆盖它 |
 | `-i, --ignore-interrupts` | 忽略中断信号                     |
+
+## xargs
+
+![xargs](https://wizardzines.com/comics/xargs/xargs.png)
 
 # 例子
 

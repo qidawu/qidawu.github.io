@@ -5,6 +5,8 @@ updated:
 tags: GNU/Linux
 ---
 
+![find](https://wizardzines.com/comics/find/find.png)
+
 `find` 是最常见和最强大的查找命令，直接查找磁盘，缺点耗时长。命令格式如下：
 
 `find [path...] [expression]`

@@ -10,6 +10,8 @@ typora-root-url: ..
 
 ## 引用（Quoting）
 
+![bash quotes](https://wizardzines.com/comics/bash-quotes/bash-quotes.png)
+
 引用用于：
 
 * 阻止对特殊字符的处理。
@@ -41,6 +43,10 @@ typora-root-url: ..
 * 变量
 * 位置参数
 * 特殊参数
+
+![shell arguments](https://wizardzines.com/comics/shell-arguments/shell-arguments.png)
+
+![bash functions](https://wizardzines.com/comics/bash-functions/bash-functions.png)
 
 ## 变量（Varialbe）
 
@@ -79,6 +85,10 @@ typora-root-url: ..
 `$$`：本程序的 PID（进程 ID 号）
 
 `$!`：最近执行的后台（即异步）命令的 PID
+
+# 环境变量
+
+![environment variables](https://wizardzines.com/comics/environment-variables/environment-variables.png)
 
 # 参考
 

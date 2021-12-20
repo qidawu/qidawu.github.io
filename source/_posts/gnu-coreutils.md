@@ -3,6 +3,7 @@ title: "GNU/CoreUtils 常用命令总结"
 date: 2015-11-10 00:01:22
 updated: 
 tags: GNU/Linux
+typora-root-url: ..
 ---
 
 GNU/CoreUtils 是一组类 Unix 操作系统所需的基础软件包。它包含三组命令，常用的命令如 `cat`、`ls`、`rm`。学习 GNU/Linux 的第一步，就是要熟悉软件包下常用的命令。下面分别介绍这三组常用的命令：
@@ -22,11 +23,11 @@ GNU/CoreUtils 是一组类 Unix 操作系统所需的基础软件包。它包含
 
 ## Directory listing
 
-| 命令     | 描述                                | 备注                                       |
-| ------ | --------------------------------- | ---------------------------------------- |
-| `ls`   | List directory contents           | `-l` 查看详细信息。<br/>`-a` 显示隐藏文件。<br/>`-d` 仅列出目录本身，而不是列出目录内的文件。<br/>`-h` 将文件容量以人类较易读的方式（如GB、KB等）列出来。<br/>`-t` 按时间排序显示，默认为新的排在前面。<br/>`-S` 按文件容量大小排序，而不是用文件名。 |
-| `dir`  | List directory contents briefly   | Exactly like `ls -C -b`                  |
-| `vdir` | List directory contents verbosely | Exactly like `ls -l -b`                  |
+| 命令   | 描述                              | 备注                                                         |
+| ------ | --------------------------------- | ------------------------------------------------------------ |
+| `ls`   | List directory contents           | `-l` 查看详细信息。<br/>`-a` 显示隐藏文件。<br/>`-d` 仅列出目录本身，而不是列出目录内的文件。列出所有子目录本身：`ls -d */`<br/>`-h` 将文件容量以人类较易读的方式（如GB、KB等）列出来。<br/>`-t` 按时间排序显示，默认为新的排在前面。<br/>`-S` 按文件容量大小排序，而不是用文件名。 |
+| `dir`  | List directory contents briefly   | Exactly like `ls -C -b`                                      |
+| `vdir` | List directory contents verbosely | Exactly like `ls -l -b`                                      |
 
 ## Changing file attributes
 
@@ -46,6 +47,8 @@ GNU/CoreUtils 是一组类 Unix 操作系统所需的基础软件包。它包含
 | `stat`     | Return data about an inode               |                                          |
 | `truncate` | Shrink or extend the size of a file to the specified size | -s 参数指定一个大小：K, M, G, T, P, E, Z, Y       |
 
+![disk usage](https://wizardzines.com/comics/disk-usage/disk-usage.png)
+
 # Text utilities
 
 ## Output of entire files
@@ -57,6 +60,8 @@ GNU/CoreUtils 是一组类 Unix 操作系统所需的基础软件包。它包含
 | `nl`     | Numbers lines of files                   | `-b` 指定行号的方式，主要有 `a` `t`两种：<br/>`-b a` 无论是否是空行，同样列出行号。<br/>`-b t` 默认值，不列出空行行号。 |
 | `base64` | base64 encode/decode data and print to standard output |                                          |
 
+![cat](https://wizardzines.com/comics/cat/cat.png)
+
 ## Output of parts of files
 
 | 命令     | 描述                                        | 备注                                                         |
@@ -66,6 +71,14 @@ GNU/CoreUtils 是一组类 Unix 操作系统所需的基础软件包。它包含
 | `tailf`  |                                             | 等同于 `tail -f -n 10`                                       |
 | `split`  | Split a file into pieces                    | 用于按行、按大小分割文件                                     |
 | `csplit` | Split a file into context-determined pieces |                                                              |
+
+![head&tail](https://wizardzines.com/comics/head-tail/head-tail.png)
+
+https://en.wikipedia.org/wiki/More_(command)
+
+https://en.wikipedia.org/wiki/Less_(Unix)
+
+![less](https://wizardzines.com/comics/less/less.png)
 
 ## Operating on sorted files
 

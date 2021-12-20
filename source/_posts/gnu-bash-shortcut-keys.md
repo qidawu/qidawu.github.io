@@ -54,3 +54,5 @@ description: "下面总结的是 GNU/Bash 中部分最实用的命令名称及�
 # 参考
 
 《[GNU/Bash Readline Commands](http://www.gnu.org/software/bash/manual/bashref.html#Bindable-Readline-Commands)》
+
+![bash tricks](https://wizardzines.com/comics/bash-tricks/bash-tricks.png)

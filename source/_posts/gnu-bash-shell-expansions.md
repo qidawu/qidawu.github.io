@@ -6,6 +6,8 @@ tags: GNU/Linux
 typora-root-url: ..
 ---
 
+![brackets cheatsheet](https://wizardzines.com/comics/brackets-cheatsheet/brackets-cheatsheet.png)
+
 # Shell 扩展（Shell Expansions）
 
 命令行的扩展是在拆分成词之后进行的。共有七种类型的扩展：

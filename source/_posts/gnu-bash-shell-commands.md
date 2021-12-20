@@ -14,6 +14,10 @@ typora-root-url: ..
 
 ## 管道（Pipelines）
 
+![bash pipes](https://wizardzines.com/comics/bash-pipes/bash-pipes.png)
+
+![pipes](https://wizardzines.com/comics/pipes/pipes.png)
+
 pipeline（管道）是一个或多个命令的序列，用字符 | 分隔。管道的命令格式如下：
 
 ```bash
@@ -33,6 +37,8 @@ command [ | command2 ... ]
 ![pipe](/img/gnu-text-utilities/pipe.png)
 
 ## 重定向（Redirection）
+
+![redirects](https://wizardzines.com/comics/redirects/redirects.png)
 
 在命令执行前，它的输入和输出可能被 redirected (重定向)，该功能可以用于如下场景：
 
@@ -58,11 +64,13 @@ $ find /tmp/ -name 2> /dev/null
 
 ### 描述符（Descriptor Number）
 
-| 描述符 | 描述                   |
-| ------ | ---------------------- |
-| `0`    | 标准输入（stdin）      |
-| `1`    | 标准输出（stdout）     |
-| `2`    | 标准错误输出（stderr） |
+| 描述符 | 描述                     |
+| ------ | ------------------------ |
+| `0`    | 标准输入（`stdin`）      |
+| `1`    | 标准输出（`stdout`）     |
+| `2`    | 标准错误输出（`stderr`） |
+
+![file descriptors](https://wizardzines.com/comics/file-descriptors/file-descriptors.png)
 
 ### 操作符（Operator）
 
@@ -116,17 +124,25 @@ $ ./configure && make && make install
 
 compound command（复合命令）是如下情况之一：
 
+### 1
+
 * `(list)`
-
 * `{ list; }`
-
 * `((expression))`
-
 * `[[ expression ]]`
+
+### if statements
 
 * `if list; then list; [ elif list; then list; ] ... [ else list; ] fi`
 
+![bash if statements](https://wizardzines.com/comics/bash-if-statements/bash-if-statements.png)
+
+* `select name [ in word ] ; do list ; done`
 * `case word in [ [(] pattern [ | pattern ] `
+
+> select in 通常和 case in 一起使用，在用户输入不同的编号时可以做出不同的反应，见：https://blog.csdn.net/yrx420909/article/details/104308041
+
+### for loops
 
 * `while list; do list; done`
 
@@ -153,7 +169,7 @@ compound command（复合命令）是如下情况之一：
 
 * `for (( expr1 ; expr2 ; expr3 )) ; do list ; done`
 
-* `select name [ in word ] ; do list ; done`
+![bash for loops](https://wizardzines.com/comics/bash-for-loops/bash-for-loops.png)
 
 # 参考
 

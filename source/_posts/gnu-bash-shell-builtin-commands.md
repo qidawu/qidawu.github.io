@@ -86,6 +86,10 @@ Bash 是一个多任务的 CLI ，有以下作业控制（Job Control）相关�
 | `Ctrl+Z` | 暂停/挂起目前的命令，转入后台运行。通过在命令后追加一个&，可以将该命令转入后台运行 |
 | `Ctrl+C` | 终止目前的命令                                               |
 
+![more bash tricks](https://wizardzines.com/comics/more-bash-tricks/more-bash-tricks.png)
+
 # 参考
 
 http://www.gnu.org/software/bash/manual/bashref.html#Shell-Builtin-Commands
+
+![builtins](https://wizardzines.com/comics/builtins/builtins.png)
