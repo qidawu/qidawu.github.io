@@ -6,6 +6,20 @@ tags: [C/C++]
 typora-root-url: ..
 ---
 
+# C 语言
+
+> C++ integrates the operators `new` and `delete` for allocating dynamic memory. But these were not available in the C language; instead, it used a library solution, with the functions `malloc`, `calloc`, `realloc` and `free`, defined in the header [`<cstdlib>`](http://www.cplusplus.com/%3Ccstdlib%3E) (known as `<stdlib.h>` in C). The functions are also available in C++ and can also be used to allocate and deallocate dynamic memory.
+>
+> Note, though, that the memory blocks allocated by these functions are not necessarily compatible with those returned by `new`, so they should not be mixed; each one should be handled with its own set of functions or operators.
+
+## 动态内存分配 malloc, calloc, realloc
+
+https://www.runoob.com/cprogramming/c-memory-management.html
+
+## 动态内存回收 free
+
+https://www.runoob.com/cprogramming/c-memory-management.html
+
 # C++ 语言
 
 ## 动态内存分配 new
@@ -86,7 +100,7 @@ C++ 提供了两种标准机制来检查堆内存分配是否成功：
 
 ## 动态内存回收 delete
 
-如果您不再需要动态分配的内存空间，可以使用 `delete` 运算符，删除之前由 `new` 运算符分配的内存，以便该内存可再次用于其它动态内存分配。语法如下：
+如果您不再需要动态分配的内存空间，可以使用 `delete` 运算符，删除之前由 `new` 运算符分配的**堆内存（memory heap）**，以便该内存可再次用于其它动态内存分配。语法如下：
 
 ```C++
 // releases the memory of a single element allocated using new
@@ -96,16 +110,7 @@ delete bar;
 delete [] foo; // 不管所删除数组的维数多少，指针名前只用一对方括号 []
 ```
 
-# C 语言
-
-> C++ integrates the operators `new` and `delete` for allocating dynamic memory. But these were not available in the C language; instead, it used a library solution, with the functions `malloc`, `calloc`, `realloc` and `free`, defined in the header [`<cstdlib>`](http://www.cplusplus.com/%3Ccstdlib%3E) (known as `<stdlib.h>` in C). The functions are also available in C++ and can also be used to allocate and deallocate dynamic memory.
->
-> Note, though, that the memory blocks allocated by these functions are not necessarily compatible with those returned by `new`, so they should not be mixed; each one should be handled with its own set of functions or operators.
-
-## 动态内存分配 malloc, calloc, realloc
-
-## 动态内存回收 free
-
 # 参考
 
 http://www.cplusplus.com/doc/tutorial/dynamic/
+

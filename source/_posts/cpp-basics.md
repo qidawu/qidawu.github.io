@@ -19,7 +19,13 @@ typora-root-url: ..
 * [C 预处理器](https://www.runoob.com/cprogramming/c-preprocessors.html)
 * [Preprocessor directives](http://www.cplusplus.com/doc/tutorial/preprocessor/)
 
-# 二、基础语法
+# 二、头文件
+
+https://www.runoob.com/cprogramming/c-header-files.html
+
+https://www.runoob.com/cprogramming/c-standard-library.html
+
+# 三、基础语法
 
 ## 1、标识符（identifier）
 
@@ -79,6 +85,8 @@ C++ 允许在 `char`、`int` 和 `double` 数据类型前放置修饰符。修�
 | `short`    | Y     |          |        |
 
 ### 4.3、作用域
+
+在 C++ 中：
 
  * 作用域可分为：
     * 全局作用域
@@ -191,12 +199,6 @@ int main()
 | `.`（点）和 `->`（箭头） | [成员运算符](https://www.runoob.com/cplusplus/cpp-member-operators.html)用于引用**类**、**结构体**和**共用体**的成员。 |
 | `sizeof`                 | [sizeof 运算符](https://www.runoob.com/cplusplus/cpp-sizeof-operator.html)返回变量的存储大小。例如，`sizeof(int)` 返回 `4` 个字节。 |
 | `Cast`                   | [强制转换运算符](https://www.runoob.com/cplusplus/cpp-casting-operators.html)把一种数据类型转换为另一种数据类型。例如，`int(2.2000)` 将返回 2。 |
-| `new`                    | 在堆上动态内存分配。参考：[Dynamic memory](http://www.cplusplus.com/doc/tutorial/dynamic/) |
-| `delete`                 | 在堆上进行内存回收。                                         |
-
-提取运算符 `>>`
-
-插入运算符 `<<`
 
 ## 6、控制语句
 

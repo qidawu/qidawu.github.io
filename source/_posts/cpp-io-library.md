@@ -28,11 +28,13 @@ typora-root-url: ..
 
 To operate with streams, C++ provides the standard `iostream` library, which contains the following elements:
 
-Basic class templates
+![Elements of the iostream library](/img/cpp/elements_of_the_iostream_library.png)
+
+## Basic class templates
 
 > The base of the iostream library is the hierarchy of class templates. The class templates provide most of the functionality of the library in a type-independent fashion.
 
-Class template instantiations
+## Class template instantiations
 
 > The library incorporates two standard sets of instantiations of the entire iostream class template hierarchy: 
 >
@@ -40,7 +42,7 @@ Class template instantiations
 >
 > * The classes of the wide-oriented (`wchar_t`) instatiation follow the same naming conventions as the narrow-oriented instantiation but with the name of each class and object prefixed with a `w` character, forming `wios`, `wistream` and `wofstream`, as an example.
 
-Standard objects
+## Objects
 
 > As part of the iostream library, the header file `<iostream>` declares certain objects that are used to perform input and output operations on the standard input and output.
 >
@@ -49,15 +51,13 @@ Standard objects
 > * narrow-oriented objects: `cin`, `cout`, `cerr` and `clog` 
 > * wide-oriented objects: `wcin`, `wcout`, `wcerr` and `wclog`
 
-Manipulators
+## Manipulators
 
 > Manipulators are global functions designed to be used together with insertion (`<<`) and extraction (`>>`) operators performed on `iostream` stream objects. They generally modify properties and formatting settings of the streams.
 
-下表摘录了 iostream 库中常见的元素：
+# 常用头文件
 
-![Elements of the iostream library](/img/cpp/elements_of_the_iostream_library.png)
-
-其中，下列这些头文件在 C++ 编程中很重要。
+下列这些头文件在 C++ 编程中很常用，下面分别介绍：
 
 | 头文件       | 函数和描述                                                   |
 | :----------- | :----------------------------------------------------------- |
