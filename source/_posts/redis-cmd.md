@@ -172,15 +172,15 @@ public synchronized int nextId() {
   $ SINTER key [key ...]
   
   # 我关注的人也关注 ta
-  foreach(member in 我关注的人) {
+  foreach(member in 我_关注的人) {
     # 我每个关注的人，他们关注的人中，是否有 ta
     $ SISMEMBER member_关注的人 ta
   }
   
   # 我可能认识的人
-  foreach(member in 我关注的人) {
+  foreach(member in 我_关注的人) {
     # 我每个关注的人，他们关注的人中，有我还没关注的
-    $ SDIFF member_关注的人 我关注的人
+    $ SDIFF member_关注的人 我_关注的人
   }
   ```
 
