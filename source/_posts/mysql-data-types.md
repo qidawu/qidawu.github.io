@@ -220,13 +220,59 @@ MySQL 不能将 `BLOB` 和 `TEXT` 列全部长度的字符串进行索引，也�
 * MySQL 有多种表示日期的数据类型，比如，当只记录年信息的时候，可以使用 `YEAR` 类型，而没有必要使用 `DATE` 类型。
 * 每一个类型都有合法的取值范围，当指定确实不合法的值时系统将 "零" 值插入到数据库中。
 
-| 类型        | 字节长度 | 默认值（0 值）      | 取值范围                                          | 备注                                                         |
+| 类型        | **Storage before MySQL 5.6.4** | **Storage as of MySQL 5.6.4** | 默认值（0 值）      | 取值范围                                          |
 | ----------- | -------- | ------------------- | ------------------------------------------------- | ------------------------------------------------------------ |
-| `YEAR`      | 1 byte   | 0000                | 1901 ~ 2155                                       |                                                              |
-| `DATE`      | 3 bytes  | 0000-00-00          | 1000-01-01 ~ 9999-12-31                           |                                                              |
-| `TIME`      | 3 bytes  | 00:00:00            | -838:59:59 ~ 838:59:59                            |                                                              |
-| `DATETIME`  | 5 bytes  | 0000-00-00 00:00:00 | 1000-01-01 00:00:00 ~ 9999-12-31 23:59:59         | `DATETIME` 把日期和时间封装到格式为 `YYYYMMDDHHMMSS` 的整数中，与时区无关。默认情况下，MySQL 以一种可排序的、无歧义的格式显示 `DATETIME` 值，例如“2018-01-16 22:37:08”。这是 ANSI 标准定义的日期和时间显示方法。 |
-| `TIMESTAMP` | 4 bytes  | 1970-01-01 00:00:00 UTC | 1970-01-01 00:00:00 UTC ~ 2038-01-19 03:14:07 UTC | `TIMESTAMP` 显示的值依赖于时区。                             |
+| `YEAR`      | 1 byte, little endian | Unchanged                                        | 0000                | 1901 to 2155                                   |
+| `DATE`      | 3 bytes, little endian | Unchanged                                        | 0000-00-00          | '1000-01-01' to '9999-12-31' |
+| `TIME`      | 3 bytes, little endian | 3 bytes + fractional-seconds storage, big endian | 00:00:00            | '-838:59:59.000000' to '838:59:59.000000' |
+| `DATETIME`  | 8 bytes, little endian | 5 bytes + fractional-seconds storage, big endian | 0000-00-00 00:00:00 | '1000-01-01 00:00:00.000000' to '9999-12-31 23:59:59.999999' |
+| `TIMESTAMP` | 4 bytes, little endian | 4 bytes + fractional-seconds storage, big endian | 1970-01-01 00:00:00 UTC | '1970-01-01 00:00:01.000000' UTC to '2038-01-19 03:14:07.999999' UTC |
+
+### TIMESTAMP[(fsp)]
+
+> [`TIMESTAMP[(fsp)]`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html)
+>
+> 
+>
+> A timestamp. The range is `'1970-01-01 00:00:01.000000'` UTC to `'2038-01-19 03:14:07.999999'` UTC. [`TIMESTAMP`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html) values are stored as the number of seconds since the epoch (`'1970-01-01 00:00:00'` UTC). A [`TIMESTAMP`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html) cannot represent the value `'1970-01-01 00:00:00'` because that is equivalent to 0 seconds from the epoch and the value 0 is reserved for representing `'0000-00-00 00:00:00'`, the “zero” [`TIMESTAMP`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html) value.
+>
+> 
+>
+> An optional *`fsp`* value in the range from 0 to 6 may be given to specify fractional seconds precision. A value of 0 signifies that there is no fractional part. If omitted, the default precision is 0.
+>
+> 
+>
+> ...
+
+`TIMESTAMP` 显示的值**依赖于时区**。`TIMESTAMP` 类型的范围如下：
+
+| 时间                 | 时间戳             | 二进制字面量                        |
+| -------------------- | ------------------ | ----------------------------------- |
+| 1970-01-01T00:00:00Z | 0                  | 00000000 00000000 00000000 00000000 |
+| 2038-01-19T03:14:07Z | 2^31-1, 2147483647 | 01111111 11111111 11111111 11111111 |
+
+### DATETIME[(fsp)]
+
+> [`DATETIME[(fsp)]`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html)
+>
+> A `date` and `time` combination. The supported range is `'1000-01-01 00:00:00.000000'` to `'9999-12-31 23:59:59.999999'`. MySQL displays [`DATETIME`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html) values in `YYYY-MM-DD hh:mm:ss[.fraction]` format, but permits assignment of values to [`DATETIME`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html) columns using either strings or numbers.
+>
+> An optional *`fsp`* value in the range from 0 to 6 may be given to specify fractional seconds precision. A value of 0 signifies that there is no fractional part. If omitted, the default precision is 0.
+
+`DATETIME` 把日期和时间封装到格式为 `YYYYMMDDHHMMSS` 的整数中，**与时区无关（本地时区）**。默认情况下，MySQL 以一种可排序的、无歧义的格式显示 `DATETIME` 值，例如“2018-01-16 22:37:08”。这是 ANSI 标准定义的日期和时间显示方法。`DATETIME` 类型非小数部分的编码如下：
+
+```
+ 1 bit  sign           (1= non-negative, 0= negative)
+17 bits year*13+month  (year 0-9999, month 0-12)
+ 5 bits day            (0-31)
+ 5 bits hour           (0-23)
+ 6 bits minute         (0-59)
+ 6 bits second         (0-59)
+---------------------------
+40 bits = 5 bytes
+```
+
+https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html
 
 ### 存储精度
 
@@ -248,26 +294,6 @@ MySQL 不能将 `BLOB` 和 `TEXT` 列全部长度的字符串进行索引，也�
 | 5, 6                         | 999,999                        | 0000 1111 0100 0010 0011 1111 (24 bits) | 3 bytes          |
 
 有关于时间值的内部表示的详细信息，参考 [MySQL Internals: Important Algorithms and Structures - Date and Time Data Type Representation](https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html)
-
-`DATETIME` 类型非小数部分的编码如下：
-
-```
- 1 bit  sign           (1= non-negative, 0= negative)
-17 bits year*13+month  (year 0-9999, month 0-12)
- 5 bits day            (0-31)
- 5 bits hour           (0-23)
- 6 bits minute         (0-59)
- 6 bits second         (0-59)
----------------------------
-40 bits = 5 bytes
-```
-
-`TIMESTAMP` 类型的如下：
-
-| 时间                 | 时间戳             | 二进制字面量                        |
-| -------------------- | ------------------ | ----------------------------------- |
-| 1970-01-01T00:00:00Z | 0                  | 00000000 00000000 00000000 00000000 |
-| 2038-01-19T03:14:07Z | 2^31-1, 2147483647 | 01111111 11111111 11111111 11111111 |
 
 # 默认值
 
