@@ -48,7 +48,9 @@ SELECT NOW(6);                          -- 2018-08-08 22:20:46.166123，获取�
 SELECT CURRENT_TIMESTAMP;               -- 2018-08-08 22:20:46，获取当前年月日时分秒
 ```
 
-## 时区
+## 时区查看/修改
+
+[5.1.13 MySQL Server Time Zone Support](https://dev.mysql.com/doc/refman/5.7/en/time-zone-support.html)
 
 ### 查看当前时区
 ```sql
@@ -87,11 +89,7 @@ default-time_zone = '+8:00'
 $ service mysql restart
 ```
 
-### 时区转换
-
-参考：https://dev.mysql.com/doc/refman/5.7/en/datetime.html
-
-> MySQL converts `TIMESTAMP` values from the current time zone to UTC for storage, and back from UTC to the current time zone for retrieval. (This does not occur for other types such as `DATETIME`.) By default, the current time zone for each connection is the server's time. The time zone can be set on a per-connection basis. As long as the time zone setting remains constant, you get back the same value you store. If you store a `TIMESTAMP` value, and then change the time zone and retrieve the value, the retrieved value is different from the value you stored. This occurs because the same time zone was not used for conversion in both directions. The current time zone is available as the value of the [`time_zone`](https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_time_zone) system variable. For more information, see [Section 5.1.13, “MySQL Server Time Zone Support”](https://dev.mysql.com/doc/refman/5.7/en/time-zone-support.html).
+## 时区转换 函数
 
 `CONVERT_TZ(dt, from_tz, to_tz)` 函数用于将 `DATETIME` 类型转为指定时区，例如：
 
@@ -100,7 +98,11 @@ $ service mysql restart
 SELECT CONVERT_TZ( FROM_UNIXTIME( UNIX_TIMESTAMP() ), '+00:00', '+08:00' ) AS NOW;
 ```
 
-## 日期/时间转换
+`TIMESTAMP` 类型的时区显示，参考：https://dev.mysql.com/doc/refman/5.7/en/datetime.html
+
+> MySQL converts `TIMESTAMP` values from the current time zone to UTC for storage, and back from UTC to the current time zone for retrieval. (This does not occur for other types such as `DATETIME`.) By default, the current time zone for each connection is the server's time. The time zone can be set on a per-connection basis. As long as the time zone setting remains constant, you get back the same value you store. If you store a `TIMESTAMP` value, and then change the time zone and retrieve the value, the retrieved value is different from the value you stored. This occurs because the same time zone was not used for conversion in both directions. The current time zone is available as the value of the [`time_zone`](https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_time_zone) system variable. For more information, see [Section 5.1.13, “MySQL Server Time Zone Support”](https://dev.mysql.com/doc/refman/5.7/en/time-zone-support.html).
+
+## 日期/时间转换 函数
 
 ### 日期/时间 > 时间戳
 
@@ -187,7 +189,7 @@ select str_to_date('08.09.2008 08:09:30', '%m.%d.%Y %h:%i:%s'); -- 2008-08-09 08
 | `%T`     | Time, 24-hour (*`hh:mm:ss`*)                                 |
 | `%r`     | Time, 12-hour (*`hh:mm:ss`* followed by `AM` or `PM`)        |
 
-## 日期/时间计算
+## 日期/时间计算 函数
 
 为日期增加一个时间间隔：
 
@@ -215,7 +217,7 @@ select date_add(@dt, interval -1 day);       -- sub 1 day
 SELECT DATE_SUB(@dt, INTERVAL 7 DAY);        -- 七天前
 ```
 
-## 日期/时间截取
+## 日期/时间截取 函数
 
 选取日期时间的各个部分：日期、时间、年、季度、月、日、小时、分钟、秒、微秒
 

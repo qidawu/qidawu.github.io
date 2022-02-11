@@ -38,6 +38,12 @@ ZoneId zoneId = ZoneId.of("Europe/Paris");
 
 ## ZonedDateTime
 
+https://docs.oracle.com/javase/8/docs/api/java/time/ZonedDateTime.html
+
+> A date-time with a time-zone in the ISO-8601 calendar system, such as `2007-12-03T10:15:30+01:00 Europe/Paris`.
+
+Java 8 中 `ZonedDateTime` 基于 ISO-8601 实现，参考[这里](/posts/java8-time/#ISO-8601)。
+
 ### 底层实现
 
 `ZonedDateTime` 的底层实现如下：
@@ -151,7 +157,7 @@ OffsetDateTime dateTimeInNewYork2 = dateTime1.atOffset(newYorkOffset);
 
 ## java.sql.Timestamp
 
-有时开发会使用 `java.sql.Timestamp` 作为 PO 实体类的时间字段，`java.sql.Timestamp` 底层实现使用**格里历（公历）**，并使用**本地时区**（即服务器默认时区），并受该时区影响。
+有时开发会使用 `java.sql.Timestamp` 作为 PO 实体类的时间字段，`java.sql.Timestamp` 底层实现使用**格里历（公历）**，并使用服务器所在时区（即**本地时区**），并受该时区影响。
 
 这里看一段代码，以 2021-01-04 00:00:00 为例演示转换过程：
 
@@ -329,23 +335,10 @@ Timestamp.valueOf(localDateTime);
 
 # 参考
 
-* 《Java 8 实战》
-* Java SE Docs
-
-时区：
-
-* [协调世界时（UTC） - 维基百科](https://zh.wikipedia.org/wiki/%E5%8D%8F%E8%B0%83%E4%B8%96%E7%95%8C%E6%97%B6)
-* https://time.is/UTC
-* [时区转换器：计算世界各个时区的时差](https://www.zeitverschiebung.net/cn/)
-* [Time Zone Converter](http://www.timezoneconverter.com/cgi-bin/zoneinfo)
-
 时区数据库：
 
 * [IANA  的时区数据库](https://www.iana.org/time-zones)
-
-* [《Java时区数据库与IANA数据》](https://www.coder.work/article/6269420)
-
-* https://www.infoq.cn/article/S7iIaYMTOecZowBxBCY3
+* [《这个重要开源项目全靠一位低调的 “怪老头” 维护！他和比尔盖茨一样撑起了计算机世界》](https://www.infoq.cn/article/S7iIaYMTOecZowBxBCY3)
 
   > 时区设置背后有一组大量关于全球许多代表性地点时间历史信息的代码和数据，这些代码和数据被称为**时区数据库**（即 tz、tzdata 或 zoneinfo），该数据库会定期进行更新以反映各政治实体对时区边界、UTC 差值和夏令时规则的更改。对 tz 的更新遵循 BCP 175 流程进行管理。
   >
@@ -357,6 +350,17 @@ Timestamp.valueOf(localDateTime);
   >
   > 现在，具体的维护工作由互联网分配号码管理局（Internet Assigned Numbers Authority， IANA）负责。Paul Eggert 是时区数据库的项目负责人，该职位被称为 TZ 协调员。
 
+时区工具：
+
+* [协调世界时（UTC） - 维基百科](https://zh.wikipedia.org/wiki/%E5%8D%8F%E8%B0%83%E4%B8%96%E7%95%8C%E6%97%B6)
+* https://time.is/UTC
+* [时区转换器：计算世界各个时区的时差](https://www.zeitverschiebung.net/cn/)
+* [Time Zone Converter](http://www.timezoneconverter.com/cgi-bin/zoneinfo)
+
 其它：
 
+* 《Java 8 实战》
+* Java SE Docs
+* [《Java 时区数据库与 IANA 数据》](https://www.coder.work/article/6269420)
 * [《Mysql JDBC里的useTimezone参数是做什么用的？》](https://segmentfault.com/q/1010000000262788)
+* 《八十天环游地球》【法】儒勒·凡尔纳

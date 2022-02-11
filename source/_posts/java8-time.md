@@ -93,30 +93,7 @@ Instant           // 以 Unix 元年时间（UTC 时区 1970-01-01T00:00:00Z，�
 | [泰国历](https://zh.wikipedia.org/wiki/泰國曆)               | `ThaiBuddhistDate` |
 | [伊斯兰历（回历）](https://zh.wikipedia.org/zh/伊斯兰历)     | `HijrahDate`       |
 
-[ISO-8601](https://zh.wikipedia.org/wiki/ISO_8601) 日历系统是世界文明日历系统的事实标准，其**日期表示法**为：
-
-> 年由4位数字组成YYYY，或者带正负号的四或五位数字表示±YYYYY。以**[公历](https://zh.wikipedia.org/wiki/公历)公元**1年为0001年，以公元前1年为0000年，公元前2年为-0001年，其他以此类推。
->
-> 月、日用两位数字表示：MM、DD。
-
-Java 8 中 `LocalDate` 基于 ISO-8601 实现。另外还提供了四种其它的日历系统。这些日历系统中的每一个都有一个对应的类，如下图。所有这些类都实现了 `java.time.chrono.ChronoLocalDate` 接口，能够对公历的日期进行建模。
-
-![ChronoLocalDate实现类](/img/java/time/ChronoLocalDate实现类.png)
-
-```java
-// 格里历（公历）
-LocalDate date = LocalDate.now();
-// 和历
-JapaneseDate japaneseDate = JapaneseDate.from(date);
-// 中华民国历
-MinguoDate minguoDate = MinguoDate.from(date);
-// 泰国历
-ThaiBuddhistDate thaiBuddhistDate = ThaiBuddhistDate.from(date);
-// 伊斯兰历（回历）
-HijrahDate hijrahDate = HijrahDate.from(date);
-```
-
-还有一些常见的历法，例如：
+还有其它一些常见的历法，例如：
 
 * [中国传统历法](https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BC%A0%E7%BB%9F%E5%8E%86%E6%B3%95)
 * [会计年度](https://zh.wikipedia.org/wiki/會計年度)：
@@ -134,15 +111,62 @@ HijrahDate hijrahDate = HijrahDate.from(date);
 >
 > 这里提供了一个常见的[纪年对照表](https://zh.wikipedia.org/wiki/%E6%B0%91%E5%9C%8B%E7%B4%80%E5%B9%B4#%E7%B4%80%E5%B9%B4%E5%B0%8D%E7%85%A7)，可供参考。 
 
--
-
 > [年号](https://zh.wikipedia.org/wiki/%E5%B9%B4%E5%8F%B7)是中国历史君主时代帝王纪年所立的名号，缘起于西汉汉武帝时期，后来朝鲜新罗在6世纪、日本在7世纪后期、越南在10世纪都因为中国的影响，开始使用年号；台湾岛的郑氏王朝与台湾民主国、朝鲜半岛大韩帝国与高丽、蒙古国建国初年受到中国影响，都还使用过年号，目前唯一使用年号的是仍保持君主制的日本。
 >
 > 值得一提，[中华民国](https://zh.wikipedia.org/wiki/中華民國)所用的[民国纪年](https://zh.wikipedia.org/wiki/民國紀年)、以及[朝鲜民主主义人民共和国](https://zh.wikipedia.org/wiki/朝鮮民主主義人民共和國)使用的[主体纪年](https://zh.wikipedia.org/wiki/主体纪年)，常被误认为是年号，实际上仅是单纯的纪年[历法](https://zh.wikipedia.org/wiki/曆法)。
 
--
-
 > [一世一元制](https://zh.wikipedia.org/wiki/%E4%B8%80%E4%B8%96%E4%B8%80%E5%85%83%E5%88%B6)，指[君主](https://zh.wikipedia.org/wiki/君主)(国王、大君主、可汗、天皇、皇帝)在其在位期间只使用同一个[年号](https://zh.wikipedia.org/wiki/年號)，不进行改元的制度。例外：如果君主后来另行称帝或是重祚，会另建新年号，以示区别。
+
+### ISO-8601
+
+[ISO-8601](https://zh.wikipedia.org/wiki/ISO_8601) 日历系统是世界文明日历系统的事实标准：
+
+> In general, ISO 8601 applies to these representations and formats: 
+>
+> * *dates,* in the [Gregorian](https://en.wikipedia.org/wiki/Gregorian_calendar) calendar (including the [proleptic Gregorian](https://en.wikipedia.org/wiki/Proleptic_Gregorian_calendar) calendar); 
+> * *times,* based on the [24-hour timekeeping system](https://en.wikipedia.org/wiki/24-hour_clock), with optional [UTC offset](https://en.wikipedia.org/wiki/UTC_offset); [*time intervals*](https://en.wikipedia.org/wiki/Time_interval); and combinations thereof.[[2]](https://en.wikipedia.org/wiki/ISO_8601#cite_note-scope-2) 
+>
+> The standard does not assign specific meaning to any element of the dates/times represented: the meaning of any element depends on the context of its use. 
+>
+> Dates and times represented cannot use words that do not have a specified numerical meaning within the standard (thus excluding [names of years](https://en.wikipedia.org/wiki/Chinese_calendar_correspondence_table) in the [Chinese calendar](https://en.wikipedia.org/wiki/Chinese_calendar)), or that do not use [computer characters](https://en.wikipedia.org/wiki/Character_(computing)) (excludes images or sounds).[[2]](https://en.wikipedia.org/wiki/ISO_8601#cite_note-scope-2)
+
+ISO-8601 的**日期表示法**为：
+
+> In representations that adhere to the ISO 8601 *interchange standard* :
+>
+> * dates and times are arranged such that the greatest temporal term (typically a year) is placed at the left and each successively lesser term is placed to the right of the previous term. 
+> * Representations must be written in a combination of [Arabic numerals](https://en.wikipedia.org/wiki/Arabic_numerals) and the specific computer characters (such as "-", ":", "T", "W", "Z") that are assigned specific meanings within the standard; that is, such commonplace descriptors of dates (or parts of dates) as "January", "Thursday", or "New Year's Day" are not allowed in interchange representations within the standard.
+
+> 年由 4 位数字组成 `YYYY`，或者带正负号的四或五位数字表示 `±YYYYY`：
+>
+> * 公元 1 年为 0001 年
+> * 公元前 1 年为 0000 年
+> * 公元前 2 年为 -0001 年
+>
+> 其它以此类推。
+>
+> 月、日用两位数字表示：`MM`、`DD`。
+
+https://docs.oracle.com/javase/8/docs/api/java/time/LocalDateTime.html
+
+> A date-time without a time-zone in the ISO-8601 calendar system, such as `2007-12-03T10:15:30`.
+
+Java 8 中 `LocalDate` 基于 ISO-8601 实现。另外还提供了四种其它的日历系统。这些日历系统中的每一个都有一个对应的类，如下图。所有这些类都实现了 `java.time.chrono.ChronoLocalDate` 接口，能够对日期进行建模。
+
+![ChronoLocalDate实现类](/img/java/time/ChronoLocalDate实现类.png)
+
+```java
+// 格里历（公历）
+LocalDate date = LocalDate.now();
+// 和历
+JapaneseDate japaneseDate = JapaneseDate.from(date);
+// 中华民国历
+MinguoDate minguoDate = MinguoDate.from(date);
+// 泰国历
+ThaiBuddhistDate thaiBuddhistDate = ThaiBuddhistDate.from(date);
+// 伊斯兰历（回历）
+HijrahDate hijrahDate = HijrahDate.from(date);
+```
 
 ## 底层实现
 
@@ -598,7 +622,9 @@ LocalDateTime.parse("01/01/1999", dtf);
 
 * 《Java 8 实战》
 * Java SE Docs
-* [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339)
+* [ISO 8601 - DATE AND TIME FORMAT](https://www.iso.org/iso-8601-date-and-time-format.html)
+* [RFC 3339 - Date and Time on the Internet: Timestamps](https://datatracker.ietf.org/doc/html/rfc3339)
+* [What's the difference between ISO 8601 and RFC 3339 Date Formats?](https://stackoverflow.com/questions/522251/whats-the-difference-between-iso-8601-and-rfc-3339-date-formats)
 * 《[Parsing and Formatting (The Java™ Tutorials > Date Time > Standard Calendar)](https://docs.oracle.com/javase/tutorial/datetime/iso/format.html)》
 * 《[`uuuu` versus `yyyy` in `DateTimeFormatter` formatting pattern codes in Java?](https://stackoverflow.com/questions/41177442/uuuu-versus-yyyy-in-datetimeformatter-formatting-pattern-codes-in-java)》
 * 《[LocalDate、LocalDateTime与timestamp、Date的转换](https://www.jianshu.com/p/b4629857fc6f)》
