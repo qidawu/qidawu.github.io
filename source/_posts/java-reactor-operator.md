@@ -38,7 +38,11 @@ Reactive Streams 规范并未提供任何操作符（Operators），而 Reactor 
 >
 > This transforms the push model into a **push-pull hybrid**, where the downstream can pull n elements from upstream if they are readily available. But if the elements are not ready, they get pushed by the upstream whenever they are produced.
 
-# Mono
+# 我该使用哪个操作符？
+
+## Creating a New Sequence…
+
+### Mono
 
 https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html
 
@@ -46,9 +50,41 @@ https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html
 
 ![mono](/img/java/reactive-stream/reactor/mono/mono.svg)
 
-## 创建 Mono 流
+创建 Mono 流：
 
 ![mono_create](/img/java/reactive-stream/reactor/mono/mono_create.png)
+
+### Flux
+
+https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html
+
+> for [N] elements
+
+![flux](/img/java/reactive-stream/reactor/flux/flux.svg)
+
+普通创建：
+
+![flux_create](/img/java/reactive-stream/reactor/flux/flux_create.png)
+
+遍历创建：
+
+
+
+定时创建：
+
+![flux_create_interval](/img/java/reactive-stream/reactor/flux/flux_create_interval.png)
+
+合并创建：
+
+![flux_create_combine](/img/java/reactive-stream/reactor/flux/flux_create_combine.png)
+
+编程式创建：
+
+![flux_create_2](/img/java/reactive-stream/reactor/flux/flux_create_2.png)
+
+其它：
+
+![flux_create_switchOnNext](/img/java/reactive-stream/reactor/flux/flux_create_switchOnNext.png)
 
 ## 中间操作
 
@@ -56,7 +92,7 @@ https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html
 >
 > While the Reactive Streams specification does not specify operators at all, one of the best added values of reactive libraries, such as Reactor, **is the rich vocabulary of operators** that they provide. These cover a lot of ground, from simple transformation and filtering to complex orchestration and error handling.
 
-### 转换
+### Transforming an Existing Sequence
 
 常用的如下：
 
@@ -77,10 +113,11 @@ https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html
 
     - …where the async task can return multiple values, from a [Mono](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html) source: [Mono#flatMapMany](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#flatMapMany-java.util.function.Function-)
 
-      - ```java
+        ```java
         // Mono 转 Flux
         // Create a Flux that emits the items contained in the provided Iterable. A new iterator will be created for each subscriber.
         Mono#flatMapMany(Flux::fromIterable)
+        ```
 
 - I want to add pre-set elements to an existing sequence:
 
@@ -99,7 +136,7 @@ https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html
 
   - by applying a function between each element (eg. running sum): [reduce](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#reduce-A-java.util.function.BiFunction-)
     
-    - ```java
+      ```java
       Flux.range(0, 5)
         .reduce(Integer::sum)  // 两两相加
         .map(Objects::toString)
@@ -116,7 +153,25 @@ https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html
 
 - I want to combine publishers…
 
-  - ...
+  - in sequential order: [Flux#concat](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#concat-org.reactivestreams.Publisher...-) or `.concatWith(other)` ([Flux](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#concatWith-org.reactivestreams.Publisher-)|[Mono](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#concatWith-org.reactivestreams.Publisher-))
+    - …but delaying any error until remaining publishers have been emitted: [Flux#concatDelayError](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#concatDelayError-org.reactivestreams.Publisher-)
+    - …but eagerly subscribing to subsequent publishers: [Flux#mergeSequential](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#mergeSequential-int-org.reactivestreams.Publisher...-)
+  - in emission order (combined items emitted as they come): [Flux#merge](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#merge-int-org.reactivestreams.Publisher...-) / `.mergeWith(other)` ([Flux](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#mergeWith-org.reactivestreams.Publisher-)|[Mono](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#mergeWith-org.reactivestreams.Publisher-))
+    - …with different types (transforming merge): [Flux#zip](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#zip-java.util.function.Function-org.reactivestreams.Publisher...-) / [Flux#zipWith](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#zipWith-org.reactivestreams.Publisher-)
+  - by pairing values:
+    - from 2 Monos into a [Tuple2](https://projectreactor.io/docs/core/release/api/reactor/util/function/Tuple2.html): [Mono#zipWith](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#zipWith-reactor.core.publisher.Mono-)
+    - from n Monos when they all completed: [Mono#zip](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#zip-java.util.function.Function-reactor.core.publisher.Mono...-)
+  - by coordinating their termination:
+    - from 1 Mono and any source into a [Mono](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html): [Mono#and](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#and-org.reactivestreams.Publisher-)
+    - from n sources when they all completed: [Mono#when](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#when-java.lang.Iterable-)
+    - into an arbitrary container type:
+      - each time all sides have emitted: [Flux#zip](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#zip-java.util.function.Function-org.reactivestreams.Publisher...-) (up to the smallest cardinality)
+      - each time a new value arrives at either side: [Flux#combineLatest](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#combineLatest-java.util.function.Function-int-org.reactivestreams.Publisher...-)
+  - selecting the first publisher which…
+    - produces a *value* (`onNext`): `firstWithValue` ([Flux](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#firstWithValue-java.lang.Iterable-)|[Mono](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#firstWithValue-java.lang.Iterable-))
+    - produces *any signal*: `firstWithSignal` ([Flux](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#firstWithSignal-java.lang.Iterable-)|[Mono](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#firstWithSignal-java.lang.Iterable-))
+  - triggered by the elements in a source sequence: [switchMap](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#switchMap-java.util.function.Function-) (each source element is mapped to a Publisher)
+  - triggered by the start of the next publisher in a sequence of publishers: [switchOnNext](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#switchOnNext-org.reactivestreams.Publisher-)
 
 - I want to repeat an existing sequence: `repeat` ([Flux](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#repeat--)|[Mono](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#repeat--))
 
@@ -128,7 +183,7 @@ https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html
 
   - I want another sequence instead: `switchIfEmpty` ([Flux](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#switchIfEmpty-org.reactivestreams.Publisher-)|[Mono](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#switchIfEmpty-reactor.core.publisher.Mono-))
 
-    - ```java
+      ```java
       Flux.just(0, 1, 2, 3)
         .filter(i -> i < 0)
         .next()
@@ -136,7 +191,7 @@ https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html
         .switchIfEmpty(Mono.just(-1))
         .map(Objects::toString)
         .subscribe(log::info);
-
+      ```
 
 - I have a sequence but I am not interested in values: `ignoreElements` ([Flux.ignoreElements()](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#ignoreElements--)|[Mono.ignoreElement()](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#ignoreElement--))
 
@@ -148,7 +203,7 @@ https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html
 
 - ...
 
-### 过滤
+### Filtering a Sequence
 
 - I want to filter a sequence:
   - based on an arbitrary criteria: `filter` ([Flux](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#filter-java.util.function.Predicate-)|[Mono](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#filter-java.util.function.Predicate-))
@@ -189,7 +244,14 @@ https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html
   - and I want a default value if the sequence is empty: [Flux#single(T)](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#single-T-)
   - and I accept an empty sequence as well: [Flux#singleOrEmpty](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#singleOrEmpty--)
 
-### 监听事件
+| 方法                   | 注释                                                         |
+| ---------------------- | ------------------------------------------------------------ |
+| `take(long n)`         | Take only the first N values from this `Flux`, if available. |
+| `takeLast(long n)`     | Emit the last N values this `Flux` emitted before its completion. |
+| `last()`               | Emit the last element observed before complete signal as a `Mono`, or emit `NoSuchElementException` error if the source was empty. |
+| `last(T defaultValue)` | Emit the last element observed before complete signal as a `Mono`, or emit the **defaultValue** if the source was empty. |
+
+### Peeking into a Sequence
 
 ![Reactive callback](/img/java/reactive-stream/reactive-stream/process_of_reactive_stream_2.png)
 
@@ -219,7 +281,7 @@ https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html
 | `timestamp` | If this `Mono` is valued, emit a `Tuple2` pair of T1 the current clock time in millis (as a `Long` measured by the parallel Scheduler) and T2 the emitted data (as a T). |
 | `elapsed`   |                                                              |
 
-### 异常处理
+### Handling Errors
 
 对于异常处理，Reactor 除了默认的立刻抛出异常的处理方式之外，还提供三类处理方式：
 
@@ -227,18 +289,23 @@ https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html
 * recover from errors **by falling back** (`onErrorReturn`、`onErrorResume`)
 * recover from errors **by retrying** (`retry`、`retryWhen`)
 
-| 方法                        | 注释                                                         | 描述                                                      |
-| --------------------------- | ------------------------------------------------------------ | --------------------------------------------------------- |
-| `error`                     | Create a `Mono` that terminates with the specified error immediately after being subscribed to. | 创建异常流。                                              |
-| `onErrorMap`                | Transform any error emitted by this `Mono` by synchronously applying a function to it.<br/>Transform an error emitted by this `Mono` by synchronously applying a function to it <u>if the error matches the given type.</u> Otherwise let the error pass through.<br/>Transform an error emitted by this `Mono` by synchronously applying a function to it <u>if the error matches the given predicate.</u> Otherwise let the error pass through. | catching an exception and wrapping and re-throwing        |
-| `onErrorReturn`             | Simply emit a captured fallback value when <u>any error</u> is observed on this `Mono`.<br/>Simply emit a captured fallback value when <u>an error of the specified type</u> is observed on this `Mono`.<br/>Simply emit a captured fallback value when <u>an error matching the given predicate</u> is observed on this `Mono`. | catching an exception and falling back to a default value |
-| `onErrorResume`             | Subscribe to a fallback publisher when <u>any error</u> occurs, using a function to choose the fallback depending on the error.<br/>Subscribe to a fallback publisher when <u>an error matching the given type</u> occurs.<br/>Subscribe to a fallback publisher when <u>an error matching a given predicate</u> occurs. | catching an exception and falling back to another `Mono`  |
-| `onErrorContinue`           | Let compatible operators **upstream** recover from errors by dropping the incriminating element from the sequence and continuing with subsequent elements. |                                                           |
-| `retry()`<br/>`retry(long)` | Re-subscribes to this `Mono` sequence if it signals any error, indefinitely.<br/>Re-subscribes to this `Mono` sequence if it signals any error, for a fixed number of times. | retrying with a simple policy (max number of attempts)    |
-| `retryWhen`                 |                                                              |                                                           |
+| 方法                        | 注释                                                         | 描述                                                         |
+| --------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| `error`                     | Create a `Mono` that terminates with the specified error immediately after being subscribed to. | 创建异常流。                                                 |
+| `onErrorMap`                | Transform any error emitted by this `Mono` by synchronously applying a function to it.<br/>Transform an error emitted by this `Mono` by synchronously applying a function to it <u>if the error matches the given type.</u> Otherwise let the error pass through.<br/>Transform an error emitted by this `Mono` by synchronously applying a function to it <u>if the error matches the given predicate.</u> Otherwise let the error pass through. | catching an exception and wrapping and re-throwing           |
+| `onErrorReturn`             | Simply emit a captured fallback value when <u>any error</u> is observed on this `Mono`.<br/>Simply emit a captured fallback value when <u>an error of the specified type</u> is observed on this `Mono`.<br/>Simply emit a captured fallback value when <u>an error matching the given predicate</u> is observed on this `Mono`. | catching an exception and falling back to a default value    |
+| `onErrorResume`             | Subscribe to a fallback publisher when <u>any error</u> occurs, using a function to choose the fallback depending on the error.<br/>Subscribe to a fallback publisher when <u>an error matching the given type</u> occurs.<br/>Subscribe to a fallback publisher when <u>an error matching a given predicate</u> occurs. | catching an exception and falling back to another `Mono`     |
+| `onErrorContinue`           | Let compatible operators **upstream** recover from errors by dropping the incriminating element from the sequence and continuing with subsequent elements. | https://devdojo.com/ketonemaniac/reactor-onerrorcontinue-vs-onerrorresume |
+| `retry()`<br/>`retry(long)` | Re-subscribes to this `Mono` sequence if it signals any error, indefinitely.<br/>Re-subscribes to this `Mono` sequence if it signals any error, for a fixed number of times. | retrying with a simple policy (max number of attempts)       |
+| `retryWhen`                 |                                                              |                                                              |
 
+`Mono`
 
 ![mono_error](/img/java/reactive-stream/reactor/mono/mono_error.png)
+
+`Flux`
+
+![flux_error](/img/java/reactive-stream/reactor/flux/flux_error.png)
 
 受检异常处理：
 
@@ -249,136 +316,47 @@ https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html
 
 参考：https://projectreactor.io/docs/core/release/reference/index.html#error.handling
 
-## 终结操作
-
-### 订阅
-
-![mono_subscribe](/img/java/reactive-stream/reactor/mono/mono_subscribe.png)
-
-### 阻塞返回结果
-
-![mono_block](/img/java/reactive-stream/reactor/mono/mono_block.png)
-
-# Flux
-
-https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html
-
-> for [N] elements
-
-![flux](/img/java/reactive-stream/reactor/flux/flux.svg)
-
-## 创建 Flux 流
-
-普通创建：
-
-![flux_create](/img/java/reactive-stream/reactor/flux/flux_create.png)
-
-遍历创建：
-
-
-
-定时创建：
-
-![flux_create_interval](/img/java/reactive-stream/reactor/flux/flux_create_interval.png)
-
-合并创建：
-
-![flux_create_combine](/img/java/reactive-stream/reactor/flux/flux_create_combine.png)
-
-编程式创建：
-
-![flux_create_2](/img/java/reactive-stream/reactor/flux/flux_create_2.png)
-
-其它：
-
-![flux_create_switchOnNext](/img/java/reactive-stream/reactor/flux/flux_create_switchOnNext.png)
-
-## 中间操作
-
-### 转换操作
-
-Flux 转 Mono：
-
-![flux_to_mono](/img/java/reactive-stream/reactor/flux/flux_to_mono.png)
-
-`map`、`flatMap`：
-
-![flux_map](/img/java/reactive-stream/reactor/flux/flux_map.png)
-
-转成并行流：
-
-![flux_parallel](/img/java/reactive-stream/reactor/flux/flux_parallel.png)
-
-### 空值处理
-
-![flux_ifempty](/img/java/reactive-stream/reactor/flux/flux_ifempty.png)
-
-### 计数
-
-`count`
-
-### 排序
+### Sorting a Flux
 
 ![flux_sort](/img/java/reactive-stream/reactor/flux/flux_sort.png)
 
-### 去重
+### Splitting a Flux
 
-![flux_distinct](/img/java/reactive-stream/reactor/flux/flux_distinct.png)
-
-### 分组
-
-![flux_window](/img/java/reactive-stream/reactor/flux/flux_window.png)
-
-### 合并
-
-![flux_concat](/img/java/reactive-stream/reactor/flux/flux_concat.png)
-
-![flux_merge](/img/java/reactive-stream/reactor/flux/flux_merge.png)
-
-### 压缩
-
-![flux_zip](/img/java/reactive-stream/reactor/flux/flux_zip.png)
-
-### 获取元素
-
-| 方法                   | 注释                                                         |
-| ---------------------- | ------------------------------------------------------------ |
-| `take(long n)`         | Take only the first N values from this `Flux`, if available. |
-| `takeLast(long n)`     | Emit the last N values this `Flux` emitted before its completion. |
-| `last()`               | Emit the last element observed before complete signal as a `Mono`, or emit `NoSuchElementException` error if the source was empty. |
-| `last(T defaultValue)` | Emit the last element observed before complete signal as a `Mono`, or emit the **defaultValue** if the source was empty. |
-
-
-
-![flux_take](/img/java/reactive-stream/reactor/flux/flux_take.png)
+https://projectreactor.io/docs/core/release/reference/index.html#advanced-three-sorts-batching
 
 ### 延迟处理
 
 ![flux_delay](/img/java/reactive-stream/reactor/flux/flux_delay.png)
 
-### 缓冲
+### 转成并行流
 
-![flux_buffer](/img/java/reactive-stream/reactor/flux/flux_buffer.png)
-
-### 执行操作
-
-![flux_do](/img/java/reactive-stream/reactor/flux/flux_do.png)
-
-### 异常处理
-
-![flux_error](/img/java/reactive-stream/reactor/flux/flux_error.png)
+![flux_parallel](/img/java/reactive-stream/reactor/flux/flux_parallel.png)
 
 ## 终结操作
 
-### 订阅
+### Subscribe a Sequence
+
+`Mono`、`Flux`
+
+![mono_subscribe](/img/java/reactive-stream/reactor/mono/mono_subscribe.png)
 
 订阅后可以使用 `Disposable` API 停止 FLux 流。
 
-![flux_subscribe](/img/java/reactive-stream/reactor/flux/flux_subscribe.png)
+### Going Back to the Synchronous World
 
-### 阻塞返回结果
+Note: all of these methods except [Mono#toFuture](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#toFuture--) will throw an [UnsupportedOperatorException](https://docs.oracle.com/javase/8/docs/api/java/lang/UnsupportedOperationException.html?is-external=true) if called from within a [Scheduler](https://projectreactor.io/docs/core/release/api/reactor/core/scheduler/Scheduler.html) marked as "non-blocking only" (by default [parallel()](https://projectreactor.io/docs/core/release/api/reactor/core/scheduler/Schedulers.html#parallel--) and [single()](https://projectreactor.io/docs/core/release/api/reactor/core/scheduler/Schedulers.html#single--)).
 
-![flux_block](/img/java/reactive-stream/reactor/flux/flux_block.png)
+- I have a [Flux](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html) and I want to:
+  - block until I can get the first element: [Flux#blockFirst](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#blockFirst--)
+    - …with a timeout: [Flux#blockFirst(Duration)](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#blockFirst-java.time.Duration-)
+  - block until I can get the last element (or null if empty): [Flux#blockLast](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#blockLast--)
+    - …with a timeout: [Flux#blockLast(Duration)](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#blockLast-java.time.Duration-)
+  - synchronously switch to an [Iterable](https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true): [Flux#toIterable](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#toIterable--)
+  - synchronously switch to a Java 8 [Stream](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html): [Flux#toStream](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#toStream--)
+- I have a [Mono](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html) and I want:
+  - to block until I can get the value: [Mono#block](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#block--)
+    - …with a timeout: [Mono#block(Duration)](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#block-java.time.Duration-)
+  - a [CompletableFuture](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html): [Mono#toFuture](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#toFuture--)
 
 # 参考
 
