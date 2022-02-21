@@ -179,7 +179,7 @@ SELECT * FROM tbl_name
 
 # key_len
 
-表示 MySQL 实际选择的索引长度。如果该索引为联合索引，可用于判断 MySQL 实际使用了联合索引中的多少个字段。如果 `key` 列为 `NULL`，`key_len` 列也为 `NULL`。
+表示 MySQL 实际选择的索引长度，单位为 Byte。如果该索引为联合索引，可用于判断 MySQL 实际使用了联合索引中的多少个字段。如果 `key` 列为 `NULL`，`key_len` 列也为 `NULL`。
 
 `key_len` 计算规则如下：
 
@@ -192,19 +192,23 @@ SELECT * FROM tbl_name
     - `MEDIUMINT` 3 Bytes
     - `INT` 4 Bytes
     - `BIGINT` 8 Bytes
+    
   * 日期与时间类型
     - `DATE` 3 Bytes
     - `TIMESTAMP` 4 Bytes
     - `DATETIME` 8 Bytes
-  * 字符串类型
-    - `char(n)`：如果字符集为 `utf8`，则长度为 3n Bytes
-    - `varchar(n)`：如果字符集为 `utf8`，则长度为 3n + 2 Bytes。额外 2 Bytes 用于存储长度。
-  
-* 各个字符集：
-  * `latin1` 编码一个字符 1 Byte
-  * `gbk` 编码一个字符 2 Bytes
-  * `utf8` 编码一个字符 3 Bytes
-  * `utf8mb4` 编码一个字符 4 Bytes
+    
+  * 字符串类型，实际字节存储长度取决于使用的[字符集](https://dev.mysql.com/doc/refman/5.7/en/charset.html)：
+    - | 字符集（Character encoding） | `M`    | `L`     |
+      | ---------------------------- | ------ | ------- |
+      | `latin1`                     | 1 Char | 1 Byte  |
+      | `gbk`                        | 1 Char | 2 Bytes |
+      | `utf8`                       | 1 Char | 3 Bytes |
+      | `utf8mb4`                    | 1 Char | 4 Bytes |
+      
+    - `CHAR(M)`：如果字符集为 `utf8`，则长度为 3 * M Bytes
+    
+    - `VARCHAR(M)`：如果字符集为 `utf8`，则长度为 3 * M Bytes + 1 or 2 Bytes。额外 1 or 2 Byte(s) 用于存储长度。
   
 * 创建索引的时候可以指定索引的长度，例如：`alter table test add index idx_username (username(30));`。长度 30 指的是字符的个数。
 

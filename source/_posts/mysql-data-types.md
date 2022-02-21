@@ -103,27 +103,25 @@ MySQL 支持的数据类型非常多，选择正确的数据类型对于获得�
 
 ### 比特类型
 
-`BIT[(M)]` 比特类型，*M* 为 1~64 位比特。
+`BIT[(M)]` 比特类型，*M* 为 1~64 bit(s)。
 
 `b'value'` 符号可用于指定比特值。`value` 是一组使用 0 和 1 编写的二进制值。例如 `b'111'` 和 `b'10000000'` 分别代表 `7` 和 `128` 。详见《[Bit-Value Literals](https://dev.mysql.com/doc/refman/5.7/en/bit-value-literals.html)》。
 
 如果赋值给小于 *M* 位长的 `BIT(M)` 类型列，则该值左侧用零填充。例如，为 `BIT(6)` 列赋值 `b'101'` 实际上等于赋值 `b'000101'`。
 
-`BIT(1)` 常用来表示布尔类型，`b'0'` 表示 `false`，`b'1'` 表示 `true`。
+`BIT(1)` 常用来表示**布尔类型**，`b'0'` 表示 `false`，`b'1'` 表示 `true`。
 
 1 byte = 8 bit。
 
 ### 整数类型（精确值）
 
-MySQL 可以使用以下几种整数类型，存储的值的范围从“-2^(N-1)”到“2^(N-1)-1”，其中 N 是存储空间的位数（1 byte = 8 bit）：
-
-| 类型        | 字节长度 | 取值范围（有符号） | 取值范围（无符号） | 备注                                                         |
-| ----------- | -------- | ------------------ | ------------------ | ------------------------------------------------------------ |
-| `TINYINT`   | 1 byte   | -2^7 ~2^7-1        | 0~2^8-1            | 同义词 `BOOL`、`BOOLEAN` ，0 为 false，!0 为 true            |
-| `SMALLINT`  | 2 bytes  | -2^15 ~2^15-1      | 0~2^16-1           |                                                              |
-| `MEDIUMINT` | 3 bytes  | -2^23 ~2^23-1      | 0~2^24-1           |                                                              |
-| `INT`       | 4 bytes  | -2^31 ~2^31-1      | 0~2^32-1           | 同义词 `INTEGER`                                             |
-| `BIGINT`    | 8 bytes  | -2^63 ~2^63-1      | 0~2^64-1           | `SERIAL` 等于 `BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE` 的别名 ，适用于创建主键 |
+| 类型        | 存储长度          | 取值范围（有符号） | 取值范围（无符号） | 备注                                                         |
+| ----------- | ----------------- | ------------------ | ------------------ | ------------------------------------------------------------ |
+| `TINYINT`   | 1 Byte (8 bits)   | -2^7 ~ 2^7-1       | 0 ~ 2^8-1          | 同义词 `BOOL`、`BOOLEAN` ，0 为 false，!0 为 true            |
+| `SMALLINT`  | 2 Bytes (16 bits) | -2^15 ~ 2^15-1     | 0 ~ 2^16-1         |                                                              |
+| `MEDIUMINT` | 3 Bytes (24 bits) | -2^23 ~ 2^23-1     | 0 ~ 2^24-1         |                                                              |
+| `INT`       | 4 Bytes (32 bits) | -2^31 ~ 2^31-1     | 0 ~ 2^32-1         | 同义词 `INTEGER`                                             |
+| `BIGINT`    | 8 Bytes (64 bits) | -2^63 ~ 2^63-1     | 0 ~ 2^64-1         | `SERIAL` 等于 `BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE` 的别名 ，适用于创建主键 |
 
 `INT[(M)] [UNSIGNED] [ZEROFILL] [AUTO_INCREMENT]` 整数类型
 
@@ -133,11 +131,18 @@ MySQL 可以使用以下几种整数类型，存储的值的范围从“-2^(N-1)
 
 * `ZEROFILL` 填充零：
 
-  顾名思义就是用 “0” 填充的意思，也就是在数字位数不够（< *`M`*）的空间用字符 “0” 填满。只在一些交互工具中有效，例如 MyCli。
+  顾名思义就是用 “0” 填充的意思，也就是在数字位数不够（< *`M`* ）的空间用字符 “0” 填满。只在一些交互工具中有效，例如 MyCli。
 
 - `UNSIGNED` 无符号：
 
-  整数类型有可选的 `UNSIGNED` 属性，表示不允许负值，这大致可以使正数的上限提高一倍。例如 `tinyint UNSIGNED` 可以存储的范围是 0~255，而 `tinyint` 的存储范围是 -128~127。
+  整数类型有可选的 `UNSIGNED` 属性，表示不允许负值，可以使正整数的上限提升一倍：
+
+  |                  | 公式                 | 例子                                   |
+  | ---------------- | -------------------- | -------------------------------------- |
+  | 有符号的取值范围 | -2^(N-1) ~ 2^(N-1)-1 | `tinyint` -2^7 ~ 2^7-1 (-128 ~ 127)    |
+  | 无符号的取值范围 | 0  ~ 2^N-1           | `tinyint UNSIGNED` 0 ~ 2^8-1 (0 ~ 255) |
+
+  N 为存储长度的位数（1 Byte = 8 bits）。
 
 * `AUTO_INCREMENT` 自动递增：
 
@@ -173,8 +178,8 @@ salary DECIMAL(5,2)
 
 | 类型     | 字节长度 | 取值范围                                                     |
 | -------- | -------- | ------------------------------------------------------------ |
-| `FLOAT`  | 4 bytes  | `-3.402823466E+38` to `-1.175494351E-38`, `0`, and `1.175494351E-38` to `3.402823466E+38` |
-| `DOUBLE` | 8 bytes  | `-1.7976931348623157E+308` to `-2.2250738585072014E-308`, `0`, and`2.2250738585072014E-308` to `1.7976931348623157E+308` |
+| `FLOAT`  | 4 Bytes  | `-3.402823466E+38` to `-1.175494351E-38`, `0`, and `1.175494351E-38` to `3.402823466E+38` |
+| `DOUBLE` | 8 Bytes  | `-1.7976931348623157E+308` to `-2.2250738585072014E-308`, `0`, and`2.2250738585072014E-308` to `1.7976931348623157E+308` |
 
 因为浮点值是近似值而不是作为精确值存储的，比值时可能会导致问题。详见《[Problems with Floating-Point Values](https://dev.mysql.com/doc/refman/5.7/en/problems-with-float.html)》。
 
@@ -182,25 +187,39 @@ salary DECIMAL(5,2)
 
 ### `CHAR` 和 `VARCHAR` 类型
 
-下列表格中，*M* 表示字符长度，*L* 表示实际字节存储长度。这两种类型很相似，但它们被存储和检索的方式不同。它们的最大字节长度 *L* 和尾部空格是否保留也不同。
+| 类型         | 最大字节长度 *L* | 尾部空格是否保留 | 描述                                                         | 适用情况                                                     |
+| ------------ | ---------------- | ---------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| `CHAR(M)`    | 255 Bytes        | 是               | 用于存储定长字符串。字符长度不足时会填充尾部空格到指定的长度。 | 存储很短的字符串，或者所有值都接近同一个长度。例如，存储密码的 MD5 值；经常变更的数据，定长的 `CHAR` 类型不容易产生碎片。 |
+| `VARCHAR(M)` | 65,535 Bytes     | 否               | 用于存储可变长字符串，是最常见的字符串数据类型。它比定长类型更节省空间，因为它仅使用必要的空间。<br>其有效最大字节长度取决于**行大小限制**（默认 65,535 Bytes，在所有列中共享） ，参考：《[表列数量和行数限制](https://dev.mysql.com/doc/refman/5.7/en/column-count-limit.html)》。 | 字符的最大字节长度比平均长度大很多；列的更新很少，所以碎片不是问题；使用了像 UTF-8 这样复杂的字符集，每个字符都使用不同的字节数进行存储。 |
 
-| 类型         | 最大字节长度          | 尾部空格是否保留 | 描述                                                         | 适用情况                                                     |
-| ------------ | --------------------- | ---------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| `VARCHAR(M)` | 65,535 bytes (2^16-1) | 否               | 用于存储可变长字符串，是最常见的字符串数据类型。它比定长类型更节省空间，因为它仅使用必要的空间。其有效最大长度取决于**行大小限制**（默认 65,535 字节，在所有列中共享） 和使用的字符集（例如， UTF-8 字符集每个字符最多可能需要三个字节，因此最多可以声明为 21,844 个字符）。参加《[表列数量和行数限制](https://dev.mysql.com/doc/refman/5.7/en/column-count-limit.html)》。 | 字符的最大长度比平均长度大很多；列的更新很少，所以碎片不是问题；使用了像 UTF-8 这样复杂的字符集，每个字符都使用不同的字节数进行存储。 |
-| `CHAR(M)`    | 255 bytes (2^8-1)     | 是               | 用于存储定长字符串。长度不足时会填充尾部空格到指定的长度。   | 存储很短的字符串，或者所有值都接近同一个长度。例如，存储密码的 MD5 值；经常变更的数据，定长的 `CHAR` 类型不容易产生碎片。 |
+其中，*M* 表示字符长度，*L* 表示实际字节长度，取决于使用的[字符集](https://dev.mysql.com/doc/refman/5.7/en/charset.html)：
 
-不同于 `CHAR` 类型，`VARCHAR` 类型需要使用 1 或 2 个额外字节记录字符串的长度：如果列的最大长度小于或等于 255 字节，则只使用 1 个字节表示，否则使用 2 个字节：
+| 字符集（Character encoding） | *M*    | *L*     |
+| ---------------------------- | ------ | ------- |
+| `latin1`                     | 1 Char | 1 Byte  |
+| `gbk`                        | 1 Char | 2 Bytes |
+| `utf8`                       | 1 Char | 3 Bytes |
+| `utf8mb4`                    | 1 Char | 4 Bytes |
+
+`CHAR` 和 `VARCHAR` 这两种类型很相似，但它们被存储和检索的方式不同。它们的最大字节长度 *L* 和尾部空格是否保留也不同。
+
+不同于 `CHAR` 类型，`VARCHAR` 类型需要 1 或 2 个额外字节，用于记录字符串的长度：
 
 > *L* + 1 bytes if column values require 0 − 255 bytes, *L* + 2 bytes if values may require more than 255 bytes
 
-下表通过存储各种字符串值到 `CHAR(4)` 和 `VARCHAR(4)` 列说明了 `CHAR` 和 `VARCHAR` 之间的差别（假设该列使用单字节字符集，例如 latin1）：
+这是因为：
 
-| 值           | `CHAR(4)` | 需要存储 | `VARCHAR(4)` | 需要存储 |
-| ------------ | --------- | -------- | ------------ | -------- |
-| `''`         | `'    '`  | 4 bytes  | `''`         | 1 byte   |
-| `'ab'`       | `'ab  '`  | 4 bytes  | `'ab'`       | 3 bytes  |
-| `'abcd'`     | `'abcd'`  | 4 bytes  | `'abcd'`     | 5 bytes  |
-| `'abcdefgh'` | `'abcd'`  | 4 bytes  | `'abcd'`     | 5 bytes  |
+* 1 Byte = 8 bits 刚好可以记录 0~255 (2^8-1) 长度范围
+* 2 Bytes = 16 bits 刚好可以记录 0~65,535 (2^16-1) 长度范围
+
+例子：下表通过存储各种字符串值到 `CHAR(4)` 和 `VARCHAR(4)` 列展示 `CHAR` 和 `VARCHAR` 之间的差别（假设该列使用单字节字符集，例如 `latin1`）：
+
+| 值           | `CHAR(4)`           | 实际字节长度 | `VARCHAR(4)` | 实际字节长度 |
+| ------------ | ------------------- | ------------ | ------------ | ------------ |
+| `''`         | `'    '` (四个空格) | 4 bytes      | `''`         | 1 byte       |
+| `'ab'`       | `'ab  '` (两个空格) | 4 bytes      | `'ab'`       | 3 bytes      |
+| `'abcd'`     | `'abcd'`            | 4 bytes      | `'abcd'`     | 5 bytes      |
+| `'abcdefgh'` | `'abcd'`            | 4 bytes      | `'abcd'`     | 5 bytes      |
 
 ### `BLOB` 和 `TEXT` 类型
 
@@ -217,7 +236,7 @@ MySQL 不能将 `BLOB` 和 `TEXT` 列全部长度的字符串进行索引，也�
 
 ## 日期与时间类型
 
-| 类型        | **Storage before MySQL 5.6.4** | **Storage as of MySQL 5.6.4** | 默认值（0 值）      | 取值范围                                          |
+| 类型        | **Storage before MySQL 5.6.4** | **Storage as of MySQL 5.6.4** | 0 值      | 取值范围                                          |
 | ----------- | -------- | ------------------- | ------------------------------------------------- | ------------------------------------------------------------ |
 | [`YEAR`](https://dev.mysql.com/doc/refman/5.7/en/year.html) | 1 byte, little endian | Unchanged                                        | `0000`              | `1901` to `2155`                               |
 | [`DATE`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html) | 3 bytes, little endian | Unchanged                                        | `0000-00-00`        | `1000-01-01` to `9999-12-31` |
@@ -243,9 +262,19 @@ MySQL 不能将 `BLOB` 和 `TEXT` 列全部长度的字符串进行索引，也�
 | 1                  | 00000000 00000000 00000000 00000001 | `1970-01-01 00:00:01` UTC |
 | 2^31-1, 2147483647 | 01111111 11111111 11111111 11111111 | `2038-01-19 03:14:07` UTC |
 
-`TIMESTAMP` 类型的时区显示：
+`TIMESTAMP` 类型的时区处理：
 
 > MySQL converts `TIMESTAMP` values from the current time zone to UTC for storage, and back from UTC to the current time zone for retrieval. (This does not occur for other types such as `DATETIME`.) By default, the current time zone for each connection is the server's time. The time zone can be set on a per-connection basis. As long as the time zone setting remains constant, you get back the same value you store. If you store a `TIMESTAMP` value, and then change the time zone and retrieve the value, the retrieved value is different from the value you stored. This occurs because the same time zone was not used for conversion in both directions. The current time zone is available as the value of the [`time_zone`](https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_time_zone) system variable. For more information, see [Section 5.1.13, “MySQL Server Time Zone Support”](https://dev.mysql.com/doc/refman/5.7/en/time-zone-support.html).
+
+用无符号 `int` 或 `bigint` 存储时间戳也是一种解决方案，两种方案对比如下：
+
+|                            | `TIMESTAMP`                                                  | `INT`、`BIGINT`                                              |
+| -------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 时间范围                   | 存在 [2K38 问题](/posts/unix-timestamp/#Y2K38-Year-2038-problem) | 时间范围更大                                                 |
+| 时区支持                   | 无时区，便于国际化业务                                       | 无时区，便于国际化业务                                       |
+| 自动初始化和更新           | 支持                                                         | 不支持                                                       |
+| 是否支持使用时间戳整数查询 | 不支持                                                       | 支持                                                         |
+| DBMS 查询显示              | 支持用本地时区显示（缺省情况下，每个连接使用服务器时区。也可以为每个连接设置时区） | 需通过 [`FROM_UNIXTIME(unix_timestamp[,format])`](https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_from-unixtime) 函数转换，否则阅读困难 |
 
 ### DATETIME[(fsp)]
 
@@ -255,9 +284,25 @@ MySQL 不能将 `BLOB` 和 `TEXT` 列全部长度的字符串进行索引，也�
 >
 > An optional *`fsp`* value in the range from 0 to 6 may be given to specify fractional seconds precision. A value of 0 signifies that there is no fractional part. If omitted, the default precision is 0.
 
-`DATETIME` 把日期和时间封装到格式为 `YYYYMMDDHHMMSS` 的整数中，**与时区无关（本地时区）**。默认情况下，MySQL 以一种可排序的、无歧义的格式显示 `DATETIME` 值，例如“2018-01-16 22:37:08”。这是 ANSI 标准定义的日期和时间显示方法。
+`DATETIME` 类型是一个本地时间，**与时区无关**。
 
-参考：[Section 10.9, "Date and Time Data Type Representation"](https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html)，`DATETIME` 类型非小数部分的编码如下：
+默认情况下，MySQL 以一种可排序的、无歧义的格式显示 `DATETIME` 值，例如“2018-01-16 22:37:08”。这是 ANSI 标准定义的日期和时间显示方法。
+
+`DATETIME` 类型允许使用字符串类型或整数类型进行**赋值**：
+
+```mysql
+-- TODO
+```
+
+当 `DATETIME` 类型与整型比较时，`DATETIME` 类型会自动转为整型。利用这个特性可以方便快速比较，例如查询时间范围为 2018-02-15 00:00:00 到 2018-02-16 00:00:00：
+
+```mysql
+select count(1) 
+from t_table 
+where createTime between 20180215 and 20180216;
+```
+
+`DATETIME` 类型非小数部分的编码如下。参考：[Section 10.9, "Date and Time Data Type Representation"](https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html)
 
 ```
  1 bit  sign           (1= non-negative, 0= negative)
@@ -297,7 +342,7 @@ MySQL 不能将 `BLOB` 和 `TEXT` 列全部长度的字符串进行索引，也�
 
 * 节省存储空间，仅在必要时为 [`TIME`](https://dev.mysql.com/doc/refman/5.7/en/time.html), [`DATETIME`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html), and [`TIMESTAMP`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html) 指定精度：
 
-  > A `DATETIME` or `TIMESTAMP` value can include a trailing fractional seconds part in up to microseconds (6 digits) precision. In particular, any fractional part in a value inserted into a `DATETIME` or `TIMESTAMP` column is stored rather than discarded. With the fractional part included, the format for these values is `'*`YYYY-MM-DD hh:mm:ss`*[.*`fraction`*]'`, the range for `DATETIME` values is `'1000-01-01 00:00:00.000000'` to `'9999-12-31 23:59:59.999999'`, and the range for `TIMESTAMP` values is `'1970-01-01 00:00:01.000000'` to `'2038-01-19 03:14:07.999999'`. The fractional part should always be separated from the rest of the time by a decimal point; no other fractional seconds delimiter is recognized. For information about fractional seconds support in MySQL, see [Section 11.2.7, “Fractional Seconds in Time Values”](https://dev.mysql.com/doc/refman/5.7/en/fractional-seconds.html).
+  > A `DATETIME` or `TIMESTAMP` value can include a trailing fractional seconds part in up to microseconds (6 digits) precision. In particular, any fractional part in a value inserted into a `DATETIME` or `TIMESTAMP` column is stored rather than discarded. With the fractional part included, the format for these values is `'YYYY-MM-DD hh:mm:ss[.fraction]'`, the range for `DATETIME` values is `'1000-01-01 00:00:00.000000'` to `'9999-12-31 23:59:59.999999'`, and the range for `TIMESTAMP` values is `'1970-01-01 00:00:01.000000'` to `'2038-01-19 03:14:07.999999'`. The fractional part should always be separated from the rest of the time by a decimal point; no other fractional seconds delimiter is recognized. For information about fractional seconds support in MySQL, see [Section 11.2.7, “Fractional Seconds in Time Values”](https://dev.mysql.com/doc/refman/5.7/en/fractional-seconds.html).
 
 * 利用自动初始化和更新功能，为 `create_time`、`update_time` 字段赋值：
 
@@ -310,7 +355,7 @@ MySQL 不能将 `BLOB` 和 `TEXT` 列全部长度的字符串进行索引，也�
   );
   ```
 
-* 注意每一个类型都有合法的取值范围，当指定确实不合法的值时系统将 "零" 值插入到数据库中。
+* 注意每一个类型都有合法的取值范围，当指定确实不合法的值时系统将 "零" 值插入到数据库中。但要注意开启相关 [SQL mode](https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_sql_mode)：
 
   > Invalid `DATE`, `DATETIME`, or `TIMESTAMP` values are converted to the “zero” value of the appropriate type (`'0000-00-00'` or `'0000-00-00 00:00:00'`), if the SQL mode permits this conversion. The precise behavior depends on which if any of strict SQL mode and the [`NO_ZERO_DATE`](https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html#sqlmode_no_zero_date) SQL mode are enabled; see [Section 5.1.10, “Server SQL Modes”](https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html).
 

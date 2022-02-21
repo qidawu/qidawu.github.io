@@ -1,5 +1,5 @@
 ---
-title: MySQL 常用日期函数
+title: MySQL 常用日期与时间函数
 date: 2018-01-26 21:43:12
 updated:
 tags: MySQL
@@ -102,13 +102,66 @@ SELECT CONVERT_TZ( FROM_UNIXTIME( UNIX_TIMESTAMP() ), '+00:00', '+08:00' ) AS NO
 
 > MySQL converts `TIMESTAMP` values from the current time zone to UTC for storage, and back from UTC to the current time zone for retrieval. (This does not occur for other types such as `DATETIME`.) By default, the current time zone for each connection is the server's time. The time zone can be set on a per-connection basis. As long as the time zone setting remains constant, you get back the same value you store. If you store a `TIMESTAMP` value, and then change the time zone and retrieve the value, the retrieved value is different from the value you stored. This occurs because the same time zone was not used for conversion in both directions. The current time zone is available as the value of the [`time_zone`](https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_time_zone) system variable. For more information, see [Section 5.1.13, “MySQL Server Time Zone Support”](https://dev.mysql.com/doc/refman/5.7/en/time-zone-support.html).
 
-## 日期/时间转换 函数
+## TIMESTAMP ⇄ DATETIME
 
-### 日期/时间 > 时间戳
+### TIMESTAMP → DATETIME
 
-| Name                                                         | Description                                                  |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| [`UNIX_TIMESTAMP([date])`](https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_unix-timestamp) | Return a Unix timestamp.<br/>If no *`date`* argument, it returns a Unix timestamp representing seconds since `'1970-01-01 00:00:00'` UTC.<br/>If with a *`date`* argument, it returns the value of the argument as seconds since `'1970-01-01 00:00:00'` UTC. |
+[`FROM_UNIXTIME(unix_timestamp[,format])`](https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_from-unixtime)
+
+> Returns a representation of *`unix_timestamp`* as a [`DATETIME`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html) or [`VARCHAR`](https://dev.mysql.com/doc/refman/5.7/en/char.html) value. The value returned is expressed using the session time zone. (Clients can set the session time zone as described in [Section 5.1.13, “MySQL Server Time Zone Support”](https://dev.mysql.com/doc/refman/5.7/en/time-zone-support.html).) *`unix_timestamp`* is an internal timestamp value representing seconds since `'1970-01-01 00:00:00'` UTC, such as produced by the [`UNIX_TIMESTAMP()`](https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_unix-timestamp) function.
+>
+> *`unix_timestamp`*
+>
+> * When *`unix_timestamp`* is an integer, the fractional seconds precision of the `DATETIME` is `0`.
+> * When *`unix_timestamp`* is a decimal value, the fractional seconds precision of the `DATETIME` is the same as the precision of the decimal value, up to a maximum of `6`.
+> * When *`unix_timestamp`* is a floating point number, the fractional seconds precision of the datetime is `6`.
+>
+> *`format`*
+>
+> * If *`format`* is omitted, the value returned is a [`DATETIME`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html).
+> * If *`format`* is supplied, the value returned is a [`VARCHAR`](https://dev.mysql.com/doc/refman/5.7/en/char.html).
+
+例子：
+
+```sql
+-- 不指定 format 格式，返回 DATETIME 类型
+SELECT FROM_UNIXTIME(1447430881);
+ -> '2015-11-13 10:08:01'
+
+-- 只支持单位为秒的时间戳，不支持毫秒、微秒，需要先除以其精度转为浮点数
+SELECT FROM_UNIXTIME(1447430881123 / 1000);
+ -> '2015-11-13 16:08:01.1230'
+
+-- 运算后，转为整数类型
+SELECT FROM_UNIXTIME(1447430881) + 0;
+ -> 20151113100801
+
+-- 指定 format 格式，返回 VARCHAR 类型
+SELECT FROM_UNIXTIME(1447430881, '%Y %D %M %h:%i:%s %x');
+ -> '2015 13th November 10:08:01 2015'
+```
+
+`fomart` 参数参考[这里](/posts/mysql-date-and-time-functions/#format-参数)。
+
+### DATETIME → TIMESTAMP
+
+[`UNIX_TIMESTAMP([date])`](https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_unix-timestamp)
+
+> Return a Unix timestamp.
+>
+> If no *`date`* argument, it returns a Unix timestamp representing seconds since `'1970-01-01 00:00:00'` UTC.
+>
+> If with a *`date`* argument, it returns the value of the argument as seconds since `'1970-01-01 00:00:00'` UTC.
+>
+> The server interprets *`date`* as a value in the session time zone and converts it to an internal Unix timestamp value in UTC. (Clients can set the session time zone as described in [Section 5.1.13, “MySQL Server Time Zone Support”](https://dev.mysql.com/doc/refman/5.7/en/time-zone-support.html).)
+>
+> The *`date`* argument may be a [`DATE`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html), [`DATETIME`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html), or [`TIMESTAMP`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html) string, or a number in *`YYMMDD`*, *`YYMMDDhhmmss`*, *`YYYYMMDD`*, or *`YYYYMMDDhhmmss`* format. If the argument includes a time part, it may optionally include a fractional seconds part.
+>
+> The return value is an integer if no argument is given or the argument does not include a fractional seconds part, or [`DECIMAL`](https://dev.mysql.com/doc/refman/5.7/en/fixed-point-types.html) if an argument is given that includes a fractional seconds part.
+>
+> When the *`date`* argument is a [`TIMESTAMP`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html) column, [`UNIX_TIMESTAMP()`](https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_unix-timestamp) returns the internal timestamp value directly, with no implicit “string-to-Unix-timestamp” conversion.
+>
+> The valid range of argument values is the same as for the [`TIMESTAMP`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html) data type: `'1970-01-01 00:00:01.000000'` UTC to `'2038-01-19 03:14:07.999999'` UTC. If you pass an out-of-range date to [`UNIX_TIMESTAMP()`](https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_unix-timestamp), it returns `0`.
 
 例子：
 
@@ -118,33 +171,13 @@ SELECT UNIX_TIMESTAMP(now());           -- 1218124800，将当前时间转换为
 SELECT UNIX_TIMESTAMP('2008-08-08');    -- 1219125100，将指定参数转换为时间戳
 ```
 
-### 时间戳 > 日期/时间
+## DATETIME ⇄ String
 
-| Name                                                         | Description                     |
-| ------------------------------------------------------------ | ------------------------------- |
-| [`FROM_UNIXTIME(unix_timestamp[,format])`](https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_from-unixtime) | Format Unix timestamp as a date |
-
-注意，该函数只支持单位为秒的时间戳，不支持毫秒、微秒，需要先换算：
-
-```sql
-SELECT FROM_UNIXTIME(1447430881);                                    -- 2015-11-13 10:08:01
-SELECT FROM_UNIXTIME(1447430881123 / 1000);                          -- 2015-11-13 16:08:01.1230
-SELECT FROM_UNIXTIME(1447430881123456 / 1000000, '%Y %D %M %r %f');  -- 2015 13th November 04:08:01 PM 123456
-```
-
-支持指定 `fomart` 格式：
-
-```sql
-SELECT FROM_UNIXTIME(0);                       -- 1970-01-01 00:00:00
-SELECT FROM_UNIXTIME(0, '%Y %D %M %h:%i:%s');  -- 1970 1st January 12:00:00
-```
-
-### 日期/时间 > 字符串
+### DATETIME → String
 
 Date/Time to Str（日期/时间转换为字符串）函数：
 
-* `date_format(date, format)`
-* `time_format(time, format)`
+[`DATE_FORMAT(date, format)`](https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_date-format)、[`TIME_FORMAT(time, format)`](https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_time-format)
 
 例子：
 
@@ -155,11 +188,13 @@ select date_format('2018-08-08 22:23:01', '%Y%m%d%H%i%s');      -- 2018080822230
 select time_format('22:23:01', '%H.%i.%s');                     -- 22.23.01
 ```
 
-### 字符串 > 日期/时间
+### String → DATETIME
 
-Str to Date （字符串转换为日期）函数：
+[`STR_TO_DATE(str, format)`](https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_str-to-date)
 
-* `str_to_date(str, format)`
+> This is the inverse of the [`DATE_FORMAT()`](https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_date-format) function. It takes a string *`str`* and a format string *`format`*. [`STR_TO_DATE()`](https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_str-to-date) returns a [`DATETIME`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html) value if the format string contains both date and time parts, or a [`DATE`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html) or [`TIME`](https://dev.mysql.com/doc/refman/5.7/en/time.html) value if the string contains only date or time parts. If the date, time, or datetime value extracted from *`str`* is illegal, [`STR_TO_DATE()`](https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_str-to-date) returns `NULL` and produces a warning.
+
+例子：
 
 ```mysql
 select str_to_date('08/09/2008', '%m/%d/%Y');                   -- 2008-08-09
@@ -171,7 +206,9 @@ select str_to_date('08.09.2008 08:09:30', '%m.%d.%Y %h:%i:%s'); -- 2008-08-09 08
 
 ### format 参数
 
-`format` 如下，这里只列出常用的：
+`format` 参数如下，这里只列出常用的。更多 `format` 参数参考：
+
+https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_date-format
 
 | `format` | 描述                                                         |
 | -------- | ------------------------------------------------------------ |
@@ -191,13 +228,9 @@ select str_to_date('08.09.2008 08:09:30', '%m.%d.%Y %h:%i:%s'); -- 2008-08-09 08
 
 ## 日期/时间计算 函数
 
-为日期增加一个时间间隔：
+为日期增加一个时间间隔：`date_add()`
 
-* `date_add()`
-
-为日期减去一个时间间隔：
-
-* `date_sub()`
+为日期减去一个时间间隔：`date_sub()`
 
 ```mysql
 set @dt = now();
@@ -287,11 +320,11 @@ group by days;
 
 ## 按 N 分钟统计订单量
 
-做法在于将每行的分钟数 `(MINUTE(create_time)` 除以 10 得到的小数向下取整，再乘以 10 就是所属的区间。例如：
+做法在于将每行的分钟数 `MINUTE(create_time)` 除以 10 得到的小数使用 `FLOOR` 函数向下取整，再乘以 10 得到的就是所属区间。例如：
 
-* 1 分钟 > 0
-* 25 分钟 > 20
-* 59 分钟 > 50
+* 1 分钟 -> 0
+* 25 分钟 -> 20
+* 59 分钟 -> 50
 
 下例按 10 分钟统计订单量：
 
@@ -326,41 +359,6 @@ GROUP BY hours;
 |       18 | 2008-09-29 01:50 |
 |     1949 | 2008-09-29 02:00 |
 ```
-
-# 建表自动初始化与更新时间
-
-假设表有 3 个字段：id、name、update_time，希望在新增记录时能自动设置 update_time 字段为当前时间，设置 `DEFAULT CURRENT_TIMESTAMP` 子句即可：
-
-```mysql
-CREATE TABLE `test` (
-`id` int NOT NULL,
-`name` varchar(255),
-`update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-PRIMARY KEY (`id`)
-);
-```
-
-如果希望在更新记录时还能自动更新 update_time 字段为当前时间，设置 `ON UPDATE CURRENT_TIMESTAMP` 子句即可：
-
-```mysql
-...
-`update_time` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-...
-```
-
-设置之后，即使直接通过 Navicat 工具修改了 name 字段，那么 update_time 也会自动更新，除非手动设置了 update_time 字段。
-
-参考：https://dev.mysql.com/doc/refman/5.7/en/timestamp-initialization.html
-
-# DATETIME 类型快速对比
-
-```mysql
-select count(1) 
-from t_table 
-where createTime between 20180215 and 20180216;
-```
-
-datetime 会自动转为整数，查询范围从 2018-02-15 00:00:00 到 2018-02-16 00:00:00。
 
 # 参考
 
