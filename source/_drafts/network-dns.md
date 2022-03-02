@@ -1,8 +1,8 @@
 ---
-title: 计算机网络系列（应用层）DNS 协议、相关命令总结
+title: 应用层 DNS 协议、相关命令总结
 date: 2022-01-15 23:32:08
 updated:
-tags: [Java]
+tags: 计算机网络
 typora-root-url: ..
 ---
 
@@ -315,3 +315,9 @@ https://en.wikipedia.org/wiki/Domain_name
 https://wizardzines.com/comics/dig/
 
 https://wizardzines.com/comics/dns-record-types/
+
+
+
+《[如果美国封了 DNS，俄罗斯将从网络消失？](https://mp.weixin.qq.com/s/VCzEFqPR9JXAJPUDQv0gVA)》
+
+《[美国能让中国从网络上消失？- 良许 Linux](https://mp.weixin.qq.com/s/if4SfF7gEPH_U6ue_xQHdw)》

@@ -1,7 +1,8 @@
+---
 title: "GoDaddy 中配置无 www 前缀域名"
 date: 2015-04-12 23:19:55
 updated: 
-tags: [DNS, 建站]
+tags: [计算机网络, 建站]
 description: "搭好博客后，在权威域名服务商 GoDaddy 注册了一个新域名使用。当配置无 www 前缀域名时，却遇到了一些配置问题。"
 ---
 

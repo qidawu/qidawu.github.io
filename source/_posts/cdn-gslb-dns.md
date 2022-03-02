@@ -2,7 +2,7 @@
 title: "浅析基于 DNS 解析方式的 GSLB"
 date: 2015-09-30 22:33:55
 updated:
-tags: DNS
+tags: 计算机网络
 ---
 
 GSLB（Global Server Load Balance，全局负载均衡）作为 CDN 系统架构中最核心的部分，负责流量调度。本文站在服务提供方的视角，做一些技术总结。
