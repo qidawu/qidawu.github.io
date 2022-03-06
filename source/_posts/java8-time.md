@@ -1,5 +1,5 @@
 ---
-title: Java 常用类型系列（四）Java 8 日期与时间总结
+title: Java 常用类型系列（四）日期与时间类型总结
 date: 2018-04-05 23:39:32
 updated:
 tags: Java
@@ -32,13 +32,9 @@ Java 8 引入了新的 `java.time` 类库，用于加强对日期与时间的操
 | [java.time.zone](https://docs.oracle.com/javase/8/docs/api/java/time/zone/package-summary.html) | Support for time-zones and their rules.                      |
 | [java.time.format](https://docs.oracle.com/javase/8/docs/api/java/time/format/package-summary.html) | Provides classes to print and parse dates and times.         |
 
-## java.time
-
-`java.time` 包的核心接口：
-
-![java-time核心接口](/img/java/time/java-time核心接口.png)
-
 `java.time` 包的常用类：
+
+![java.time核心类](/img/java/time/java.time核心类.png)
 
 ```java
 Year              // 2007
@@ -56,10 +52,6 @@ ZonedDateTime     // 2007-12-03T10:15:30+01:00 Europe/Paris
 Instant           // 以 Unix 元年时间（UTC 时区 1970-01-01T00:00:00Z，“Z” 代表 UTC 时区）开始所经历的秒数
 ```
 
-![java.time核心类](/img/java/time/java.time核心类.png)
-
-## java.time.temporal
-
 `java.time.temporal` 包的核心接口：
 
 | Interface          | Description                                                  |
@@ -73,85 +65,23 @@ Instant           // 以 Unix 元年时间（UTC 时区 1970-01-01T00:00:00Z，�
 
 ![ChronoLocalDate核心接口方法](/img/java/time/temporal核心接口.png)
 
-# LocalDate、LocalTime
-
-`LocalDate`、`LocalTime` 是人类易读的日期和时间格式，表示一个本地时间点，**无时区信息**。
-
-## 历法系统介绍
+# 历法系统介绍
 
 首先了解几个概念：
 
-### 历法
+## Calendar system 历法
 
 [历法](https://zh.wikipedia.org/wiki/历法)，或称日历，是用[年](https://zh.wikipedia.org/wiki/年)、[月](https://zh.wikipedia.org/wiki/月)、[日](https://zh.wikipedia.org/wiki/日)等时间单位计算时间的方法。Java 8 提供的历法实现如下：
 
-| 历法                                                         | Java 8 实现        |
-| ------------------------------------------------------------ | ------------------ |
-| [格里历（公历）](https://zh.wikipedia.org/wiki/格里曆)，即 [Gregorian calendar](https://en.wikipedia.org/wiki/Gregorian_calendar) | `LocalDate`        |
-| [和历](https://zh.wikipedia.org/wiki/和历)                   | `JapaneseDate`     |
-| [中华民国历](https://zh.wikipedia.org/wiki/民國紀年)         | `MinguoDate`       |
-| [泰国历](https://zh.wikipedia.org/wiki/泰國曆)               | `ThaiBuddhistDate` |
-| [伊斯兰历（回历）](https://zh.wikipedia.org/zh/伊斯兰历)     | `HijrahDate`       |
+| 历法                                                         | Java 8 实现                         |
+| ------------------------------------------------------------ | ----------------------------------- |
+| [格里历（公历）](https://zh.wikipedia.org/wiki/格里曆)，即 [Gregorian calendar](https://en.wikipedia.org/wiki/Gregorian_calendar) | `java.time.LocalDate`               |
+| [和历](https://zh.wikipedia.org/wiki/和历)                   | `java.time.chrono.JapaneseDate`     |
+| [中华民国历](https://zh.wikipedia.org/wiki/民國紀年)         | `java.time.chrono.MinguoDate`       |
+| [泰国历](https://zh.wikipedia.org/wiki/泰國曆)               | `java.time.chrono.ThaiBuddhistDate` |
+| [伊斯兰历（回历）](https://zh.wikipedia.org/zh/伊斯兰历)     | `java.time.chrono.HijrahDate`       |
 
-还有其它一些常见的历法，例如：
-
-* [中国传统历法](https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BC%A0%E7%BB%9F%E5%8E%86%E6%B3%95)
-* [会计年度](https://zh.wikipedia.org/wiki/會計年度)：
-
-> 财政年度，又称会计年度，是指公司或国家每年制定预算或计算收入的统计时间。但每个国家或其法例所辖的组织各有不同，大抵分成两类：
->
-> * 历年制，即是由1月1日起，使用历年制有中国、德国、法国、等等。
-> * 跨年制，使用跨年制有美国、日本、香港、澳大利亚、等等。
->
-> 在会计上常会用 [4/4/5 日历](https://en.wikipedia.org/wiki/4-4-5_Calendar)，每一个月会有固定的周数，以便各月之间和各年之间的比较。
-
-### 纪年
-
-> [纪年](https://zh.wikipedia.org/wiki/纪年)，或称**纪元**，是指[历法](https://zh.wikipedia.org/wiki/历法)中的**年份**命名体系，例如[格里历](https://zh.wikipedia.org/wiki/格里曆)（公历）所使用的[基督纪年](https://zh.wikipedia.org/wiki/基督纪年)（[公元](https://zh.wikipedia.org/wiki/公元)），中国[农历](https://zh.wikipedia.org/wiki/农历)使用的[干支纪年](https://zh.wikipedia.org/wiki/干支纪年)等。世界各地曾存在过各种不同的纪年方法，其中一些至今仍在使用，例如日本现在仍在使用[年号纪年](https://zh.wikipedia.org/wiki/年号纪年)。
->
-> 这里提供了一个常见的[纪年对照表](https://zh.wikipedia.org/wiki/%E6%B0%91%E5%9C%8B%E7%B4%80%E5%B9%B4#%E7%B4%80%E5%B9%B4%E5%B0%8D%E7%85%A7)，可供参考。 
-
-> [年号](https://zh.wikipedia.org/wiki/%E5%B9%B4%E5%8F%B7)是中国历史君主时代帝王纪年所立的名号，缘起于西汉汉武帝时期，后来朝鲜新罗在6世纪、日本在7世纪后期、越南在10世纪都因为中国的影响，开始使用年号；台湾岛的郑氏王朝与台湾民主国、朝鲜半岛大韩帝国与高丽、蒙古国建国初年受到中国影响，都还使用过年号，目前唯一使用年号的是仍保持君主制的日本。
->
-> 值得一提，[中华民国](https://zh.wikipedia.org/wiki/中華民國)所用的[民国纪年](https://zh.wikipedia.org/wiki/民國紀年)、以及[朝鲜民主主义人民共和国](https://zh.wikipedia.org/wiki/朝鮮民主主義人民共和國)使用的[主体纪年](https://zh.wikipedia.org/wiki/主体纪年)，常被误认为是年号，实际上仅是单纯的纪年[历法](https://zh.wikipedia.org/wiki/曆法)。
-
-> [一世一元制](https://zh.wikipedia.org/wiki/%E4%B8%80%E4%B8%96%E4%B8%80%E5%85%83%E5%88%B6)，指[君主](https://zh.wikipedia.org/wiki/君主)(国王、大君主、可汗、天皇、皇帝)在其在位期间只使用同一个[年号](https://zh.wikipedia.org/wiki/年號)，不进行改元的制度。例外：如果君主后来另行称帝或是重祚，会另建新年号，以示区别。
-
-### ISO-8601
-
-[ISO-8601](https://zh.wikipedia.org/wiki/ISO_8601) 日历系统是世界文明日历系统的事实标准：
-
-> In general, ISO 8601 applies to these representations and formats: 
->
-> * *dates,* in the [Gregorian](https://en.wikipedia.org/wiki/Gregorian_calendar) calendar (including the [proleptic Gregorian](https://en.wikipedia.org/wiki/Proleptic_Gregorian_calendar) calendar); 
-> * *times,* based on the [24-hour timekeeping system](https://en.wikipedia.org/wiki/24-hour_clock), with optional [UTC offset](https://en.wikipedia.org/wiki/UTC_offset); [*time intervals*](https://en.wikipedia.org/wiki/Time_interval); and combinations thereof.[[2]](https://en.wikipedia.org/wiki/ISO_8601#cite_note-scope-2) 
->
-> The standard does not assign specific meaning to any element of the dates/times represented: the meaning of any element depends on the context of its use. 
->
-> Dates and times represented cannot use words that do not have a specified numerical meaning within the standard (thus excluding [names of years](https://en.wikipedia.org/wiki/Chinese_calendar_correspondence_table) in the [Chinese calendar](https://en.wikipedia.org/wiki/Chinese_calendar)), or that do not use [computer characters](https://en.wikipedia.org/wiki/Character_(computing)) (excludes images or sounds).[[2]](https://en.wikipedia.org/wiki/ISO_8601#cite_note-scope-2)
-
-ISO-8601 的**日期表示法**为：
-
-> In representations that adhere to the ISO 8601 *interchange standard* :
->
-> * dates and times are arranged such that the greatest temporal term (typically a year) is placed at the left and each successively lesser term is placed to the right of the previous term. 
-> * Representations must be written in a combination of [Arabic numerals](https://en.wikipedia.org/wiki/Arabic_numerals) and the specific computer characters (such as "-", ":", "T", "W", "Z") that are assigned specific meanings within the standard; that is, such commonplace descriptors of dates (or parts of dates) as "January", "Thursday", or "New Year's Day" are not allowed in interchange representations within the standard.
-
-> 年由 4 位数字组成 `YYYY`，或者带正负号的四或五位数字表示 `±YYYYY`：
->
-> * 公元 1 年为 0001 年
-> * 公元前 1 年为 0000 年
-> * 公元前 2 年为 -0001 年
->
-> 其它以此类推。
->
-> 月、日用两位数字表示：`MM`、`DD`。
-
-https://docs.oracle.com/javase/8/docs/api/java/time/LocalDateTime.html
-
-> A date-time without a time-zone in the ISO-8601 calendar system, such as `2007-12-03T10:15:30`.
-
-Java 8 中 `LocalDate` 基于 ISO-8601 实现。另外还提供了四种其它的日历系统。这些日历系统中的每一个都有一个对应的类，如下图。所有这些类都实现了 `java.time.chrono.ChronoLocalDate` 接口，能够对日期进行建模。
+这些类都实现了 `java.time.chrono.ChronoLocalDate` 接口，能够对日期进行建模。
 
 ![ChronoLocalDate实现类](/img/java/time/ChronoLocalDate实现类.png)
 
@@ -167,6 +97,65 @@ ThaiBuddhistDate thaiBuddhistDate = ThaiBuddhistDate.from(date);
 // 伊斯兰历（回历）
 HijrahDate hijrahDate = HijrahDate.from(date);
 ```
+
+还有其它一些常见的历法，例如：
+
+* [中国传统历法](https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BC%A0%E7%BB%9F%E5%8E%86%E6%B3%95)
+* ...
+
+## Calendar era 纪年
+
+https://en.wikipedia.org/wiki/Calendar_era
+
+https://docs.oracle.com/javase/8/docs/api/java/time/chrono/Era.html
+
+> [纪年](https://zh.wikipedia.org/wiki/纪年)，或称**纪元**，是指[历法](https://zh.wikipedia.org/wiki/历法)中的**年份**命名体系，例如[格里历](https://zh.wikipedia.org/wiki/格里曆)（公历）所使用的[基督纪年](https://zh.wikipedia.org/wiki/基督纪年)（[公元](https://zh.wikipedia.org/wiki/公元)），中国[农历](https://zh.wikipedia.org/wiki/农历)使用的[干支纪年](https://zh.wikipedia.org/wiki/干支纪年)等。世界各地曾存在过各种不同的纪年方法，其中一些至今仍在使用，例如日本现在仍在使用[年号纪年](https://zh.wikipedia.org/wiki/年号纪年)。
+>
+> 这里提供了一个常见的[纪年对照表](https://zh.wikipedia.org/wiki/%E6%B0%91%E5%9C%8B%E7%B4%80%E5%B9%B4#%E7%B4%80%E5%B9%B4%E5%B0%8D%E7%85%A7)，可供参考。 
+
+> [年号](https://zh.wikipedia.org/wiki/%E5%B9%B4%E5%8F%B7)是中国历史君主时代帝王纪年所立的名号，缘起于西汉汉武帝时期，后来朝鲜新罗在6世纪、日本在7世纪后期、越南在10世纪都因为中国的影响，开始使用年号；台湾岛的郑氏王朝与台湾民主国、朝鲜半岛大韩帝国与高丽、蒙古国建国初年受到中国影响，都还使用过年号，目前唯一使用年号的是仍保持君主制的日本。
+>
+> 值得一提，[中华民国](https://zh.wikipedia.org/wiki/中華民國)所用的[民国纪年](https://zh.wikipedia.org/wiki/民國紀年)、以及[朝鲜民主主义人民共和国](https://zh.wikipedia.org/wiki/朝鮮民主主義人民共和國)使用的[主体纪年](https://zh.wikipedia.org/wiki/主体纪年)，常被误认为是年号，实际上仅是单纯的纪年[历法](https://zh.wikipedia.org/wiki/曆法)。
+
+> [一世一元制](https://zh.wikipedia.org/wiki/%E4%B8%80%E4%B8%96%E4%B8%80%E5%85%83%E5%88%B6)，指[君主](https://zh.wikipedia.org/wiki/君主)(国王、大君主、可汗、天皇、皇帝)在其在位期间只使用同一个[年号](https://zh.wikipedia.org/wiki/年號)，不进行改元的制度。例外：如果君主后来另行称帝或是重祚，会另建新年号，以示区别。
+
+# LocalDate、LocalTime
+
+`LocalDate`、`LocalTime` 是人类易读的日期和时间格式，表示一个本地时间点，基于 ISO 8601 历法系统，**无时区信息**。
+
+## ISO 8601 日期和时间表示法
+
+The [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) calendar system is the modern civil calendar system used today in most of the world. It is equivalent to the [proleptic Gregorian](https://en.wikipedia.org/wiki/Proleptic_Gregorian_calendar) calendar system :
+
+> In general, ISO 8601 applies to these representations and formats: 
+>
+> * *dates,* in the [Gregorian](https://en.wikipedia.org/wiki/Gregorian_calendar) calendar (including the [proleptic Gregorian](https://en.wikipedia.org/wiki/Proleptic_Gregorian_calendar) calendar); 
+> * *times,* based on the [24-hour timekeeping system](https://en.wikipedia.org/wiki/24-hour_clock), with optional [UTC offset](https://en.wikipedia.org/wiki/UTC_offset); [*time intervals*](https://en.wikipedia.org/wiki/Time_interval); and combinations thereof.[[2]](https://en.wikipedia.org/wiki/ISO_8601#cite_note-scope-2) 
+>
+> The standard does not assign specific meaning to any element of the dates/times represented: the meaning of any element depends on the context of its use. 
+>
+> Dates and times represented cannot use words that do not have a specified numerical meaning within the standard (thus excluding [names of years](https://en.wikipedia.org/wiki/Chinese_calendar_correspondence_table) in the [Chinese calendar](https://en.wikipedia.org/wiki/Chinese_calendar)), or that do not use [computer characters](https://en.wikipedia.org/wiki/Character_(computing)) (excludes images or sounds).[[2]](https://en.wikipedia.org/wiki/ISO_8601#cite_note-scope-2)
+
+ISO 8601 的**日期和时间表示法**为：
+
+> In representations that adhere to the ISO 8601 *interchange standard* :
+>
+> * dates and times are arranged such that the greatest temporal term (typically a year) is placed at the left and each successively lesser term is placed to the right of the previous term. 
+> * Representations must be written in a combination of [Arabic numerals](https://en.wikipedia.org/wiki/Arabic_numerals) and the specific computer characters (such as "-", ":", "T", "W", "Z") that are assigned specific meanings within the standard; that is, such commonplace descriptors of dates (or parts of dates) as "January", "Thursday", or "New Year's Day" are not allowed in interchange representations within the standard.
+
+而这几个类都基于 ISO 8601实现的：
+
+https://docs.oracle.com/javase/8/docs/api/java/time/LocalDate.html
+
+> A date without a time-zone in the ISO-8601 calendar system, such as `2007-12-03`.
+
+https://docs.oracle.com/javase/8/docs/api/java/time/LocalTime.html
+
+> A time without a time-zone in the ISO-8601 calendar system, such as `10:15:30`.
+
+https://docs.oracle.com/javase/8/docs/api/java/time/LocalDateTime.html
+
+> A date-time without a time-zone in the ISO-8601 calendar system, such as `2007-12-03T10:15:30`.
 
 ## 底层实现
 
@@ -259,14 +248,17 @@ LocalDate date1 = LocalDate.ofEpochDay(0);
 // 通过静态方法创建实例
 LocalDate date2 = LocalDate.parse("2007-12-03");
 
-// 通过时间戳创建实例
-LocalDateTime.ofEpochSecond(timestamp, 0, ZoneOffset.of("+08:00"))
-
 // 合并日期和时间
 LocalDateTime dateTime = date.atTime(time);
 LocalDateTime dateTime1 = time.atDate(date);
 LocalDateTime dateTime2 = date.atStartOfDay();
 LocalDateTime dateTime3 = LocalDateTime.of(date, time);
+
+// 获取本地时区的当前日期与时间
+LocalDateTime dateTime4 = LocalDateTime.now();
+
+// 通过 unix_timestamp 创建实例
+LocalDateTime dateTime5 = LocalDateTime.ofEpochSecond(timestamp, 0, ZoneOffset.of("+08:00"));
 
 // java.time.LocalDateTime 转 java.sql.Timestamp
 Timestamp timestamp = Timestamp.valueOf(localDateTime);
@@ -331,23 +323,24 @@ LocalDate newDate8 = date.with(TemporalAdjusters.lastDayOfMonth());
 
 作为人，我们习惯于以星期几、几号、几点、几分这样的方式理解日期和时间。毫无疑问，这种方式对于计算机而言并不容易理解。从计算机的角度来看，建模时间最自然的格式是表示一个持续时间段上某个点的单一大整型数。这也是新的 `java.time.Instant` 类对时间建模的方式，它是以 **Unix 元年时间**（UTC 时区 1970-01-01T00:00:00Z，“Z” 代表 UTC 时区）开始所经历的秒数进行计算。
 
-> 1 秒(s) = 
-> 1,000 毫秒(ms) = 
-> 1,000,000 微秒(μs) = 
-> 1,000,000,000 纳秒(ns) = 
-> 1,000,000,000,000 皮秒(ps) = 
-> 1,000,000,000,000,000 飞秒(fs) = 
-> 1,000,000,000,000,000,000 仄秒(zs) = 
-> 1,000,000,000,000,000,000,000 幺秒(ys) = 
-> 1,000,000,000,000,000,000,000,000 渺秒(as)
+## 小数秒精度
 
-> 1 纳秒(ns) = 10^-9 秒（0.000,000,001，十亿分之一秒）
-> 1 微秒(μs) = 10^-6 秒（0.000,001，百万分之一秒）
-> 1 毫秒(ms) = 10^-3 秒（0.001，千分之一秒）
+参考《[国际单位制词头表（Metric prefix）](https://en.wikipedia.org/wiki/Metric_prefix)》，小数秒精度（fractional seconds precision）可以分为：
+
+| 名称词头 | 符号词头 | 中文词头   | 英文          | [科学计数法](https://en.wikipedia.org/wiki/Scientific_notation) | 二进制存储所需位数 | 类型     | 名称示例 (以秒为例) | 符号示例 (以秒为例) |
+| -------- | -------- | ---------- | ------------- | ------------------------------------------------------------ | ------------------ | -------- | ------------------- | ------------------- |
+| milli    | m        | 毫         | Thousandth    | 1×10⁻³                                                       | 2¹⁰                | 小数单位 | millisecond         | ms                  |
+| micro    | μ        | 微         | Millionth     | 1×10⁻⁶                                                       | 2²⁰                | 小数单位 | microsecond         | μs                  |
+| nano     | n        | 纳〔诺〕   | Billionth     | 1×10⁻⁹                                                       | 2³⁰                | 小数单位 | nanosecond          | ns                  |
+| pico     | p        | 皮〔可〕   | Trillionth    | 1×10⁻¹²                                                      | 2⁴⁰                | 小数单位 | picosecond          | ps                  |
+| femto    | f        | 飞〔母托〕 | Quadrillionth | 1×10⁻¹⁵                                                      | 2⁵⁰                | 小数单位 | femtosecond         | fs                  |
+| atto     | a        | 啊〔托〕   | Quintillionth | 1×10⁻¹⁸                                                      | 2⁶⁰                | 小数单位 | attosecond          | as                  |
+| zepto    | z        | 仄〔普托〕 | Sextillionth  | 1×10⁻²¹                                                      | 2⁷⁰                | 小数单位 | zeptosecond         | zs                  |
+| yocto    | y        | 幺〔科托〕 | Septillionth  | 1×10⁻²⁴                                                      | 2⁸⁰                | 小数单位 | yoctosecond         | ys                  |
 
 ## 底层实现
 
-从底层实现可见，`Instant` 仅包含不可变的秒、纳秒。即支持的最高存储精度为**纳秒**：
+从底层实现可见，`java.time.Instant` 仅包含不可变的秒、纳秒。由此可见，支持的最高存储精度为**纳秒（10^-9 秒）**：
 
 ```java
 public final class Instant
@@ -364,55 +357,84 @@ public final class Instant
 }
 ```
 
-## 使用方式
-
-通过静态工厂方法创建实例：
+可以通过 getter 方法获取这两个属性，例如：
 
 ```java
-// 自 1970-01-01T00:00:00Z 之后经过的毫秒数
-// 1970-01-01T00:00:01.000Z
-Instant instant = Instant.ofEpochMilli(1000);
-
-// // 自 1970-01-01T00:00:00Z 之后经过的秒数
-// 1970-01-01T00:00:01Z
-Instant instant1 = Instant.ofEpochSecond(1);
-
-Instant instant2 = Instant.now();
-```
-
-`Instant` 与 `java.util.Date` 互转：
-
-```java
-Date date = Date.from(instant);
-Instant instant = date.toInstant();
-```
-
-`Instant` 与时间戳互转：
-
-```java
-Instant instant = Instant.now(); // 2019-07-07T11:07:42.814Z
+Instant instant = Instant.now(); // 1562497662814 (2019-07-07T11:07:42.814Z)
 
 // Instant 的设计初衷是为了便于机器使用，底层实现仅包含由秒和纳秒所构成的数字。
 long seconds = instant.getEpochSecond();  // 1562497662
 int nanoSeconds = instant.getNano();  // 814000000
-
-// Instant 无法处理那些我们非常容易理解的时间单位，例如下述操作将抛出异常：
-// java.time.temporal.UnsupportedTemporalTypeException: Unsupported field: DayOfMonth
-// instant.get(ChronoField.DAY_OF_MONTH);
-
-// Instant 与时间戳互转
-long timestamp = instant.toEpochMilli();  // 1562497662814
-assertEquals(System.currentTimeMillis(), timestamp); // true
-Instant instant2 = Instant.ofEpochMilli(timestamp); // 2019-07-07T11:07:42.814Z
 ```
 
-时间字符串转 `Instant`：
+## 使用方式
+
+### 创建实例
+
+`java.time.Instant` 提供了一系列静态工厂方法，用于创建实例，例如：
 
 ```java
-Instant.from(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse("2001-07-04T12:08:56+05:30"));
+Instant instant = Instant.now();
 ```
 
-创建副本并修改：
+*unix_timestamp* → `java.time.Instant`：
+
+```java
+// // 自 1970-01-01T00:00:00Z 之后经过的秒数
+// 1970-01-01T00:00:01Z
+Instant instant = Instant.ofEpochSecond(1);
+
+// 自 1970-01-01T00:00:00Z 之后经过的毫秒数
+// 1970-01-01T00:00:01.000Z
+Instant instant = Instant.ofEpochMilli(1000);
+```
+
+`java.util.Date` → `java.time.Instant`：
+
+```java
+Instant instant = new Date().toInstant();
+```
+
+`java.time.LocalDateTime` → `java.time.ZonedDateTime` →  `java.time.Instant`：
+
+```java
+ZonedDateTime dt = LocalDateTime.now().atZone(zoneId);
+Instant instant = Instant.from(dt);
+```
+
+### 类型转换
+
+`java.time.Instant` → *unix_timestamp*：
+
+```java
+long seconds = Instant.now().getEpochSecond();  // 秒
+long milliSeconds = Instant.now().toEpochMilli();  // 毫秒
+```
+
+`java.time.Instant` → `java.util.Date`：
+
+```java
+Date date = Date.from(Instant.now());
+```
+
+### 读取字段信息
+
+```java
+Instant instant = Instant.now(); // 1562497662814 (2019-07-07T11:07:42.814Z)
+
+int milliOfSecond = instant.get(ChronoField.MILLI_OF_SECOND);  // 814
+int microOfSecond = instant.get(ChronoField.MICRO_OF_SECOND);  // 814000
+int nanoOfSecond = instant.get(ChronoField.NANO_OF_SECOND);    // 814000000
+```
+
+但 `java.time.Instant` 无法处理那些人类非常容易理解的时间单位，例如下述操作将抛出异常：
+
+```java
+// java.time.temporal.UnsupportedTemporalTypeException: Unsupported field: DayOfMonth
+Instant.now().get(ChronoField.DAY_OF_MONTH);
+```
+
+### 创建副本并修改
 
 ```java
 Instant newInstant = instant.with(ChronoField.INSTANT_SECONDS, 30);
@@ -569,14 +591,14 @@ ZonedDateTime.now(ZoneId.of("Asia/Jakarta")).truncatedTo(ChronoUnit.SECONDS).for
 >
 > A formatter created from a pattern can be used as many times as necessary, it is immutable and is thread-safe.
 
-`DateTimeFormatter#ofPattern(String)` 静态工厂方法：
+使用静态工厂方法 `DateTimeFormatter#ofPattern(String)` 创建日期格式器：
 
 ```java
 // 01/02/2021
 LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 ```
 
-`DateTimeFormatter#ofPattern(String, Locale)` 静态工厂方法：
+使用静态工厂方法 `DateTimeFormatter#ofPattern(String, Locale)` 创建日期格式器：
 
 ```java
 // 2021 2 1
@@ -591,7 +613,7 @@ LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy MMMM d", Locale.US)
 LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy MMMMM d", Locale.US));
 ```
 
-Pattern 的字母数量决定格式，以月份为例：
+注意：Pattern 的字母数量决定格式，以月份为例：
 
 * Exactly 1 pattern letter will use the minimum number of digits and without padding.
 * Exactly 2 pattern letters, the count of digits is used as the width of the output field, with the value zero-padded as necessary.
