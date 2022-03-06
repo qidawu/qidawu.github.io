@@ -18,7 +18,7 @@ typora-root-url: ..
 
 在 Java 中，迭代器模式的实现有以下几种：
 
-![Iterator_impl](/img/java/design-pattern/Iterator_impl.png)
+![Iterator Interface](/img/java/collection/Iterator_interface.png)
 
 * [`java.util.Enumeration<E>`](https://docs.oracle.com/javase/8/docs/api/java/util/Enumeration.html)：Java 1.0 引入，用于枚举集合元素。这种传统接口已被 `Iterator` 迭代器取代，虽然 `Enumeration` 还未被废弃，但在现代代码中已经被很少使用了。主要用于诸如 `java.util.Vector` 和 `java.util.Properties` 这些传统集合类。
 * [`java.util.Iterator<E>`](https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html)：Java 1.2 引入。作为 [Java 集合框架](https://docs.oracle.com/javase/8/docs/technotes/guides/collections/index.html)的成员，迭代器取代了枚举。迭代器与枚举有两个不同之处：
@@ -30,7 +30,13 @@ typora-root-url: ..
 
 # 与 Stream API 对比
 
-[`java.util.stream.Stream<T>`]()：Java 8 引入，用于实现 Stream API。与迭代器的区别在于：
+[`java.util.stream.Stream<T>`]()：Java 8 引入，用于实现 Stream API：
+
+![Stream Interface](/img/java/lambda/Stream_interface.png)
+
+![Stream Interface](/img/java/lambda/Stream_interface_2.png)
+
+与迭代器的区别在于：
 
 * `Iterator` 外部迭代，使用命令式编程范式，完全由用户来决定”做什么“和”怎么做“，例如：
 
