@@ -10,7 +10,7 @@ typora-root-url: ..
 
 ![unix_timestamp](/img/gnu-linux/unix_timestamp.png)
 
-# 延伸阅读
+# 时间戳问题
 
 ## Y2K (Year 2000 problem)
 
@@ -59,11 +59,49 @@ Instant.ofEpochSecond(b).atZone(ZoneOffset.of("-00:00")).toLocalDateTime()
 >
 > 已有人提出了许多建议，包括以带符号的64位整数来存储自某个时间点（1970年1月1日或2000年1月1日）以来的毫秒/微秒，以获得至少30万年的时间范围。其他建议包括用新的库重新编译程序，等等。这方面的工作正在开展之中；据专家们声称，2038年问题解决起来应该不难。
 
+# 各种开发语言获取当前时间戳
+
+Java
+
+[`java.time.Instant`](/posts/java8-time/#Instant)
+
+```java
+// 秒时间戳
+Instant.now().getEpochSecond()
+// 毫秒时间戳
+Instant.now().toEpochMilli()
+
+// 毫秒时间戳
+System.currentTimeMillis()
+```
+
+Javascript
+
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date
+
+```javascript
+Math.round(new Date() / 1000)
+```
+
+Shell
+
+```shell
+date +%s
+```
+
+MySQL
+
+[`UNIX_TIMESTAMP([date])`](/posts/mysql-date-and-time-functions/#DATETIME-→-TIMESTAMP)
+
+```sql
+SELECT UNIX_TIMESTAMP()
+```
+
+其它语言：...
+
 # 参考
 
 [UNIX时间 - 维基百科](https://zh.wikipedia.org/zh/UNIX%E6%97%B6%E9%97%B4)
-
-https://time.is/UTC
 
 Y2K problem
 
