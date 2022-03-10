@@ -123,12 +123,12 @@ public synchronized int nextId() {
 
 | 集合操作                           | 命令                                             |
 | ---------------------------------- | ------------------------------------------------ |
-| 添加元素                           | `SADD` key member [member ...]                   |
+| 添加元素（去重）                   | `SADD` key member [member ...]                   |
 | 移除元素                           | `SREM` key member [member ...]                   |
 | 判断指定元素是否存在               | `SISMEMBER` key member                           |
-| 获取所有元素                       | `SMEMBERS` key                                   |
 | 获取元素个数                       | `SCARD` key                                      |
 | 增量式遍历集合元素                 | `SSCAN` key cursor [MATCH pattern] [COUNT count] |
+| 获取所有元素                       | `SMEMBERS` key                                   |
 | 获取指定个数的**随机元素**         | `SRANDMEMBER` key [count]                        |
 | 移除指定个数的**随机元素**，并返回 | `SPOP` key [count]                               |
 
@@ -146,19 +146,28 @@ public synchronized int nextId() {
 
 使用场景：
 
-* 去重
+* 抽奖、秒杀、抢红包 —— 本质上都是同一类问题，解决思路类似。为了减少对临界资源的竞争，避免使用各种锁进行并发控制，可以预先对临界资源进行拆分，以提升性能：
 
   ```bash
-  $ SADD key member [member ...]
-  ```
+  # 预拆红包，放入集合
+  $ SADD key 子红包ID1 [子红包ID2 …]
+  # 查看所有红包
+  $ SMEMBERS key
+  # 随机抽取红包
+  $ SPOP key [count]
   
-* 抽奖：
-
-  ```bash
+  # 预先将奖品放入奖池
+  $ SADD key member [member …]
+  # 查看所有奖品
+  $ SMEMBERS key
   # 随机抽奖（只抽一次）
   $ SRANDMEMBER key [count]
   
-  # 随机抽取一二三等奖
+  # 登记参与抽奖的候选人
+  $ SADD key member [member …]
+  # 查看所有候选人
+  $ SMEMBERS key
+  # 随机抽取一二三等奖的获得者
   $ SPOP key [count]
   ```
 
@@ -205,7 +214,7 @@ public synchronized int nextId() {
 
 使用场景：
 
-* Top K（例如排行榜）。实现思路：利用集合的三大特性之一——互异性，进行去重，相同元素只进行计数。最后按计数结果对集合进行倒序排序，取前 N 个元素。
+* Top K（例如排行榜）。实现思路：利用集合的三大特性之一——互异性，进行去重，相同元素只进行计数，形成一个二元组集合（key 为元素，value 为计数）。最后按计数结果对集合进行倒序排序，取前 N 个元素。
 
 # 其它命令
 
