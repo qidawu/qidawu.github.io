@@ -330,3 +330,5 @@ https://dev.mysql.com/doc/refman/5.7/en/optimization-indexes.html
 https://dev.mysql.com/doc/refman/5.7/en/show-columns.html
 
 《[MySQL索引背后的数据结构及算法原理](http://blog.codinglabs.org/articles/theory-of-mysql-index.html)》
+
+《[慢 SQL 治理经典案例分享 | 阿里技术](https://mp.weixin.qq.com/s/WyfRV-7sK_O8pxDZbPXQtQ)》

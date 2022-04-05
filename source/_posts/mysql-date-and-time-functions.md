@@ -102,9 +102,9 @@ SELECT CONVERT_TZ( FROM_UNIXTIME( UNIX_TIMESTAMP() ), '+00:00', '+08:00' ) AS NO
 
 > MySQL converts `TIMESTAMP` values from the current time zone to UTC for storage, and back from UTC to the current time zone for retrieval. (This does not occur for other types such as `DATETIME`.) By default, the current time zone for each connection is the server's time. The time zone can be set on a per-connection basis. As long as the time zone setting remains constant, you get back the same value you store. If you store a `TIMESTAMP` value, and then change the time zone and retrieve the value, the retrieved value is different from the value you stored. This occurs because the same time zone was not used for conversion in both directions. The current time zone is available as the value of the [`time_zone`](https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_time_zone) system variable. For more information, see [Section 5.1.13, “MySQL Server Time Zone Support”](https://dev.mysql.com/doc/refman/5.7/en/time-zone-support.html).
 
-## TIMESTAMP ⇄ DATETIME
+## 日期/时间类型转换 函数
 
-### TIMESTAMP → DATETIME
+### TIMESTAMP → xxx
 
 [`FROM_UNIXTIME(unix_timestamp[,format])`](https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_from-unixtime)
 
@@ -143,7 +143,7 @@ SELECT FROM_UNIXTIME(1447430881, '%Y %D %M %h:%i:%s %x');
 
 `fomart` 参数参考[这里](/posts/mysql-date-and-time-functions/#format-参数)。
 
-### DATETIME → TIMESTAMP
+### xxx → TIMESTAMP
 
 [`UNIX_TIMESTAMP([date])`](https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_unix-timestamp)
 
@@ -170,8 +170,6 @@ SELECT UNIX_TIMESTAMP();                -- 1218124800，获取当前时间戳
 SELECT UNIX_TIMESTAMP(now());           -- 1218124800，将当前时间转换为时间戳，等价于上例
 SELECT UNIX_TIMESTAMP('2008-08-08');    -- 1219125100，将指定参数转换为时间戳
 ```
-
-## DATETIME ⇄ String
 
 ### DATETIME → String
 
