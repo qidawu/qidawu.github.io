@@ -63,6 +63,8 @@ org.apache.ibatis.executor.ExecutorException: No constructor found in ...
 
 #### 敏感字段脱敏/加解密
 
+https://mybatis.org/mybatis-3/configuration.html#typeHandlers
+
 实现 `org.apache.ibatis.type.TypeHandler` 接口：
 
 ![TypeHandler](/img/mybatis/mybatis_api_TypeHandler.png)
@@ -220,9 +222,11 @@ https://mybatis.org/mybatis-3/sqlmap-xml.html#Auto-mapping
 
 ### 缓存
 
-一级缓存：也称为本地缓存，与 `SqlSession` 绑定，只存在于 `SqlSession` 生命周期。
+#### 一级缓存
 
-二级缓存，实现：
+也称为本地缓存，与 `SqlSession` 绑定，只存在于 `SqlSession` 生命周期。
+
+#### 二级缓存
 
 https://github.com/mybatis/memcached-cache
 
@@ -239,6 +243,10 @@ https://github.com/mybatis/couchbase-cache
 https://github.com/mybatis/oscache-cache
 
 https://github.com/mybatis/ehcache-cache
+
+参考：
+
+《[MyBatis 二级缓存 关联刷新实现](https://mp.weixin.qq.com/s/c0BOu8wO7q6h6i0PU-K4Bg)》
 
 ## 插入
 
@@ -291,6 +299,13 @@ The `selectKey` element is described as follows:
   resultType="int"
   order="BEFORE"
   statementType="PREPARED">
+```
+
+注解方式：
+
+```java
+@Insert("insert into Author(id, username, password, email,bio, favourite_section) values (#{id}, #{username}, #{password}, #{email}, #{bio}, #{favouriteSection,jdbcType=VARCHAR})")
+@SelectKey(keyProperty = "id", resultType = Long.class, before = false, statement = "SELECT LAST_INSERT_ID()")
 ```
 
 # 与 Spring 整合
