@@ -271,3 +271,5 @@ https://docs.spring.io/spring/docs/current/spring-framework-reference/data-acces
 https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/annotation/Transactional.html
 
 https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/annotation/Propagation.html
+
+《[@Transactional 注解失效的 3 种原因及解决方案](https://mp.weixin.qq.com/s/0x0PnH-HNeqN6Ls56c1M9A)》

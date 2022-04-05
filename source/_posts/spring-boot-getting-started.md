@@ -74,23 +74,37 @@ spring-boot-dependencies (Parent pom)
 
 ## 项目管理
 
-- `spring-boot-dependencies`
-  - 用于定义和统一管理 Sprint Boot 的各个依赖版本号，继承自 `spring-boot-build`。可通过 `dependencyManagement` 引入该依赖可以解决**单继承问题**。
-- `spring-boot-parent`
-  - Spring Boot 各个依赖的父 POM，用于构建配置。继承自 `spring-boot-dependencies`。
+- [`spring-boot-dependencies`](https://github.com/spring-projects/spring-boot/tree/main/spring-boot-project/spring-boot-dependencies)
+  
+  - 用于定义和统一管理 Sprint Boot 的各个依赖版本号，业务项目可以覆盖版本号如下：
+  
+    ```XML
+    <properties>
+      <log4j2.version>2.16.0</log4j2.version>
+    </properties>
+    ```
+  
+  - 继承自 `spring-boot-build`。
+  
+  - 可通过 `dependencyManagement` 引入该依赖可以解决**单继承问题**。
+  
+- [`spring-boot-parent`](https://github.com/spring-projects/spring-boot/tree/main/spring-boot-project/spring-boot-parent)
+  
+  - Spring Boot 各个依赖的父 POM，用于构建配置。
+  - 继承自 `spring-boot-dependencies`。
 
 ## 核心依赖
 
 - `spring-boot` Spring Boot 的核心工程。
-- `spring-boot-autoconfigure` 实现 Spring Boot 自动配置的关键，常用的包含：
+- [`spring-boot-autoconfigure`](https://github.com/spring-projects/spring-boot/tree/main/spring-boot-project/spring-boot-autoconfigure) 实现 Spring Boot 自动配置的关键，常用的包含：
   - 自动配置总开关 `@EnableAutoConfiguration`
   - 各种自动配置类 `*AutoConfiguration`
   - 各种外部化配置属性类 `*Properties`
   - 各种条件化注解类 `@ConditionOn*`
-- `spring-boot-starters` 起步依赖的父 POM
+- [`spring-boot-starters`](https://github.com/spring-projects/spring-boot/tree/main/spring-boot-project/spring-boot-starters) 起步依赖的父 POM
   - Spring Boot 提供的众多起步依赖，用于降低项目依赖的复杂度，清单详见：[Starters](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter)，例如：
-    - `spring-boot-starter` 核心起步依赖，包括自动配置支持、日志、YAML 依赖
-    - `spring-boot-starter-parent` 业务项目的**父 POM**，继承自 `spring-boot-dependencies`
+    - [`spring-boot-starter`](https://github.com/spring-projects/spring-boot/tree/main/spring-boot-project/spring-boot-starters/spring-boot-starter) 核心起步依赖，包括自动配置支持、日志、YAML 依赖
+    - [`spring-boot-starter-parent`](https://github.com/spring-projects/spring-boot/tree/main/spring-boot-project/spring-boot-starters/spring-boot-starter-parent) 业务项目的**父 POM**，继承自 `spring-boot-dependencies`
     - `spring-boot-starter-web` WEB 开发相关起步依赖
     - `spring-boot-starter-test` 测试相关起步依赖
     - ...
