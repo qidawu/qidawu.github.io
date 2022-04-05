@@ -30,11 +30,39 @@ grep [选项] 'PATTERN' [文本文件]
 | -------------------- | ------------------------- | ----------------- |
 | `-c, --count`        | 打印匹配的行数            |                   |
 | `-n, --line-number`  | 打印行号                  |                   |
-| `-v, --revert-match` | 反转查找                  |                   |
+| `-v, --revert-match` | 反转查找（非）            |                   |
+| `-E`                 | 使用正则表达式            |                   |
 | `-A , --after`       | 可加数字，表示打印后面n行 |                   |
 | `-B , --before`      | 可加数字，表示打印前面n行 |                   |
+| `-i`                 | 不区分大小写              |                   |
 | `-r`                 | 递归目录查找              | `grep -r "XXX" *` |
 | `--color`            | 关键字高亮                |                   |
+
+且（AND）：
+
+```bash
+# 使用管道符连接多个 grep 命令
+grep 'pattern1' filename | grep 'pattern2'
+```
+
+或（OR）：
+
+```bash
+# 方法一：使用转义字符 \|
+grep 'pattern1\|pattern2' filename
+
+# 方法二：使用正则表达式选项 -E
+grep -E 'pattern1|pattern2' filename
+
+# 方法三：egrep 相当于 grep -E
+egrep 'pattern1|pattern2' filename
+```
+
+非（NOT）：
+
+```bash
+grep -v 'pattern' filename
+```
 
 ## tr
 
