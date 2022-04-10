@@ -359,6 +359,9 @@ https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
 
 《[44 | 最短路径：地图软件是如何计算出最优出行路径的？](https://time.geekbang.org/column/article/76468)》
 
+> 1. 每次只看一步
+> 2. 不走回头路
+
 ### A* 算法
 
 https://en.wikipedia.org/wiki/A*_search_algorithm
