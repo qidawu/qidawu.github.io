@@ -20,9 +20,120 @@ typora-root-url: ..
 * 机密性（Confidentiality）：要求保护数据内容不能泄露，常见手段是加密。
 * 完整性（Integrity）：要求保护数据内容是完整、没有被篡改的。常见手段是数字签名。
 * 可用性（Availability）：要求保护资源是“随需而得”。如拒绝服务攻击 （简称DoS，Denial of Service） 破坏的是安全的可用性。
+* 真实性（Authenticity）：通信双方的身份确认，确保数据来源于合法的用户。
 * 不可抵赖性（Non-repudiation），防抵赖。常见手段是数字签名。
-* 认证（Authentication）
-* 授权（Authorization）
+
+
+
+认证（Authentication）：我是谁？——身份
+
+授权（Authorization）：我能做什么？——权利
+
+凭证（Credentials）：依据是什么？——依据（凭证实现认证和授权的一种媒介，标记访问者的身份或权利）
+
+# 3A 黄金法则
+
+针对各个安全环节，可以使用 3A 黄金法则：
+
+事前防御——认证（Authentication）
+
+事中防御——授权（Authorization）
+
+事后防御——审计（Audit）
+
+| 认证、授权技术 | HTTP 请求头                                                  |
+| -------------- | ------------------------------------------------------------ |
+| 基本认证       | `Authorization: Basic <Base64("username:password")>`         |
+| 摘要认证       | `Authorization: Digest <MD5(username, password, nonce, ...)>` |
+| JWT            | `Authorization: Bearer <JWT Token>`                          |
+| OAuth          | `Authorization: Bearer <Access Token>`                       |
+
+## 认证（Authentication）
+
+> 认证其实包括两个部分：身份识别和认证。
+>
+> - 身份识别其实就是在问 “你是谁？”，你会回答 “你是你”。
+> - 身份认证则会问 “你是你吗？”，那你要证明 “你是你” 这个回答是合法的。
+>
+> 身份识别和认证通常是同时出现的一个过程。身份识别强调的是主体如何声明自己的身份，而身份认证强调的是，主体如何证明自己所声明的身份是合法的。
+>
+> 比如说：
+>
+> - 当你在使用用户名和密码登录的过程中，用户名起到身份识别的作用，而密码起到身份认证的作用；
+> - 当你用指纹、人脸或者门卡等进行登入的过程中，这些过程同时包含了身份识别和认证。
+>
+> 认证形式可以大致分为三种。按照认证强度由弱到强排序，分别是：
+>
+> - 你知道什么（密码、密保问题等）；
+> - 你拥有什么（门禁卡、手机验证码、安全令牌、U 盾等）；
+> - 你是什么（生物特征，如指纹、人脸、虹膜等）。
+> 
+> ![authentication](/img/security/authentication.png)
+
+典型技术：基本认证、摘要认证、JWT、单点登录（CAS 流程、OpenID）
+
+### 基本认证（Basic Access Authentication）
+
+https://en.wikipedia.org/wiki/Basic_access_authentication
+
+> 在 HTTP 用户代理（如：网页浏览器）请求时，提供用户名和密码的一种方式。
+>
+> HTTP 请求头会包含 `Authorization` 字段，形式如下： `Authorization: Basic <凭证>`，该凭证是 `Base64("username:password")`。 
+>
+> 最初，基本认证是定义在 HTTP 1.0 规范（RFC 1945）中，后续的有关安全的信息可以在 HTTP 1.1 规范（RFC 2616）和 HTTP 认证规范（RFC 2617）中找到。于 1999 年 RFC 2617 过期，于 2015 年的 RFC 7617 重新被定义。
+
+![Basic_Access_Authentication](/img/security/Basic_Access_Authentication.png)
+
+### 摘要认证（Digest Access Authentication）
+
+https://en.wikipedia.org/wiki/Digest_access_authentication
+
+> 摘要认证是一种比基本认证更安全的认证方式：
+>
+> > It applies a hash function to the username and password before sending them over the network. In contrast, [basic access authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) uses the easily reversible [Base64](https://en.wikipedia.org/wiki/Base64) encoding instead of hashing, making it non-secure unless used in conjunction with [TLS](https://en.wikipedia.org/wiki/Transport_Layer_Security).
+> >
+> > Technically, digest access authentication is an application of [MD5](https://en.wikipedia.org/wiki/MD5) [cryptographic hashing](https://en.wikipedia.org/wiki/Cryptographic_hash) with usage of [nonce](https://en.wikipedia.org/wiki/Cryptographic_nonce) values to prevent [replay attacks](https://en.wikipedia.org/wiki/Replay_attack). It uses the [HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) protocol.
+>
+> 摘要认证最初由 RFC 2069 中被定义。RFC 2069 大致定义了一个传统的由服务器生成随机数（nonce）来维护安全性的摘要认证架构。 
+>
+> RFC 2069 随后被 RFC 2617 取代。RFC 2617 引入了一系列安全增强的选项。
+
+![Digest_Access_Authentication](/img/security/Digest_Access_Authentication.png)
+
+### 消息认证码（HMAC）
+
+HMAC 也是一种摘要认证方式
+
+![HMAC](/img/security/hmac-in-java.webp)
+
+但相比上述两种认证方式仅保证用户的真实性（Authenticity），[HMAC](/posts/java-cryptography-api/#HMAC) 还能同时保证传输数据的：
+
+* 完整性（Integrity）
+* 真实性（Authenticity）
+* 不可抵赖性（Non-repudiation）
+
+### JSON Web Token
+
+https://oauth.net/2/jwt/
+
+## 授权（Authorization）
+
+> 在确认完 “你是你” 之后，下一个需要明确的问题就是 “你能做什么”。
+>
+> 除了对 “你能做什么” 进行限制，授权机制还会对 “你能做多少” 进行限制。比如：
+>
+> - 手机流量授权了你能够使用多少的移动网络数据。
+> - 我们申请签证的过程，其实就是一次申请授权的过程。
+
+### OAuth
+
+参考：[OAuth 2](/posts/oauth2/)
+
+## 审计（Audit）
+
+> 当你在授权之下完成操作后，安全需要检查一下 “你做了什么”，这个检查的过程就是审计。
+>
+> 当发现你做了某些异常操作时，安全还会提供你做了这些操作的 “证据”，让你无法抵赖，这个过程就是问责。
 
 # 安全评估的四阶段
 
@@ -63,3 +174,5 @@ typora-root-url: ..
 互联网安全的核心问题，是**数据安全**的问题。
 
 《白帽子讲 Web 安全》
+
+https://time.geekbang.org/column/intro/262
