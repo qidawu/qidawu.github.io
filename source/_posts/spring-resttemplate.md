@@ -11,6 +11,7 @@ typora-root-url: ..
 要轻松地操作 URL，可以使用 Spring 的 `org.springframework.web.util.UriComponentsBuilder` 类。相比手动拼接字符串更易维护，还可以处理 URL 编码：
 
 ```java
+    // `java.net.URI#toURL()` 可以转为 `java.net.URL`
     private URI getUri(Object body) {
         String rootUrl = "";
         String path = "";
@@ -27,9 +28,11 @@ typora-root-url: ..
     }
 ```
 
-`java.net.URI#toURL()` 可以将 URI 转为 `java.net.URL`。 
+`GenericUtils` 参考：https://github.com/qidawu/java-api-test/blob/master/src/main/java/reflect/GenericUtils.java
 
 # HTTP 请求
+
+## RestTemplate
 
 构造出 `java.net.URI` 之后，可以使用 `org.springframework.web.client.RestTemplate` 如下：
 
@@ -56,19 +59,22 @@ public class HttpApiService {
             HttpHeaders requestHeaders = getHttpHeaders();
             HttpEntity<Object> httpEntity;
 
-            // GET 请求，请求参数作为 query parameter 放到 url
+            // GET 请求，请求参数作为 query parameter 放入 URL
+            //   对方 Controller 方法入参需标注 @RequestParam，以接收 query parameter
             if (httpMethod == HttpMethod.GET) {
                 uri = getUri(body);
                 // 请求参数不能放到 HttpEntity，因为 GET 请求的话不会带上 request body（因为底层 HttpURLConnection#setDoOutput(false)）
                 httpEntity = new HttpEntity<>(requestHeaders);
             }
-            // POST 请求，请求参数作为 request body 而不放到 url
+            // POST 请求，请求参数作为 request body 而不放入 URL
             else {
                 uri = getUri(null);
-                // POST 表单，request body 类型必须为 MultiValueMap：
+                // POST 表单（Content-Type: application/x-www-form-urlencoded）
+                //   request body 类型必须为 MultiValueMap。MultiValueMap 参数最终会转为形如：key1=value1&key2=value2&...
                 //   Writing [{key=[value]}] with org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter
-                //   MultiValueMap 参数最终会转为形如：key1=value1&key2=value2&...
-                // POST JSON：
+                // 
+                // POST JSON（Content-Type: application/json）
+                //   request body 类型为普通 POJO
                 //   Writing [ReqDTO(key=value)] with org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
                 //   对方 Controller 方法入参需标注 @RequestBody，以接收整个 request body
                 httpEntity = new HttpEntity<>(body, requestHeaders);
@@ -94,16 +100,23 @@ public class HttpApiService {
 }
 ```
 
+GET 请求、POST 表单时，对方 Controller 方法入参需标注 [`@RequestParam`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestParam.html)，以接收 query parameter。但要注意，官方文档提醒如下：
+
+> Supported for annotated handler methods in Spring MVC and Spring WebFlux as follows:
+>
+> - In Spring MVC, "request parameters" map to query parameters, form data, and parts in multipart requests. This is because the Servlet API combines query parameters and form data into a single map called "parameters", and that includes automatic parsing of the request body.
+> - In Spring WebFlux, "request parameters" map to query parameters only. To work with all 3, query, form data, and multipart data, you can use data binding to a command object annotated with [`ModelAttribute`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/ModelAttribute.html).
+
 ## CURL 形式
 
-GET 请求：
+### GET 请求
 
 ```bash
 curl --location --request GET 'http://rootUrl/path?key=value' \
 --header 'Content-Type: application/x-www-form-urlencoded'
 ```
 
-POST 表单（`AllEncompassingFormHttpMessageConverter`）：
+### POST 表单
 
 ```bash
 curl --location --request POST 'http://rootUrl/path' \
@@ -111,7 +124,7 @@ curl --location --request POST 'http://rootUrl/path' \
 --data-urlencode 'key=value'
 ```
 
-POST JSON（`MappingJackson2HttpMessageConverter`）：
+### POST JSON
 
 ```bash
 curl --location --request POST 'http://rootUrl/path' \
