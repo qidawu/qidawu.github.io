@@ -1,5 +1,5 @@
 <!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
 <!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
 {% if site.tags.length > 1 %}
-  {{ list_tags(site.tags, {orderby: 'length', order: 'desc', amount: 12}) }}
+  {{ list_tags(site.tags, {orderby: 'length', order: 'desc', show_count: false, amount: 0}) }}
 {% endif %}
