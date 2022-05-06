@@ -2,7 +2,7 @@
 title: Java 虚拟机系列（三）垃圾收集器总结
 date: 2019-09-10 23:22:23
 updated:
-tags: Java
+tags: [Java, JVM]
 typora-root-url: ..
 ---
 

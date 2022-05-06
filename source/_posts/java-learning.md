@@ -2,7 +2,7 @@
 title: Java 学习资源总结
 date: 2020-09-15 23:32:08
 updated:
-tags: [Java]
+tags: [Java, JVM]
 typora-root-url: ..
 ---
 
@@ -74,23 +74,27 @@ Reference
 >   - [Project Panama](http://openjdk.java.net/projects/panama)：
 >   - ......
 
-一点历史：
+一些历史：参考《[JDK 历代版本变化](https://github.com/JavaMilk/JDKHistory)》
 
 > JDK 从 1.5 版本开始，在官方的正式文档与宣传资料中已经不再使用类似“JDK 1.5”的名称，只有程序员内部使用的开发版本号（Developer Version，例如 java -version 的输出）才继续沿用 1.5、1.6 和 1.7 的版本号（JDK 10 之后又改为了采用年份加月份作为开发版本号，例如 18.3），而公开版本号（Product Version）则改为 JDK 5、JDK 6 和 JDK 7 的命名方式。
 >
 > 从 JDK 10 开始，每年的 3 月和 9 月各发布一个大版本，目的就是避免众多功能特性被集中捆绑到一个 JDK 版本上而引发交付风险。同时为了降低维护成本，每六个 JDK 大版本中才会被划出一个长期支持（Long Term Suppot，LTS）版本，只有 LTS 版的 JDK 能够获得为期三年的支持和更新，普通版的 JDK 就只有短短六个月的生命周期。
 >
-> JDK 8 和 JDK 11 是 LTS 版本，再下一个就到 2021 年发布的 JDK 17。
+> JDK 8 和 [JDK 11](https://www.oracle.com/java/technologies/javase/11all-relnotes.html) 是 LTS 版本，再下一个就到 2021 年发布的 JDK 17。
 
-参考《[JDK 历代版本变化](https://github.com/JavaMilk/JDKHistory)》
+> 在 2018 年发布的 Java 11， Oracle 已经让 OpenJDK 和 Oracle JDK 两者的二进制文件在功能上尽可能相互接近，尽管 OpenJDK 与 Oracle JDK 两者在一些选项之间仍然存在一些差异。参考：<[Differences Between Oracle JDK and OpenJDK](https://www.baeldung.com/oracle-jdk-vs-openjdk)>。
 
-> 根据 JEP-320 的内容，计划于 2018 年 9 月发布的 JDK 11 将不包括 Java EE 模块：JAX-WS（ JSR-224 ）、JAXB（ JSR-222 ）、JAF（ JSR-925 ）、Commons Annotations（ JSR-250 ）和 JTA（ JSR-907 ），而这些模块已在 JDK 中存在了多年。计划在 JDK 11 中移除的四个 Java EE 模块最终将进入 EE4J。
+![JDK](/img/java/basics/JDK.webp)
 
-常见 JDK 版本：
+> 根据 [JEP-320](http://openjdk.java.net/jeps/320) 的内容，计划于 2018 年 9 月发布的 JDK 11 将不包括 Java EE 模块：JAX-WS（ JSR-224 ）、JAXB（ JSR-222 ）、JAF（ JSR-925 ）、Commons Annotations（ JSR-250 ）和 JTA（ JSR-907 ），而这些模块已在 JDK 中存在了多年。计划在 JDK 11 中移除的四个 Java EE 模块最终将进入 EE4J。
 
-* OracleJDK 商业版
 
-  > OTN 协议下发行的传统的 OracleJDK，个人可以免费使用，但若在生产环境中商用就必须付费，可以有三年时间的更新支持。
+
+常见 JDK 版本：《[你该选择什么样的 JDK？](https://www.infoq.cn/article/HZHmj8LKWd652ZDXip1j)》
+
+* Oracle JDK 商业版
+
+  > OTN 协议下发行的传统的 Oracle JDK，个人可以免费使用，但若在生产环境中商用就必须付费，可以有三年时间的更新支持。
 
 * [OpenJDK](http://openjdk.java.net/) 开源版
 
@@ -104,7 +108,9 @@ Reference
 
   * AdoptOpenJDK OpenJ9 builds
 
-    > 除了标准的 OpenJDK 构建外，AdoptOpenJDK 还提供了使用 OpenJ9 而非 HotSpot 的版本。OpenJ9 最初是由 IBM 实现的 JVM，现在已开源并交由 Eclipse 运作。
+    > 除了标准的 OpenJDK 构建外，AdoptOpenJDK 还提供了使用 OpenJ9 而非 HotSpot 的版本。OpenJ9 最初是由 IBM 实现的 JVM，现在已开源并交由 Eclipse Foundation 运作。
+    >
+    > 2017 年，IBM 将内部使用 20 多年之久的 J9 虚拟机开源，并贡献到 Eclipse Foundation。
 
   * [Red Hat build of OpenJDK](https://developers.redhat.com/products/openjdk/overview)
 
@@ -121,6 +127,8 @@ Reference
 除了官方 HotSpotVM、GraalVM 实现，其它厂商实现如下：
 
 ![](/img/java/jvm/jvm_impl.png)
+
+参考：[Java 虚拟机系列](/tags/JVM/)
 
 # Enterprise Edition
 
@@ -184,6 +192,7 @@ Java EE 和 Spring 之间复杂的关系：
 
 * [Eclipse EE4J](https://projects.eclipse.org/projects/ee4j)
 * https://jakarta.ee/specifications/
+* https://eclipse-ee4j.github.io/jakartaee-tutorial/
 
 ### Architecture
 
@@ -245,20 +254,34 @@ https://jakarta.ee/specifications/platform/9/jakarta-platform-spec-9.html#a84
 
 - https://www.tutorialspoint.com/java_concurrency/index.htm
 
+2017 年
+
+- 《[Java 老矣，尚能饭否？——2017 Java 9 语言的发展现状以及未来](https://www.infoq.cn/article/is-java-out-of-date/)》
+
+2019 年
+
+- 《[InfoQ 2019 年 Java 发展趋势报告](https://www.infoq.cn/article/xHcGEQe2*jXl8kDTuNK2)》
+
+- 《[2019 中国 Java 发展趋势报告](https://www.infoq.cn/article/WomHORGulYaYEDYwoiP8)》
+
+  > Java 作为使用最为广泛的语言，最近几年还是有比较大进步的，无论从语法的易用性上还是性能上都有很大程度的提升。吸收了函数式编程的思想，lambda 表达式、Parallem stream、Var 变量等提升了开发人员的效率与代码的简洁性。ZGC 无疑是一项重大的改进，在一定程度上解决了 Java 天生的 GC 延迟问题。
+  >
+  > Java 的编程复杂度并没有明显的降低，比如 I/O 处理、并发 / 并⾏计算，以及类加载等等。再者是 Java 与操作系统之间的交互仍不够充分，尽管 Java 9 开始提供了不少的 API，然⽽了解和使用的群体不⾜。Java 在这方面明显不及 GO 语言。
+  >
+  > 从语⾔层⾯来看，Java 正在向主流非 Java 语⾔融合，解决其中鸿沟的关键是**语法的变化**，比如 Java 8 的 Lambda 表达式 和 Java 10 的局部变量类型（ `var` ）等。个人认为这是一件好事，未来前后端不分家，相互渗透，对于彼此语言都是良性。
+
+2020 年
+
+- 《[InfoQ Java 趋势发展报告（2020 年 9 月）](https://www.infoq.cn/article/aHx9jlWKrmJK5O6hKN4c)》
+- 《[Java 现状与技术趋势报告 | 阿里技术](https://www.infoq.cn/article/HZHmj8LKWd652ZDXip1j)》
+- 《[2020年 JVM 生态报告解读](https://segmentfault.com/a/1190000021906788)》
+- 《[Java 的新未来：逐渐“Kotlin 化”](https://www.infoq.cn/article/YgPRotsrI1qSr8cxRGlq)》
 
 
+2021 年
 
-《[Java 老矣，尚能饭否？——2017 Java 9 语言的发展现状以及未来](https://www.infoq.cn/article/is-java-out-of-date/)》
+- 《[InfoQ 2021 年 Java 发展趋势报告](https://www.infoq.cn/article/mJxpWooi8uN1yN48dzBH)》
 
-《[2019 中国 Java 发展趋势报告](https://www.infoq.cn/article/WomHORGulYaYEDYwoiP8)》
+2022 年
 
-> Java 作为使用最为广泛的语言，最近几年还是有比较大进步的，无论从语法的易用性上还是性能上都有很大程度的提升。吸收了函数式编程的思想，lambda 表达式、Parallem stream、Var 变量等提升了开发人员的效率与代码的简洁性。ZGC 无疑是一项重大的改进，在一定程度上解决了 Java 天生的 GC 延迟问题。
->
-> Java 的编程复杂度并没有明显的降低，比如 I/O 处理、并发 / 并⾏计算，以及类加载等等。再者是 Java 与操作系统之间的交互仍不够充分，尽管 Java 9 开始提供了不少的 API，然⽽了解和使用的群体不⾜。Java 在这方面明显不及 GO 语言。
->
-> 从语⾔层⾯来看，Java 正在向主流非 Java 语⾔融合，解决其中鸿沟的关键是**语法的变化**，比如 Java 8 的 Lambda 表达式 和 Java 10 的局部变量类型（ `var` ）等。个人认为这是一件好事，未来前后端不分家，相互渗透，对于彼此语言都是良性。
-
-《[2020年 JVM 生态报告解读](https://segmentfault.com/a/1190000021906788)》
-
-《[Java 的新未来：逐渐“Kotlin 化”](https://www.infoq.cn/article/YgPRotsrI1qSr8cxRGlq)》
-
+- 《[2022 年 Java 将何去何从？](https://www.infoq.cn/article/Ckvyawmfma127oiA6Lt7)》
