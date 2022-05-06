@@ -40,9 +40,9 @@ typora-root-url: ..
 
 [+ 的重载与 StringBuilder](https://lingcoder.github.io/OnJava8/#/book/18-Strings?id=-%e7%9a%84%e9%87%8d%e8%bd%bd%e4%b8%8e-stringbuilder)
 
-# 工具类
+# 字符串的处理
 
-## java.util.Formatter
+## 字符串格式化
 
 C 语言 `printf` 风格的字符串格式化解释器。用法参考[这里](https://blog.csdn.net/quinnnorris/article/details/54614446)。
 
@@ -50,7 +50,7 @@ https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html
 
 ![Formatter](/img/java/string/Formatter.png)
 
-## java.util.StringJoiner
+## 字符串拼接
 
 对于字符串拼接，除了使用 `StringBuilder` 之外， Java SE 8 还提供了新的 API `java.util.StringJoiner`，它是`String.join` 和 `java.util.stream.Collectors#joining(...)` 的底层实现。结合 Stream API 使用如下：
 
@@ -60,15 +60,38 @@ Arrays.asList("a", "b", "c", "d", "e", "f", "g").stream()
                 .collect(Collectors.joining(",", "[", "]"));
 ```
 
-## org.apache.commons.lang3.StringUtils
+## 字符串转义
 
-Apache Commons Lang 为字符串操作提供了 `StringUtils` 工具类，使用方式参考[这里](/2017/12/25/apache-commons-lang/)。
+方式一：在线工具：https://www.freeformatter.com/string-escaper.html
 
-![StringUtils](/img/java/commons/commons-lang/StringUtils.png)
+> HTML Escape
+> Escapes or unescapes an HTML file removing traces of offending characters that could be wrongfully interpreted as markup.
+>
+> > FEATURES
+> > Escapes all reserverd characters with their corresponding HTML entities (', ", &, <, >)
+> > Escapes ISO 8859-1 symbols and characters that have corresponding HTML entities
+>
+> JSON Escape
+> Escapes or unescapes a JSON string removing traces of offending characters that could prevent parsing.
+>
+> XML Escape
+> Escapes or unescapes an XML file removing traces of offending characters that could be wrongfully interpreted as markup.
+>
+> CSV Escape
+> Escapes or unescapes a CSV string removing traces of offending characters that could prevent parsing.
+>
+> JavaScript Escape
+> Escapes or unescapes a JavaScript string removing traces of offending characters that could prevent interpretation.
+>
+> Java and .Net Escape
+> Escapes or unescapes a Java or .Net string removing traces of offending characters that could prevent compiling.
+>
+> SQL Escape
+> Escapes or unescapes a SQL string removing traces of offending characters that could prevent execution.
 
-## org.apache.commons.lang3.StringEscapeUtils
+方式二：代码处理
 
-Apache Commons Lang 提供了字符串转义和反转义工具类 `StringEscapeUtils`，用于 Java、JavaScript、JSON、HTML、XML、CSV 等字符串：
+Apache Commons Lang 提供了字符串转义和反转义工具类 `org.apache.commons.lang3.StringEscapeUtils`，用于 Java、JavaScript、JSON、HTML、XML、CSV 等字符串：
 
 ![StringEscapeUtils](/img/java/string/StringEscapeUtils.png)
 
@@ -81,6 +104,28 @@ StringEscapeUtils.escapeHtml4("<span>hello world</span>");
 // {hello: "world"}
 StringEscapeUtils.unescapeJson("{hello: \"world\"}");
 ```
+
+例如，有些 HTML 字符实体在 PDF 是不支持的，需要先转义：
+
+```java
+// flying saucer
+ITextRenderer renderer = new ITextRenderer();
+
+String escapedHtml = StringEscapeUtils.escapeHtml4(srcHtml);
+renderer.setDocumentFromString(escapedHtml);
+```
+
+参考：
+
+https://en.wikipedia.org/wiki/Escape_sequence
+
+https://en.wikipedia.org/wiki/Escape_sequences_in_C
+
+## 字符串操作
+
+Apache Commons Lang 为字符串操作提供了 `org.apache.commons.lang3.StringUtils` 工具类，使用方式参考[这里](/2017/12/25/apache-commons-lang/)。
+
+![StringUtils](/img/java/commons/commons-lang/StringUtils.png)
 
 # 参考
 
