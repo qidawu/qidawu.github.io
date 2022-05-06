@@ -29,6 +29,11 @@ https://github.com/FasterXML/jackson-annotations
 * `@JsonProperty`
 * `@JsonIgnore`
 * `@JsonIgnoreProperties`
+* `@JsonInclude`
+* `@JsonFormat`
+* `@JsonSerialize`
+* `@JsonDeserialize`
+* ...
 
 ## Databind
 
@@ -37,6 +42,10 @@ For all data-binding, we need a [`com.fasterxml.jackson.databind.ObjectMapper`](
 ```java
 ObjectMapper mapper = new ObjectMapper(); // create once, reuse
 ```
+
+参考：
+
+《[ObjectMapper，别再像个二货一样一直 new 了！](https://mp.weixin.qq.com/s/SHbt1jmgGaHQs1eeyJQ-qA)》
 
 ### Configuration
 
