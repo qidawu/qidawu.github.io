@@ -286,7 +286,11 @@ https://dubbo.apache.org/zh/docs/v2.7/user/examples/parameter-validation/
 
 ## Spring MVC 参数验证
 
-参考：[Spring MVC 方法参数验证](/2016/06/25/spring-mvc/#方法参数验证)
+参考：
+
+[Spring MVC 方法参数验证](/posts/spring-mvc/#方法参数验证)
+
+[SpringBoot 中使用 `@Valid` 注解 + 全局异常处理器 优雅处理参数验证](http://www.mydlq.club/article/49/)
 
 # 常见问题
 
