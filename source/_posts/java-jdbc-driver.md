@@ -12,7 +12,7 @@ typora-root-url: ..
 
 # 什么是 JDBC？
 
-JDBC 表示 Java Database Connectivity，是 JavaSE（Java 标准版）的一部分，。JDBC API 用于在 Java 应用程序中执行以下活动：
+JDBC 表示 Java Database Connectivity，是 Java SE（Java 标准版）的一部分。JDBC API 用于在 Java 应用程序中执行以下活动：
 
 1. 连接到数据库
 2. 执行查询并将语句更新到数据库
@@ -61,6 +61,8 @@ https://blog.csdn.net/autfish/article/details/52170053
 
 如果选定使用推荐的第四种驱动程序类型，接下来需要下载对应厂商的驱动程序，目前提供这些[支持列表](https://www.oracle.com/technetwork/java/index-136695.html)。
 
+### MySQL Connector/J
+
 例如最常用的 MySQL 数据库，提供了 [MySQL Connector/J](https://dev.mysql.com/downloads/connector/j/)（即 `mysql-connector-java`）。Maven 依赖配置如下：
 
 ```xml
@@ -72,7 +74,7 @@ https://blog.csdn.net/autfish/article/details/52170053
 </dependency>
 ```
 
-MySQL 驱动程序的更多信息，例如：
+关于 MySQL 驱动程序的更多信息，详见：https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-overview.html
 
 - 驱动程序/数据源类名
 - 连接 URL 语法
@@ -84,13 +86,43 @@ MySQL 驱动程序的更多信息，例如：
 - MySQL 错误码与 JDBC SQLState 代码的映射关系
 - ……
 
-详见：https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-overview.html
+# 如何使用 JDBC？
 
-# 注册驱动程序源码分析
+## 配置 JDBC URL
+
+JDBC URL 提供了一种标识数据源的方法，以便相应的驱动程序识别它并与之建立连接。
+
+因此，首先需要先配置好 JDBC URL，以便驱动程序注册完毕之后通过 JDBC URL 与数据源建立连接。
+
+JDBC URL 的标准语法如下：
+
+```
+protocol//[hosts][/database][?properties]
+```
+
+详见：https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-reference-jdbc-url-format.html
+
+例如：`jdbc:mysql://localhost:3306/test?useUnicode=true;characterEncoding=utf-8`
+
+### 常用协议
+
+常见的 JDBC URL 协议及对应 Driver Class 如下：
+
+![](/img/java/jdbc/jdbc-url.png)
+
+### 配置属性
+
+MySQL Connector/J：
+
+https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-reference-configuration-properties.html
+
+https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-reference-configuration-properties.html
+
+## 注册驱动程序
 
 有几种方式可以注册驱动程序，如下：
 
-## 手工注册
+### 手工注册
 
 ```java
 Class.forName("com.mysql.jdbc.Driver");  // 方式一，底层实现其实就是方式二
@@ -98,7 +130,7 @@ DriverManager.registerDriver(new com.mysql.jdbc.Driver());  // 方式二
 System.setProperty("jdbc.drivers", "com.mysql.jdbc.Driver");  // 方式三
 ```
 
-## 自动注册
+### 自动注册
 
 从 JDBC API 4.0 开始，`java.sql.DriverManager` 类得到了增强，利用 **Java SPI 机制**从厂商驱动程序的 `META-INF/services/java.sql.Driver` 文件中自动加载 `java.sql.Driver` 实现类。 因此应用程序无需再显式调用 `Class.forName` 或 `DriverManager.registerDriver` 方法来注册或加载驱动程序。`java.sql.DriverManager` 源码分析如下，
 
@@ -197,31 +229,7 @@ public class Driver extends NonRegisteringDriver implements java.sql.Driver {
 }
 ```
 
-# JDBC URL
-
-驱动程序注册完毕之后，接下来是通过 JDBC URL 与数据源建立连接。
-
-JDBC URL 提供了一种标识数据源的方法，以便相应的驱动程序识别它并与之建立连接。
-
-JDBC URL 的标准语法如下：
-
-```
-jdbc:<subprotocol>:<subname>
-```
-
-它有三个部分，用冒号分隔，分解如下：
-
-* `jdbc` - 协议。JDBC URL 中的协议始终是 `jdbc`。
-* `<subprotocol>` - 驱动程序的名称（如 `mysql`）或数据库连接机制的名称（如 `odbc`），可由一个或多个驱动程序支持。
-* `<subname>` - 数据源的名称。
-
-例如：
-
-```
-jdbc:mysql://localhost:3306/test?useUnicode=true;characterEncoding=utf-8
-```
-
-## 源码分析
+### 常见问题
 
 如果有多个不同的驱动程序都被注册，调用 `DriverManager.getConnection` 方法通过 JDBC URL 获取数据源连接时，会使用第一个可用的驱动程序来创建连接。源码分析如下：
 
@@ -338,12 +346,6 @@ public enum Type {
 ```
 
 如果该 JDBC URL 没有对应可用的驱动程序，程序将抛出异常：`java.sql.SQLException: No suitable driver found for jdbc:...`。
-
-## 常用列表
-
-常见的 JDBC URL 前缀及对应 Driver Class 如下：
-
-![](/img/java/jdbc/jdbc-url.png)
 
 # 参考
 
