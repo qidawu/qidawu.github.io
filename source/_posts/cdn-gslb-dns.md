@@ -57,9 +57,9 @@ DNS 的查询机制给使用它的互联网应用带来额外的时延，有时�
 | [LACNIC](http://www.lacnic.net/)   | Latin America and parts of the Caribbean |
 | [RIPE NCC](http://www.ripe.net/)   | Europe, the Middle East and parts of Central Asia |
 
-可见，亚太地区的 IP 地址由 APNIC 分配，访问[这里](https://www.apnic.net/publications/research-and-insights/stats)可以知道在何处得到 IP 地址分配的有用信息。进入 FTP ，阅读 README 以了解该下载哪个文件以及文件的格式。下载 `delegated-apnic-latest` 文件，过滤出分配给中国大陆（CN）的 IP 地址。
+可见，亚太地区的 IP 地址由 APNIC 分配，访问[这里](https://www.apnic.net/publications/research-and-insights/stats)可以知道在何处得到 IP 地址分配的有用信息。进入 FTP ，阅读 README 以了解该下载哪个文件以及文件的格式。下载 [`delegated-apnic-latest`](https://ftp.apnic.net/stats/apnic/delegated-apnic-latest) 文件，过滤出分配给中国大陆（CN）的 IP 地址。
 
-然后可以通过 [CNNIC IP 地址注册信息查询系统](http://ipwhois.cnnic.cn/)查询这个地址段属于哪个运营商，但一次只能查询一个地址段，根本无法手工完成所有地址段的查询，因此推荐在 Linux 下使用 whois 工具以遍历的方式逐个查询，然后按关键字归类、去重、排序，按运营商产生几个独立的文件。如果各 IP 地址租用方未能按统一的标准在 APNIC 提交注册信息则需要特殊处理。
+然后可以通过 [ICANN Lookup](https://lookup.icann.org/zh/lookup) 或 [CNNIC IP 地址注册信息查询系统](http://ipwhois.cnnic.cn/)查询这个地址段属于哪个运营商，但一次只能查询一个地址段，根本无法手工完成所有地址段的查询，因此推荐在 Linux 下使用 `whois` 命令以遍历的方式逐个查询，然后按关键字归类、去重、排序，按运营商产生几个独立的文件。如果各 IP 地址租用方未能按统一的标准在 APNIC 提交注册信息则需要特殊处理。
 
 ## IP 地址列表使用
 
