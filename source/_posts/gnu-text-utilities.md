@@ -64,6 +64,10 @@ egrep 'pattern1|pattern2' filename
 grep -v 'pattern' filename
 ```
 
+参考：
+
+https://stackoverflow.com/questions/9969414/always-include-first-line-in-grep
+
 ## tr
 
 `tr` 命令用于替换或删除指定的字符（注意不接收文件参数），其命令格式如下：
@@ -142,10 +146,10 @@ sort [选项] [文本文件]
 
 常用的选项如下：
 
-| 选项   | 描述                |
-| ---- | ----------------- |
-| `-n` | 依照数值的大小排序（默认是以文字） |
-| `-r` | 反向排序              |
+| 选项                                 | 描述                               |
+| ------------------------------------ | ---------------------------------- |
+| `-n, --numeric-sort, --sort=numeric` | 依照数值的大小排序（默认是以文字） |
+| ` -r, --reverse`                     | 反向排序                           |
 
 ## uniq
 
@@ -157,12 +161,22 @@ uniq [选项] [文本文件]
 
 常用的选项如下：
 
-| 选项   | 描述       |
-| ---- | -------- |
-| `-i` | 忽略大小写    |
-| `-c` | 进行计数     |
-| `-d` | 只显示重复行   |
-| `-u` | 只显示不重复的行 |
+| 选项                | 描述                                                         |
+| ------------------- | ------------------------------------------------------------ |
+| `-i, --ignore-case` | Case insensitive comparison of lines.<br/>忽略大小写         |
+| `-c, --count`       | Precede each output line with the count of the number of times the line occurred in the input, followed by a single space.<br/>进行计数 |
+| `-d, --repeated`    | Output a single copy of each line that is repeated in the input.<br/>只显示重复行（交集） |
+| `-u, --unique`      | Only output lines that are not repeated in the input.<br/>只显示不重复的行（差集） |
+
+例子：
+
+```bash
+cat a b | sort | uniq > c   # c is a union b
+
+cat a b | sort | uniq -d > c   # c is a intersect b
+
+cat a b | sort | uniq -u > c   # c is set difference a - b
+```
 
 ## wc
 

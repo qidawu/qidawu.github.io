@@ -67,54 +67,10 @@ typora-root-url: ..
 > - 你知道什么（密码、密保问题等）；
 > - 你拥有什么（门禁卡、手机验证码、安全令牌、U 盾等）；
 > - 你是什么（生物特征，如指纹、人脸、虹膜等）。
-> 
+>
 > ![authentication](/img/security/authentication.png)
 
-典型技术：基本认证、摘要认证、JWT、单点登录（CAS 流程、OpenID）
-
-### 基本认证（Basic Access Authentication）
-
-https://en.wikipedia.org/wiki/Basic_access_authentication
-
-> 在 HTTP 用户代理（如：网页浏览器）请求时，提供用户名和密码的一种方式。
->
-> HTTP 请求头会包含 `Authorization` 字段，形式如下： `Authorization: Basic <凭证>`，该凭证是 `Base64("username:password")`。 
->
-> 最初，基本认证是定义在 HTTP 1.0 规范（RFC 1945）中，后续的有关安全的信息可以在 HTTP 1.1 规范（RFC 2616）和 HTTP 认证规范（RFC 2617）中找到。于 1999 年 RFC 2617 过期，于 2015 年的 RFC 7617 重新被定义。
-
-![Basic_Access_Authentication](/img/security/Basic_Access_Authentication.png)
-
-### 摘要认证（Digest Access Authentication）
-
-https://en.wikipedia.org/wiki/Digest_access_authentication
-
-> 摘要认证是一种比基本认证更安全的认证方式：
->
-> > It applies a hash function to the username and password before sending them over the network. In contrast, [basic access authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) uses the easily reversible [Base64](https://en.wikipedia.org/wiki/Base64) encoding instead of hashing, making it non-secure unless used in conjunction with [TLS](https://en.wikipedia.org/wiki/Transport_Layer_Security).
-> >
-> > Technically, digest access authentication is an application of [MD5](https://en.wikipedia.org/wiki/MD5) [cryptographic hashing](https://en.wikipedia.org/wiki/Cryptographic_hash) with usage of [nonce](https://en.wikipedia.org/wiki/Cryptographic_nonce) values to prevent [replay attacks](https://en.wikipedia.org/wiki/Replay_attack). It uses the [HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) protocol.
->
-> 摘要认证最初由 RFC 2069 中被定义。RFC 2069 大致定义了一个传统的由服务器生成随机数（nonce）来维护安全性的摘要认证架构。 
->
-> RFC 2069 随后被 RFC 2617 取代。RFC 2617 引入了一系列安全增强的选项。
-
-![Digest_Access_Authentication](/img/security/Digest_Access_Authentication.png)
-
-### 消息认证码（HMAC）
-
-HMAC 也是一种摘要认证方式
-
-![HMAC](/img/security/hmac-in-java.webp)
-
-但相比上述两种认证方式仅保证用户的真实性（Authenticity），[HMAC](/posts/java-cryptography-api/#HMAC) 还能同时保证传输数据的：
-
-* 完整性（Integrity）
-* 真实性（Authenticity）
-* 不可抵赖性（Non-repudiation）
-
-### JSON Web Token
-
-https://oauth.net/2/jwt/
+参考：[认证技术总结](/posts/authentication/)
 
 ## 授权（Authorization）
 
@@ -124,8 +80,6 @@ https://oauth.net/2/jwt/
 >
 > - 手机流量授权了你能够使用多少的移动网络数据。
 > - 我们申请签证的过程，其实就是一次申请授权的过程。
-
-### OAuth
 
 参考：[OAuth 2](/posts/oauth2/)
 

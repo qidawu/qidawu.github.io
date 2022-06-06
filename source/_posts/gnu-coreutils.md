@@ -53,14 +53,21 @@ GNU/CoreUtils 是一组类 Unix 操作系统所需的基础软件包。它包含
 
 ## Output of entire files
 
-| 命令       | 描述                                       | 备注                                       |
-| -------- | ---------------------------------------- | ---------------------------------------- |
-| `cat`    | Concatenates and prints files on the standard output | 常用于连接并输出多个文件的内容。                         |
-| `tac`    | Concatenates and prints files on the standard output in reverse | 常用于反向连接并输出多个文件的内容。                       |
-| `nl`     | Numbers lines of files                   | `-b` 指定行号的方式，主要有 `a` `t`两种：<br/>`-b a` 无论是否是空行，同样列出行号。<br/>`-b t` 默认值，不列出空行行号。 |
-| `base64` | base64 encode/decode data and print to standard output |                                          |
+| 命令     | 描述                                                         | 备注                                                         |
+| -------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| `cat`    | Concatenates and prints files on the standard output         | 常用于连接并输出多个文件的内容。                             |
+| `tac`    | Concatenates and prints files on the standard output in reverse | 常用于反向连接并输出多个文件的内容。                         |
+| `nl`     | Numbers lines of files                                       | `-b` 指定行号的方式，主要有 `a` `t`两种：<br/>`-b a` 无论是否是空行，同样列出行号。<br/>`-b t` 默认值，不列出空行行号。 |
+| `base32` | Encodes or decodes [Base32](https://en.wikipedia.org/wiki/Base32), and prints result to standard output |                                                              |
+| `base64` | Encodes or decodes [Base64](https://en.wikipedia.org/wiki/Base64), and prints result to standard output |                                                              |
 
 ![cat](https://wizardzines.com/comics/cat/cat.png)
+
+https://en.wikipedia.org/wiki/More_(command)
+
+https://en.wikipedia.org/wiki/Less_(Unix)
+
+![less](https://wizardzines.com/comics/less/less.png)
 
 ## Output of parts of files
 
@@ -74,47 +81,52 @@ GNU/CoreUtils 是一组类 Unix 操作系统所需的基础软件包。它包含
 
 ![head&tail](https://wizardzines.com/comics/head-tail/head-tail.png)
 
-https://en.wikipedia.org/wiki/More_(command)
-
-https://en.wikipedia.org/wiki/Less_(Unix)
-
-![less](https://wizardzines.com/comics/less/less.png)
-
 ## Operating on sorted files
 
-| 命令     | 描述              | 备注                                       |
-| ------ | --------------- | ---------------------------------------- |
-| `sort` | Sort text files | 详见[本文](http://www.cnblog.me/2015/11/15/gnu-text-utilities/) |
-| `shuf` | Shuffling text  |                                          |
-| `uniq` | Uniquify files  | 详见[本文](http://www.cnblog.me/2015/11/15/gnu-text-utilities/) |
+| 命令   | 描述            | 备注                                   |
+| ------ | --------------- | -------------------------------------- |
+| `sort` | Sort text files | 详见[本文](/posts/gnu-text-utilities/) |
+| `shuf` | Shuffling text  |                                        |
+| `uniq` | Uniquify files  | 详见[本文](/posts/gnu-text-utilities/) |
 
 ## Operating on fields
 
-| 命令      | 描述                                       | 备注                                       |
-| ------- | ---------------------------------------- | ---------------------------------------- |
-| `cut`   | Print selected parts of lines            | 详见[本文](http://www.cnblog.me/2015/11/15/gnu-text-utilities/) |
-| `paste` | Merge lines of files                     | 合并多个文件的所有行                               |
-| `join`  | Joins lines of two files on a common field | 合并两个文件中相同位置的行                            |
+| 命令    | 描述                                       | 备注                                   |
+| ------- | ------------------------------------------ | -------------------------------------- |
+| `cut`   | Print selected parts of lines              | 详见[本文](/posts/gnu-text-utilities/) |
+| `paste` | Merge lines of files                       | 合并多个文件的所有行                   |
+| `join`  | Joins lines of two files on a common field | 合并两个文件中相同位置的行             |
 
 ## Operating on characters
 
-| 命令         | 描述                             | 备注                                       |
-| ---------- | ------------------------------ | ---------------------------------------- |
-| `tr`       | Translate or delete characters | 详见[本文](http://www.cnblog.me/2015/11/15/gnu-text-utilities/) |
-| `expand`   | Convert tabs to spaces         |                                          |
-| `unexpand` | Convert spaces to tabs         |                                          |
+| 命令       | 描述                           | 备注                                   |
+| ---------- | ------------------------------ | -------------------------------------- |
+| `tr`       | Translate or delete characters | 详见[本文](/posts/gnu-text-utilities/) |
+| `expand`   | Convert tabs to spaces         |                                        |
+| `unexpand` | Convert spaces to tabs         |                                        |
 
 ## Summarizing files
 
-| 命令          | 描述                                       | 备注                                       |
-| ----------- | ---------------------------------------- | ---------------------------------------- |
-| `wc`        | Print the number of bytes, words, and lines in files | 详见[本文](http://www.cnblog.me/2015/11/15/gnu-text-utilities/) |
-| `sum`       |                                          |                                          |
-| `cksum`     |                                          |                                          |
-| `md5sum`    |                                          |                                          |
-| `sha1sum`   |                                          |                                          |
-| `sha256sum` |                                          |                                          |
-| `sha512sum` |                                          |                                          |
+| 命令                                                         | 描述                                                         | 备注                                   |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | -------------------------------------- |
+| `wc`                                                         | Print the number of bytes, words, and lines in files         | 详见[本文](/posts/gnu-text-utilities/) |
+| `sum`                                                        | Checksums and counts the blocks in a file                    |                                        |
+| `cksum`                                                      | Checksums (IEEE Ethernet [CRC-32](https://en.wikipedia.org/wiki/Cyclic_redundancy_check)) and count the bytes in a file |                                        |
+| `b2sum`                                                      | Computes and checks [BLAKE2b](https://en.wikipedia.org/wiki/BLAKE2b) message digest |                                        |
+| `md5sum`                                                     | Computes and checks [MD5](https://en.wikipedia.org/wiki/MD5) message digest |                                        |
+| `sha1sum`<br/>`sha224sum`<br/>`sha256sum`<br/>`sha384sum`<br/>`sha512sum` | Computes and checks [SHA-1](https://en.wikipedia.org/wiki/SHA-1)/[SHA-2](https://en.wikipedia.org/wiki/SHA-2) message digests |                                        |
+
+https://en.wikipedia.org/wiki/Checksum
+
+> A **checksum** is a small-sized [block](https://en.wikipedia.org/wiki/Block_(data_storage)) of data derived from another block of [digital data](https://en.wikipedia.org/wiki/Digital_data) for the purpose of [detecting errors](https://en.wikipedia.org/wiki/Error_detection) that may have been introduced during its [transmission](https://en.wikipedia.org/wiki/Telecommunication) or [storage](https://en.wikipedia.org/wiki/Computer_storage).
+
+![checksum](/img/security/Checksum.svg)
+
+https://en.wikipedia.org/wiki/Cryptographic_hash_function
+
+[单向散列算法](/posts/java-cryptography-api/)
+
+![digest](/img/security/Digest.svg)
 
 # Shell utilities
 
@@ -174,7 +186,7 @@ https://en.wikipedia.org/wiki/Less_(Unix)
 
 | 命令    | 描述                                       | 备注                                       |
 | ----- | ---------------------------------------- | ---------------------------------------- |
-| `tee` | Redirect output to multiple files or processes | 详见[本文](http://www.cnblog.me/2015/11/15/gnu-text-utilities/) |
+| `tee` | Redirect output to multiple files or processes | 详见[本文](/posts/gnu-text-utilities/) |
 
 ## Conditions
 
@@ -245,4 +257,5 @@ unzip [选项] dist.zip
 
 * 《[List of GNU packages](https://en.wikipedia.org/wiki/List_of_GNU_packages)》
 * 《[GNU Core Utilities](https://en.wikipedia.org/wiki/GNU_Core_Utilities)》
-* 《[GNU Coreutils Manual](http://www.gnu.org/software/coreutils/manual/html_node/index.html)》
+  * 《[List of GNU Core Utilities commands](https://en.wikipedia.org/wiki/List_of_GNU_Core_Utilities_commands)》
+  * 《[GNU Coreutils Manual](http://www.gnu.org/software/coreutils/manual/html_node/index.html)》
