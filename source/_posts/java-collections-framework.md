@@ -46,6 +46,8 @@ typora-root-url: ..
 
 ## Collection
 
+[Collection](https://en.wikipedia.org/wiki/Collection_(abstract_data_type))
+
 最基础的集合接口 `java.util.Collection` 及其子接口如下：
 
 ![Collection](/img/java/collection/Collection.png)
@@ -55,6 +57,8 @@ typora-root-url: ..
 ![methods_of_collection](/img/java/collection/methods_of_collection.png)
 
 ## Map
+
+[Map](https://en.wikipedia.org/wiki/Associative_array)
 
 其它集合接口基于 `java.util.Map`，不是真正的集合。但是，这些接口包含集合视图（*collection-view*）操作，使得它们可以作为集合进行操作。
 

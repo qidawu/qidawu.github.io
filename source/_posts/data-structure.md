@@ -32,6 +32,19 @@ typora-root-url: ..
 
 ## 逻辑结构
 
+https://en.wikipedia.org/wiki/Abstract_data_type
+
+- https://en.wikipedia.org/wiki/Set_(abstract_data_type)
+  - https://en.wikipedia.org/wiki/Multiset
+- https://en.wikipedia.org/wiki/List_(abstract_data_type)
+  - https://en.wikipedia.org/wiki/Stack_(abstract_data_type)
+  - https://en.wikipedia.org/wiki/Queue_(abstract_data_type)
+  - https://en.wikipedia.org/wiki/Priority_queue
+  - https://en.wikipedia.org/wiki/Double-ended_queue
+  - https://en.wikipedia.org/wiki/Double-ended_priority_queue
+- https://en.wikipedia.org/wiki/Tree_(data_structure)
+- https://en.wikipedia.org/wiki/Graph_(abstract_data_type)
+
 ### 集合结构
 
 任意两个结点之间都没有邻接关系，组织形式松散：

@@ -1,5 +1,5 @@
 ---
-title: 数据结构系列（三）树形结构总结
+title: 数据结构系列（三）树结构总结
 date: 2021-10-05 17:13:35
 updated:
 tags: 数据结构
@@ -9,33 +9,35 @@ typora-root-url: ..
 
 # 相关术语
 
-树形结构的相关术语：
+维基百科 [Tree (data structure)](https://en.wikipedia.org/wiki/Tree_(data_structure)#Terminology) 的相关术语：
 
-![树形结构的相关术语](/img/data-structure/tree/terms_of_tree.png)
-
-树（Tree），来自维基百科 [Tree (data structure)](https://en.wikipedia.org/wiki/Tree_(data_structure)#Terminology) 的定义：
+![树形结构的相关术语](/img/data-structure/tree/tree_terms.png)
 
 * 结点（Node）：包含一个数据元素及若干指向其子树的分支。
 
 * 结点的度（Degree of node）：
 
-  > Degree
-  >
   > For a given node, its number of children. A leaf has necessarily degree <mark>zero</mark>.
   
 * 树的度（Degree of tree）：
   
-  > Degree of tree
-  >
-  > The degree of a tree is the maximum degree of a node in the tree.
-
+  > The degree of a tree is the **maximum** degree of a node in the tree.
+  
 * 高度（Height）、深度（Depth）：
 
-  > The **height** of a node is the length of the longest downward path to a leaf from that node. The height of the root is the height of the tree. The **depth** of a node is the length of the path to its root (i.e., its *root path*). This is commonly needed in the manipulation of the various self-balancing trees, [AVL Trees](https://en.wikipedia.org/wiki/AVL_Trees) in particular. The root node has depth <mark>zero</mark>, leaf nodes have height <mark>zero</mark>, and a tree with only a single node (hence both a root and leaf) has depth and height <mark>zero</mark>. Conventionally, an empty tree (tree with no nodes, if such are allowed) has height <mark>−1</mark>.
+  > The **height** of a node is the length of <u>the longest downward path to a leaf</u> from that node. The **height** of the root is the height of the tree.
+  >
+  > The **depth** of a node is the length of <u>the path to its root</u> (i.e., its *root path*).
+  >
+  > ![Difference Between Tree Depth and Height](/img/data-structure/tree/tree_depth_height_difference.png)
+  >
+  > When using zero-based counting, the root node has depth <mark>zero</mark>, leaf nodes have height <mark>zero</mark>, and a tree with only a single node (hence both a root and leaf) has depth and height <mark>zero</mark>. Conventionally, an empty tree (tree with no nodes, if such are allowed) has height <mark>−1</mark>.
 
-森林（Forest）：n 棵互不相交的树的集合。
+参考：
 
-> A set of *n* ≥ 0 disjoint trees.
+https://www.baeldung.com/cs/tree-depth-height-difference
+
+https://stackoverflow.com/questions/2603692/what-is-the-difference-between-tree-depth-and-height
 
 # 一叉树
 
@@ -57,16 +59,29 @@ typora-root-url: ..
 
 ![二叉树的性质](/img/data-structure/tree/binary_tree_formula.png)
 
-下面总结下二叉树的常见公式。
-
-## 性质（公式）
-
 二叉树的通用性质：
 
 * 性质 1：二叉树第 i (i ≥ 1) 层至多有 $2^{i-1}$ 个结点。
+
+  ![Level start with 1 from root node](/img/data-structure/tree/tree-level-start-with-1.png)
+
 * 性质 2：深度为 k (k ≥ 1) 的二叉树至多有 $2^k-1$ 个结点。
+
+  ![Depth start with 1 from root node](/img/data-structure/tree/tree-depth-start-with-1.png)
+
 * 性质 3：二叉树中，若度数为 0 的叶子结点个数为 $n_0$，度数为 2 的结点个数为 $n_2$，则 $n_0 = n_2 + 1$。
-* 若根节点的层数为 1，则具有 n 个结点的二叉树的最大高度为 n。
+
+* 若根节点的层数为 1，则具有 n 个结点的二叉树的最大高度为 n（即一叉树）。
+
+
+
+参考：https://www.atnyla.com/tutorial/level-and-height-of-the-tree/3/392
+
+## 逻辑结构
+
+下面介绍几种特殊的二叉树：
+
+### 满二叉树（Full Binary Tree）
 
 满二叉树的性质：
 
@@ -78,16 +93,20 @@ typora-root-url: ..
   | -------- | --------- | --------- | --------- | ---------- |
   | 结点总数 | $2^1-1=1$ | $2^2-1=3$ | $2^3-1=7$ | $2^4-1=15$ |
 
+### 完全二叉树（Complete Binary Tree）
+
+![完全二叉树](/img/data-structure/tree/complete_binary_tree.webp)
+
 完全二叉树的性质：
 
 * 含有 n 个结点的完全二叉树，深度为 $⌊log_2n⌋+1$。
 
-* 高度为 k 的完全二叉树：
+* 深度为 k 的完全二叉树：
 
   |                | $k=1$     | $k ≥ 2$   |
   | -------------- | --------- | --------- |
   | 最少结点数     | $2^{k-1}$ | $2^{k-1}$ |
-  | 最少叶子结点树 | $k$       | $2^{k-2}$ |
+  | 最少叶子结点数 | $k$       | $2^{k-2}$ |
 
   如下图和表格：
 
@@ -101,24 +120,6 @@ typora-root-url: ..
 * 含有 n 个结点的完全二叉树按层编号，则：
 
 ![完全二叉树的父子结点编号计算](/img/data-structure/tree/complete_binary_tree_formula.png)
-
-哈夫曼树的性质：
-
-* 哈夫曼树中，不存在度数为 1 的**分支结点**。
-* 若度数为 0 的**叶子结点**个数为 $n_0$，则哈夫曼树共有 $2n_0 - 1$ 个结点。
-* 若度数为 2 的结点个数为 $n_2$，则哈夫曼树共有 $2(n_2 + 1) - 1$ 个结点。
-
-## 逻辑结构
-
-下面介绍几种特殊的二叉树：
-
-### 满二叉树（Full Binary Tree）
-
-![满二叉树](/img/data-structure/tree/full_binary_tree.png)
-
-### 完全二叉树（Complete Binary Tree）
-
-![完全二叉树](/img/data-structure/tree/complete_binary_tree.webp)
 
 ## 存储结构
 
@@ -218,6 +219,8 @@ typora-root-url: ..
 
 # 多叉树
 
+## B-tree
+
 B-tree 的阶（Order），来自 Knuth (1998) 的定义：
 
 > Knuth (1998) defining the order to be maximum number of children (which is one more than the maximum number of keys).
@@ -246,8 +249,6 @@ B-tree 的阶（Order），来自 Knuth (1998) 的定义：
 
 例如一棵 3 阶 B 树，高度相比二叉树会更低。
 
-## B-tree
-
 ## B+ Tree
 
 特性：
@@ -269,6 +270,10 @@ B-tree 的阶（Order），来自 Knuth (1998) 的定义：
 
 ## 存储结构
 
+森林（Forest）：n 棵互不相交的树的集合。
+
+> A set of *n* ≥ 0 disjoint trees.
+
 ![LC-RS Representation](/img/data-structure/tree/left_child-right_sibling_representation_of_tree.png)
 
 https://blog.csdn.net/chengyq116/article/details/112342319
@@ -287,7 +292,15 @@ https://slidetodoc.com/left-childright-sibling-representation-instructor-prof-jy
 
 https://en.wikipedia.org/wiki/Huffman_tree
 
+哈夫曼树的性质：
+
+* 哈夫曼树中，不存在度数为 1 的**分支结点**。
+* 若度数为 0 的**叶子结点**个数为 $n_0$，则哈夫曼树共有 $2n_0 - 1$ 个结点。
+* 若度数为 2 的结点个数为 $n_2$，则哈夫曼树共有 $2(n_2 + 1) - 1$ 个结点。
+
 《[灵光一现的创造 霍夫曼编码](http://www.360doc.com/content/21/0927/19/32196507_997366430.shtml)》
+
+【霍夫曼编码原理 文本压缩、ZIP压缩文件原理 Huffman Encoding by Tom Scott-哔哩哔哩】 https://b23.tv/wFatkFc
 
 ## 查找
 
@@ -351,3 +364,6 @@ https://en.wikipedia.org/wiki/Huffman_tree
 
 《[AVL树，红黑树，B树，B+树，Trie树都分别应用在哪些现实场景中？](https://www.zhihu.com/question/30527705)》
 
+
+
+《[Implementing a Binary Tree in Java | Baeldung](https://www.baeldung.com/java-binary-tree)》
