@@ -91,7 +91,39 @@ Stream<Integer> stream7 = Stream.concat(Stream.of(1, 2), Stream.of(3, 4, 5));
 
 # 例子
 
-## 分组统计
+## 转换为数组（toArray）
+
+```Java
+Object[] objects = Stream.of(1, 2, 3, 4, 5).toArray();
+Integer[] integers = Stream.of(1, 2, 3, 4, 5).toArray(Integer[]::new);
+int[] arr = IntStream.of(1, 2, 3, 4, 5).toArray();
+```
+
+## 转换为列表（toList）
+
+```java
+// Java 8, modifiable List
+List<String> result = list.stream()
+    .collect(Collectors.toList());
+
+// Java 10, unmodifiable List
+List<String> result = list.stream()
+    .collect(Collectors.toUnmodifiableList());
+
+// Java 16, unmodifiable List
+List<String> result = list.stream()
+    .toList();
+```
+
+## 转换为键值对（toMap）
+
+```java
+Map<PayMethod.PayMethodEnum, XxxHandler> map = handlers.stream()
+                .filter(handler -> getAnnotation(handler) != null)
+                .collect(Collectors.toMap(handler -> getAnnotation(handler).code(), Function.identity()));
+```
+
+## 分组统计（groupingBy）
 
 测试数据如下，需要按 key 分组统计总个数、总和、平均数、最大值、最小值：
 
@@ -134,11 +166,7 @@ Map<String, IntSummaryStatistics> summary = peoples.stream()
 
 ## 获取列表索引
 
-`forEach` 方法入参缺少列表索引，无法实现某些场景下的特殊需求：
-
-```Java
-elements.forEach(element -> downloadFile(element));
-```
+`forEach` 方法入参缺少列表索引，无法实现某些特殊需求。
 
 解决方案一，通过 `IntStream` 获取索引 index：
 
@@ -170,17 +198,6 @@ IterateUtil.forEach(
 );
 ```
 
-## 数组转换
-
-```Java
-int[] arr = IntStream.of(1, 2, 3, 4, 5).toArray();
-```
-
-```Java
-Object[] objects = Stream.of(1, 2, 3, 4, 5).toArray();
-Integer[] integers = Stream.of(1, 2, 3, 4, 5).toArray(Integer[]::new);
-```
-
 ## 异常处理
 
 《[Exceptions in Java 8 Lambda Expressions](https://www.baeldung.com/java-lambda-exceptions)》
@@ -192,3 +209,8 @@ Integer[] integers = Stream.of(1, 2, 3, 4, 5).toArray(Integer[]::new);
 https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html
 
 https://docs.oracle.com/javase/tutorial/collections/streams/index.html
+
+https://github.com/amaembo/streamex
+
+《[用了 Stream API 之后，代码反而越写越丑？——写出具有可维护性的 Stream API 代码](https://mp.weixin.qq.com/s/a_QYX5z1AJhITYaXD-Gzag)》
+
