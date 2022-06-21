@@ -1,5 +1,5 @@
 ---
-title: Java 类加载篇（二）Java SPI 机制总结
+title: Java 类加载篇（三）SPI 动态加载机制总结
 date: 2018-11-05 22:27:20
 updated:
 tags: Java
