@@ -16,26 +16,28 @@ typora-root-url: ..
 
 详见：[Oracle Java SE Support Roadmap](https://www.oracle.com/java/technologies/java-se-support-roadmap.html)
 
-| Release      | GA Date           | Premier Support Until | Extended Support Until | Sustaining Support |
-| :----------- | :---------------- | :-------------------- | :--------------------- | :----------------- |
-| 6            | December 2006     | December 2015         | December 2018          | Indefinit          |
-| 7            | July 2011         | July 2019             | July 2022*****         | Indefinite         |
-| 8﻿**          | March 2014        | March 2022            | December 2030*****     | Indefinite         |
-| 9 (non‑LTS)  | September 2017    | March 2018            | Not Available          | Indefinite         |
-| 10 (non‑LTS) | March 2018        | September 2018        | Not Available          | Indefinite         |
-| 11 (LTS)     | September 2018    | September 2023        | September 2026         | Indefinite         |
-| 12 (non‑LTS) | March 2019        | September 2019        | Not Available          | Indefinite         |
-| 13 (non‑LTS) | September 2019    | March 2020            | Not Available          | Indefinite         |
-| 14 (non‑LTS) | March 2020        | September 2020        | Not Available          | Indefinite         |
-| 15 (non‑LTS) | September 2020    | March 2021            | Not Available          | Indefinite         |
-| 16 (non-LTS) | March 2021        | September 2021        | Not Available          | Indefinite         |
-| 17 (LTS)     | September 2021*** | September 2026****    | September 2029****     | Indefinite         |
-
-
+| Release         | GA Date        | Premier Support Until | Extended Support Until | Sustaining Support |
+| :-------------- | :------------- | :-------------------- | :--------------------- | :----------------- |
+| 6               | December 2006  | December 2015         | December 2018          |                    |
+| 7 (LTS)         | July 2011      | July 2019             | July 2022*****         | Indefinite         |
+| 8﻿ (LTS)**       | March 2014     | March 2022            | December 2030*****     | Indefinite         |
+| 9 (non‑LTS)     | September 2017 | March 2018            | Not Available          | Indefinite         |
+| 10 (non‑LTS)    | March 2018     | September 2018        | Not Available          | Indefinite         |
+| 11 (LTS)        | September 2018 | September 2023        | September 2026         | Indefinite         |
+| 12 (non‑LTS)    | March 2019     | September 2019        | Not Available          | Indefinite         |
+| 13 (non‑LTS)    | September 2019 | March 2020            | Not Available          | Indefinite         |
+| 14 (non‑LTS)    | March 2020     | September 2020        | Not Available          | Indefinite         |
+| 15 (non‑LTS)    | September 2020 | March 2021            | Not Available          | Indefinite         |
+| 16 (non-LTS)    | March 2021     | September 2021        | Not Available          | Indefinite         |
+| 17 (LTS)        | September 2021 | September 2026****    | September 2029****     | Indefinite         |
+| 18 (non-LTS)    | March 2022     | September 2022        | Not Available          | Indefinite         |
+| 19 (non-LTS)*** | September 2022 | March 2023            | Not Available          | Indefinite         |
+| 20 (non-LTS)*** | March 2023     | September 2023        | Not Available          | Indefinite         |
+| 21 (LTS)***     | September 2023 | September 2028        | September 2031         | Indefinite         |
 
 ![](/img/java/basics/java_2019Q3_graph.png)
 
-## Java SE 8
+### Java SE 8
 
 [Java Platform, Standard Edition (Java SE) Overview](https://docs.oracle.com/javase/8/docs/technotes/guides/)
 
