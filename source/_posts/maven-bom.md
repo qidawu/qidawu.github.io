@@ -5,6 +5,14 @@ updated:
 tags: Java
 ---
 
+# BOM
+
+> What Is Maven BOM❓
+>
+> BOM stands for Bill Of Materials. **A BOM is a special kind of POM that is used to control the versions of a project’s dependencies and provide a central place to define and update those versions.**
+>
+> BOM provides the flexibility to add a dependency to our module without worrying about the version that we should depend on.
+
 在大型项目中，BOM 用于将一组相关的、可以良好协作的构建（Maven Artifact）组合在一起，提供版本管理，避免构件间潜在的版本不兼容风险。
 
 BOM 如下：
@@ -25,46 +33,54 @@ BOM 如下：
 </project>
 ```
 
-例如常用的 Reactor、Spring Boot、Spring Cloud：
+例如常用的 [Reactor](/posts/java-reactor-startup)、Spring Framework、[Spring Boot](/posts/spring-boot-getting-started)、Spring Cloud：
 
 ```XML
-    <dependencyManagement>
-        <dependencies>
-            <!-- Import dependency management from Reactor -->
-            <dependency>
-                <groupId>io.projectreactor</groupId>
-                <artifactId>reactor-bom</artifactId>
-                <version>${reactor.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            
-            <!-- Import dependency management from Spring Boot -->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            
-            <!-- Import dependency management from Spring Cloud -->
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+<!-- 每个公司可能都拥有自己的标准父项目，为了解决 Maven 单继承问题，可以使用 `<dependencyManagement>` 通过组合方式来享受其提供的依赖版本统一管理的好处 -->
+<dependencyManagement>
+  <dependencies>
+    <!-- Import dependency management from Reactor -->
+    <dependency>
+      <groupId>io.projectreactor</groupId>
+      <artifactId>reactor-bom</artifactId>
+      <version>${reactor.version}</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+
+    <!-- Import dependency management from Spring Framework -->
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-framework-bom</artifactId>
+        <version>${spring-framework.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+
+    <!-- Import dependency management from Spring Boot -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-dependencies</artifactId>
+      <version>${spring-boot.version}</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+
+    <!-- Import dependency management from Spring Cloud -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-dependencies</artifactId>
+      <version>${spring-cloud.version}</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+  </dependencies>
+</dependencyManagement>
 ```
 
-# 实践例子（一）
-
-每个公司可能都拥有自己的标准父项目，为了解决 Maven 单继承问题，可以通过组合方式使用 `<dependencyManagement>` 依赖管理来享受其提供的版本管理的好处。
-
-# 实践例子（二）
+# 实践例子
 
 `<dependencyManagement>` 用于在具有层级关系的项目间统一管理依赖的版本，一般用在父项目中，通过它来管理 jar 包的版本，让子项目中引用一个依赖而不用显式的指定版本号，以达到**依赖版本统一管理**的目的。
 
@@ -173,3 +189,5 @@ BOM 如下：
 https://docs.spring.io/spring-boot/docs/current/reference/html/using-boot-build-systems.html
 
 https://projectreactor.io/docs/core/release/reference/#getting-started-understanding-bom
+
+https://www.baeldung.com/spring-maven-bom
