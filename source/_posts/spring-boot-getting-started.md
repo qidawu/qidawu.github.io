@@ -3,9 +3,10 @@ title: Spring Boot 入门总结
 date: 2017-08-01 16:38:00
 updated:
 tags: [Java, Spring]
+typora-root-url: ..
 ---
 
-# 版本情况
+# Roadmap
 
 截止 2021.9，Spring Boot 的最新版本情况：
 
@@ -21,7 +22,7 @@ tags: [Java, Spring]
 | [2.0.x](https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247485347&idx=1&sn=ff480a238c6cb84c1bb8363272781b43&scene=21#wechat_redirect) |  2018/03   |  已停止维护  |
 | [1.5.x](https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247485192&idx=1&sn=915e013ebb0ce4166c685d1747fdd47c&scene=21#wechat_redirect) |  2017/01   |  已停止维护  |
 
-# 搭建项目
+# Getting Started
 
 有几种方式可以搭建基于 Spring Boot 的项目：
 
@@ -42,13 +43,13 @@ tags: [Java, Spring]
    1. 社区版：离线安装 [Spring Assistant](http://plugins.jetbrains.com/plugin/10229-spring-assistant) 插件（在线安装方式被墙）
    2. 收费版：直接使用 Spring Initializr 插件
 
-# 项目组成
+# Spring Boot 组成
 
 Spring Boot 的[各个子项目](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project)组成及结构如下：
 
 ```
-spring-boot-dependencies (Parent pom)
-  spring-boot-parent (Parent pom)
+spring-boot-dependencies (BOM)
+  spring-boot-parent (Parent POM)
     spring-boot
     spring-boot-autoconfigure
     spring-boot-starters (Parent module)
@@ -76,17 +77,17 @@ spring-boot-dependencies (Parent pom)
 
 - [`spring-boot-dependencies`](https://github.com/spring-projects/spring-boot/tree/main/spring-boot-project/spring-boot-dependencies)
   
-  - 用于定义和统一管理 Sprint Boot 的各个依赖版本号，业务项目可以覆盖版本号如下：
+  - BOM (Bill of Materials)，用于定义和统一管理 Sprint Boot 的各个依赖版本号。
+  
+  - 业务项目可以通过 `dependencyManagement` 引入该依赖，解决**单继承问题**。
+  
+  - 业务项目可以覆盖版本号如下（但不建议）：
   
     ```XML
     <properties>
       <log4j2.version>2.16.0</log4j2.version>
     </properties>
     ```
-  
-  - 继承自 `spring-boot-build`。
-  
-  - 可通过 `dependencyManagement` 引入该依赖可以解决**单继承问题**。
   
 - [`spring-boot-parent`](https://github.com/spring-projects/spring-boot/tree/main/spring-boot-project/spring-boot-parent)
   
@@ -131,12 +132,9 @@ spring-boot-dependencies (Parent pom)
 
 # POM 配置
 
-* 方式一：继承 `spring-boot-starter-parent`
-* 方式二：如果已经有父项目，组合 `spring-boot-dependencies`
+参考：[Build Tool Plugins](https://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins.html)
 
-参考：[Build Systems - Maven](https://docs.spring.io/spring-boot/docs/current/reference/html/using-boot-build-systems.html#using-boot-maven)
-
-## 继承方式
+## 继承 spring-boot-starter-parent
 
 Maven 用户可以继承 `spring-boot-starter-parent` POM 项目以获得合理的默认配置：
 
@@ -155,16 +153,16 @@ Maven 用户可以继承 `spring-boot-starter-parent` POM 项目以获得合理�
 
 - Java 1.8 作为默认的编译器级别
 - UTF-8 源码编码
-- 提供统一的依赖版本管理（继承自 Maven POM `spring-boot-dependencies`），可以让你在自己的 pom 中引入依赖时省略版本号定义，保障依赖间的兼容性
+- 提供统一的依赖版本管理（继承自 `spring-boot-dependencies` BOM），可以让你在自己的 pom 中引入依赖时省略版本号定义，保障依赖间的兼容性
 - An execution of the [`repackage` goal](https://docs.spring.io/spring-boot/docs/2.1.0.RELEASE/maven-plugin/repackage-mojo.html) with a `repackage` execution id.
-- 合理的 [resource filtering](https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html) 配置（`application.properties` and `application.yml` including profile-specific files）
 - 合理的 plugin configuration 配置
+- 合理的 [resource filtering](https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html) 配置（`application.properties` and `application.yml` including profile-specific files）
 
-## 组合方式
+## 组合 spring-boot-dependencies
 
 不是每个人都喜欢继承 `spring-boot-starter-parent` POM 项目。每个公司可能都拥有自己的标准父项目，或者你更愿意明确声明所有 Maven 配置。
 
-即使如此，你仍然可以通过以组合方式使用 `scope=import`  的 `spring-boot-dependencies` 依赖来享受依赖管理的好处，如下所示：
+即使如此，你仍然可以以组合方式引入 `scope=import`  的 `spring-boot-dependencies` BOM 项目，来享受依赖管理的好处。如下所示：
 
 ```xml
 <dependencyManagement>
@@ -183,7 +181,9 @@ Maven 用户可以继承 `spring-boot-starter-parent` POM 项目以获得合理�
 
 这种组合方式能解决 Maven 单继承问题。
 
-# Maven 插件
+## 引入 spring-boot-maven-plugin
+
+> The Spring Boot Maven Plugin provides Spring Boot support in [Apache Maven](https://maven.org/). It allows you to package executable jar or war archives, run Spring Boot applications, generate build information and start your Spring Boot application prior to running integration tests.
 
 `spring-boot-maven-plugin` 插件内置[几个 goal](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals)，如下：
 
@@ -199,12 +199,7 @@ Maven 用户可以继承 `spring-boot-starter-parent` POM 项目以获得合理�
 | [spring-boot:start](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-start) | Start a spring application. Contrary to the `run` goal, this does not block and allows other goals to operate on the application. This goal is typically used in integration test scenario where the application is started before a test suite and stopped after. |
 | [spring-boot:stop](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-stop) | Stop an application that has been started by the "start" goal. Typically invoked once a test suite has completed. |
 
-参考：
-
-* [Spring Boot Maven Plugin](https://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins-maven-plugin.html)
-* https://docs.spring.io/spring-boot/docs/current/maven-plugin/
-
-## 项目运行方式一
+### 项目运行方式一
 
 Goal `spring-boot:run` 用于快速编译并运行 Spring Boot 应用，常用于本地开发环境。命令：
 
@@ -212,14 +207,19 @@ Goal `spring-boot:run` 用于快速编译并运行 Spring Boot 应用，常用�
 $ mvn spring-boot:run
 ```
 
-## 项目运行方式二
+### 项目运行方式二
 
-Goal `spring-boot:repackage` 用于重新打包现有的 jar/war 包，以便可以通过 `java -jar` 命令运行。常用于生产环境。命令：
+Goal `spring-boot:repackage` 用于重新打包现有的 jar/war 包，以便可以通过 `java -jar` 命令运行，常用于部署环境。命令：
 
 ```bash
-# Phase package 先将项目打包成一个 jar/war 包，再通过 Goal spring-boot:repackage 重新打包
+# Phase package 先将项目打包成一个 jar/war 包，再通过 Goal spring-boot:repackage 重新打成 jar 包
 $ mvn package spring-boot:repackage
 ```
+
+参考：
+
+* https://www.baeldung.com/spring-boot-repackage-vs-mvn-package
+* https://docs.spring.io/spring-boot/docs/current/reference/html/executable-jar.html
 
 重新打包后的 jar 包会内嵌一个 Servlet 容器，你可以像运行任何其它应用程序一样运行它：
 
@@ -227,70 +227,74 @@ $ mvn package spring-boot:repackage
 $ java -jar target/myapplication-0.0.1-SNAPSHOT.jar
 ```
 
-也可以指定运行参数，例如：
+也可以指定 Java System properties 运行，例如：
 
 ```bash
-$ java -jar -spring.profiles.active=prod target/myapplication-0.0.1-SNAPSHOT.jar
+$ java -jar -Dspring.profiles.active=prod target/myapplication-0.0.1-SNAPSHOT.jar
 ```
 
-## 项目运行方式三
+### 项目运行方式三
 
 通过在 jar 中添加启动脚本，为 *nix 系统制作一个完全可执行的 jar。常用于生产环境。
 
-更多信息参考：
-
-https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-repackage-parameters-details-executable
-
-[7.3 Installing Spring Boot Applications](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing)
+参考：[14.2 Installing Spring Boot Applications](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing)
 
 > In addition to running Spring Boot applications by using `java -jar`, it is also possible to make **fully executable** applications for Unix systems. A fully executable jar can be executed like any other executable binary or it can be [registered with `init.d` or `systemd`](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services). This helps when installing and managing Spring Boot applications in common production environments.
 >
-> Fully executable jars work by embedding an extra script at the front of the file. It is recommended that you make your jar or war fully executable only if you intend to execute it directly, rather than running it with `java -jar` or deploying it to a servlet container.
+> > ⚠️ Caution
+> >
+> > Fully executable jars work by embedding an extra script at the front of the file. It is recommended that you make your jar or war fully executable only if you intend to execute it directly, rather than running it with `java -jar` or deploying it to a servlet container.
 >
 > To create a ‘fully executable’ jar with Maven, use the following plugin configuration:
 >
 > ```XML
 > <plugin>
->     <groupId>org.springframework.boot</groupId>
->     <artifactId>spring-boot-maven-plugin</artifactId>
->     <configuration>
->         <executable>true</executable>
->     </configuration>
+>  <groupId>org.springframework.boot</groupId>
+>  <artifactId>spring-boot-maven-plugin</artifactId>
+>  <configuration>
+>      <executable>true</executable>
+>  </configuration>
 > </plugin>
 > ```
 >
 > You can then run your application by typing `./my-application.jar` (where `my-application` is the name of your artifact). The directory containing the jar is used as your application’s working directory.
 
-### Unix/Linux Services
+参考：[Optional parameter `executable` of spring-boot:repackage](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-repackage-parameters-details-executable)
+
+> Make a fully executable jar for *nix machines by prepending a **launch script** to the jar.
+
+#### Unix/Linux Services
+
+更多信息参考：[14.2.2. Unix/Linux Services](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services)
 
 * Installation as an `init.d` Service (System V)
 
 * Installation as a `systemd` Service
 
-   > `systemd` is the successor of the System V init system and is now being used by many modern Linux distributions.
+  > `systemd` is the successor of the System V init system and is now being used by many modern Linux distributions.
 
 * Customizing the Startup Script
-   * [Customizing the Start Script When It Is Written](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services.script-customization.when-written)
-   
-   * [Customizing a Script When It Runs](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services.script-customization.when-running)
-   
-     > For items of the script that need to be customized *after* the jar has been written, you can use environment variables or a [config file](https://docs.spring.io/spring-boot/docs/current/reference/html/deployment.html#deployment.installing.nix-services.script-customization.when-running.conf-file).
-     >
-     > The [following environment properties](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services.script-customization.when-running) are supported with the default script.
-   
-     例如：
-   
-     ```
-     MODE=service
-     identity=my-application
-     JAVA_OPTS="-Dspring.profiles.active=prod"
-     PID_FOLDER=./
-     LOG_FOLDER=./
-     ```
 
-### 脚本命令
+  * [Customizing the Start Script When It Is Written](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services.script-customization.when-written)
 
-当 config file 中，设置 `MODE=service`，`./my-application.jar` 可执行命令如下：
+  * [Customizing a Script When It Runs](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services.script-customization.when-running)
+
+    > For items of the script that need to be customized *after* the jar has been written, you can use environment variables or a [config file](https://docs.spring.io/spring-boot/docs/current/reference/html/deployment.html#deployment.installing.nix-services.script-customization.when-running.conf-file).
+    >
+    > The [following environment properties](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services.script-customization.when-running) are supported with the default script.
+
+    > With the exception of `JARFILE` and `APP_NAME`, the settings listed in the preceding section can be configured by using a `.conf` file. **The file is expected to be next to the jar file and have the same name but suffixed with `.conf` rather than `.jar`.** For example, a jar named `/var/myapp/myapp.jar` uses the configuration file named `/var/myapp/myapp.conf`, as shown in the following example:
+    >
+    > ```
+    > MODE=service
+    > JAVA_OPTS="-Xmx1024M -Dspring.profiles.active=prod"
+    > PID_FOLDER=./
+    > LOG_FOLDER=./
+    > ```
+
+##### 脚本命令
+
+当设置 `MODE=service`，`./my-application.jar` 可执行命令如下：
 
 > You can explicitly set it to `service` so that the `stop|start|status|restart` commands work or to `run` if you want to run the script in the foreground.
 
@@ -300,38 +304,83 @@ https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingl
 * `start` 启动应用
 * `restart` 重启应用
 
-# 外部配置
+# 外部化配置
 
-更多信息参考：[5.2. Externalized Configuration](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#features.external-config)
+更多信息参考：[Externalized Configuration](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#features.external-config)
 
-Spring Boot 能从多种属性源获得属性，包括如下几处：
+> Spring Boot lets you externalize your configuration so that you can **work with the same application code in different environments**. You can use a variety of external configuration sources, include Java properties files, YAML files, environment variables, and command-line arguments.
+>
+> Property values can be injected directly into your beans by 
+>
+> * using the `@Value` annotation, accessed through Spring’s `Environment` abstraction, 
+> * or be [bound to structured objects](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#features.external-config.typesafe-configuration-properties) through `@ConfigurationProperties`.
+>
+> Spring Boot uses a very particular `PropertySource` order that is designed to allow sensible overriding of values. Properties are considered in the following order (with values from **lower items overriding earlier ones**):
+>
+> 1. Default properties (specified by setting `SpringApplication.setDefaultProperties`).
+> 2. [`@PropertySource`](https://docs.spring.io/spring-framework/docs/5.3.20/javadoc-api/org/springframework/context/annotation/PropertySource.html) annotations on your `@Configuration` classes.
+> 3. ⭐️ Config data (such as `application.properties` files).
+> 4. A `RandomValuePropertySource` that has properties only in `random.*`.
+> 5. ⭐️ OS environment variables (`System.getenv()`).
+> 6. ⭐️ Java System properties (`System.getProperties()`) (that is, arguments starting with `-D`, such as ` -Dspring.profiles.active=prod`).
+> 7. ⭐️ JNDI attributes from `java:comp/env`.
+> 8. `ServletContext` init parameters.
+> 9. `ServletConfig` init parameters.
+> 10. Properties from `SPRING_APPLICATION_JSON` (inline JSON embedded in an environment variable or system property).
+> 11. ⭐️ Command line arguments. (that is, arguments starting with `--`, such as `--server.port=9000`)
+> 12. `properties` attribute on your tests. Available on [`@SpringBootTest`](https://docs.spring.io/spring-boot/docs/2.7.0/api/org/springframework/boot/test/context/SpringBootTest.html) and the [test annotations for testing a particular slice of your application](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#features.testing.spring-boot-applications.autoconfigured-tests).
+> 13. [`@TestPropertySource`](https://docs.spring.io/spring-framework/docs/5.3.20/javadoc-api/org/springframework/test/context/TestPropertySource.html) annotations on your tests.
+> 14. [Devtools global settings properties](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using.devtools.globalsettings) in the `$HOME/.config/spring-boot` directory when devtools is active.
 
-1. 命令行参数
-2. `java:comp/env` 里的 JNDI 属性
-3. JVM 系统属性
-4. 操作系统环境变量
-5. 随机生成的带 `random.*` 前缀的属性（在设置其他属性时，可以引用它们，比如 `${random.long}`）
-6. 应用程序以外的 `application.properties` 或者 `appliaction.yml` 文件
-7. 打包在应用程序内的 `application.properties` 或者 `appliaction.yml` 文件
-8. 通过 `@PropertySource` 标注的属性源
-9. 默认属性
+> ⭐️ Config data files are considered in the following order:
+>
+> 1. [Application properties](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#features.external-config.files) packaged inside your jar (`application.properties` and YAML variants).
+> 2. [Profile-specific application properties](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#features.external-config.files.profile-specific) packaged inside your jar (`application-{profile}.properties` and YAML variants).
+> 3. [Application properties](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#features.external-config.files) outside of your packaged jar (`application.properties` and YAML variants).
+> 4. [Profile-specific application properties](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#features.external-config.files.profile-specific) outside of your packaged jar (`application-{profile}.properties` and YAML variants).
 
-这个列表按照优先级排序，也就是说，任何在高优先级属性源里设置的属性都会覆盖低优先级的相同属性。例如，命令行参数会覆盖其他属性源里的属性。
+> It is recommended to stick with one format for your entire application. If you have configuration files with both `.properties` and `.yml` format in the same location, `.properties` takes precedence.
 
-`application.properties` 和 `application.yml` 文件能放在以下四个位置：
+## External Application Properties
 
-1. 外置，在相对于应用程序运行目录的 `/config` 子目录里。
-2. 外置，在应用程序运行的目录里。
-3. 内置，在 `config` 包内。
-4. 内置，在 `Classpath` 根目录。
+> Spring Boot will automatically find and load `application.properties` and `application.yaml` files from the following locations when your application starts:
+>
+> 1. The classpath root
+> 2. The classpath `/config` package
+>
+> The list is ordered by precedence (with values from **lower items overriding earlier ones**). Documents from the loaded files are added as `PropertySources` to the Spring `Environment`.
 
-同样，这个列表按照优先级排序。也就是说，`/config` 子目录里的 `application.properties` 会覆盖应用程序 `Classpath` 里的 `application.properties` 中的相同属性。
+`spring.config.name` 修改配置文件名称：
 
-此外，如果你在同一优先级位置同时有 `application.properties` 和 `application.yml`，那么 `application.yml` 里的属性会覆盖 `application.properties` 里的属性。
+> If you do not like `application` as the configuration file name, you can switch to another file name by specifying a `spring.config.name` environment property.
+>
+> For example, to look for `myproject.properties` and `myproject.yaml` files you can run your application as follows:
+>
+> ```shell
+> $ java -jar myproject.jar --spring.config.name=myproject
+> ```
 
-如果需要为自己的 Bean 加上外部配置注入，可以使用注解 `@ConfigurationProperties`。
+`spring.config.location` 引用外部配置文件：
 
-## 配置嵌入式服务器
+> You can also refer to an explicit location by using the `spring.config.location` environment property. This property accepts a comma-separated list of one or more locations to check.
+>
+> The following example shows how to specify two distinct files:
+>
+> ```shell
+> $ java -jar myproject.jar --spring.config.location=\
+>  optional:classpath:/default.properties,\
+>  optional:classpath:/override.properties
+> ```
+>
+> Use the prefix `optional:` if the [locations are optional](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#features.external-config.files.optional-prefix) and you do not mind if they do not exist.
+
+## Common Application Properties
+
+https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html#appendix.application-properties
+
+## 例子
+
+### 配置嵌入式服务器
 
 Spring Boot 集成了 Tomcat、Jetty 和 Undertow，极大便利了项目部署。下面介绍一些常用配置：
 
@@ -340,7 +389,7 @@ server.port=8080 # Server HTTP port.
 server.context-path= # Context path
 ```
 
-### Tomcat
+#### Tomcat
 
 URI 编码配置：
 
@@ -371,7 +420,7 @@ server.tomcat.min-spare-threads=0 # Minimum amount of worker threads.
 server.tomcat.accept-count= # Maximum queue length for incoming connection requests when all possible request processing threads are in use.
 ```
 
-### Undertow
+#### Undertow
 
 ```properties
 # 设置IO线程数, 它主要执行非阻塞的任务,它们会负责多个连接, 默认设置每个CPU核心一个线程
@@ -403,10 +452,14 @@ https://github.com/spring-projects/spring-boot
 
 https://docs.spring.io/spring-boot/docs/current/
 
-* [4.1.5. Using Spring Boot Starters](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter)
-* [5.2. Externalized Configuration](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#features.external-config)
-* [7.3 Installing Spring Boot Applications](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing)
-  * [7.3.2 Unix/Linux Services - Customizing the Startup Script](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services.script-customization)
+https://docs.spring.io/spring-boot/docs/current/reference/html/index.html
 
-[Spring Boot Tomcat配置](https://yq.aliyun.com/articles/619390)
+* [6.1.5. Using Spring Boot Starters](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter)
+* [7.2. Externalized Configuration](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#features.external-config)
+* [14.2 Installing Spring Boot Applications](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing)
+  * [14.2.2 Unix/Linux Services - Customizing the Startup Script](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services.script-customization)
+
+[Spring Boot 的 16 条最佳实践](https://mp.weixin.qq.com/s/alLpto0ZCnkv7ew2tWLtKQ)
+
+[Spring Boot Tomcat 配置](https://yq.aliyun.com/articles/619390)
 

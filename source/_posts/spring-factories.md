@@ -3,6 +3,7 @@ title: Spring Boot 自动配置及 Factories 机制总结
 date: 2017-08-20 17:27:20
 updated:
 tags: [Java, Spring]
+typora-root-url: ..
 ---
 
 Spring Boot 应用中的"自动配置"是通过 `@EnableAutoConfiguration` 注解进行开启的。`@EnableAutoConfiguration` 可以帮助 Spring Boot 应用将所有符合条件的 `@Configuration` 配置类的 bean 都加载到 Spring IoC 容器中。本文解析了实现这个效果的原理。
@@ -79,13 +80,29 @@ org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition
 Filtered 30 auto configuration class in 1000 ms
 ```
 
-# 总结
+## 总结
 
 在日常工作中，我们可能需要实现一些 Spring Boot Starter 给被人使用，这个时候我们就可以使用这个 Factories 机制，将自己的 Starter 注册到 `org.springframework.boot.autoconfigure.EnableAutoConfiguration` 命名空间下。这样用户只需要在服务中引入我们的 jar 包即可完成自动加载及配置。Factories 机制可以让 Starter 的使用只需要很少甚至不需要进行配置。
 
 本质上，Spring Factories 机制与 Java SPI 机制原理都差不多：都是通过指定的规则，在规则定义的文件中配置接口的各种实现，通过 key-value 的方式读取，并以反射的方式实例化指定的类型。
 
+# spring.factories 已废弃
+
+https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.7-Release-Notes
+
+> Loading auto-configurations from `spring.factories` is deprecated.
+
+> If you have created your own auto-configurations, you should move the registration from `spring.factories` to a new file named `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`. Each line contains the fully qualified name of the auto-configuration. See [the included auto-configurations](https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot-autoconfigure/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports) for an example.
+>
+> For backwards compatibility, entries in `spring.factories` will still be honored.
+
+《提升维护效率，利用开源项目 mica-auto 自动生成这两个文件》
+
+https://mp.weixin.qq.com/s/ASBRANcdMI2VXflyvD6wiA
+
 # 参考
+
+[Auto-configuration Classes](https://docs.spring.io/spring-boot/docs/current/reference/html/auto-configuration-classes.html)
 
 https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/SpringFactoriesLoader.html
 
