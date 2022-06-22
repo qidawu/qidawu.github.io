@@ -118,6 +118,55 @@ https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-reference-configuration
 
 https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-reference-configuration-properties.html
 
+#### useServerPrepStmts
+
+https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-connp-props-prepared-statements.html#cj-conn-prop_useServerPrepStmts
+
+> Use server-side prepared statements if the server supports them?
+
+MySQL 是否默认开启预编译，与 MySQL Server 的版本无关，而与 MySQL Connector/J（驱动程序）的版本有关，Connector/J 5.0.5 之前的版本默认开启预编译。Connector/J 5.0.5 及以后的版本默认不开启预编译，想启用 MySQL 预编译，就必须设置 `useServerPrepStmts=true`。
+
+参考：《[JDBC 的 PreparedStatement 预编译详解](https://mp.weixin.qq.com/s/5JwMQJ-X2jBLfeTURLO68w)》
+
+#### allowMultiQueries
+
+https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-connp-props-security.html#cj-conn-prop_allowMultiQueries
+
+> Allow the use of `;` to delimit multiple queries during one statement (true/false). Default is `false`, and it does not affect the `addBatch()` and `executeBatch()` methods, which rely on `rewriteBatchedStatements` instead.
+
+基于安全考虑，默认情况下，MySQL Connector/J 禁用 `;` 拼接 SQL。
+
+如果想通过 MyBatis `foreach` 使用 `;` 拼接  `UPDATE`/`DELETE` 语句进行批量提交（但强烈不建议），需要设置 `useServerPrepStmts=true`。
+
+#### rewriteBatchedStatements
+
+https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-connp-props-performance-extensions.html#cj-conn-prop_rewriteBatchedStatements
+
+> Should the driver use multi-queries (regardless of the setting of `allowMultiQueries`) as well as rewriting of prepared statements for `INSERT` into **multi-value inserts** when `executeBatch()` is called? 
+>
+> Notice that this has the potential for [SQL injection](https://en.wikipedia.org/wiki/SQL_injection) if using plain `java.sql.Statement` and your code doesn't sanitize input correctly.
+>
+> Notice that for prepared statements, server-side prepared statements can not currently take advantage of this rewrite option, and that if you don't specify stream lengths when using `PreparedStatement.set*Stream()`, the driver won't be able to determine the optimum number of parameters per batch and you might receive an error from the driver that the resultant packet is too large. 
+>
+> `Statement.getGeneratedKeys()` for these rewritten statements only works when the entire batch includes `INSERT` statements. 
+>
+> Please be aware using `rewriteBatchedStatements=true` with `INSERT .. ON DUPLICATE KEY UPDATE` that for rewritten statement server returns only one value as sum of all affected (or found) rows in batch and it isn't possible to map it correctly to initial statements; in this case driver returns 0 as a result of each batch statement if total count was 0, and the `Statement.SUCCESS_NO_INFO` as a result of each batch statement if total count was > 0.
+
+要减少 JDBC 的网络调用次数改善性能，你可以设置 `rewriteBatchedStatements=true`，并使用 `PreparedStatement` 的 `addBatch()` 方法并执行 `executeBatch()` 批量发送多个操作给数据库。
+
+根据执行的 DML 语句类型，使用不同的处理方法：
+
+- 如果是 `INSERT` 语句，会整合成形如：`insert into t values (xx),(yy),(zz),...`
+- 如果是 `UPDATE`/`DELETE` 语句，会整合成形如：`update t set … where id = 1; update t set … where id = 2; update t set … where id = 3; ...`
+
+然后按 `maxAllowedPacket` 分批拼接 SQL 语句，然后按批次提交 MySQL。
+
+参考：《[MySQL 批量操作](https://www.jianshu.com/p/04d3d235cb9f)》
+
+#### maxAllowedPacket
+
+> Maximum allowed packet size to send to server. If not set, the value of system variable `max_allowed_packet` will be used to initialize this upon connecting. This value will not take effect if set larger than the value of `max_allowed_packet`. Also, due to an internal dependency with the property "`blobSendChunkSize`", this setting has a minimum value of "8203" if "`useServerPrepStmts`" is set to "`true`".
+
 ## 注册驱动程序
 
 有几种方式可以注册驱动程序，如下：
@@ -358,3 +407,5 @@ https://blog.csdn.net/autfish/article/details/52170053
 https://dev.mysql.com/downloads/connector/j/
 
 https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-overview.html
+
+《[MySQL 驱动 Bug 引发的事务不回滚问题](https://mp.weixin.qq.com/s/YjzgdkZOf0MYFIsWDoIMfA)》
