@@ -56,12 +56,7 @@ https://www.runoob.com/cprogramming/c-standard-library.html
 
 ### 4.1、基本数据类型
 
-C/C++ 基本数据类型：
-
-* 一种**布尔类型**
-* 一种**字符类型**
-* 一种**整数型**
-* 两种**浮点型**
+C 语言的基本数据类型：
 
 | 类型     | 关键字   | 存储大小                    | 备注                       |
 | :------- | :------- | --------------------------- | -------------------------- |
@@ -72,6 +67,10 @@ C/C++ 基本数据类型：
 | 双浮点型 | `double` | `sizeof(double)` = `8` 字节 |                            |
 
 ![基本数据类型](/img/cpp/data_type.png)
+
+C 语言各种数据类型的内存映像（32 位平台）：
+
+![基本数据类型](/img/cpp/c-data-types.png)
 
 ### 4.2、修饰符
 
@@ -228,3 +227,5 @@ https://www.cplusplus.com/doc/tutorial/
 https://www.cplusplus.com/doc/tutorial/variables/
 
 https://www.cplusplus.com/doc/tutorial/namespaces/
+
+《[C 语言入门教程 - 阮一峰](https://wangdoc.com/clang/)》
