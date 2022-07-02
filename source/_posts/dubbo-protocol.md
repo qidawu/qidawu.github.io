@@ -3,13 +3,14 @@ title: Dubbo 协议小结
 date: 2017-11-24 10:14:57
 updated:
 tags: Java
+typora-root-url: ..
 ---
 
 # RPC 框架对比
 
 市面上的 RPC 框架功能比较：
 
-![RPC框架功能比较](/img/dubbo/rpc_framework_compare.png)
+![RPC框架功能比较](/img/java/dubbo/rpc_framework_compare.png)
 
 # 协议对比
 
@@ -129,3 +130,5 @@ https://dangdangdotcom.github.io/dubbox/rest.html
 https://mvnrepository.com/artifact/com.gaosi/dubbox
 
 Dubbox fork from Dubbo，目前只发布了一个版本：2.8.4
+
+《[有了 HTTP，为什么还要 RPC？](https://mp.weixin.qq.com/s/crgiTRZ6sJWm34-p65MlmQ)》

@@ -23,47 +23,47 @@ MyBatis 常用的产品组成汇总如下：
 
 # MyBatis 核心架构
 
-![](/img/mybatis/mybatis_core_architecture.png)
+![](/img/java/mybatis/mybatis_core_architecture.png)
 
-![](/img/mybatis/mybatis_core_architecture_2.png)
+![](/img/java/mybatis/mybatis_core_architecture_2.png)
 
 MyBatis 语句执行时的层次结构：
 
-![](/img/mybatis/mybatis_core_architecture_3.jpg)
+![](/img/java/mybatis/mybatis_core_architecture_3.jpg)
 
 涉及的主要 API 如下：
 
-![mybatis-api](/img/mybatis/mybatis-api.png)
+![mybatis-api](/img/java/mybatis/mybatis-api.png)
 
 ## Executor
 
-![mybatis_api_Executor](/img/mybatis/mybatis_api_Executor.png)
+![mybatis_api_Executor](/img/java/mybatis/mybatis_api_Executor.png)
 
 ## StatementHandler
 
-![mybatis_api_StatementHandler](/img/mybatis/mybatis_api_StatementHandler.png)
+![mybatis_api_StatementHandler](/img/java/mybatis/mybatis_api_StatementHandler.png)
 
 ## ParameterHandler
 
-![mybatis_api_ParameterHandler](/img/mybatis/mybatis_api_ParameterHandler.png)
+![mybatis_api_ParameterHandler](/img/java/mybatis/mybatis_api_ParameterHandler.png)
 
 ## ResultSetHandler
 
-![mybatis_api_ResultSetHandler](/img/mybatis/mybatis_api_ResultSetHandler.png)
+![mybatis_api_ResultSetHandler](/img/java/mybatis/mybatis_api_ResultSetHandler.png)
 
 ## TypeHandler
 
-![mybatis_api_TypeHandler](/img/mybatis/mybatis_api_TypeHandler.png)
+![mybatis_api_TypeHandler](/img/java/mybatis/mybatis_api_TypeHandler.png)
 
 # 使用方式
 
 ## 基于 Statement ID 的传统方式
 
-![mybatis_statement_id](/img/mybatis/mybatis_statement_id.jpg)
+![mybatis_statement_id](/img/java/mybatis/mybatis_statement_id.jpg)
 
 ## 基于 Mapper 接口的推荐方式
 
-![mybatis_mapper](/img/mybatis/mybatis_mapper.jpg)
+![mybatis_mapper](/img/java/mybatis/mybatis_mapper.jpg)
 
 # 参考
 

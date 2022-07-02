@@ -3,13 +3,14 @@ title: Dubbo 配置小结
 date: 2017-11-15 20:14:05
 updated:
 tags: Java
+typora-root-url: ..
 ---
 
 本文主要总结 Dubbo 日常使用时的一些常用配置。
 
 # 配置之间的关系
 
-![配置之间的关系](/img/dubbo/dubbo-config.jpg)
+![配置之间的关系](/img/java/dubbo/dubbo-config.jpg)
 
 | XML 配置               | Java Config 配置                             | 配置         | 解释                                                         |
 | ---------------------- | -------------------------------------------- | ------------ | ------------------------------------------------------------ |
@@ -29,15 +30,15 @@ tags: Java
 
 ## 协议
 
-![](/img/dubbo/dubbo_protocol.png)
+![](/img/java/dubbo/dubbo_protocol.png)
 
 ## 服务提供者
 
-![](/img/dubbo/provider.png)
+![](/img/java/dubbo/provider.png)
 
 ## 服务消费者
 
-![](/img/dubbo/consumer.png)
+![](/img/java/dubbo/consumer.png)
 
 # 配置覆盖关系
 
@@ -48,13 +49,13 @@ tags: Java
 
 规则二是指，所有配置最终都将转换为 URL 表示，并由服务提供方生成，经注册中心传递给消费方。其 URL 格式如下：`protocol://username:password@host:port/path?key=value&key=value`
 
-![dubbo 配置覆盖关系](/img/dubbo/dubbo-config-override.jpg)
+![dubbo 配置覆盖关系](/img/java/dubbo/dubbo-config-override.jpg)
 
 参考：[XML 配置](http://dubbo.apache.org/zh-cn/docs/user/configuration/xml.html)。
 
 # 属性配置关系
 
-![dubbo 属性覆盖关系](/img/dubbo/dubbo-properties-override.jpg)
+![dubbo 属性覆盖关系](/img/java/dubbo/dubbo-properties-override.jpg)
 
 参考：[属性配置](http://dubbo.apache.org/zh-cn/docs/user/configuration/properties.html)
 

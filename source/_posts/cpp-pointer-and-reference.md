@@ -242,7 +242,7 @@ p = 0x7ffee483763c, &p = 0x7ffee4837628, *p = 10, &*p = 0x7ffee483763c, *&p = 0x
 
 引用与指针的区别，如下图：
 
-![引用与指针对比](/img/cpp/pointer_and_reference.png)
+![引用与指针对比](/img/c/pointer_and_reference.png)
 
 # 参考
 

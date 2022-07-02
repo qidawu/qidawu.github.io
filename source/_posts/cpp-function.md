@@ -75,7 +75,7 @@ int max1(int num1, int num2)
 
 传址与传引用的使用区别，如下：
 
-![指针与引用的使用区别](/img/cpp/compare_with_pointer_and_reference.png)
+![指针与引用的使用区别](/img/c/compare_with_pointer_and_reference.png)
 
 # 函数调用
 

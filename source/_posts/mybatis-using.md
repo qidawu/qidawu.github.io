@@ -8,7 +8,7 @@ typora-root-url: ..
 
 # MyBatis Core
 
-![](/img/mybatis/mybatis_core.png)
+![](/img/java/mybatis/mybatis_core.png)
 
 ## 查询
 
@@ -18,7 +18,7 @@ https://mybatis.org/mybatis-3/sqlmap-xml.html#Result_Maps
 
 结果映射，用于自定义结果集（Result Maps）：
 
-![](/img/mybatis/mybatis_result_map.png)
+![](/img/java/mybatis/mybatis_result_map.png)
 
 #### 可变/不可变类的结果映射
 
@@ -67,7 +67,7 @@ https://mybatis.org/mybatis-3/configuration.html#typeHandlers
 
 实现 `org.apache.ibatis.type.TypeHandler` 接口：
 
-![TypeHandler](/img/mybatis/mybatis_api_TypeHandler.png)
+![TypeHandler](/img/java/mybatis/mybatis_api_TypeHandler.png)
 
 #### 枚举字段存取
 

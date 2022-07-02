@@ -200,7 +200,7 @@ public class ValidatorUtil {
 
 Hibernate 框架提供了各种子项目，如下：
 
-![Hibernate Projects](/img/hibernate/hibernate_projects.png)
+![Hibernate Projects](/img/java/hibernate/hibernate_projects.png)
 
 其中，子项目 Hibernate Validator 是 Bean Validation 规范的**官方认证实现**。
 
@@ -291,6 +291,11 @@ https://dubbo.apache.org/zh/docs/v2.7/user/examples/parameter-validation/
 [Spring MVC 方法参数验证](/posts/spring-mvc/#方法参数验证)
 
 [SpringBoot 中使用 `@Valid` 注解 + 全局异常处理器 优雅处理参数验证](http://www.mydlq.club/article/49/)
+
+[@Validated 和 @Valid 的区别](https://mp.weixin.qq.com/s/vErmG-x8zSYJoNCWLovndg)
+
+* [`@Valid`](https://docs.oracle.com/javaee/7/api/javax/validation/Valid.html) 由 Bean Validation 提供，由 Hibernate Validator 实现。
+* [`@Validated`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/validation/annotation/Validated.html) 由 Spring Validator 提供，是 `@Valid` 的变种，在使用上并没有区别，但在分组、注解位置、嵌套验证等功能上有所不同。
 
 # 常见问题
 

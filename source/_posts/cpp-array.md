@@ -161,7 +161,7 @@ sizeof(arrayName) / sizeof(arrayName[0]);  // 5
 
 # 指针数组 VS 数组指针
 
-![指针数据 VS 数组指针](/img/cpp/pointer_array.jpg)
+![指针数据 VS 数组指针](/img/c/pointer_array.jpg)
 
 ## 指针数组
 

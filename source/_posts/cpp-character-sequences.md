@@ -24,7 +24,7 @@ string str = "hello world";
 
 字符串实际上是使用 [null 字符](https://baike.baidu.com/item/Null/19660386) `\0` 终止的一维字符数组，如下：
 
-![C 字符串](/img/cpp/c-strings.png)
+![C 字符串](/img/c/c-strings.png)
 
 代码如下：
 

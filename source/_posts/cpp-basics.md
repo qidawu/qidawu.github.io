@@ -66,11 +66,11 @@ C 语言的基本数据类型：
 | 浮点型   | `float`  | `sizeof(float)` = `4` 字节  | C++ 中，小数默认为浮点型。 |
 | 双浮点型 | `double` | `sizeof(double)` = `8` 字节 |                            |
 
-![基本数据类型](/img/cpp/data_type.png)
+![基本数据类型](/img/c/data_types.png)
 
 C 语言各种数据类型的内存映像（32 位平台）：
 
-![基本数据类型](/img/cpp/c-data-types.png)
+![基本数据类型](/img/c/data_types_2.png)
 
 ### 4.2、修饰符
 
