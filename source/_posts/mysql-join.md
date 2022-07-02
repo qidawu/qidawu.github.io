@@ -6,9 +6,15 @@ tags: MySQL
 typora-root-url: ..
 ---
 
-![join](/img/mysql/join.png)
+![join](/img/sql/join/join_summary.png)
 
 # 连接语法
+
+![join](/img/sql/join/join.png)
+
+![join](/img/sql/join/join_0.png)
+
+![join](/img/sql/join/join_1.jpg)
 
 ## 内连接
 
@@ -198,3 +204,4 @@ t3_scanned_count =
 - [Multi-Range Read Optimization](https://dev.mysql.com/doc/refman/5.7/en/mrr-optimization.html)
 
 - [Block Nested-Loop and Batched Key Access Joins](https://dev.mysql.com/doc/refman/5.7/en/bnl-bka-optimization.html)
+
