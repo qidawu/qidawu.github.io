@@ -6,15 +6,13 @@ tags: [函数式编程, Java]
 typora-root-url: ..
 ---
 
+流是从支持数据处理操作的源生成的元素序列，源可以是数组、集合、文件、函数。流不是集合元素，它不是数据结构并不保存数据，它的主要目的在于计算。
+
 本文总结下 Stream API：
 
 ![java.util.stream](/img/java/lambda/stream_api.png)
 
-# 什么是流
-
-流是从支持数据处理操作的源生成的元素序列，源可以是数组、集合、文件、函数。流不是集合元素，它不是数据结构并不保存数据，它的主要目的在于计算。
-
-# 如何生产流
+# 创建流
 
 ## 数组
 
@@ -79,17 +77,13 @@ Stream<Integer> stream8 = Stream.<Integer>builder().add(1).add(2).build();
 Stream<Integer> stream7 = Stream.concat(Stream.of(1, 2), Stream.of(3, 4, 5));
 ```
 
-# 流的操作类型
-
-## 中间操作
+# 中间操作
 
 一个流可以后面跟随零个或多个中间操作。其目的主要是打开流，做出某种程度的数据映射/过滤，然后返回一个新的流，交给下一个操作使用。这类操作都是惰性化的，仅仅调用到这类方法，并没有真正开始流的遍历，真正的遍历需等到终结操作。
 
-## 终结操作
+# 终止操作
 
 一个流有且只能有一个终结操作，当这个操作执行后，流就被关闭，无法再被操作了。
-
-# 例子
 
 ## 转换为数组（toArray）
 
@@ -117,21 +111,30 @@ List<String> result = list.stream()
 
 ## 转换为键值对（toMap）
 
-```java
-Map<PayMethod.PayMethodEnum, XxxHandler> map = handlers.stream()
-                .filter(handler -> getAnnotation(handler) != null)
-                .collect(Collectors.toMap(handler -> getAnnotation(handler).code(), Function.identity()));
-```
-
-## 分组统计（groupingBy）
-
-测试数据如下，需要按 key 分组统计总个数、总和、平均数、最大值、最小值：
+测试数据如下：
 
 ```java
 List<Pair<String, Integer>> peoples = Arrays.asList(Pair.of("Lucy", 10),
                                                     Pair.of("Lucy", 30),
                                                     Pair.of("Peter", 18));
 ```
+
+需求：按 key 分组，key 冲突则保留 value 最大的。
+
+```java
+// 演示 `mergeFunction`
+// {Peter=(Peter,18), Lucy=(Lucy,30)}
+Map<String, Pair<String, Integer>> map = peoples.stream()
+  .collect(Collectors.toMap(
+    Pair::getKey,
+    Function.identity(),
+    (people1, people2) -> people1.getValue() > people2.getValue() ? people1 : people2)
+  );
+```
+
+## 分组统计（groupingBy）
+
+需求：按 key 分组统计总个数、总和、平均数、最大值、最小值。
 
 方式一，各项单独统计：
 
@@ -163,6 +166,8 @@ Map<String, Optional<Pair<String, Integer>>> min = peoples.stream()
 Map<String, IntSummaryStatistics> summary = peoples.stream()
     .collect(Collectors.groupingBy(Pair::getKey, Collectors.summarizingInt(Pair::getValue)));
 ```
+
+# 常见问题
 
 ## 获取列表索引
 
