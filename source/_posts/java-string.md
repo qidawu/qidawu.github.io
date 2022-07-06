@@ -26,9 +26,11 @@ typora-root-url: ..
 
 ## `intern()` 方法
 
-# 字符串的特性
+# 字符串的处理
 
-三种常用字符串类的区别如下：
+## 字符串拼接
+
+字符串拼接的三种方式，区别如下：
 
 |                           | since       | immutable ? | thread-safe ?  |
 | ------------------------- | ----------- | ----------- | -------------- |
@@ -36,29 +38,44 @@ typora-root-url: ..
 | `java.lang.StringBuffer`  | Java SE 1.0 | mutable     | thread-safe    |
 | `java.lang.StringBuilder` | Java SE 1.5 | mutable     | no thread-safe |
 
-## 字符串拼接-字节码分析
+字符串拼接的字节码分析，参考：[《On Java 8》第十八章 字符串：`+` 的重载与 `StringBuilder` 对比](https://zyb0408.github.io/gitbooks/onjava8/docs/book/18-Strings.html#%E9%87%8D%E8%BD%BD%E5%92%8CStringBuilder)
 
-[+ 的重载与 StringBuilder](https://lingcoder.github.io/OnJava8/#/book/18-Strings?id=-%e7%9a%84%e9%87%8d%e8%bd%bd%e4%b8%8e-stringbuilder)
-
-# 字符串的处理
-
-## 字符串格式化
-
-C 语言 `printf` 风格的字符串格式化解释器。用法参考[这里](https://blog.csdn.net/quinnnorris/article/details/54614446)。
-
-https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html
-
-![Formatter](/img/java/string/Formatter.png)
-
-## 字符串拼接
-
-对于字符串拼接，除了使用 `StringBuilder` 之外， Java SE 8 还提供了新的 API `java.util.StringJoiner`，它是`String.join` 和 `java.util.stream.Collectors#joining(...)` 的底层实现。结合 Stream API 使用如下：
+除了上述方式之外， Java SE 8 还提供了新的工具类 `java.util.StringJoiner`，它是`String.join` 和 `java.util.stream.Collectors#joining(...)` 的底层实现。结合 Stream API 使用如下：
 
 ```java
 // [a,b,c,d,e,f,g]
 Arrays.asList("a", "b", "c", "d", "e", "f", "g").stream()
                 .collect(Collectors.joining(",", "[", "]"));
 ```
+
+## 字符串格式化
+
+[`java.util.Formatter`](https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html) —— C 语言 `printf` 风格的字符串格式化解释器。
+
+![Formatter](/img/java/string/Formatter.png)
+
+用法：
+
+Returns a formatted string using the specified `format` string and `args`.
+
+```java
+String s1 = new Formatter().format(format, args).toString();
+// or simplied
+String s2 = String.format(format, args);
+```
+
+Writes a formatted string to this output stream using the specified `format` string and `args`.
+
+```java
+System.out.printf(format, args);
+System.out.format(format, args);
+```
+
+参考：
+
+https://www.baeldung.com/java-printstream-printf
+
+https://blog.csdn.net/quinnnorris/article/details/54614446
 
 ## 字符串转义
 
