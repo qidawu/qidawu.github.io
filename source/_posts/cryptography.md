@@ -1,5 +1,5 @@
 ---
-title: 几种密码学常用算法总结
+title: 密码学几种常用算法总结
 date: 2018-06-01 22:36:24
 updated:
 tags: [Java, 安全]
@@ -64,9 +64,12 @@ https://en.wikipedia.org/wiki/Cryptographic_hash_function
 
   > A message digest can also serve as a means of reliably identifying a file
   >
-  > * several [source code management](https://en.wikipedia.org/wiki/Source_Code_Management) systems, including [Git](https://en.wikipedia.org/wiki/Git_(software)), [Mercurial](https://en.wikipedia.org/wiki/Mercurial_(software)) and [Monotone](https://en.wikipedia.org/wiki/Monotone_(software)), use the [sha1sum](https://en.wikipedia.org/wiki/Sha1sum) of various types of content (file content, directory trees, ancestry information, etc.) to uniquely identify them. 
+  > * Several [source code management](https://en.wikipedia.org/wiki/Source_Code_Management) systems, including [Git](https://en.wikipedia.org/wiki/Git_(software)), [Mercurial](https://en.wikipedia.org/wiki/Mercurial_(software)) and [Monotone](https://en.wikipedia.org/wiki/Monotone_(software)), use the [sha1sum](https://en.wikipedia.org/wiki/Sha1sum) of various types of content (file content, directory trees, ancestry information, etc.) to uniquely identify them.
+  >   * [Why does Git use SHA-1 as version numbers?](https://stackoverflow.com/questions/11233591/why-does-git-use-sha-1-as-version-numbers)
   >
-  > * Hashes are used to identify files on [peer-to-peer](https://en.wikipedia.org/wiki/Peer-to-peer) [filesharing](https://en.wikipedia.org/wiki/Filesharing) networks. 
+  >   * [Why does Git use a cryptographic hash function?](https://stackoverflow.com/questions/28792784/why-does-git-use-a-cryptographic-hash-function)
+  >
+  > * Hashes are used to identify files on [peer-to-peer](https://en.wikipedia.org/wiki/Peer-to-peer) [filesharing](https://en.wikipedia.org/wiki/Filesharing) networks.
   >
   >   * For example, in an [ed2k link](https://en.wikipedia.org/wiki/Ed2k_link), an [MD4](https://en.wikipedia.org/wiki/MD4)-variant hash is combined with the file size, providing sufficient information for locating file sources, downloading the file, and verifying its contents. 
   >
@@ -123,3 +126,8 @@ https://en.wikipedia.org/wiki/Public-key_cryptography
 
 Java 使用例子：https://www.baeldung.com/java-rsa
 
+# 参考
+
+科普  | 《码书：编码与解码的战争》：一场加解密的战争
+
+《[图片理解数字签名和验签过程](https://blog.csdn.net/xiangwanpeng/article/details/70834060)》
