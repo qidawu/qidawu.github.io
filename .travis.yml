@@ -1,12 +1,12 @@
-# ÉèÖÃÓïÑÔ
+# è®¾ç½®è¯­è¨€
 language: node_js
-# ÉèÖÃÏàÓ¦µÄ°æ±¾£¬¿ÉÒÔÖ¸¶¨°æ±¾ 10£¬»òÕßÊ¹ÓÃÎÈ¶¨°æ stable
-node_js: stable
-# ÉèÖÃÖ»¼àÌıÄÄ¸ö·ÖÖ§
+# è®¾ç½®ç›¸åº”çš„ç‰ˆæœ¬ï¼Œå¯ä»¥æŒ‡å®šç‰ˆæœ¬ 10ï¼Œæˆ–è€…ä½¿ç”¨ç¨³å®šç‰ˆ stable
+node_js: 16
+# è®¾ç½®åªç›‘å¬å“ªä¸ªåˆ†æ”¯
 branches:
   only:
     - master
-# »º´æ node_modules Ä¿Â¼£¬¿ÉÒÔ½ÚÊ¡³ÖĞø¼¯³ÉµÄÊ±¼ä
+# ç¼“å­˜ node_modules ç›®å½•ï¼Œå¯ä»¥èŠ‚çœæŒç»­é›†æˆçš„æ—¶é—´
 cache:
   directories:
     - node_modules
@@ -20,8 +20,8 @@ script:
 after_script:
   - cd ./public
   - git init
-  - git config user.name "qida_wu" # ĞŞ¸Äname
-  - git config user.email "cynthia903@qq.com" # ĞŞ¸Äemail
+  - git config user.name "qida_wu" # ä¿®æ”¹name
+  - git config user.email "cynthia903@qq.com" # ä¿®æ”¹email
   - git add .
   - git commit -m "Travis CI Auto Builder"
   - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:master
