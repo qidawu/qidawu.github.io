@@ -363,8 +363,8 @@ codeblock:
   # Code Highlight theme
   # All available themes: https://theme-next.js.org/highlight/
   theme:
-    light: zenburn
-    dark: tomorrow-night
+    light: base16/zenburn
+    dark: base16/tomorrow-night
   prism:
     light: prism
     dark: prism-dark
