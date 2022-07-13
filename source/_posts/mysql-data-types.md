@@ -32,51 +32,56 @@ MySQL 支持的数据类型非常多，选择正确的数据类型对于获得�
 
 * 使用日期与时间类型，而不是字符串来存储日期和时间，以便排序和格式转换。
 
-* 使用无符号整型，而不是字符串来存储 IP 地址。MySQL 提供了两个函数来处理 IP 地址：
+* IPv4 地址：按十进制标记法（32-bit decimal notation）使用 32 位无符号整型类型（`int unsigned`）进行存储，而不是按点分十进制标记法（Dot-decimal notation）使用字符串类型（`varchar`）进行存储。
 
   ```sql
-  -- 使用 INT unsigned 类型存储（存储范围：0 ~ 2^32-1）
-  SELECT inet_aton('0.0.0.0');  --结果：0
-  SELECT inet_aton('192.168.1.1');  --结果：3232235777
-  SELECT inet_aton('255.255.255.255');  --结果：4294967295
-  
-  SELECT inet_ntoa('3232235777');  --结果：192.168.1.1
-  ```
-
-* 使用定长二进制类型（如 `binary`），而不是字符串来存储散列值：
-
-  * `MD5` 128 bit / 4 = 32 length
-  * `SHA-1` 160 bit / 4 = 40 length
-  * `SHA-224` 224 bit / 4 = 56 length
-  * `SHA-256` 256 bit / 4 = 64 length
-  * `SHA-384` 384 bit / 4 = 96 length
-  * `SHA-512` 512 bit / 4 = 128 length
-
-  ```sql
-  -- 示例表
-  CREATE TABLE `t_hash` (
-    `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键 ID',
-    `hash` varbinary(40) NOT NULL COMMENT '散列值',
-    PRIMARY KEY (`id`),
-    KEY `idx_hash` (`hash`) USING BTREE
+  -- 测试表（注意使用 int UNSIGNED 类型存储（存储范围：0 ~ 2^32-1））
+  CREATE TABLE `t_iptable` (
+    `ip1` int(32) UNSIGNED NOT NULL COMMENT 'IPv4 地址',
+    `ip2` varchar(15) NOT NULL COMMENT 'IPv4 地址'
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
   
   -- 测试数据
-  INSERT INTO t_hash(hash) values(md5('0.0.0.0'));
-  INSERT INTO t_hash(hash) values(sha1('0.0.0.0'));
-  INSERT INTO t_hash(hash) values('你好吗');
+  INSERT INTO t_iptable(ip1, ip2) VALUES(INET_ATON('0.0.0.0'), '0.0.0.0');
+  INSERT INTO t_iptable(ip1, ip2) VALUES(INET_ATON('10.198.1.1'), '10.198.1.1');
+  INSERT INTO t_iptable(ip1, ip2) VALUES(INET_ATON('255.255.255.255'), '255.255.255.255');
   
   -- 测试结果
-  -- length() 函数返回值的单位为字节。
-  -- 由于二进制类型无字符集，因此中文乱码
-  select hash, length(hash), char_length(hash) from t_hash order by id;
-  +------------------------------------------+--------------+-------------------+
-  | hash                                     | length(hash) | char_length(hash) |
-  +------------------------------------------+--------------+-------------------+
-  | f1f17934834ae2613699701054ef9684         |           32 |                32 |
-  | e562f69ec36e625116376f376d991e41613e9bf3 |           40 |                40 |
-  | 浣犲ソ鍚?                                 |            9 |                 9 |
-  +------------------------------------------+--------------+-------------------+
+  -- INET_ATON()	Return the numeric value of an IP address		
+  -- INET_NTOA()	Return the IP address from a numeric value		
+  -- INET6_ATON()	Return the numeric value of an IPv6 address		
+  -- INET6_NTOA()	Return the IPv6 address from a numeric value
+  SELECT INET_NTOA(ip1), ip2 FROM t_iptable;
+  +-----------------+-----------------+
+  | INET_NTOA(ip1)  | ip2             |
+  +-----------------+-----------------+
+  | 0.0.0.0         | 0.0.0.0         |
+  | 10.198.1.1      | 10.198.1.1      |
+  | 255.255.255.255 | 255.255.255.255 |
+  +-----------------+-----------------+
+  ```
+
+* 散列值：使用定长二进制类型（`binary`），而不是按十六进制标记法使用字符串类型（`char`）来存储散列值：https://stackoverflow.com/questions/614476/storing-sha1-hash-values-in-mysql
+
+  ```sql
+  -- 测试表
+  CREATE TABLE `t_hash` (
+    `hash1` binary(20) NOT NULL COMMENT '散列值',
+    `hash2` char(40) NOT NULL COMMENT '散列值'
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  
+  -- 测试数据
+  INSERT INTO t_hash(hash1, hash2) VALUES(UNHEX('E562F69EC36E625116376F376D991E41613E9BF3'), 'E562F69EC36E625116376F376D991E41613E9BF3');
+  
+  -- 测试结果
+  -- BIT_LENGTH()	Return length of a string in bits
+  -- LENGTH()	Return length of a string in bytes
+  SELECT HEX(hash1), BIT_LENGTH(hash1), LENGTH(hash1), hash2, BIT_LENGTH(hash2), LENGTH(hash2) FROM t_hash;
+  +------------------------------------------+-------------------+---------------+------------------------------------------+-------------------+---------------+
+  | HEX(hash1)                               | BIT_LENGTH(hash1) | LENGTH(hash1) | hash2                                    | BIT_LENGTH(hash2) | LENGTH(hash2) |
+  +------------------------------------------+-------------------+---------------+------------------------------------------+-------------------+---------------+
+  | E562F69EC36E625116376F376D991E41613E9BF3 |               160 |            20 | E562F69EC36E625116376F376D991E41613E9BF3 |               320 |            40 |
+  +------------------------------------------+-------------------+---------------+------------------------------------------+-------------------+---------------+
   ```
 
 ## Avoid `NULL` if possible
@@ -113,15 +118,15 @@ MySQL 支持的数据类型非常多，选择正确的数据类型对于获得�
 
 1 byte = 8 bit。
 
-### 整数类型（精确值）
+### 整数类型
 
-| 类型        | 存储长度          | 取值范围（有符号） | 取值范围（无符号） | 备注                                                         |
-| ----------- | ----------------- | ------------------ | ------------------ | ------------------------------------------------------------ |
-| `TINYINT`   | 1 Byte (8 bits)   | -2^7 ~ 2^7-1       | 0 ~ 2^8-1          | 同义词 `BOOL`、`BOOLEAN` ，0 为 false，!0 为 true            |
-| `SMALLINT`  | 2 Bytes (16 bits) | -2^15 ~ 2^15-1     | 0 ~ 2^16-1         |                                                              |
-| `MEDIUMINT` | 3 Bytes (24 bits) | -2^23 ~ 2^23-1     | 0 ~ 2^24-1         |                                                              |
-| `INT`       | 4 Bytes (32 bits) | -2^31 ~ 2^31-1     | 0 ~ 2^32-1         | 同义词 `INTEGER`                                             |
-| `BIGINT`    | 8 Bytes (64 bits) | -2^63 ~ 2^63-1     | 0 ~ 2^64-1         | `SERIAL` 等于 `BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE` 的别名 ，适用于创建主键 |
+| Data Type   | Storage Required | Data Range（`signed`） | Data Range（`unsigned`） | Description                                                  |
+| ----------- | ---------------- | ---------------------- | ------------------------ | ------------------------------------------------------------ |
+| `TINYINT`   | 8 bits, 1 Byte   | -2^7 ~ 2^7-1           | 0 ~ 2^8-1                | 同义词 `BOOL`、`BOOLEAN` ，0 为 false，!0 为 true            |
+| `SMALLINT`  | 16 bits, 2 Bytes | -2^15 ~ 2^15-1         | 0 ~ 2^16-1               |                                                              |
+| `MEDIUMINT` | 24 bits, 3 Bytes | -2^23 ~ 2^23-1         | 0 ~ 2^24-1               |                                                              |
+| `INT`       | 32 bits, 4 Bytes | -2^31 ~ 2^31-1         | 0 ~ 2^32-1               | 同义词 `INTEGER`                                             |
+| `BIGINT`    | 64 bits, 8 Bytes | -2^63 ~ 2^63-1         | 0 ~ 2^64-1               | `SERIAL` 等于 `BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE` 的别名 ，适用于创建主键 |
 
 `INT[(M)] [UNSIGNED] [ZEROFILL] [AUTO_INCREMENT]` 整数类型
 
@@ -148,15 +153,28 @@ MySQL 支持的数据类型非常多，选择正确的数据类型对于获得�
 
   在需要产生唯一标识符或顺序值时，可利用此属性，这个属性只用于整数类型。`AUTO_INCREMENT` 值一般从 1 开始，每行增加 1。 一个表中最多只能有一个 `AUTO_INCREMENT` 列 。对于任何想要使用 `AUTO_INCREMENT` 的列，应该定义为 `NOT NULL`，并定义为 `PRIMARY KEY` 或定义为 `UNIQUE` 键。
 
+### 浮点类型（近似值）
+
+`FLOAT[(M,D)] [UNSIGNED] [ZEROFILL]` 单精度浮点类型（floating-point number），*M* 是总位数，*D* 是小数点后面的位数。如果 *M* 和 *D* 省略，值将存储到硬件允许的限制。单精度浮点数精确到约 7 位小数。
+
+`DOUBLE[(M,D)] [UNSIGNED] [ZEROFILL]` 双精度浮点类型（floating-point number），*M* 是总位数，*D* 是小数点后面的位数。如果 *M* 和 *D* 省略，值将存储到硬件允许的限制。双精度浮点数精确到小数点后 15 位。
+
+| Data Type | Storage Required | Data Range                                                   |
+| --------- | ---------------- | ------------------------------------------------------------ |
+| `FLOAT`   | 32 bits, 4 Bytes | `-3.402823466E+38` to `-1.175494351E-38`, `0`, and `1.175494351E-38` to `3.402823466E+38` |
+| `DOUBLE`  | 64 bits, 8 Bytes | `-1.7976931348623157E+308` to `-2.2250738585072014E-308`, `0`, and`2.2250738585072014E-308` to `1.7976931348623157E+308` |
+
+因为浮点值是近似值而不是作为精确值存储的，比值时可能会导致问题。详见《[Problems with Floating-Point Values](https://dev.mysql.com/doc/refman/5.7/en/problems-with-float.html)》。
+
 ### 定点类型（精确值）
 
 `DECIMAL[(M[,D])] [UNSIGNED] [ZEROFILL]` 定点类型（fixed-point number），用于存储高精度数值，如货币数据。
 
 *M* 是总位数（精度，precision），*D* 是小数点后的位数（标度，scale）。小数点和（对于负数） `-` 符号不计入 *M*。如果 *D* 为 0，则值不包含小数点或小数部分。如果指定 `UNSIGNED`，则不允许负值。`DECIMAL` 的所有基本运算 (+, -, *, /) 都以 65 位数的最大精度完成。
 
-| 类型        | *M* 精度范围（总位数） | *D* 标度范围（小数位数） | 备注                          |
-| --------- | ------------- | -------------- | --------------------------- |
-| `DECIMAL` | 0~65，默认 10    | 0~30，默认 0      | 同义词 `DEC`、`NUMERIC`、`FIXED` |
+| Data Type | *M* 精度范围（总位数） | *D* 标度范围（小数位数） | 备注                             |
+| --------- | ---------------------- | ------------------------ | -------------------------------- |
+| `DECIMAL` | 0~65，默认 10          | 0~30，默认 0             | 同义词 `DEC`、`NUMERIC`、`FIXED` |
 
 例如 ：
 
@@ -170,50 +188,62 @@ salary DECIMAL(5,2)
 
 因为需要额外的空间和计算开销，所以应该尽量只在对小数进行精确计算时才使用 `DECIMAL` —— 例如存储财务数据。但在数据量比较大的时候，可以考虑使用 `BIGINT` 代替 `DECIMAL` ，将需要存储的货币单位根据小数的位数乘以相应的倍数即可。假设要存储的财务数据精确到万分之一分，则可以把所有金额乘以一百万，然后将结果存储在 `BIGINT` 里，这样可以同时避免浮点存储计算不精确和 `DECIMAL` 精确计算代价高的问题。
 
-### 浮点类型（近似值）
-
-`FLOAT[(M,D)] [UNSIGNED] [ZEROFILL]` 单精度浮点类型（floating-point number），*M* 是总位数，*D* 是小数点后面的位数。如果 *M* 和 *D* 省略，值将存储到硬件允许的限制。单精度浮点数精确到约 7 位小数。
-
-`DOUBLE[(M,D)] [UNSIGNED] [ZEROFILL]` 双精度浮点类型（floating-point number），*M* 是总位数，*D* 是小数点后面的位数。如果 *M* 和 *D* 省略，值将存储到硬件允许的限制。双精度浮点数精确到小数点后 15 位。
-
-| 类型     | 字节长度 | 取值范围                                                     |
-| -------- | -------- | ------------------------------------------------------------ |
-| `FLOAT`  | 4 Bytes  | `-3.402823466E+38` to `-1.175494351E-38`, `0`, and `1.175494351E-38` to `3.402823466E+38` |
-| `DOUBLE` | 8 Bytes  | `-1.7976931348623157E+308` to `-2.2250738585072014E-308`, `0`, and`2.2250738585072014E-308` to `1.7976931348623157E+308` |
-
-因为浮点值是近似值而不是作为精确值存储的，比值时可能会导致问题。详见《[Problems with Floating-Point Values](https://dev.mysql.com/doc/refman/5.7/en/problems-with-float.html)》。
-
 ## 字符串类型
+
+In the following table
+
+* *`M`* represents the declared column length in 
+  * **bytes** for binary string types (`BINARY(M)`、`VARBINARY(M)`)
+  * **characters** for nonbinary string types (`CHAR(M)`、`VARCHAR(M)`)
+* *`L`* represents the actual length in **bytes** of a given string value.
+
+|  | Binary Strings (Byte Strings) | Nonbinary Strings (Character Strings) | Storage Required                                             |
+| ------------ | ------------------------------------------------------------ | ------------ | ------------ |
+| **Fixed-length types** |     | `CHAR(M)` | *`L`* = *`M`* × *`w`* bytes, 0 < *`M`* <= 255, where *`w`* is the number of bytes required for the maximum-length character in the character set. |
+| **Fixed-length types** | `BINARY(M)` |  | *`M`* bytes, 0 <= *`M`* <= 255 |
+| **Variable-length types** | `VARBINARY(M)` | `VARCHAR(M)` | *`L`* = *`M`* × *`w`* bytes + 1 bytes if column values require 0 − 255 bytes<br>*`L`* = *`M`* × *`w`* bytes + 2 bytes if values may require more than 255 bytes<br/>其有效最大字节长度取决于**行大小限制**（默认 65,535 Bytes，在所有列中共享） ，参考：《[表列数量和行数限制](https://dev.mysql.com/doc/refman/5.7/en/column-count-limit.html)》。 |
+| **Variable-length types** | `TINYBLOB`     | `TINYTEXT` | *`L`* + 1 bytes, where *`L`* < 2^8 = 256 bytes |
+| **Variable-length types** | `BLOB`             | `TEXT`       | *`L`* + 2 bytes, where *`L`* < 2^16 = 64 KB    |
+| **Variable-length types** | `MEDIUMBLOB` | `MEDIUMTEXT` | *`L`* + 3 bytes, where *`L`* < 2^24 = 16 MB    |
+| **Variable-length types** | `LONGBLOB`     | `LONGTEXT` | *`L`* + 4 bytes, where *`L`* < 2^32 = 4 GB     |
+
+variable-length types 变长类型需要额外的 1 到 4 个字节记录长度：
+
+* 1 Byte = 8 bits 刚好可以记录 0~2^8-1 (255) bytes
+* 2 Bytes = 16 bits 刚好可以记录 0~2^16-1 (65,535) bytes
+* 3 Bytes = 24 bits 刚好可以记录 0~2^24 bytes
+* 4 Bytes = 32 bits 刚好可以记录 0~2^32 bytes
+
+|                                           | Description                                                  |      |
+| ----------------------------------------- | ------------------------------------------------------------ | ---- |
+| **Binary Strings (Byte Strings)**         | They have the `binary` character set and collation, and comparison and sorting are based on the numeric values of the bytes in the values. |      |
+| **Nonbinary Strings (Character Strings)** | They have a [character set](https://dev.mysql.com/doc/refman/5.7/en/charset.html) other than `binary`, and values are sorted and compared based on the collation of the character set. |      |
+
+对于 Nonbinary Strings (Character Strings)，*M* 和 *L* 换算关系如下：
+
+| 字符集（Character Sets） | *M*         | *L*     |
+| ------------------------ | ----------- | ------- |
+| `latin1`                 | 1 character | 1 byte  |
+| `gbk`                    | 1 character | 2 bytes |
+| `utf8`                   | 1 character | 3 bytes |
+| `utf8mb4`                | 1 character | 4 bytes |
+
+### `BINARY` 和 `VARBINARY` 类型
+
+https://dev.mysql.com/doc/refman/5.7/en/binary-varbinary.html
+
+> The `BINARY` and `VARBINARY` types are similar to [`CHAR`](https://dev.mysql.com/doc/refman/5.7/en/char.html) and [`VARCHAR`](https://dev.mysql.com/doc/refman/5.7/en/char.html), except that they store binary strings rather than nonbinary strings. That is, they store byte strings rather than character strings. This means they have the `binary` character set and collation, and comparison and sorting are based on the numeric values of the bytes in the values.
 
 ### `CHAR` 和 `VARCHAR` 类型
 
-| 类型         | 最大字节长度 *L* | 尾部空格是否保留 | 描述                                                         | 适用情况                                                     |
-| ------------ | ---------------- | ---------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| `CHAR(M)`    | 255 Bytes        | 是               | 用于存储定长字符串。字符长度不足时会填充尾部空格到指定的长度。 | 存储很短的字符串，或者所有值都接近同一个长度。例如，存储密码的 MD5 值；经常变更的数据，定长的 `CHAR` 类型不容易产生碎片。 |
-| `VARCHAR(M)` | 65,535 Bytes     | 否               | 用于存储可变长字符串，是最常见的字符串数据类型。它比定长类型更节省空间，因为它仅使用必要的空间。<br>其有效最大字节长度取决于**行大小限制**（默认 65,535 Bytes，在所有列中共享） ，参考：《[表列数量和行数限制](https://dev.mysql.com/doc/refman/5.7/en/column-count-limit.html)》。 | 字符的最大字节长度比平均长度大很多；列的更新很少，所以碎片不是问题；使用了像 UTF-8 这样复杂的字符集，每个字符都使用不同的字节数进行存储。 |
+https://dev.mysql.com/doc/refman/5.7/en/char.html
 
-其中：
+`CHAR` 和 `VARCHAR` 这两种类型很相似，但它们被存储和检索的方式不同。区别如下：
 
-* *M* 表示字符长度
-* *L* 表示实际字节长度，取决于使用的[字符集](https://dev.mysql.com/doc/refman/5.7/en/charset.html)
-
-| 字符集（Character encoding） | *M*    | *L*     |
-| ---------------------------- | ------ | ------- |
-| `latin1`                     | 1 Char | 1 Byte  |
-| `gbk`                        | 1 Char | 2 Bytes |
-| `utf8`                       | 1 Char | 3 Bytes |
-| `utf8mb4`                    | 1 Char | 4 Bytes |
-
-`CHAR` 和 `VARCHAR` 这两种类型很相似，但它们被存储和检索的方式不同。它们的最大字节长度 *L* 和尾部空格是否保留也不同。
-
-不同于 `CHAR` 类型，`VARCHAR` 类型需要 1 或 2 个额外字节，用于记录字符串的长度：
-
-> *L* + 1 bytes if column values require 0 − 255 bytes, *L* + 2 bytes if values may require more than 255 bytes
-
-这是因为：
-
-* 1 Byte = 8 bits 刚好可以记录 0~255 (2^8-1) 长度范围
-* 2 Bytes = 16 bits 刚好可以记录 0~65,535 (2^16-1) 长度范围
+| Data Type    | 尾部空格是否保留 | 描述                                                         | 适用情况                                                     |
+| ------------ | ---------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| `CHAR(M)`    | 是               | 用于存储定长字符串。字符长度不足时会填充尾部空格到指定的长度。 | 存储很短的字符串，或者所有值都接近同一个长度。或经常变更的数据，定长的 `CHAR` 类型不容易产生碎片。 |
+| `VARCHAR(M)` | 否               | 用于存储可变长字符串，是最常见的字符串数据类型。它比定长类型更节省空间，因为它仅使用必要的空间。 | 字符的最大字节长度比平均长度大很多；列的更新很少，所以碎片不是问题；使用了像 UTF-8 这样复杂的字符集，每个字符都使用不同的字节数进行存储。 |
 
 例子：下表通过存储各种字符串值到 `CHAR(4)` 和 `VARCHAR(4)` 列展示 `CHAR` 和 `VARCHAR` 之间的差别（假设该列使用单字节字符集，例如 `latin1`）：
 
@@ -226,20 +256,15 @@ salary DECIMAL(5,2)
 
 ### `BLOB` 和 `TEXT` 类型
 
-`TEXT` 表示二进制字符串（字节字符串），没有排序规则或字符集。`BLOB` 表示非二进制字符串（字符串），有排序规则、字符集。与其它类型不同，MySQL 把每个 `BLOB` 和 `TEXT` 值当做一个独立的对象处理。存储引擎在存储时通常会做特殊处理。当 `BLOB` 和 `TEXT` 值太大时，InnoDB 会使用专门的“外部”存储区域来进行存储，**此时每个值在行内需要 1~4 个字节存储一个指针，然后在外部存储区域存储实际的值**。它们的最大字节长度如下：
+https://dev.mysql.com/doc/refman/5.7/en/blob.html
 
-| 类型                       | 指针长度 | 实际值的最大字节长度              |
-| -------------------------- | -------- | --------------------------------- |
-| `TINYTEXT`、`TINYBLOB`     | 1 byte   | 256 bytes (2^8)                   |
-| `TEXT`、`BLOB`             | 2 bytes  | 65,536 bytes (2^16)，64 KB        |
-| `MEDIUMTEXT`、`MEDIUMBLOB` | 3 bytes  | 16,777,216 bytes (2^24)，16 MB    |
-| `LONGTEXT`、`LONGBLOB`     | 4 bytes  | 4,294,967,296 bytes  (2^32)，4 GB |
+与其它类型不同，MySQL 把每个 `BLOB` 和 `TEXT` 值当做一个独立的对象处理。存储引擎在存储时通常会做特殊处理。当 `BLOB` 和 `TEXT` 值太大时，InnoDB 会使用专门的“外部”存储区域来进行存储，**此时每个值在行内需要 1~4 个字节存储一个指针，然后在外部存储区域存储实际的值**。
 
 MySQL 不能将 `BLOB` 和 `TEXT` 列全部长度的字符串进行索引，也不能使用这些索引消除排序，因此可以使用“前缀索引”解决这个问题。
 
 ## 日期与时间类型
 
-| 类型        | **Storage before MySQL 5.6.4** | **Storage as of MySQL 5.6.4** | 0 值      | 取值范围                                          |
+| Data Type | **Storage Required before MySQL 5.6.4** | **Storage Required as of MySQL 5.6.4** | 0 值      | 取值范围                                          |
 | ----------- | -------- | ------------------- | ------------------------------------------------- | ------------------------------------------------------------ |
 | [`YEAR`](https://dev.mysql.com/doc/refman/5.7/en/year.html) | 1 byte, little endian | Unchanged                                        | `0000`              | `1901` to `2155`                               |
 | [`DATE`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html) | 3 bytes, little endian | Unchanged                                        | `0000-00-00`        | `1000-01-01` to `9999-12-31` |
@@ -378,6 +403,16 @@ where createTime between 20180215 and 20180216;
       * 如果系统变量 `explicit_defaults_for_timestamp` 开启，其默认值为 0 值。
       * 否则表中第一列 `TIMESTAMP` 的默认值为当前时间。
     * 其它类型的默认值为相应的 0 值。
+
+# Java, JDBC, and MySQL Types
+
+参考：
+
+[JDBC SQL 和 Java 数据类型映射总结](/posts/java-jdbc-mapping-sql-and-java-types/)
+
+https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-reference-type-conversions.html
+
+![Java, JDBC, and MySQL Types](/img/java/jdbc/mysql-types.png)
 
 # 参考
 
