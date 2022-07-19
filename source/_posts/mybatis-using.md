@@ -24,6 +24,9 @@ https://mybatis.org/mybatis-3/sqlmap-xml.html#Result_Maps
 
 如果是可变类（mutable classes），可以使用 Setter injection 进行结果映射（注意，必须指定 `property` 属性）：
 
+> `id` – an ID result; flagging results as ID will help improve overall performance
+> `result` – a normal result injected into a **field** or **JavaBean property**
+
 ```XML
   <resultMap id="BaseResultMap" type="...">
     <id column="id" jdbcType="BIGINT" property="id" />
@@ -32,21 +35,66 @@ https://mybatis.org/mybatis-3/sqlmap-xml.html#Result_Maps
   </resultMap>
 ```
 
-但如果是不可变类（immutable classes），则只能通过 Constructor injection 进行结果映射（注意，必须指定 `javaType` 属性，否则构造方法参数默认使用 `java.lang.Object` 类型会构造报错）：
+但如果是不可变类（immutable classes），由于都是 `final` field，没有 Setter 方法，则只能通过 Constructor injection 进行结果映射：
 
-```XML
-  <resultMap id="BaseResultMap" type="...">
-    <constructor>
-      <idArg column="id" javaType="java.lang.Long" />
-      <arg column="create_time" javaType="java.lang.Long" />
-      <arg column="update_time" javaType="java.lang.Long" />
-    </constructor>
-  </resultMap>
-```
+> `constructor` - used for injecting results into the constructor of a class upon instantiation
+>
+> - `idArg` - ID argument; flagging results as ID will help improve overall performance
+> - `arg` - a normal result injected into the constructor
+
+注意，`arg` 元素有两种设置方式：
+* 有序的 `arg`。必须指定 `javaType` 属性，否则构造方法参数默认使用 `java.lang.Object` 类型会构造报错。
+
+  ```XML
+    <resultMap id="BaseResultMap" type="...">
+      <constructor>
+        <idArg column="id" javaType="java.lang.Long" />
+        <arg column="create_time" javaType="java.lang.Long" />
+        <arg column="update_time" javaType="java.lang.Long" />
+      </constructor>
+    </resultMap>
+  ```
+
+* 无序的 `arg`。通过指定 `name` 属性，可以忽略 `javaType` 属性。
+
+  ```XML
+    <resultMap id="BaseResultMap" type="...">
+      <constructor>
+        <idArg column="id" name="id" />
+        <arg column="create_time" name="createTime" />
+        <arg column="update_time" name="updateTime" />
+      </constructor>
+    </resultMap>
+  ```
 
 > When you are dealing with a `constructor` with many parameters, maintaining the order of arg elements is error-prone.
 >
-> Since 3.4.3, by specifying the `name` of each parameter, you can write `arg` elements in any order. To reference constructor parameters by their names, you can either add `@Param` annotation to them or compile the project with '`-parameters`' compiler option and enable `useActualParamName` (this option is enabled by default).
+> Since 3.4.3, by specifying the `name` of each parameter, you can write `arg` elements in any order. To reference constructor parameters by their names, you can
+>
+> * either add `@Param` annotation to them
+>
+> * or compile the project with ['`-parameters`' compiler option](https://docs.oracle.com/en/java/javase/11/tools/javac.html) and enable `useActualParamName` (this option is enabled by default).
+>
+>   ```XML
+>   <!-- https://maven.apache.org/plugins/maven-compiler-plugin/examples/pass-compiler-arguments.html -->
+>   <project>
+>       <build>
+>           <plugins>
+>               <plugin>
+>                   <groupId>org.apache.maven.plugins</groupId>
+>                   <artifactId>maven-compiler-plugin</artifactId>
+>                   <configuration>
+>                       <compilerArgs>
+>                           <arg>-parameters</arg>
+>                       </compilerArgs>
+>                   </configuration>
+>               </plugin>
+>           </plugins>
+>       </build>
+>   </project>
+>   ```
+>
+>   
 >
 > `javaType` can be omitted if there is a property with the same name and type.
 
@@ -61,19 +109,9 @@ org.apache.ibatis.executor.ExecutorException: No constructor found in ...
 * 如果是可变类（mutable classes），为类添加无参构造方法。
 * 如果是不可变类（immutable classes），Mapper XML 结果映射 `resultMap` 必须使用正确参数的 `constructor`。
 
-#### 敏感字段脱敏/加解密
+#### 嵌套结果映射
 
-https://mybatis.org/mybatis-3/configuration.html#typeHandlers
-
-实现 `org.apache.ibatis.type.TypeHandler` 接口：
-
-![TypeHandler](/img/java/mybatis/mybatis_api_TypeHandler.png)
-
-#### 枚举字段存取
-
-#### 嵌套关系查询
-
-两种关系配置：
+两种嵌套关系配置：
 
 * `association` "has-one" type relationship
 * `collection` "has many" type relationship
@@ -215,6 +253,21 @@ public class StudentQO extends StudentPO {
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
 </resultMap>
 ```
+
+#### TypeHandler
+
+> Whenever MyBatis sets a parameter on a `PreparedStatement` or retrieves a value from a `ResultSet`, a `TypeHandler` is used to retrieve the value in a means appropriate to the Java type.
+
+[TypeHandler](https://mybatis.org/mybatis-3/configuration.html#typeHandlers) 可用于以下场景：
+
+* 枚举字段处理
+* 敏感字段脱敏、加解密处理
+* [Binary-to-text encoding](https://en.wikipedia.org/wiki/Binary-to-text_encoding)
+* ...
+
+实现 `org.apache.ibatis.type.TypeHandler` 接口：
+
+![TypeHandler](/img/java/mybatis/mybatis_api_TypeHandler.png)
 
 ### 自动结果映射
 
