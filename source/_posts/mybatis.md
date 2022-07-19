@@ -2,7 +2,7 @@
 title: Java 数据持久化系列（六）MyBatis 框架解析
 date: 2018-03-24 18:43:34
 updated:
-tags: Java
+tags: [Java, JDBC]
 typora-root-url: ..
 ---
 

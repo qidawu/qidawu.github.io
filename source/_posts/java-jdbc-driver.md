@@ -2,7 +2,7 @@
 title: Java 数据持久化系列（一）JDBC Driver 驱动程序总结
 date: 2018-02-03 21:56:21
 updated:
-tags: Java
+tags: [Java, JDBC]
 typora-root-url: ..
 ---
 
@@ -117,6 +117,46 @@ MySQL Connector/J：
 https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-reference-configuration-properties.html
 
 https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-reference-configuration-properties.html
+
+#### useSSL
+
+javax.net.ssl.SSLHandshakeException: No appropriate protocol (protocol is disabled or cipher suites are inappropriate)
+
+```
+Caught while disconnecting...
+
+** BEGIN NESTED EXCEPTION ** 
+
+javax.net.ssl.SSLException
+MESSAGE: closing inbound before receiving peer's close_notify
+
+STACKTRACE:
+
+javax.net.ssl.SSLException: closing inbound before receiving peer's close_notify
+	at sun.security.ssl.Alert.createSSLException(Alert.java:133)
+	at sun.security.ssl.Alert.createSSLException(Alert.java:117)
+	at sun.security.ssl.TransportContext.fatal(TransportContext.java:340)
+	at sun.security.ssl.TransportContext.fatal(TransportContext.java:296)
+	at sun.security.ssl.TransportContext.fatal(TransportContext.java:287)
+	at sun.security.ssl.SSLSocketImpl.shutdownInput(SSLSocketImpl.java:737)
+	at sun.security.ssl.SSLSocketImpl.shutdownInput(SSLSocketImpl.java:716)
+	at com.mysql.cj.protocol.a.NativeProtocol.quit(NativeProtocol.java:1319)
+	at com.mysql.cj.NativeSession.quit(NativeSession.java:182)
+	at com.mysql.cj.jdbc.ConnectionImpl.realClose(ConnectionImpl.java:1750)
+	at com.mysql.cj.jdbc.ConnectionImpl.close(ConnectionImpl.java:720)
+	at com.zaxxer.hikari.pool.PoolBase.quietlyCloseConnection(PoolBase.java:135)
+	at com.zaxxer.hikari.pool.HikariPool.lambda$closeConnection$1(HikariPool.java:441)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+
+
+** END NESTED EXCEPTION **
+```
+
+#### connectionTimeZone
+
+https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-connp-props-datetime-types-processing.html#cj-conn-prop_connectionTimeZone
 
 #### useServerPrepStmts
 

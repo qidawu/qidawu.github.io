@@ -2,7 +2,7 @@
 title: Java 数据持久化系列（四）Spring JDBC 使用总结
 date: 2018-02-20 22:26:25
 updated:
-tags: [Java, Spring]
+tags: [Java, JDBC, Spring]
 typora-root-url: ..
 ---
 
@@ -199,7 +199,7 @@ public class JdbcTemplateAutoConfiguration {
 * classpath 包含 `DataSource`、`JdbcTemplate` 类
 * `DataSource` bean 有且只有一个
 
-### 使用 JdbcOperations
+### JdbcOperations
 
 依赖注入 `JdbcTemplate` 实现之后，使用如下：
 
@@ -239,7 +239,7 @@ Map<String, Object> testMap = jdbcOperations.queryForMap("SELECT id, name, city 
 log.info("Result is {}", testMap);  // Result is {id=2, name=李四, city=beijing}
 ```
 
-### 使用 NamedParameterJdbcTemplate
+### NamedParameterJdbcTemplate
 
 使用 `JdbcOperations` 需要特别注意索引参数的正确顺序，如果在修改 SQL 时忘记修改参数顺序，将导致查询出错。因此更建议使用命名参数，按照名字来绑定值：
 

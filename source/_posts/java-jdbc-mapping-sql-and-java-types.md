@@ -2,7 +2,8 @@
 title: Java 数据持久化系列（三）JDBC SQL 和 Java 数据类型映射总结
 date: 2018-02-08 14:25:06
 updated:
-tags: Java 
+tags: [Java, JDBC]
+typora-root-url: ..
 ---
 
 # 映射概述
@@ -67,8 +68,8 @@ SQL 标准后续引入的数据类型，包括 `BLOB`， `CLOB`，`ARRAY`，`REF
 
 为了在数据库和 Java 应用程序之间传输数据，JDBC API 提供了三组方法：
 
-* `ResultSet` 类提供的用于将 `SELECT` 检索结果转换为 Java 类型的方法；
 * `PreparedStatement` 类提供的用于将 Java 类型作为 SQL 语句参数发送的方法；
+* `ResultSet` 类提供的用于将 `SELECT` 检索结果转换为 Java 类型的方法；
 * `CallableStatement`类提供的用于将 `OUT` 参数转换为 Java 类型的方法。
 
 ## 静态数据访问
@@ -77,52 +78,26 @@ SQL 标准后续引入的数据类型，包括 `BLOB`， `CLOB`，`ARRAY`，`REF
 
 Java 程序从数据库中检索数据时，都必然会有某种形式的数据映射和数据转换。大多数情况下，JDBC 开发是知道目标数据库的 schema 的，例如表结构及其每列的数据类型。因此，JDBC 开发可以使用 `ResultSet`、`PreparedStatement`、`CallableStatement` 接口的强类型访问方法进行类型转换，如下：
 
-```java
-// PreparedStatement 接口
-void setBoolean(int, boolean)
-void setByte(int, byte)
-void setShort(int short)
-void setInt(int, int)
-void setLong(int, long)
-void setFloat(int, float)
-void setDouble(int, double)
-void setBigDecimal(int, BigDecimal)
-void setString(int, String)
-void setBytes(int, byte[])
-void setDate(int, Date)
-void setTime(int, Time)
-void setTimestamp(int, Timestamp)
-void setBinaryStream(int, InputStream)
-void setCharacterStream(int, Reader)
-void setRef(int, Ref)
-void setBlob(int, Blob)
-void setClob(int, Clob)
-void setArray(int, Array)
-...
+* `PreparedStatement` 接口：
 
-// ResultSet 接口
-Object getObject(int)
-boolean getBoolean(int)
-byte getByte(int)
-short getShort(int)
-int getInt(int)
-long getLong(int)
-float getFloat(int)
-double getDouble(int)
-BigDecimal getBigDecimal(int)
-String getString(int)
-byte[] getBytes(int)
-Date getDate(int)
-Time getTime(int)
-Timestamp getTimestamp(int)
-InputStream getBinaryStream(int)
-Reader getCharacterStream(int)
-Ref getRef(int)
-Blob getBlob(int)
-Clob getClob(int)
-Array getArray(int)
-...
-```
+  ```java
+  void setBoolean(int parameterIndex, boolean x) throws SQLException;
+  void setByte(int parameterIndex, byte x) throws SQLException;
+  void setInt(int parameterIndex, int x) throws SQLException;
+  ...
+  ```
+  
+* `ResultSet` 接口：
+
+  ```java
+  boolean getBoolean(int columnIndex) throws SQLException;
+  boolean getBoolean(String columnLabel) throws SQLException;
+  byte getByte(int columnIndex) throws SQLException;
+  byte getByte(String columnLabel) throws SQLException;
+  int getInt(int columnIndex) throws SQLException;
+  int getInt(String columnLabel) throws SQLException;
+  ...
+  ```
 
 ### 自定义映射
 
@@ -136,13 +111,20 @@ Array getArray(int)
 
 在大多数情况下，用户都希望访问在编译期数据类型已知的结果或参数。但是某些情况下，应用程序在编译期无法获知它们访问的目标数据库的 schema。因此，除了静态的数据类型访问之外，JDBC 还提供了对动态的数据类型访问的支持。
 
-有三种方法可以方便地访问在编译期数据类型未知的值，使用所有 Java 对象的共同父类 `Object` 类型：
+访问在编译期数据类型未知的值，可以使用所有 Java 对象的共同父类 `Object` 类型：
 
-```java
-ResultSet.getObject
-PreparedStatement.setObject
-CallableStatement.getObject
-```
+* `PreparedStatement` 接口：
+
+  ```java
+  void setObject(int parameterIndex, Object x, int targetSqlType)
+  void setObject(int parameterIndex, Object x)
+  ```
+
+* `ResultSet` 接口：
+
+  ```java
+  Object getObject(int)
+  ```
 
 `boolean`, `char`, `byte`, `short`, `int`, `long`, `float`, `double` 八种基本数据类型将返回其对应的包装类型，其它的则返回对应的类型：
 
