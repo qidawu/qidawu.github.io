@@ -350,8 +350,10 @@ API：
 
 https://www.baeldung.com/java-generics-vs-extends-object
 
-http://tutorials.jenkov.com/java-generics/wildcards.html
+[Java Generic's Wildcards](http://tutorials.jenkov.com/java-generics/wildcards.html)
 
-https://www.jianshu.com/p/faed45dbfa0c
+[Java Reflection API 介绍](https://www.jianshu.com/p/faed45dbfa0c)
 
-https://blog.csdn.net/ShuSheng0007/article/details/89520530
+[读懂 Java 类型（Type）系统](https://blog.csdn.net/ShuSheng0007/article/details/89520530)
+
+[现代编程语言需要泛型 —— 排序例子](https://mp.weixin.qq.com/s/aJzNSXo80MVFJZOZVhurQQ)

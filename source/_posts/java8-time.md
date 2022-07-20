@@ -63,6 +63,8 @@ Instant           // 以 Unix 元年时间（UTC 时区 1970-01-01T00:00:00Z，�
 | `TemporalField`    | 日期和时间的字段。`ChronoField` 枚举实现了该接口，可传入 temporal 对象的 `get` 或 `with` 方法获取或修改枚举对应的值。 |
 | `TemporalAdjuster` | 函数式接口，定义了对 temporal 对象的调整策略。可以使用 `TemporalAdjusters` 工具类的静态工厂方法生成对象实例，并传入temporal 对象的 `with` 方法进行时间调整。 |
 
+`java.time.temporal` 包的核心方法：
+
 ![ChronoLocalDate核心接口方法](/img/java/time/temporal核心接口.png)
 
 # 历法系统介绍
@@ -70,6 +72,8 @@ Instant           // 以 Unix 元年时间（UTC 时区 1970-01-01T00:00:00Z，�
 首先了解几个概念：
 
 ## Calendar system 历法
+
+https://en.wikipedia.org/wiki/Calendar
 
 [历法](https://zh.wikipedia.org/wiki/历法)，或称日历，是用[年](https://zh.wikipedia.org/wiki/年)、[月](https://zh.wikipedia.org/wiki/月)、[日](https://zh.wikipedia.org/wiki/日)等时间单位计算时间的方法。Java 8 提供的历法实现如下：
 

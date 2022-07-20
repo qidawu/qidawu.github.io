@@ -8,7 +8,9 @@ typora-root-url: ..
 
 包装类型作为日常开发最常用的数据载体，使用时有一些点需要特别注意，否则容易踩坑，本文总结下。
 
-# 值、引用比较问题
+# 常见问题
+
+## 值、引用比较问题
 
 首先看一段代码：
 
@@ -35,7 +37,7 @@ System.out.println(("e == f is " + (e == f)));  // e == f is false
 
 ![notes](/img/java/primitive-type/notes.png)
 
-# 自动装箱的性能问题
+## 自动装箱的性能问题
 
 Java 语言提供了八种基本类型。其中包括：
 
@@ -124,18 +126,12 @@ System.out.println(sum);
 
 * 以及一堆配套的基本类型特化的函数式接口。
 
-部分代码如下：
-
-![Stream](/img/java/lambda/Stream.png)
-
-![stream_methods](/img/java/lambda/stream_methods.png)
-
 那么什么时候应该使用装箱类型呢？
 
 1. 必须使用装箱基本类型作为类型参数，因为 Java 不允许使用基本类型。例如作为泛型集合中的元素、键和值，由于不能将基本类型作为类型参数，因此必须使用装箱基本类型。又例如，不能将变量声明为 `ThreadLocal<int>` 类型，因此必须使用 `ThreadLocal<Integer>`。
 2. 在进行反射的方法调用时，必须使用装箱基本类型。
 
-# 自动拆箱的 NPE 风险
+## 自动拆箱的 NPE 风险
 
 要注意，当程序进行涉及装箱和拆箱基本类型的混合类型计算时，它会进行自动拆箱。当程序进行拆箱时，会有 NPE 风险：
 
@@ -153,12 +149,20 @@ System.out.println(sum);
 
 # 进制转换
 
-|          | 英文简写 | 字面量前缀 | 备注                                                         |
-| -------- | -------- | ---------- | ------------------------------------------------------------ |
-| 十六进制 | `HEX`    | `0X`、`0x` |                                                              |
-| 十进制   | `DEC`    | 无         |                                                              |
-| 八进制   | `OCT`    | `0`        |                                                              |
-| 二进制   | `BIN`    | `0B`、`0b` | 参考[官方文档](https://docs.oracle.com/javase/7/docs/technotes/guides/language/binary-literals.html) |
+https://en.wikipedia.org/wiki/Category:Numeral_systems
+
+https://en.wikipedia.org/wiki/Numeral_system
+
+https://en.wikipedia.org/wiki/List_of_numeral_systems
+
+https://en.wikipedia.org/wiki/Positional_notation
+
+| [Base/Radix](https://en.wikipedia.org/wiki/Radix)<br>底/基数 | Name                                                         | 英文简写 | [字面量前缀](https://en.wikipedia.org/wiki/Integer_literal) | 备注                                                         |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | -------- | ----------------------------------------------------------- | ------------------------------------------------------------ |
+| 2                                                            | [Binary](https://en.wikipedia.org/wiki/Binary_number) 二进制 | `BIN`    | `0B`、`0b`                                                  | 参考[官方文档](https://docs.oracle.com/javase/7/docs/technotes/guides/language/binary-literals.html) |
+| 8                                                            | [Octal](https://en.wikipedia.org/wiki/Octal) 八进制          | `OCT`    | `0`                                                         |                                                              |
+| 10                                                           | [Decimal](https://en.wikipedia.org/wiki/Decimal) 十进制      | `DEC`    |                                                             |                                                              |
+| 16                                                           | [Hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) 十六进制 | `HEX`    | `0X`、`0x`                                                  |                                                              |
 
 ```java
 // 十进制转成二进制：11111111

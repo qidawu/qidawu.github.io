@@ -12,8 +12,24 @@ typora-root-url: ..
 
 * 如何实现有序遍历；
 * 如何实现缓存淘汰策略；
-* 如何解决海量数据的 Top K 问题。
+* 如何解决 Top K 问题。
 * ...
+
+# 创建 Map
+
+使用 Guava 快速创建不可变的 Map：
+
+```java
+Map<String, String> map = ImmutableMap.of("A", "Apple", "B", "Boy", "C", "Cat");
+```
+
+使用 Guava 快速创建指定 `initialCapacity` 初始容量的 Map：
+
+```java
+Maps.newHashMapWithExpectedSize(10);
+```
+
+Guava 的 `Maps` 还提供了更多的 API，可以自行研究使用。
 
 # 实现有序遍历
 
@@ -203,10 +219,10 @@ for (Map.Entry<String, String> entry : map.entrySet()) {}
 
 这种行为适用于一些特定应用场景，例如：构建一个空间占用敏感的有限资源池，按某种淘汰策略自动淘汰「过期」元素：
 
-| 排序方式   | 使用场景               |
-| ---------- | ---------------------- |
-| 按插入顺序 | 实现 FIFO 缓存淘汰策略 |
-| 按访问顺序 | 实现 LRU 缓存淘汰策略  |
+| 排序方式                            | 使用场景               |
+| ----------------------------------- | ---------------------- |
+| 按插入顺序（`accessOrder = false`） | 实现 FIFO 缓存淘汰策略 |
+| 按访问顺序（`accessOrder = true`）  | 实现 LRU 缓存淘汰策略  |
 
 通过源码分析，`LinkedHashMap` 继承自 `HashMap`，同时 `LinkedHashMap` 的节点 `Entry` 也继承自 `HashMap` 的 `Node`，并且在此基础上增加了两个属性：
 
@@ -219,7 +235,7 @@ for (Map.Entry<String, String> entry : map.entrySet()) {}
 
 ![LinkedHashMap Entry](/img/java/collection/map/LinkedHashMap_Entry_sorted.png)
 
-# 缓存淘汰策略实现
+# 实现缓存淘汰策略
 
 ## FIFO (First In First Out)
 
@@ -296,6 +312,74 @@ for (Map.Entry<String, String> entry : map.entrySet()) {}
 ## LFU (Least Frequently Used)
 
 ![LFU (Least Frequently Used)](/img/cache/LFU.png)
+
+# 实现合并
+
+| Modifier and Type | Method and Description                                       |
+| :---------------- | :----------------------------------------------------------- |
+| `default V`       | `merge(K key, V value, BiFunction<? super V,? super V,? extends V> remappingFunction)`<br>If the specified key is not already associated with a value or is associated with null, associates it with the given non-null value. |
+
+[Merging Two Maps with Java 8](https://www.baeldung.com/java-merge-maps)
+
+# 实现计数
+
+Java 8 为 `Map` 接口引入了一组新的 `default` 默认方法，如下：
+
+| Modifier and Type | Method and Description                                       |
+| ----------------- | ------------------------------------------------------------ |
+| `default V`       | `putIfAbsent(K key, V value)`<br>If the specified key is not already associated with a value (or is mapped to `null`) associates it with the given value and returns `null`, else returns the current value. |
+| `default V`       | `computeIfAbsent(K key, Function<? super K,? extends V> mappingFunction)`<br>If the specified key is not already associated with a value (or is mapped to `null`), attempts to compute its value using the given mapping function and enters it into this map unless `null`. |
+| `default V`       | `computeIfPresent(K key, BiFunction<? super K,? super V,? extends V> remappingFunction)`<br>If the value for the specified key is present and non-null, attempts to compute a new mapping given the key and its current mapped value. |
+| `default V`       | `compute(K key, BiFunction<? super K,? super V,? extends V> remappingFunction)`<br>Attempts to compute a mapping for the specified key and its current mapped value (or `null` if there is no current mapping). |
+
+实现计数如下：
+
+`putIfAbsent` 和 `computeIfAbsent`：
+
+```Java
+Map<Integer, Integer> ipStats = new HashMap<>();
+
+// previousValue is null
+Integer previousValue = ipStats.putIfAbsent(100000000, 1);
+
+// currentValue is 1
+Integer currentValue = ipStats.computeIfAbsent(200000000, key -> {
+    // key = 200000000
+    log.info("key = {}", key);
+    return 1;
+});
+```
+
+`computeIfPresent` ：
+
+```Java
+// newValue is 2
+Integer newValue = ipStats.computeIfPresent(200000000, (key, oldValue) -> {
+    // key = 200000000, oldValue = 1
+    log.info("key = {}, oldValue = {}", key, oldValue);
+    return oldValue += 1;
+});
+```
+
+使用 `compute` 实现类似 Redis 散列表的原子递增命令 `HINCRBY` key field increment 的效果：
+
+```Java
+// newValue2 is 1
+Integer newValue2 = ipStats.compute(300000000, (key, oldValue) -> {
+    if (oldValue == null) {
+        return 1;
+    } else {
+        return oldValue += 1;
+    }
+});
+```
+
+最终结果：
+
+```Java
+// result is {300000000=1, 100000000=1, 200000000=2}
+log.info("result is {}", ipStats.toString());
+```
 
 # 解决 Top K 问题
 
@@ -395,3 +479,4 @@ After sorted by statistics desc:
 https://docs.oracle.com/javase/8/docs/api/java/util/Map.html
 
 《[Guava 源码分析之Cache的实现原理](http://ifeve.com/guava-source-cache/)》
+

@@ -301,6 +301,8 @@ https://docs.oracle.com/en/java/javase/11/tools/index.html
 
 https://openjdk.java.net/tools/
 
+《[JDK 内置实用工具：监视、故障排除](https://mp.weixin.qq.com/s/FiwysEcAEeO4VFh8QHYluA)》
+
 《[使用 VisualVM 进行性能分析及调优](https://blog.csdn.net/u013970991/article/details/52036253)》
 
 《[JConsole、VisualVM 依赖的 JMX 技术到底是什么？](https://www.cnblogs.com/fengzheng/p/13431845.html)》
