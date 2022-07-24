@@ -27,7 +27,7 @@ typora-root-url: ..
 
 可以通过下图来了解 MySQL 内部字符集转换过程：
 
-![MySQL Character Set](/img/mysql/mysql_character_set.jpg)
+![MySQL Character Set](/img/mysql/charset/mysql_character_set.jpg)
 
 1. MySQL 收到请求时将请求数据从 `character_set_client` 转换为 `character_set_connection`
 2. 进行内部操作前将请求数据从 `character_set_connection` 转换为内部操作字符集，步骤如下：
@@ -118,4 +118,4 @@ https://dev.mysql.com/doc/refman/5.7/en/charset.html
 
 https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html
 
-![charset](/img/mysql/charset.png)
+![charset](/img/mysql/charset/charset.png)

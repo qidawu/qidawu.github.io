@@ -71,6 +71,8 @@ MySQL 支持的数据类型非常多，选择正确的数据类型对于获得�
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
   
   -- 测试数据
+  INSERT INTO t_hash(hash1, hash2) VALUES(0xE562F69EC36E625116376F376D991E41613E9BF3, 'E562F69EC36E625116376F376D991E41613E9BF3');
+  INSERT INTO t_hash(hash1, hash2) VALUES(X'E562F69EC36E625116376F376D991E41613E9BF3', 'E562F69EC36E625116376F376D991E41613E9BF3');
   INSERT INTO t_hash(hash1, hash2) VALUES(UNHEX('E562F69EC36E625116376F376D991E41613E9BF3'), 'E562F69EC36E625116376F376D991E41613E9BF3');
   
   -- 测试结果
@@ -233,6 +235,48 @@ variable-length types 变长类型需要额外的 1 到 4 个字节记录长度�
 https://dev.mysql.com/doc/refman/5.7/en/binary-varbinary.html
 
 > The `BINARY` and `VARBINARY` types are similar to [`CHAR`](https://dev.mysql.com/doc/refman/5.7/en/char.html) and [`VARCHAR`](https://dev.mysql.com/doc/refman/5.7/en/char.html), except that they store binary strings rather than nonbinary strings. That is, they store byte strings rather than character strings. This means they have the `binary` character set and collation, and comparison and sorting are based on the numeric values of the bytes in the values.
+
+#### Hexadecimal Literals
+
+https://en.wikipedia.org/wiki/Octal
+
+https://dev.mysql.com/doc/refman/8.0/en/hexadecimal-literals.html
+
+Hexadecimal literal values are written using `X'val'` or `0xval` notation, where *`val`* contains hexadecimal digits (`0..9`, `A..F`). Lettercase of the digits and of any leading `X` does not matter. A leading `0x` is case-sensitive and cannot be written as `0X`.
+
+Legal hexadecimal literals:
+
+```sql
+X'01AF'
+X'01af'
+x'01AF'
+x'01af'
+0x01AF
+0x01af
+```
+
+By default, a hexadecimal literal is a **binary string**, where **each pair of hexadecimal digits** represents a character:
+
+![ASCII](/img/mysql/charset/ascii.png)
+
+```SQL
+-- BIT_LENGTH()	Return length of a string in bits
+-- LENGTH()	Return length of a string in bytes
+-- CHARSET()	Returns the character set of the string argument.
+SELECT 0x41, X'41', UNHEX('41'), BIT_LENGTH(0x41), LENGTH(0x41), CHARSET(0x41);
++------+-------+-------------+------------------+--------------+---------------+
+| 0x41 | X'41' | UNHEX('41') | BIT_LENGTH(0x41) | LENGTH(0x41) | CHARSET(0x41) |
++------+-------+-------------+------------------+--------------+---------------+
+| A    | A     | A           |                8 |            1 | binary        |
++------+-------+-------------+------------------+--------------+---------------+
+```
+
+> [`UNHEX(str)`](https://dev.mysql.com/doc/refman/5.7/en/string-functions.html#function_unhex)
+>
+> For a string argument *`str`*, [`UNHEX(str)`](https://dev.mysql.com/doc/refman/5.7/en/string-functions.html#function_unhex) interprets **each pair of characters in the argument as a hexadecimal number** and converts it to the byte represented by the number. The return value is a **binary string**.
+>
+
+For information about introducers, see [Section 10.3.8, “Character Set Introducers”](https://dev.mysql.com/doc/refman/8.0/en/charset-introducer.html).
 
 ### `CHAR` 和 `VARCHAR` 类型
 
