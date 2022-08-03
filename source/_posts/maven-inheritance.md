@@ -2,7 +2,8 @@
 title: Maven 实战系列（三）继承与聚合关系
 date: 2017-04-21 22:41:57
 updated:
-tags: Java
+tags: [Java, Maven]
+typora-root-url: ..
 ---
 
 除了依赖关系，继承和聚合关系也是 Maven 项目中很常用的两种关系。

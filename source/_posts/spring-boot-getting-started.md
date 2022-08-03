@@ -2,7 +2,7 @@
 title: Spring Boot 入门总结
 date: 2017-08-01 16:38:00
 updated:
-tags: [Java, Spring]
+tags: [Java, Maven, Spring]
 typora-root-url: ..
 ---
 
@@ -212,9 +212,42 @@ $ mvn spring-boot:run
 Goal `spring-boot:repackage` 用于重新打包现有的 jar/war 包，以便可以通过 `java -jar` 命令运行，常用于部署环境。命令：
 
 ```bash
-# Phase package 先将项目打包成一个 jar/war 包，再通过 Goal spring-boot:repackage 重新打成 jar 包
-$ mvn package spring-boot:repackage
+# `clean` Phase 会清理 target 目录
+# `package` Phase 先将项目打包成一个 jar/war 包
+# `spring-boot:repackage` Goal 再重新打成 jar 包
+$ mvn clean package spring-boot:repackage
 ```
+
+⚠️ 如果未 `mvn package` 就直接 `mvn spring-boot:repackage` 会打包失败：
+
+```
+org.springframework.boot:spring-boot-maven-plugin:X.X.X.RELEASE:repackage failed: Source file must not be null 
+```
+
+[Executing `spring-boot:repackage` Goal During Maven's `package` Phase](https://www.baeldung.com/spring-boot-repackage-vs-mvn-package#4-executing-spring-bootrepackage-goal-during-mavens-package-lifecycle)
+
+> We can configure the Spring Boot Maven Plugin in our *pom.xml* to `repackage` the artifact during the `package` phase of the Maven lifecycle. In other words, when we execute `mvn package`, the `spring-boot:repackage` will be automatically executed.
+>
+> The configuration is pretty straightforward. We just add the `repackage` goal to an *execution* element:
+>
+> ```xml
+> <build>
+>     <finalName>${project.artifactId}</finalName>
+>     <plugins>
+>         <plugin>
+>             <groupId>org.springframework.boot</groupId>
+>             <artifactId>spring-boot-maven-plugin</artifactId>
+>             <executions>
+>                 <execution>
+>                     <goals>
+>                         <goal>repackage</goal>
+>                     </goals>
+>                 </execution>
+>             </executions>
+>         </plugin>
+>     </plugins>
+> </build>
+> ```
 
 参考：
 
@@ -249,11 +282,11 @@ $ java -jar -Dspring.profiles.active=prod target/myapplication-0.0.1-SNAPSHOT.ja
 >
 > ```XML
 > <plugin>
->  <groupId>org.springframework.boot</groupId>
->  <artifactId>spring-boot-maven-plugin</artifactId>
->  <configuration>
->      <executable>true</executable>
->  </configuration>
+>     <groupId>org.springframework.boot</groupId>
+>     <artifactId>spring-boot-maven-plugin</artifactId>
+>     <configuration>
+>         <executable>true</executable>
+>     </configuration>
 > </plugin>
 > ```
 >

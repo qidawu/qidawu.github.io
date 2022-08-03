@@ -2,7 +2,7 @@
 title: Maven 实战系列（二）依赖关系总结
 date: 2017-04-15 20:41:43
 updated:
-tags: Java
+tags: [Java, Maven]
 typora-root-url: ..
 ---
 

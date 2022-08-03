@@ -2,7 +2,8 @@
 title: Maven 实战系列（四）BOM 依赖管理（组合关系）
 date: 2017-04-26 22:41:57
 updated:
-tags: Java
+tags: [Java, Maven]
+typora-root-url: ..
 ---
 
 # BOM

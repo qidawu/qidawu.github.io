@@ -2,7 +2,8 @@
 title: Maven 实战系列（一）POM 基础知识
 date: 2017-04-08 22:34:21
 updated:
-tags: Java
+tags: [Java, Maven]
+typora-root-url: ..
 ---
 
 # Maven 坐标

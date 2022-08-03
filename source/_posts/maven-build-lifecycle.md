@@ -2,7 +2,8 @@
 title: Maven 实战系列（五）构建生命周期
 date: 2017-05-01 22:47:42
 updated:
-tags: Java
+tags: [Java, Maven]
+typora-root-url: ..
 ---
 
 本文用于理顺 Maven 构建的生命周期（Build Lifecycle）概念，掌握执行 Maven 命令时其背后的原理。

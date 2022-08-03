@@ -2,7 +2,8 @@
 title: Maven 实战系列（六）插件总结
 date: 2017-05-19 22:23:03
 updated:
-tags: Java
+tags: [Java, Maven]
+typora-root-url: ..
 ---
 
 Maven 本质上是一个插件框架，它的核心并不执行任何具体的构建任务，所有这些任务都交给插件来完成，例如编译源代码是由 `maven-compiler-plugin` 完成的。每个插件会有一个或者多个目标（goal），例如 `maven-compiler-plugin` 插件的 `compile` 目标用来编译位于 `src/main/java/` 目录下的主源码，`testCompile` 目标用来编译位于 `src/test/java/` 目录下的测试源码。
@@ -23,21 +24,40 @@ Maven 本质上是一个插件框架，它的核心并不执行任何具体的�
 ## maven-resources-plugin
 ## maven-compiler-plugin
 
-指定编译版本。
+https://maven.apache.org/plugins/maven-compiler-plugin/index.html
+
+https://docs.oracle.com/en/java/javase/11/tools/javac.html
+
+### 配置 `javac` 编译使用指定的 JDK
+
+https://maven.apache.org/plugins/maven-compiler-plugin/examples/compile-using-different-jdk.html
+
+### 配置 `javac` 编译版本
+
+```bash
+# -source  Specifies the version of source code accepted.
+# -target  Generates class files for a specific VM version.
+$ javac -source 1.8 -target 1.8
+```
+
+https://maven.apache.org/plugins/maven-compiler-plugin/examples/set-compiler-source-and-target.html
 
 方式一
 
 ```XML
+<project>
     <properties>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
     </properties>
+</project>
 ```
 
 方式二：
 
 ```XML
-   <build>
+<project>
+    <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -49,10 +69,67 @@ Maven 本质上是一个插件框架，它的核心并不执行任何具体的�
             </plugin>
         </plugins>
     </build>
+</project>
+```
+
+### 配置 `javac` 编译参数
+
+https://maven.apache.org/plugins/maven-compiler-plugin/examples/pass-compiler-arguments.html
+
+```XML
+<project>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
 ```
 
 ## maven-surefire-plugin
+
+### 配置默认 Skip Tests
+
+https://maven.apache.org/surefire/maven-surefire-plugin/examples/skipping-tests.html
+
+方式一：
+
+```XML
+ <project>
+    <properties>
+        <skipTests>true</skipTests>
+    </properties>
+ </project>
+```
+
+方式二：
+
+```XML
+ <project>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+ </project>
+```
+
 ## maven-install-plugin
+
 ## maven-deploy-plugin
 
 # 打包工具
