@@ -64,7 +64,7 @@ String s1 = new Formatter().format(format, args).toString();
 String s2 = String.format(format, args);
 ```
 
-Writes a formatted string to this output stream using the specified `format` string and `args`.
+Writes a formatted string to this **output stream** using the specified `format` string and `args`.
 
 ```java
 System.out.printf(format, args);
@@ -72,6 +72,21 @@ System.out.format(format, args);
 ```
 
 参考：
+
+https://linux.die.net/man/1/printf
+
+https://linux.die.net/man/3/printf
+
+https://www.baeldung.com/linux/printf-echo
+
+```bash
+$ printf "%s %s" hello world | hexyl
+┌────────┬─────────────────────────┬─────────────────────────┬────────┬────────┐
+│00000000│ 68 65 6c 6c 6f 20 77 6f ┊ 72 6c 64                │hello wo┊rld     │
+└────────┴─────────────────────────┴─────────────────────────┴────────┴────────┘
+```
+
+
 
 https://www.baeldung.com/java-printstream-printf
 
