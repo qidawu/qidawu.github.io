@@ -20,6 +20,12 @@ https://mybatis.org/mybatis-3/sqlmap-xml.html#Result_Maps
 
 ![](/img/java/mybatis/mybatis_result_map.png)
 
+参考源码：
+
+[`DefaultResultSetHandler#handleRowValues`](https://mybatis.org/mybatis-3/apidocs/org/apache/ibatis/executor/resultset/DefaultResultSetHandler.html#handleRowValues-org.apache.ibatis.executor.resultset.ResultSetWrapper-org.apache.ibatis.mapping.ResultMap-org.apache.ibatis.session.ResultHandler-org.apache.ibatis.session.RowBounds-org.apache.ibatis.mapping.ResultMapping-)
+
+[`DefaultResultSetHandler#createResultObject`](https://github.com/mybatis/mybatis-3/blob/mybatis-3.5.10/src/main/java/org/apache/ibatis/executor/resultset/DefaultResultSetHandler.java#L657)
+
 #### 可变/不可变类的结果映射
 
 如果是可变类（mutable classes），可以使用 Setter injection 进行结果映射（注意，必须指定 `property` 属性）：
@@ -75,6 +81,10 @@ https://mybatis.org/mybatis-3/sqlmap-xml.html#Result_Maps
 >
 > * or compile the project with ['`-parameters`' compiler option](https://docs.oracle.com/en/java/javase/11/tools/javac.html) and enable `useActualParamName` (this option is enabled by default).
 >
+>   | 设置名               | 描述                                                         | 有效值           | 默认值 |
+>   | :------------------- | :----------------------------------------------------------- | :--------------- | :----- |
+>   | `useActualParamName` | 允许使用方法签名中的名称作为语句参数名称。 为了使用该特性，你的项目必须采用 Java 8 编译，并且加上 `-parameters` 选项。 | `true`, `false` | `true` |
+>   
 >   ```XML
 >   <!-- https://maven.apache.org/plugins/maven-compiler-plugin/examples/pass-compiler-arguments.html -->
 >   <project>
@@ -94,7 +104,7 @@ https://mybatis.org/mybatis-3/sqlmap-xml.html#Result_Maps
 >   </project>
 >   ```
 >
->   
+> 
 >
 > `javaType` can be omitted if there is a property with the same name and type.
 
@@ -272,6 +282,15 @@ public class StudentQO extends StudentPO {
 ### 自动结果映射
 
 https://mybatis.org/mybatis-3/sqlmap-xml.html#Auto-mapping
+
+相关[配置](https://mybatis.org/mybatis-3/zh/configuration.html)：
+
+| 设置名                                                       | 描述                                                         | 有效值                       | 默认值    |
+| :----------------------------------------------------------- | :----------------------------------------------------------- | :--------------------------- | :-------- |
+| `autoMappingBehavior`                                        | 指定 MyBatis 应如何自动映射列到字段或属性。<br>* `NONE` 表示关闭自动映射<br/>* `PARTIAL` 只会自动映射没有定义嵌套结果映射的字段<br/>* `FULL` 会自动映射任何复杂的结果集（无论是否嵌套） | `NONE`, `PARTIAL`, `FULL`    | `PARTIAL` |
+| `autoMappingUnknownColumnBehavior`                           | 指定发现自动映射目标未知列（或未知属性类型）的行为。<br>* `NONE`: 不做任何反应<br>* `WARNING`: 输出警告日志（`'org.apache.ibatis.session.AutoMappingUnknownColumnBehavior'` 的日志等级必须设置为 `WARN`）<br> * `FAILING`: 映射失败 (抛出 `SqlSessionException`) | `NONE`, `WARNING`, `FAILING` | `NONE`    |
+| `mapUnderscoreToCamelCase`                                   | 是否开启驼峰命名自动映射，即从经典数据库列名 A_COLUMN 映射到经典 Java 属性名 aColumn。 | `true`, `false`              | `false`   |
+| [`argNameBasedConstructorAutoMapping`](https://github.com/mybatis/mybatis-3/blob/mybatis-3.5.10/src/main/java/org/apache/ibatis/executor/resultset/DefaultResultSetHandler.java#L742) | 当应用构造器自动映射时，参数名称被用来搜索要映射的列，而不再依赖列的顺序。（新增于 3.5.10） | `true`, `false`              | `false`   |
 
 ### 缓存
 
@@ -496,6 +515,10 @@ https://pagehelper.github.io/docs/howtouse/
 ## Mybatis Plus
 
 https://baomidou.com/
+
+https://github.com/baomidou/mybatis-plus
+
+https://github.com/yulichang/mybatis-plus-join
 
 https://www.jianshu.com/p/ceb1df475021
 
