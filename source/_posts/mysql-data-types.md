@@ -112,7 +112,9 @@ MySQL 支持的数据类型非常多，选择正确的数据类型对于获得�
 
 `BIT[(M)]` 比特类型，*M* 为 1~64 bit(s)。
 
-`b'value'` 符号可用于指定比特值。`value` 是一组使用 0 和 1 编写的二进制值。例如 `b'111'` 和 `b'10000000'` 分别代表 `7` 和 `128` 。详见《[Bit-Value Literals](https://dev.mysql.com/doc/refman/5.7/en/bit-value-literals.html)》。
+#### Bit-Value Literals
+
+`b'value'` 符号可用于指定比特值。`value` 是一组使用 0 和 1 编写的二进制值。例如 `b'111'` 和 `b'10000000'` 分别代表 `7` 和 `128` 。详见《[Bit-Value Literals](https://dev.mysql.com/doc/refman/8.0/en/bit-value-literals.html)》。
 
 如果赋值给小于 *M* 位长的 `BIT(M)` 类型列，则该值左侧用零填充。例如，为 `BIT(6)` 列赋值 `b'101'` 实际上等于赋值 `b'000101'`。
 
@@ -461,6 +463,8 @@ https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-reference-type-conversi
 # 参考
 
 https://dev.mysql.com/doc/refman/5.7/en/data-types.html
+
+https://dev.mysql.com/doc/refman/5.7/en/literals.html
 
 https://dev.mysql.com/doc/refman/5.7/en/column-count-limit.html
 
