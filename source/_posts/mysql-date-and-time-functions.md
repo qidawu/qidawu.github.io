@@ -94,7 +94,7 @@ $ service mysql restart
 `CONVERT_TZ(dt, from_tz, to_tz)` 函数用于将 `DATETIME` 类型转为指定时区，例如：
 
 ```SQL
-# TIMESTAMP 类型（UTC±00:00） > DATETIME 类型（UTC±00:00） > DATETIME 类型（UTC+08:00）
+-- TIMESTAMP 类型（UTC±00:00） > DATETIME 类型（UTC±00:00） > DATETIME 类型（UTC+08:00）
 SELECT CONVERT_TZ( FROM_UNIXTIME( UNIX_TIMESTAMP() ), '+00:00', '+08:00' ) AS NOW;
 ```
 
@@ -155,9 +155,17 @@ SELECT FROM_UNIXTIME(1447430881, '%Y %D %M %h:%i:%s %x');
 >
 > The server interprets *`date`* as a value in the session time zone and converts it to an internal Unix timestamp value in UTC. (Clients can set the session time zone as described in [Section 5.1.13, “MySQL Server Time Zone Support”](https://dev.mysql.com/doc/refman/5.7/en/time-zone-support.html).)
 >
-> The *`date`* argument may be a [`DATE`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html), [`DATETIME`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html), or [`TIMESTAMP`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html) string, or a number in *`YYMMDD`*, *`YYMMDDhhmmss`*, *`YYYYMMDD`*, or *`YYYYMMDDhhmmss`* format. If the argument includes a time part, it may optionally include a fractional seconds part.
+> The *`date`* argument may be 
 >
-> The return value is an integer if no argument is given or the argument does not include a fractional seconds part, or [`DECIMAL`](https://dev.mysql.com/doc/refman/5.7/en/fixed-point-types.html) if an argument is given that includes a fractional seconds part.
+> * a [`DATE`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html), [`DATETIME`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html), or [`TIMESTAMP`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html) **string**, 
+> * or a **number** in *`YYMMDD`*, *`YYMMDDhhmmss`*, *`YYYYMMDD`*, or *`YYYYMMDDhhmmss`* format. 
+>
+> If the argument includes a time part, it may optionally include a fractional seconds part.
+>
+> The return value is 
+>
+> * an **integer** if no argument is given or the argument does not include a fractional seconds part, 
+> * or [`DECIMAL`](https://dev.mysql.com/doc/refman/5.7/en/fixed-point-types.html) if an argument is given that includes a fractional seconds part.
 >
 > When the *`date`* argument is a [`TIMESTAMP`](https://dev.mysql.com/doc/refman/5.7/en/datetime.html) column, [`UNIX_TIMESTAMP()`](https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_unix-timestamp) returns the internal timestamp value directly, with no implicit “string-to-Unix-timestamp” conversion.
 >
