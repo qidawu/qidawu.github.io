@@ -58,8 +58,9 @@ GNU/CoreUtils 是一组类 Unix 操作系统所需的基础软件包。它包含
 | `cat`    | Concatenates and prints files on the standard output         | 常用于连接并输出多个文件的内容。                             |
 | `tac`    | Concatenates and prints files on the standard output in reverse | 常用于反向连接并输出多个文件的内容。                         |
 | `nl`     | Numbers lines of files                                       | `-b` 指定行号的方式，主要有 `a` `t`两种：<br/>`-b a` 无论是否是空行，同样列出行号。<br/>`-b t` 默认值，不列出空行行号。 |
-| `base32` | Encodes or decodes [Base32](https://en.wikipedia.org/wiki/Base32), and prints result to standard output |                                                              |
+| `basenc` | Encode/decode data and print to standard output              | `--base64` same as `base64` program (RFC4648 section 4)<br/>`--base64url` file- and url-safe base64 (RFC4648 section 5)<br/>`--base32` same as `base32` program (RFC4648 section 6)<br/>`--base32hex` extended hex alphabet base32 (RFC4648 section 7)<br/>`--base16` hex encoding (RFC4648 section 8)<br/>`-d, --decode` decode data |
 | `base64` | Encodes or decodes [Base64](https://en.wikipedia.org/wiki/Base64), and prints result to standard output |                                                              |
+| `base32` | Encodes or decodes [Base32](https://en.wikipedia.org/wiki/Base32), and prints result to standard output |                                                              |
 
 ![cat](https://wizardzines.com/comics/cat/cat.png)
 
@@ -201,7 +202,7 @@ https://en.wikipedia.org/wiki/Cryptographic_hash_function
 
 | 命令     | 描述                             | 备注                                                         |
 | -------- | -------------------------------- | ------------------------------------------------------------ |
-| `echo`   | Print a line of text             | `-n` 不输出末尾换行符<br/>`-e` 开启转义字符，例如：反斜杠 `\\`、换行符 `\n` |
+| `echo`   | Print a line of text             | `-n` Do not print the trailing newline character `\n`.<br/>`-e` 开启转义字符，例如：反斜杠 `\\`、换行符 `\n` |
 | `printf` | Format and print data            |                                                              |
 | `yes`    | Print a string until interrupted |                                                              |
 
