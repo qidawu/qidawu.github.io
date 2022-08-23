@@ -119,7 +119,7 @@ JVM 实现可以为用户提供方法区的初始值配置。在方法区大小�
 
 ## Native Method Stacks
 
-# java 命令
+# `java` Command
 
 **java** [*options*] *classname* [*args*]
 
@@ -151,7 +151,7 @@ public static void main(String[] args)
 
 *高级选项*不建议随意使用。这些是开发人员用于调整 Java HotSpot VM 特定区域的选项。这些区域通常具有特定的系统要求，并且可能需要对系统配置参数的访问权限。这些选项也不能保证所有 JVM 实现都能支持，并且随时可能改变。高级选项以 `-XX` 开头。
 
-此处参考[已废弃与已移除的选项](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#BABDCEGG)（JDK 8）。
+想跟踪最新版本中被弃用或删除的选项，参考[已废弃与已移除的选项](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#BABDCEGG)（JDK 8）。
 
 布尔类型的选项用于启用默认情况下禁用的功能，或者禁用默认情况下启用的功能。此类选项无需参数，格式如下：
 
@@ -173,89 +173,130 @@ public static void main(String[] args)
 
 `-Xss`*size*
 
-Sets the thread stack size (in bytes). Append the letter `k` or `K` to indicate KB, `m` or `M` to indicate MB, `g` or `G` to indicate GB. The default value depends on the platform:
-
-- Linux/ARM (32-bit): 320 KB
-- Linux/i386 (32-bit): 320 KB
-- Linux/x64 (64-bit): 1024 KB
-- OS X (64-bit): 1024 KB
-- Oracle Solaris/i386 (32-bit): 320 KB
-- Oracle Solaris/x64 (64-bit): 1024 KB
-
-The following examples set the thread stack size to 1024 KB in different units:
-
-```
--Xss1m
--Xss1024k
--Xss1048576
-```
-
-This option is equivalent to `-XX:ThreadStackSize`.
+> Sets the thread stack size (in bytes). Append the letter `k` or `K` to indicate KB, `m` or `M` to indicate MB, `g` or `G` to indicate GB. The default value depends on the platform:
+>
+> - Linux/ARM (32-bit): 320 KB
+> - Linux/i386 (32-bit): 320 KB
+> - Linux/x64 (64-bit): 1024 KB
+> - OS X (64-bit): 1024 KB
+> - Oracle Solaris/i386 (32-bit): 320 KB
+> - Oracle Solaris/x64 (64-bit): 1024 KB
+>
+> The following examples set the thread stack size to 1024 KB in different units:
+>
+> ```
+> -Xss1m
+> -Xss1024k
+> -Xss1048576
+> ```
+>
+> This option is equivalent to `-XX:ThreadStackSize`.
+>
 
 ## Heap
-
-`-Xms`*size*
-
-Sets the initial size (in bytes) of the heap. This value must be a multiple of 1024 and greater than 1 MB. Append the letter `k` or `K` to indicate kilobytes, `m` or `M` to indicate megabytes, `g` or `G` to indicate gigabytes.
-
-The following examples show how to set the size of allocated memory to 6 MB using various units:
-
-```
--Xms6291456
--Xms6144k
--Xms6m
-```
-
-If you do not set this option, then the initial size will be set as the sum of the sizes allocated for the old generation and the young generation.
-
-The `-Xms` option is equivalent to `-XX:InitialHeapSize`.
-
-
-
-`-Xmx`*size*
-
-Specifies the maximum size (in bytes) of the memory allocation pool in bytes. This value must be a multiple of 1024 and greater than 2 MB. Append the letter `k` or `K` to indicate kilobytes, `m` or `M` to indicate megabytes, `g` or `G` to indicate gigabytes. The default value is chosen at runtime based on system configuration. For server deployments, `-Xms` and `-Xmx` are often set to the same value. See the section "Ergonomics" in *Java SE HotSpot Virtual Machine Garbage Collection Tuning Guide* at http://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/index.html.
-
-The following examples show how to set the maximum allowed size of allocated memory to 80 MB using various units:
-
-```
--Xmx83886080
--Xmx81920k
--Xmx80m
-```
-
-The `-Xmx` option is equivalent to `-XX:MaxHeapSize`.
-
-
-
-`-Xmn`*size*
-
-Sets the initial and maximum size (in bytes) of the heap for the young generation (nursery). Append the letter `k` or `K` to indicate kilobytes, `m` or `M` to indicate megabytes, `g` or `G` to indicate gigabytes.
-
-The young generation region of the heap is used for new objects. GC is performed in this region more often than in other regions. If the size for the young generation is too small, then a lot of minor garbage collections will be performed. If the size is too large, then only full garbage collections will be performed, which can take a long time to complete. Oracle recommends that you keep the size for the young generation between a half and a quarter of the overall heap size.
-
-The following examples show how to set the initial and maximum size of young generation to 256 MB using various units:
-
-```
--Xmn256m
--Xmn262144k
--Xmn268435456
-```
-
-Instead of the `-Xmn` option to set both the initial and maximum size of the heap for the young generation, you can use `-XX:NewSize` to set the initial size and `-XX:MaxNewSize` to set the maximum size.
 
 | 参数                                                        | 描述                                                         |
 | ----------------------------------------------------------- | ------------------------------------------------------------ |
 | `-Xms`、`-XX:InitialHeapSize`<br/>`-Xmx`、`-XX:MaxHeapSize` | 设置 Heap 堆区的初始值和最大值，Server 端 JVM 建议将 `-Xms` 和 `-Xmx` 设为相同值。 |
 
-| 参数                                          | 描述                                                         |
-| --------------------------------------------- | ------------------------------------------------------------ |
-| `-Xmn`<br/>`-XX:NewSize`<br/>`-XX:MaxNewSize` | 设置 Heap 堆内 Young Generation，而 Old Generation 等于：堆区减去 `-Xmn`。<br/>设置 `-Xmn` 等同于设置了相同的初始值 `-XX:NewSize` 和最大值 `-XX:MaxNewSize`。 |
+| 参数   | 描述                                                         |
+| ------ | ------------------------------------------------------------ |
+| `-Xmn` | 设置 Heap 堆内 Young Generation，而 Old Generation 等于：堆区减去 `-Xmn`。<br/>设置 `-Xmn` 等同于设置了相同的 Young Generation 初始值 `-XX:NewSize` 和最大值 `-XX:MaxNewSize`。 |
 
 | 参数                 | 描述                                                         |
 | -------------------- | ------------------------------------------------------------ |
-| `-XX:NewRatio`       | 设置 Young Generation 和 Old Generation 的比值，例如该值为 3，则表示 Young Generation 和 Old Generation 比值为1:3。 |
-| ` -XX:SurvivorRatio` | 设置 Young Generation 中 E 区和 S 区的比例， 即 -XX:SurvivorRatio=eden/s0=eden/s1。 |
+| `-XX:NewRatio`       | Sets the ratio between **young and old generation** sizes. By default, this option is set to 2. |
+| ` -XX:SurvivorRatio` | Sets the ratio between **eden and survivor space** sizes. By default, this option is set to 8. |
+
+### `-Xms`、`-Xmx`
+
+`-Xms`*size*
+
+> Sets the initial size (in bytes) of the heap. This value must be a multiple of 1024 and greater than 1 MB. Append the letter `k` or `K` to indicate kilobytes, `m` or `M` to indicate megabytes, `g` or `G` to indicate gigabytes.
+>
+> The following examples show how to set the size of allocated memory to 6 MB using various units:
+>
+> ```
+> -Xms6291456
+> -Xms6144k
+> -Xms6m
+> ```
+>
+> If you do not set this option, then the initial size will be set as the sum of the sizes allocated for the old generation and the young generation.
+>
+> The `-Xms` option is equivalent to `-XX:InitialHeapSize`.
+>
+
+`-Xmx`*size*
+
+> Specifies the maximum size (in bytes) of the memory allocation pool in bytes. This value must be a multiple of 1024 and greater than 2 MB. Append the letter `k` or `K` to indicate kilobytes, `m` or `M` to indicate megabytes, `g` or `G` to indicate gigabytes. The default value is chosen at runtime based on system configuration. 
+>
+> > For server deployments, `-Xms` and `-Xmx` are often set to the same value. See the section "Ergonomics" in *Java SE HotSpot Virtual Machine Garbage Collection Tuning Guide* at http://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/index.html.
+>
+> The following examples show how to set the maximum allowed size of allocated memory to 80 MB using various units:
+>
+> ```
+> -Xmx83886080
+> -Xmx81920k
+> -Xmx80m
+> ```
+>
+> The `-Xmx` option is equivalent to `-XX:MaxHeapSize`.
+>
+
+### `-Xmn`
+
+`-Xmn`*size*
+
+> Sets the initial and maximum size (in bytes) of the heap for the young generation (nursery). Append the letter `k` or `K` to indicate kilobytes, `m` or `M` to indicate megabytes, `g` or `G` to indicate gigabytes.
+>
+> > The young generation region of the heap is used for new objects. GC is performed in this region more often than in other regions. 
+> >
+> > * If the size is too small, then a lot of minor garbage collections will be performed. 
+> > * If the size is too large, then only full garbage collections will be performed, which can take a long time to complete. 
+> >
+> > **Oracle recommends that you keep the size for the young generation between a half and a quarter of the overall heap size.**
+>
+> The following examples show how to set the initial and maximum size of young generation to 256 MB using various units:
+>
+> ```
+> -Xmn256m
+> -Xmn262144k
+> -Xmn268435456
+> ```
+>
+> ⚠️ Instead of the `-Xmn` option to set both the initial and maximum size of the heap for the young generation, you can use `-XX:NewSize` to set the initial size and `-XX:MaxNewSize` to set the maximum size.
+>
+
+### `-XX:NewRatio`
+
+`-XX:NewRatio`=*ratio*
+
+Sets the ratio between **young and old generation** sizes. By default, this option is set to 2.
+
+> The `NewRatio` is the ratio of old generation to young generation (e.g. value 2 means max size of old will be twice the max size of young, i.e. young can get up to 1/3 of the heap).
+>
+> ```
+> Y=H/(R+1)
+> ```
+> 
+> 设置 Young Generation 和 Old Generation 的比值，例如该值默认为 2，则表示 Young Generation 和 Old Generation 比值为1:2。
+
+### ` -XX:SurvivorRatio`
+
+`-XX:SurvivorRatio`=*ratio*
+
+Sets the ratio between **eden and survivor space** sizes. By default, this option is set to 8.
+
+> The following formula can be used to calculate the initial size of survivor space (S) based on the size of the young generation (Y), and the initial survivor space ratio (R):
+>
+> ```
+> S=Y/(R+2)
+> ```
+>
+> The 2 in the equation denotes two survivor spaces. The larger the value specified as the initial survivor space ratio, the smaller the initial survivor space size.
+>
+> By default, the initial survivor space ratio is set to 8. If the default value for the young generation space size is used (2 MB), the initial size of the survivor space will be 0.2 MB.
 
 ## Method Area
 
