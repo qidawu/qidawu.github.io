@@ -345,6 +345,7 @@ List<XxxRespDTO> data = new Gson().fromJson(json, new TypeToken<ArrayList<XxxRes
 
 https://www.baeldung.com/category/json/jackson/
 
-https://www.baeldung.com/jackson-vs-gson
+* https://www.baeldung.com/jackson-vs-gson
+* https://www.baeldung.com/jackson-exception
 
 https://github.com/qidawu/java-api-test/tree/master/src/main/java/json

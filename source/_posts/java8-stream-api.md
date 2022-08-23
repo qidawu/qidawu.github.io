@@ -167,6 +167,8 @@ Map<String, IntSummaryStatistics> summary = peoples.stream()
     .collect(Collectors.groupingBy(Pair::getKey, Collectors.summarizingInt(Pair::getValue)));
 ```
 
+参考：https://www.baeldung.com/java-groupingby-collector
+
 # 常见问题
 
 ## 获取列表索引
@@ -217,7 +219,9 @@ https://docs.oracle.com/javase/tutorial/collections/streams/index.html
 
 https://github.com/amaembo/streamex
 
-[Merging Two Maps with Java 8](https://www.baeldung.com/java-merge-maps)
+https://www.baeldung.com/tag/java-streams/
+
+* [Merging Two Maps with Java 8](https://www.baeldung.com/java-merge-maps)
 
 《[用了 Stream API 之后，代码反而越写越丑？——写出具有可维护性的 Stream API 代码](https://mp.weixin.qq.com/s/a_QYX5z1AJhITYaXD-Gzag)》
 

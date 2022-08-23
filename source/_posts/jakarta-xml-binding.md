@@ -1,5 +1,5 @@
 ---
-title: Jakarta EE 系列（四）XML Binding 规范与实践总结
+title: Jakarta EE 系列（四）XML Binding (JAXB) 规范与实践总结
 date: 2020-10-10 22:09:48
 updated:
 tags: Java
@@ -233,3 +233,5 @@ Head(tradeCode=XT-001, tradeDate=2020-03-19, tradeTime=18:39:28, serialNo=114d2c
 # 参考
 
 https://jakarta.ee/specifications/xml-binding/
+
+https://en.wikipedia.org/wiki/Jakarta_XML_Binding

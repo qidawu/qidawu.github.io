@@ -152,6 +152,10 @@ curl --location --request POST 'http://rootUrl/path' \
 
 > Strategy interface for converting from and to HTTP requests and responses.
 
+参考：
+
+* https://www.baeldung.com/spring-httpmessageconverter-rest
+
 ### java.net.*
 
 [`java.net.URL`](https://docs.oracle.com/javase/8/docs/api/java/net/URL.html)
