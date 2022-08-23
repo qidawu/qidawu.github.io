@@ -44,7 +44,7 @@ http://www.slf4j.org/manual.html#swapping
 
 ### Logback
 
-http://logback.qos.ch/
+https://logback.qos.ch/
 
 推荐使用 SLF4J bound to logback-classic 的经典组合：
 
@@ -91,8 +91,10 @@ org.apache.logging.log4j:log4j-slf4j-impl:jar:2.16.0:compile
 参考：
 
 * 《[试试这款性能最强的日志框架 Log4j 2](https://mp.weixin.qq.com/s/HCbTSvacZCwwleCdbrcGMw)》
-* 《[突发！Log4j 2 爆“核弹级”漏洞，Flink、Kafka等至少十多个项目受影响](https://mp.weixin.qq.com/s/Yq9k1eBquz3mM1sCinneiA)》
-* 《[Log4j2再发新版本2.16.0，完全删除Message Lookups的支持，加固漏洞防御！](https://mp.weixin.qq.com/s/lTlZ_vAy0_Vo15UpFl4jSw)》
+* <[Reasons to prefer logback over log4j 1.x](https://logback.qos.ch/reasonsToSwitch.html)>
+  * [*log4j.properties* to *logback.xml* Translator](https://logback.qos.ch/translator/)
+* 《[突发！Log4j 2 爆“核弹级”漏洞，Flink、Kafka 等至少十多个项目受影响](https://mp.weixin.qq.com/s/Yq9k1eBquz3mM1sCinneiA)》
+* 《[Log4j 2 再发新版本 2.16.0，完全删除 Message Lookups 的支持，加固漏洞防御！](https://mp.weixin.qq.com/s/lTlZ_vAy0_Vo15UpFl4jSw)》
 
 ### Log4j 1.x
 
@@ -141,29 +143,84 @@ org.slf4j:slf4j-jdk14:jar:1.7.32:compile
 
 # 日志框架——Logback
 
-## 配置 Appenders
+## Configuration
 
-有三种使用 Appenders 的方式：
+https://logback.qos.ch/manual/configuration.html
 
-1. 使用第一方提供的 Appenders（`ConsoleAppender`、`RollingFileAppender`）
+![Configuration file syntax](/img/java/logging/logback/basicSyntax.png)
 
-2. 使用第三方提供的 Appenders（logstash）。
+![Configuring Appenders](/img/java/logging/logback/appenderSyntax.png)
 
-3. 使用自定义 Appenders。
+Logback 配置文件样例：
 
-### 第一方 Appenders
+```XML
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+    <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
+    <springProperty scope="context" name="LOG_PATH" source="log.path" defaultValue="/data/logs"/>
+    <springProperty scope="context" name="ACTIVE_PROFILE" source="spring.profiles.active" defaultValue="dev" />
+    <springProperty scope="context" name="LOG_PATTERN" source="log.pattern" defaultValue="[%d{yyyy-MM-dd HH:mm:ss.SSS}] %5p [%t] %logger{50}:%L [%X{traceId}] --> %m%n" />
+    <springProperty scope="context" name="MONGO_URI" source="spring.data.mongodb.uri" />
 
-http://logback.qos.ch/manual/appenders.html
+    <!-- 控制台输出 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
 
-官方提供的第一方 Appender 如下：
+    <!-- 每天归档日志文件 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/project-${ACTIVE_PROFILE}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <fileNamePattern>${LOG_PATH}/project-${ACTIVE_PROFILE}-%i.log.%d{yyyyMMdd}</fileNamePattern>
+            <!--日志文件保留天数-->
+            <maxHistory>90</maxHistory>
+            <maxFileSize>100MB</maxFileSize>
+            <totalSizeCap>20GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 自定义 MongoDB Appender -->
+    <appender name="MONGO" class="com.test.MongoDBAppender"></appender>
+
+    <logger name="org.springframework" level="WARN"/>
+
+    <root level="INFO">
+        <appender-ref ref="FILE" />
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="MONGO" />
+    </root>
+
+</configuration>
+```
+
+## Appenders
+
+有三种 Appenders：
+
+1. Logback 官方提供的 Appenders。
+2. 第三方提供的 Appenders（logstash、…）。
+3. 自定义 Appenders。
+
+### 官方 Appenders
+
+Logback 官方提供的 Appenders 如下：http://logback.qos.ch/manual/appenders.html
 
 ![Appender](/img/java/logging/logback/Appender.png)
 
-其中，常用的两个 Appender 如下：
+其中，常用的两个 Appender 继承结构如下：
+
+* `ch.qos.logback.core.ConsoleAppender`
+* `ch.qos.logback.core.rolling.RollingFileAppender`
 
 ![OutputStreamAppender](/img/java/logging/logback/OutputStreamAppender.png)
 
-其中，`RollingFileAppender` 可选的策略类如下：
+其中，`ch.qos.logback.core.rolling.RollingFileAppender` 可选的策略类如下：
 
 ![Policy](/img/java/logging/logback/Policy.png)
 
@@ -175,11 +232,11 @@ https://github.com/logstash/logstash-logback-encoder
 
 ### 自定义 Appenders
 
-通过自定义 Appenders，可以将日志输出到如 MongoDB、Kafka 等服务。
+通过自定义 Appenders，可以将日志输出到任意位置，如 MongoDB、Kafka 等服务。
 
 下面演示一个简单的同步 Appender，如需异步 Appender，参考[这里](http://logback.qos.ch/manual/appenders.html#AsyncAppender)。
 
-一、新建 Appender，继承自抽象类：
+首先，新建 Appender，继承自抽象类：
 
 ![UnsynchronizedAppenderBase](/img/java/logging/logback/UnsynchronizedAppenderBase.png)
 
@@ -228,59 +285,15 @@ public class MongoDBAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 }
 ```
 
-二、创建 MDCUtils
+最后，验证 MongoDB 数据。
 
-![MDC](/img/java/logging/logback/MDC.png)
+## Encoders & Layouts
 
-```java
-import lombok.experimental.UtilityClass;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.MDC;
+https://logback.qos.ch/manual/encoders.html
 
-import java.util.UUID;
+https://logback.qos.ch/manual/layouts.html
 
-@UtilityClass
-public class MDCUtils {
-
-    public static final String TRACE_ID = "traceId";
-
-    /**
-     * 将 traceId 放到 MDC 中。如果 traceId 入参为空，则直接用 UUID 生成一个
-     * @param traceId 全局跟踪 ID
-     */
-    public void addTraceId(String traceId) {
-        if (StringUtils.isEmpty(traceId)) {
-            MDC.put(TRACE_ID, UUID.randomUUID().toString().replace("-", ""));
-        } else {
-            MDC.put(TRACE_ID, traceId);
-        }
-    }
-
-    public String getTraceId() {
-        return MDC.get(TRACE_ID);
-    }
-
-    public void clear() {
-        MDC.clear();
-    }
-
-}
-```
-
-三、在合适的设置上下文，例如 traceId：
-
-- 在 http 接口的拦截器
-- 在定时任务执行之前
-
-![TraceIdInterceptor](/img/java/logging/logback/TraceIdInterceptor.png)
-
-四、配置 Appender，参考配置文件 Sample
-
-五、验证 MongoDB 数据。
-
-## 配置 Encoders & Layouts
-
-Logback 提供的 `Encoder` 和 `Layout` 的默认实现如下：
+Logback 提供的 `ch.qos.logback.core.encoder.Encoder` 和 `ch.qos.logback.core.Layout` 的默认实现如下：
 
 ![Layout](/img/java/logging/logback/Encoder_and_Layout.png)
 
@@ -300,6 +313,8 @@ Logback 提供的 `Encoder` 和 `Layout` 的默认实现如下：
 </appender>
 ```
 
+还可以输出扩展信息，例如 `%X{traceId}`。
+
 ### 预定义格式
 
 基于预定义格式，需要使用 `ch.qos.logback.core.encoder.LayoutWrappingEncoder`，并搭配相应 `Layout` 实现。例如输出成 HTML 格式：
@@ -313,65 +328,68 @@ Logback 提供的 `Encoder` 和 `Layout` 的默认实现如下：
 </appender>
 ```
 
-### 个性化格式
+## Mapped Diagnostic Contexts (MDC)
 
-基于个性化格式，例如输出 traceid。
+https://logback.qos.ch/manual/mdc.html
 
-## 配置文件 Sample
+> To uniquely stamp each request, the user puts contextual information into the `MDC`, the abbreviation of *Mapped Diagnostic Context*.
+>
+> The `MDC` class contains only static methods. It lets the developer place information in a *diagnostic context* that can be subsequently retrieved by certain logback components. The `MDC` manages contextual information on a *per thread basis*. Typically, while starting to service a new client request, the developer will insert pertinent contextual information, such as the client id, client's IP address, request parameters etc. into the `MDC`. Logback components, if appropriately configured, will automatically include this information in each log entry.
+>
+> Please note that MDC as implemented by logback-classic assumes that values are placed into the MDC with moderate frequency. Also note that a child thread does not automatically inherit a copy of the mapped diagnostic context of its parent.
+>
+> Logback leverages SLF4J API:
+>
+> * [org.slf4j.MDC](https://www.slf4j.org/api/org/slf4j/MDC.html)
+> * [org.slf4j.MDC.MDCCloseable](https://www.slf4j.org/api/org/slf4j/MDC.MDCCloseable.html)
 
-```XML
-<?xml version="1.0" encoding="UTF-8"?>
-<configuration debug="false">
-    <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
-    <springProperty scope="context" name="LOG_PATH" source="log.path" defaultValue="/data/logs"/>
-    <springProperty scope="context" name="ACTIVE_PROFILE" source="spring.profiles.active" defaultValue="dev" />
-    <springProperty scope="context" name="LOG_PATTERN" source="log.pattern" defaultValue="[%d{yyyy-MM-dd HH:mm:ss.SSS}] %5p [%t] %logger{50}:%L [%X{traceId}] --> %m%n" />
-    <springProperty scope="context" name="MONGO_URI" source="spring.data.mongodb.uri" />
+### MDC And Managed Threads
 
-    <!-- 控制台输出 -->
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>${LOG_PATTERN}</pattern>
-        </encoder>
-    </appender>
+https://logback.qos.ch/manual/mdc.html#managedThreads
 
-    <!-- 每天归档日志文件 -->
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_PATH}/project-${ACTIVE_PROFILE}.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <!--日志文件输出的文件名-->
-            <fileNamePattern>${LOG_PATH}/project-${ACTIVE_PROFILE}-%i.log.%d{yyyyMMdd}</fileNamePattern>
-            <!--日志文件保留天数-->
-            <maxHistory>90</maxHistory>
-            <maxFileSize>100MB</maxFileSize>
-            <totalSizeCap>20GB</totalSizeCap>
-        </rollingPolicy>
-        <encoder>
-            <pattern>${LOG_PATTERN}</pattern>
-        </encoder>
-    </appender>
+### `MDCInsertingServletFilter`
 
-    <!-- 自定义 MongoDB Appender -->
-    <appender name="MONGO" class="com.test.MongoDBAppender"></appender>
+https://logback.qos.ch/manual/mdc.html#mis
 
-    <logger name="org.springframework" level="WARN"/>
+### 例子
 
-    <root level="INFO">
-        <appender-ref ref="FILE" />
-        <appender-ref ref="STDOUT" />
-        <appender-ref ref="MONGO" />
-    </root>
+一、创建 MDCUtils
 
-</configuration>
+```java
+import lombok.experimental.UtilityClass;
+import org.slf4j.MDC;
+
+@UtilityClass
+public class MDCUtils {
+
+    public static final String TRACE_ID = "traceId";
+
+    public MDC.MDCCloseable addTraceId(String traceId) {
+        return MDC.putCloseable(TRACE_ID, traceId);
+    }
+
+}
 ```
 
-## 使用 API
+二、在合适的位置设置上下文：
+
+- 在 http 接口的拦截器
+- 在定时任务执行之前
+- ...
+
+代码如下：
+
+```java
+try (MDC.MDCCloseable mdc = MDCUtils.addTraceId(...)) {
+  // TODO
+}
+```
+
+![TraceIdInterceptor](/img/java/logging/logback/TraceIdInterceptor.png)
+
+三、选择合适的 Appender 并加以配置，参考 Logback 配置文件样例。
 
 # 参考
-
-http://logback.qos.ch/manual/appenders.html
-
-http://logback.qos.ch/manual/appenders.html#AsyncAppender
 
 https://github.com/logstash/logstash-logback-encoder
 
