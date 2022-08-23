@@ -34,7 +34,14 @@ BOM 如下：
 </project>
 ```
 
-例如常用的 [Reactor](/posts/java-reactor-startup)、Spring Framework、[Spring Boot](/posts/spring-boot-getting-started)、Spring Cloud：
+常用的例如：
+
+* [Reactor](/posts/java-reactor-startup)
+* Spring Framework
+* [Spring Boot](/posts/spring-boot-getting-started)
+* Spring Cloud
+* Jackson
+* OpenFeign
 
 ```XML
 <!-- 每个公司可能都拥有自己的标准父项目，为了解决 Maven 单继承问题，可以使用 `<dependencyManagement>` 通过组合方式来享受其提供的依赖版本统一管理的好处 -->
@@ -74,6 +81,24 @@ BOM 如下：
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-dependencies</artifactId>
       <version>${spring-cloud.version}</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+    
+    <!-- https://github.com/FasterXML/jackson-bom -->
+    <dependency>
+      <groupId>com.fasterxml.jackson</groupId>
+      <artifactId>jackson-bom</artifactId>
+      <version>${jackson.version}</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+    
+    <!-- https://github.com/OpenFeign/feign#mavens-bill-of-material-bom -->
+    <dependency>
+      <groupId>io.github.openfeign</groupId>
+      <artifactId>feign-bom</artifactId>
+      <version>${openfeign.version}</version>
       <type>pom</type>
       <scope>import</scope>
     </dependency>
@@ -187,8 +212,11 @@ BOM 如下：
 
 # 参考
 
+https://en.wikipedia.org/wiki/Bill_of_materials
+
+https://www.baeldung.com/spring-maven-bom
+
 https://docs.spring.io/spring-boot/docs/current/reference/html/using-boot-build-systems.html
 
 https://projectreactor.io/docs/core/release/reference/#getting-started-understanding-bom
 
-https://www.baeldung.com/spring-maven-bom
