@@ -6,13 +6,11 @@ tags: [Java, JDBC]
 typora-root-url: ..
 ---
 
-# 映射概述
-
 由于 SQL 中的数据类型和 Java 编程语言中的数据类型并不相同，因此需要使用某种机制在使用 Java 类型的应用程序和使用 SQL 类型的数据库之间传输数据。
 
-# SQL 类型映射成 JDBC 类型
+# SQL 类型映射到 Java 类型
 
-不同数据库产品支持的 SQL 类型之间存在显着差异。即使不同的数据库支持具有相同语义的 SQL 类型，它们也可能为这些类型提供了不同的名称。例如，大多数主要数据库都支持 large binary 这种 SQL 类型，但是：
+不同数据库产品支持的 SQL 类型之间存在显着差异。即使不同的数据库支持具有相同语义的 SQL 类型，它们也可能为这些类型提供了不同的名称。例如，大多数主要数据库都支持 `large binary` 这种 SQL 类型，但是：
 
 - MySQL 的命名为 `BINARY`、`VARBINARY`（详见：[The BINARY and VARBINARY Types](https://dev.mysql.com/doc/refman/8.0/en/binary-varbinary.html)）
 - Oracle 的命名为 `LONG RAW`
@@ -22,47 +20,7 @@ typora-root-url: ..
 
 幸运的是，JDBC 开发通常不需要关心目标数据库使用的实际 SQL 类型名称。大多数情况下，JDBC 开发将针对现有数据库表进行编程，并不需要关心用于创建这些表的确切 SQL 类型名称。
 
-JDBC API 在 `java.sql.Types` 类中定义了一组通用 SQL 类型标识符，旨在表达最常用的 SQL 类型。在使用 JDBC API 进行编程时，程序员通常可以使用这些 JDBC 类型来引用通用 SQL 类型，而无需关心目标数据库使用的确切 SQL 类型名称。
-
-
-
-下表提供了 MySQL 类型与  JDBC 类型、Java 类型的映射关系：
-
-![JDBC Types Mapped to Database-specific SQL Types](/img/java/jdbc/mysql-types.png)
-
-
-## 基本 JDBC 类型
-
-| Java 类型     | SQL 数据类型 |
-| ---------------------- | ---------------------- |
-| `byte[]` | `BINARY`、`VARBINARY`、`LONGVARBINARY` |
-| `String` | `CHAR`，`VARCHAR`、`LONGVARCHAR` |
-| `boolean` | `BIT` |
-| `byte` | `TINYINT` |
-| `short` | `SMALLINT` |
-| `int` | `INTEGER` |
-| `long` | `BIGINT` |
-| `float` | `REAL` |
-| `double` | `FLOAT`、`DOUBLE` |
-| `java.math.BigDecimal` | `NUMERIC`、`DECIMAL` |
-| `java.sql.Date`      | `DATE`              |
-| `java.sql.Time`      | `TIME`              |
-| `java.sql.Timestamp` | `TIMESTAMP`         |
-
-## 高级 JDBC 类型
-
-SQL 标准后续引入的数据类型，包括 `BLOB`， `CLOB`，`ARRAY`，`REF` 等等：
-
-| Java 类型         | SQL 数据类型 | 备注              |
-| ----------------- | ------------ | ----------------- |
-| `java.sql.Array`  | `ARRAY`      | JDBC API 1.2 引入 |
-| `java.sql.Blob`   | `BLOB`       | JDBC API 1.2 引入 |
-| `java.sql.Clob`   | `CLOB`       | JDBC API 1.2 引入 |
-| `java.sql.NClob`  | `NCLOB`      | JDBC API 1.6 引入 |
-| `java.sql.Ref`    | `REF`        | JDBC API 1.2 引入 |
-| `java.sql.RowId`  | `ROWID`      | JDBC API 1.6 引入 |
-| `java.sql.Struct` | `STRUCT`     | JDBC API 1.2 引入 |
-| `java.sql.SQLXML` | `XML`        | JDBC API 1.6 引入 |
+JDBC API 在 [`java.sql.Types`](https://docs.oracle.com/javase/8/docs/api/java/sql/Types.html) 类中定义了一组通用 SQL 类型标识符，旨在表达最常用的 SQL 类型。在使用 JDBC API 进行编程时，程序员通常可以使用这些 JDBC 类型来引用通用 SQL 类型，而无需关心目标数据库使用的确切 SQL 类型名称。
 
 # 数据访问 API
 
@@ -116,17 +74,31 @@ Java 程序从数据库中检索数据时，都必然会有某种形式的数据
 * `PreparedStatement` 接口：
 
   ```java
-  void setObject(int parameterIndex, Object x, int targetSqlType)
-  void setObject(int parameterIndex, Object x)
+  void setObject(int parameterIndex, Object x) throws SQLException;
+  void setObject(int parameterIndex, Object x, int targetSqlType) throws SQLException;
   ```
 
 * `ResultSet` 接口：
 
   ```java
-  Object getObject(int)
+  Object getObject(int columnIndex) throws SQLException;
+  Object getObject(String columnLabel) throws SQLException;
+  
+  Object getObject(int columnIndex, java.util.Map<String,Class<?>> map) throws SQLException;
+  Object getObject(String columnLabel, java.util.Map<String,Class<?>> map) throws SQLException;
+  
+  // ... will convert from the SQL type of the column to the requested Java data type, if the conversion is supported. If the conversion is not supported or null is specified for the type, a `SQLException` is thrown.
+  <T> T getObject(int columnIndex, Class<T> type) throws SQLException;
+  <T> T getObject(String columnLabel, Class<T> type) throws SQLException;
   ```
+  
+  ⚠️ 特别注意：对于最后一组动态数据访问方法，参数二 `type` 的值要与 `ResultSetMetaData.GetColumnClassName()` 返回的类型相匹配，类型转换才能成功。否则抛出异常如下：
+  
+  ![java.sql.SQLException](/img/java/jdbc/java.sql.SQLException.png)
 
-`boolean`, `char`, `byte`, `short`, `int`, `long`, `float`, `double` 八种基本数据类型将返回其对应的包装类型，其它的则返回对应的类型：
+  关于 MySQL 类型与 Java 类型的映射关系，参考：https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-reference-type-conversions.html
+
+示例代码如下：
 
 ```java
 try (Connection conn = DriverManager.getConnection(url)) {
@@ -143,8 +115,30 @@ try (Connection conn = DriverManager.getConnection(url)) {
 }
 ```
 
+`boolean`, `char`, `byte`, `short`, `int`, `long`, `float`, `double` 八种基本数据类型将返回其对应的包装类型，其它的则返回对应的类型。
+
+## 设置 `NULL` 值
+
+> Some databases need to know the value's type even if the value itself is `NULL`. For this reason, **for maximum portability**, it's the JDBC specification itself that requires the `java.sql.Types` to be specified:
+
+* `PreparedStatement` 接口：
+
+  ```java
+  // Sets the designated parameter to SQL NULL.
+  void setNull(int parameterIndex, int sqlType) throws SQLException;
+  void setNull(int parameterIndex, int sqlType, String typeName) throws SQLException;
+  ```
+
+参考：[Is `JdbcType` necessary in a MyBatis mapper?](https://stackoverflow.com/questions/18645820/is-jdbctype-necessary-in-a-mybatis-mapper)
+
 # 参考
 
 https://docs.oracle.com/javase/6/docs/technotes/guides/jdbc/getstart/mapping.html
 
-https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-reference-type-conversions.html
+[`java.sql.Types`](https://docs.oracle.com/javase/8/docs/api/java/sql/Types.html)
+
+* https://github.com/qidawu/java-api-test/blob/master/src/test/java/jdbc/DynamicTypeTest.java
+* [Java Examples for `java.sql.Types`](https://www.javatips.net/api/java.sql.types)
+* [`org.apache.ibatis.type.JdbcType`](https://github.com/mybatis/mybatis-3/blob/master/src/main/java/org/apache/ibatis/type/JdbcType.java)
+* [`com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler`](https://github.com/baomidou/mybatis-plus/blob/3.0/mybatis-plus-core/src/main/java/com/baomidou/mybatisplus/core/handlers/MybatisEnumTypeHandler.java)
+

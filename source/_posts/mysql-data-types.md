@@ -450,16 +450,6 @@ where createTime between 20180215 and 20180216;
       * 否则表中第一列 `TIMESTAMP` 的默认值为当前时间。
     * 其它类型的默认值为相应的 0 值。
 
-# Java, JDBC, and MySQL Types
-
-参考：
-
-[JDBC SQL 和 Java 数据类型映射总结](/posts/java-jdbc-mapping-sql-and-java-types/)
-
-https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-reference-type-conversions.html
-
-![Java, JDBC, and MySQL Types](/img/java/jdbc/mysql-types.png)
-
 # 参考
 
 https://dev.mysql.com/doc/refman/5.7/en/data-types.html
