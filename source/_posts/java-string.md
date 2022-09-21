@@ -77,6 +77,8 @@ https://linux.die.net/man/1/printf
 
 https://linux.die.net/man/3/printf
 
+https://en.wikipedia.org/wiki/Printf_format_string
+
 https://www.baeldung.com/linux/printf-echo
 
 ```bash
@@ -85,8 +87,6 @@ $ printf "%s %s" hello world | hexyl
 │00000000│ 68 65 6c 6c 6f 20 77 6f ┊ 72 6c 64                │hello wo┊rld     │
 └────────┴─────────────────────────┴─────────────────────────┴────────┴────────┘
 ```
-
-
 
 https://www.baeldung.com/java-printstream-printf
 
