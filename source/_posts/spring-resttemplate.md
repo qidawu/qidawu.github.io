@@ -432,4 +432,8 @@ https://docs.oracle.com/javase/8/docs/technotes/guides/net/index.html
 
 https://www.baeldung.com/a-guide-to-java-sockets
 
-https://www.baeldung.com/java-socket-connection-read-timeout
+https://www.baeldung.com/category/java/tag/exception/
+
+* [Connection Timeout vs. Read Timeout for Java Sockets](https://www.baeldung.com/java-socket-connection-read-timeout)
+* [Handling `java.net.ConnectException`](https://www.baeldung.com/java-net-connectexception)
+* [Handling `java.net.SocketException`](https://www.baeldung.com/java-socketexception)

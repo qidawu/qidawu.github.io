@@ -178,3 +178,5 @@ Apache Commons Lang 为字符串操作提供了 `org.apache.commons.lang3.String
 《[Java8 对字符串连接的改进](https://segmentfault.com/a/1190000007835105)》
 
 《[HTML 字符实体](http://www.w3school.com.cn/html/html_entities.asp)》
+
+https://www.baeldung.com/category/java/tag/java-string/

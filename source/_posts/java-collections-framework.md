@@ -246,3 +246,10 @@ typora-root-url: ..
 https://docs.oracle.com/javase/8/docs/technotes/guides/collections/index.html
 
 [Why Java Collection Framework doesn't contain Tree and Graph ?](https://stackoverflow.com/questions/4978487/why-java-collection-framework-doesnt-contain-tree-and-graph)
+
+https://www.baeldung.com/category/java/
+
+- https://www.baeldung.com/category/java/tag/java-array/
+- https://www.baeldung.com/category/java/tag/java-set/
+- https://www.baeldung.com/category/java/tag/java-list/
+- https://www.baeldung.com/category/java/tag/java-map/

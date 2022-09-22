@@ -219,7 +219,7 @@ https://docs.oracle.com/javase/tutorial/collections/streams/index.html
 
 https://github.com/amaembo/streamex
 
-https://www.baeldung.com/tag/java-streams/
+https://www.baeldung.com/category/java/tag/java-streams/
 
 * [Merging Two Maps with Java 8](https://www.baeldung.com/java-merge-maps)
 
