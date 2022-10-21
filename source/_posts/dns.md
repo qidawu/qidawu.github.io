@@ -197,13 +197,29 @@ https://www.iana.org/domains/root/db
 
 顶级域名的数量仍在不断增长中，除了英文字母的域名，还不断新增各种语系的域名，如中文域名。
 
+### 顶级域名服务器（TLD name server）
+
+
+
 ## 二级域名（Second-Level Domain）
 
 组织或个人通过域名代理服务商（如 GoDaddy、万网）进行注册的域名。根据需要还可以自行在二级域名下新增三级、四级等[子域名](https://en.wikipedia.org/wiki/Subdomain)。
 
+### 权威域名服务器（Authoritative name server）
+
+https://en.wikipedia.org/wiki/Name_server#Authoritative_name_server
+
+> 任何一个拥有域名的主机，其域名与 IP 地址的映射关系等信息都存储在权威域名服务器上。
+
 ## 资源记录（Resource Record）
 
-域名系统中，一般一个[域（DNS zone）](https://en.wikipedia.org/wiki/DNS_zone)通过一个 [zone 文件](https://en.wikipedia.org/wiki/Zone_file)保存该域的相关配置信息。zone 文件包含了域名和 IP 地址等资源之间的映射，以[资源记录（Resource recerd, RR）](https://en.wikipedia.org/wiki/Domain_Name_System#DNS_resource_records)的文本形式进行组织。[这里](https://en.wikipedia.org/wiki/List_of_DNS_record_types)列举了所有的资源记录类型。
+域名系统中，一般一个[域（DNS zone）](https://en.wikipedia.org/wiki/DNS_zone)通过一个 [zone 文件](https://en.wikipedia.org/wiki/Zone_file)保存该域的相关配置信息。zone 文件包含了域名和 IP 地址等资源之间的映射，以[资源记录（Resource recerd, RR）](https://en.wikipedia.org/wiki/Domain_Name_System#DNS_resource_records)的文本形式进行组织。
+
+[这里](https://en.wikipedia.org/wiki/List_of_DNS_record_types)列举了所有的资源记录类型：
+
+![DNS record types](/img/network/application-layer/dns/DNS_record_types.png)
+
+![DNS record types](/img/network/application-layer/dns/DNS_record_types_2.png)
 
 以域名 `example.com` 为例，其 zone 文件简化如下：
 
