@@ -254,7 +254,11 @@ org.springframework.boot:spring-boot-maven-plugin:X.X.X.RELEASE:repackage failed
 * https://www.baeldung.com/spring-boot-repackage-vs-mvn-package
 * https://docs.spring.io/spring-boot/docs/current/reference/html/executable-jar.html
 
-重新打包后的 jar 包会内嵌一个 Servlet 容器，你可以像运行任何其它应用程序一样运行它：
+重新打包后的 jar 包内容如下：
+
+![repackaged jar file](/img/spring/spring-boot/spring-boot-repackaged-jar-file.png)
+
+重新打包后的 jar 包会内嵌一个 Servlet 容器，你可以像运行任何 Java 应用程序一样运行它：
 
 ```bash
 $ java -jar target/myapplication-0.0.1-SNAPSHOT.jar
