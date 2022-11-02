@@ -1,14 +1,12 @@
 ---
-title: Java 集合框架系列（六）线性表之 Queue 实现总结
+title: Java 集合框架系列（六）线性表之 Queue 总结
 date: 2018-05-12 23:40:10
 updated:
 tags: [Java, 数据结构, 并发编程]
 typora-root-url: ..
 ---
 
-本文介绍一种运算受限的线性表 —— 队列在 Java 中的实现与使用：
-
-![线性结构](/img/data-structure/list/list.jpg)
+本文介绍一种运算受限的线性表 —— `Queue` 队列在 Java 中的实现与使用。
 
 # 队列接口
 
