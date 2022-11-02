@@ -87,13 +87,13 @@ $ jstat -gcutil -h6 21891 250 7
 
  `-gcutil` 选项每列说明：
 
-| 列名   | 描述                                  |
-| ---- | ----------------------------------- |
-| S0   | Heap 上的 Survivor space 0 区（单位**%**） |
-| S1   | Heap 上的 Survivor space 1 区（单位**%**） |
-| E    | Heap 上的 Eden space 区（单位**%**）       |
-| O    | Heap 上的 Old space 区（单位**%**）        |
-| P    | Perm space 区（单位**%**）               |
+| 列名 | 描述                      |
+| ---- | ------------------------- |
+| S0   | Survivor space 0 区占用率 |
+| S1   | Survivor space 1 区占用率 |
+| E    | Eden space 区占用率       |
+| O    | Old space 区占用率        |
+| P    | Perm space 区占用率       |
 
 | 列名   | 描述                                     |
 | ---- | -------------------------------------- |
@@ -138,13 +138,13 @@ VisualVM 脱胎于自 JDK 6 起免费提供的 [`jvisualvm`](https://docs.oracle
 | ------------------------------------------------------------ | --------------------------- | ------------------------------------------------------------ | ----------------------------- |
 | [`jinfo`](https://docs.oracle.com/en/java/javase/11/tools/jinfo.html) | Configuration Info for Java | You use the `jinfo` command to generate Java configuration information for a specified Java process.<br/>实时显示或修改虚拟机配置信息。 | 在 JDK 9 中已集成到 `jhsdb`   |
 | [`jstack`](https://docs.oracle.com/en/java/javase/11/tools/jstack.html) | Stack Trace for Java        | You use the `jstack` command to print Java stack traces of Java threads for a specified Java process.<br/>显示虚拟机当前时刻的线程快照（thread dump/javacore 文件）。线程快照就是当前虚拟机内每一条线程正在执行的方法堆栈的集合，生成堆栈快照的目的通常是定位线程出现长时间停顿的原因，如线程间死锁、死循环、请求外部资源导致的长时间挂起等，都是导致线程长时间停顿的常见原因。 | 在 JDK 9 中已集成到 `jhsdb`   |
-| [`jmap`](https://docs.oracle.com/en/java/javase/11/tools/jmap.html) | Memory Map for Java         | You use the `jmap` command to print details of a specified process.<br/>用于实时生成虚拟机的堆内存转储快照（heap dump/hprof 文件），或查看堆内存信息。其它转储方法：<br/>`-XX:+HeapDumpOnOutOfMemoryError`<br/>`-XX:+HeapDumpOnCtrlBreak` | 在 JDK 9 中已集成到 `jhsdb`   |
+| [`jmap`](https://docs.oracle.com/en/java/javase/11/tools/jmap.html) | Memory Map for Java         | You use the `jmap` command to print details of a specified process.<br/>用于实时生成 JVM 堆内存转储快照（heap dump/hprof 文件），或查看堆内存信息。其它转储方法：<br/>`-XX:+HeapDumpOnOutOfMemoryError`<br/>`-XX:+HeapDumpOnCtrlBreak` | 在 JDK 9 中已集成到 `jhsdb`   |
 | ~~`jhat`~~                                                   | JVM Heap Dump Browser       | 用于分析 heap dump 文件，它会建立一个 HTTP/HTML 服务器，让用户可以在浏览器上查看分析结果。分析结果默认以包为单位进行分组显示，分析内存泄漏问题主要会使用到其中的 Heap Histogram（与 `jmap -histo` 功能一样）与 OQL 页签功能，前者可以找到内存中总容量最大的对象，后者是标准的对象查询语言，使用类似 SQL 的语法堆内存中的对象进行查询统计。 | 在 JDK 9 中已被  `jhsdb` 替代 |
 | [`jhsdb`](https://docs.oracle.com/en/java/javase/11/tools/jhsdb.html) | Java HotSpot Debugger       | 一个基于 Serviceability Agent 的 HotSpot 进程调试器。        | 自 JDK 9 起免费提供           |
 
 ## jstack
 
-`jstack` 命令用于 dump 出当前线程堆栈快照，根据堆栈信息我们可以定位到具体代码，所以它在 JVM 性能调优中使用得非常多。
+`jstack` 命令用于 thread dump（生成虚拟机的线程堆栈快照），根据堆栈信息我们可以定位到具体代码，所以它在 JVM 性能调优中使用得非常多。
 
 ``` 
 $ jstack 21090 > /tmp/threaddump
@@ -194,93 +194,68 @@ $ grep /tmp/threaddump | awk '{print $2$3$4$5}' | sort | uniq -c | sort
 
 ## jmap
 
-`jmap` 命令用于生成虚拟机的内存转储快照（heap dump 文件），或查看堆内存信息。
-
-```
-jmap [options] pid
-
--clstats pid
-Connects to a running process and prints class loader statistics of Java heap.
-
--finalizerinfo pid
-Connects to a running process and prints information on objects awaiting finalization.
-
--histo[:live] pid
-Connects to a running process and prints a histogram of the Java object heap. If the live suboption is specified, it then counts only live objects.
-
--dump:dump_options pid
-Connects to a running process and dumps the Java heap. The dump_options include:
-
-  live — When specified, dumps only the live objects; if not specified, then dumps all objects in the heap.
-
-  format=b — Dumps the Java heap,. in hprof binary format
-
-  file=filename — Dumps the heap to filename
-
-Example: jmap -dump:live,format=b,file=heap.bin pid
-```
-
 常用参数：
 
-* `-dump` 生成 Java 堆转储快照。格式为 `-dump:[live,]format=b,file=<filename>`，其中 `live` 子参数表示是否只 dump 出存活的对象。
-* `-histo` 显示堆中对象统计信息，包括类、实例数量、合计容量。
-* `-heap` 查看当前堆内存的详细信息，如配置信息 `Heap Configuration`、使用情况 `Heap Usage`。
+* `-dump` 实时生成 JVM 堆内存转储快照（heap dump/hprof 文件）。格式为 `-dump:[live,] format=b, file=<filename>`，其中 `live` 子参数表示是否只 dump 出存活的对象。
+* `-histo[:live]` 显示堆中对象统计信息，包括类、实例数量、合计容量。
+* `-heap` 查看当前堆内存的详细信息，如 `Heap Configuration`、`Heap Usage`。
 
 ```
-$ jmap -heap 21090
-Attaching to process ID 21090, please wait...
+$ jmap -heap 7059
+Attaching to process ID 7059, please wait...
 Debugger attached successfully.
 Server compiler detected.
-JVM version is 24.79-b02
+JVM version is 25.221-b11
 
 using thread-local object allocation.
 Parallel GC with 4 thread(s)
 
 Heap Configuration:
-   MinHeapFreeRatio = 0
-   MaxHeapFreeRatio = 100
-   MaxHeapSize      = 3145728000 (3000.0MB)
-   NewSize          = 2097152000 (2000.0MB)
-   MaxNewSize       = 2097152000 (2000.0MB)
-   OldSize          = 5439488 (5.1875MB)
-   NewRatio         = 2
-   SurvivorRatio    = 8
-   PermSize         = 268435456 (256.0MB)  // JDK8+ MetaspaceSize
-   MaxPermSize      = 268435456 (256.0MB)  // JDK8+ MaxMetaspaceSize
-   G1HeapRegionSize = 0 (0.0MB)
+   MinHeapFreeRatio         = 0
+   MaxHeapFreeRatio         = 100
+   MaxHeapSize              = 7516192768 (7168.0MB)
+   NewSize                  = 5368709120 (5120.0MB)
+   MaxNewSize               = 5368709120 (5120.0MB)
+   OldSize                  = 2147483648 (2048.0MB)
+   NewRatio                 = 2
+   SurvivorRatio            = 8
+   MetaspaceSize            = 21807104 (20.796875MB)
+   CompressedClassSpaceSize = 1073741824 (1024.0MB)
+   MaxMetaspaceSize         = 17592186044415 MB
+   G1HeapRegionSize         = 0 (0.0MB)
 
 Heap Usage:
 PS Young Generation
 Eden Space:
-   capacity = 1762656256 (1681.0MB)
-   used     = 1420607552 (1354.7969360351562MB)
-   free     = 342048704 (326.20306396484375MB)
-   80.59470172725499% used
+   capacity = 5249171456 (5006.0MB)
+   used     = 1933544816 (1843.9720306396484MB)
+   free     = 3315626640 (3162.0279693603516MB)
+   36.835238326800805% used
 From Space:
-   capacity = 138412032 (132.0MB)
-   used     = 0 (0.0MB)
-   free     = 138412032 (132.0MB)
-   0.0% used
+   capacity = 59768832 (57.0MB)
+   used     = 44812496 (42.73652648925781MB)
+   free     = 14956336 (14.263473510742188MB)
+   74.97636226185581% used
 To Space:
-   capacity = 138412032 (132.0MB)
+   capacity = 59768832 (57.0MB)
    used     = 0 (0.0MB)
-   free     = 138412032 (132.0MB)
+   free     = 59768832 (57.0MB)
    0.0% used
 PS Old Generation
-   capacity = 1048576000 (1000.0MB)
-   used     = 1048403072 (999.8350830078125MB)
-   free     = 172928 (0.1649169921875MB)
-   99.98350830078125% used
-PS Perm Generation  // JDK8+ 没有该区域
-   capacity = 268435456 (256.0MB)
-   used     = 67917928 (64.7715835571289MB)
-   free     = 200517528 (191.2284164428711MB)
-   25.30139982700348% used
+   capacity = 2147483648 (2048.0MB)
+   used     = 80178568 (76.46424102783203MB)
+   free     = 2067305080 (1971.535758972168MB)
+   3.733605518937111% used
 ```
 
-注意，由于此例中使用的 JDK 7 版本，因此 Heap 中包含 Perm Generation。如果使用的 JDK 8 以上版本，则 Heap 不再包含此区域，取而代之的是在 Heap 之外有一块 Metaspace。
+注意：
 
-例如上述例子通过 `jmap -heap pid` 命令发现了某个服务 O 区内存被占满的问题：`Old Generation` 达到 99.98350830078125% used，O 区内存被占满，可以进一步分析对象分布。
+|                  | Heap Configuration                  | Heap Usage                                                   |
+| ---------------- | ----------------------------------- | ------------------------------------------------------------ |
+| JDK 7 及以下版本 | `PermSize`、`MaxPermSize`           | Heap 中包含 Perm Generation                                  |
+| JDK 8 及以上版本 | `MetaspaceSize`、`MaxMetaspaceSize` | Heap 不再包含 Perm Generation，取而代之的是在 Heap 之外有一块 Metaspace |
+
+可以进一步分析对象分布。
 
 # 反汇编工具
 
