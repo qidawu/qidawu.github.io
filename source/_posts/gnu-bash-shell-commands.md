@@ -38,37 +38,13 @@ command [ | command2 ... ]
 
 ## 重定向（Redirection）
 
-![redirects](https://wizardzines.com/comics/redirects/redirects.png)
-
-在命令执行前，它的输入和输出可能被 redirected (重定向)，该功能可以用于如下场景：
-
-* 屏幕输出的信息很重要，而且需要将它存下来时；
-* 一些运行命令的可能已知错误信息，想以 `2> /dev/null` 将它丢掉；
-* 一些系统的例行命令（例如写在 `/etc/crontab`）的运行结果，需要存下来时；
-* 错误信息与正确信息需要分别输出时。
-
-例子：
-
-快速创建带内容的文件
-
-```bash
-$ echo "hello world" > /tmp/file
-$ cat /tmp/file
-```
-
-将已知错误信息丢弃
-
-```bash
-$ find /tmp/ -name 2> /dev/null
-```
-
 ### 描述符（Descriptor Number）
 
-| 描述符 | 描述                     |
-| ------ | ------------------------ |
-| `0`    | 标准输入（`stdin`）      |
-| `1`    | 标准输出（`stdout`）     |
-| `2`    | 标准错误输出（`stderr`） |
+| 描述符 | 名称                                                         | 描述                           |
+| ------ | ------------------------------------------------------------ | ------------------------------ |
+| `0`    | [`stdin`](https://en.wikipedia.org/wiki/Standard_streams#Standard_input_(stdin)) | 标准输入（Standard input）     |
+| `1`    | [`stdout`](https://en.wikipedia.org/wiki/Standard_streams#Standard_output_(stdout)) | 标准输出（Standard output）    |
+| `2`    | [`stderr`](https://en.wikipedia.org/wiki/Standard_streams#Standard_error_(stderr)) | 标准错误输出（Standard error） |
 
 ![file descriptors](https://wizardzines.com/comics/file-descriptors/file-descriptors.png)
 
@@ -84,6 +60,36 @@ $ find /tmp/ -name 2> /dev/null
 | `&>`   | 重定向标准输出和标准错误输出（Redirecting Standard Output and Standard Error）。 **推荐使用**，它与 `>word 2>&1` 在语义上等价 |
 | `>&`   | 同上，但不推荐使用                                           |
 | `2>&1` | 将标准错误输出重定向到标准输出                               |
+
+![redirects](https://wizardzines.com/comics/redirects/redirects.png)
+
+在命令执行前，它的输入和输出可能被 redirected (重定向)，该功能可以用于如下场景：
+
+* 屏幕输出的信息很重要，而且需要将它存下来时；
+* 一些运行命令的可能已知错误信息，想以 `2> /dev/null` 将它丢掉；
+* 一些系统的例行命令（例如写在 `/etc/crontab`）的运行结果，需要存下来时；
+* 错误信息与正确信息需要分别输出时。
+
+例子：
+
+快速创建带内容的文件：
+
+```bash
+$ echo "hello world" > /tmp/file
+```
+
+将 `stdout` 和 `stderr` 都重定向到本地日志文件：
+
+```bash
+java -jar app.jar >/tmp/stdout.log 2>&1
+```
+
+将 `stdout` 和 `stderr` 都丢弃（等价操作）：
+
+```bash
+java -jar app.jar >/dev/null 2>&1
+java -jar app.jar &>/dev/null
+```
 
 ## 序列（Lists of Commands）
 
