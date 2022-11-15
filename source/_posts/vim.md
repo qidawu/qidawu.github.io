@@ -6,13 +6,17 @@ tags: GNU/Linux
 typora-root-url: ..
 ---
 
+使用 [Vim](http://www.vim.org/) 也有好几年了，虽然这款“编辑器之神”的学习曲线非常陡峭，但一旦上手将会极大提高文本编辑效率，因此值得投入精力学习。
+
 ![Vim](/img/vim/vim.png)
 
-使用 [Vim](http://www.vim.org/) 也有好几年了，虽然这款“编辑器之神”的学习曲线非常陡峭，但一旦上手将会极大提高文本编辑效率，因此值得投入精力学习。
+此外，Vim 哲学早已走出编辑器范畴，渗透到各种工具，例如：
+
+![Vim](/img/vim/vim_tools.png)
 
 本文我将会从三个方面总结 Vim 的知识。
 
-# 模式
+# 四种常用模式
 
 Vim 效率之高的秘密，就在于它拥有多种“模式”。如果你已经习惯了 Windows 下的编辑器，这些模式在一开始会很违反你的使用直觉。因此学习 Vim 的第一件事，就是要习惯这些模式之间的切换。
 
@@ -184,9 +188,9 @@ I       :   Don't ignore case for the pattern.
 
 ### Substitute Text
 
-| 命令                                                      | 描述                                                         |
-| --------------------------------------------------------- | ------------------------------------------------------------ |
-| `:[range]s[ubstitute]/{pattern}/{string}/[flags] [count]` | For each line in `[range]` replace a match of `{pattern}` with `{string}`. |
+| 命令                                                         | 描述                                                         |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| :`[range]`s[ubstitute]/`{pattern}`/`{string}`/`[flags]` `[count]` | For each line in `[range]` replace a match of `{pattern}` with `{string}`. |
 
 详细命令：
 
@@ -219,12 +223,10 @@ I       :   Don't ignore case for the pattern.
 例子：
 
 ```
-1.  替换当前行中的内容：    :s/from/to/    （s即substitude）
-    :s/from/to/     ：  将当前行中的第一个from，替换成to。如果当前行含有多个
-                        from，则只会替换其中的第一个。
+1.  替换当前行中的内容：    :s/from/to/
+    :s/from/to/     ：  将当前行中的第一个from，替换成to。如果当前行含有多个from，则只会替换其中的第一个。
     :s/from/to/g    ：  将当前行中的所有from都替换成to。
-    :s/from/to/gc   ：  将当前行中的所有from都替换成to，但是每一次替换之前都
-                        会询问请求用户确认此操作。
+    :s/from/to/gc   ：  将当前行中的所有from都替换成to，但是每一次替换之前都会询问请求用户确认此操作。
 
     注意：这里的from和to都可以是任何字符串，其中from还可以是正则表达式。
 
@@ -238,8 +240,7 @@ I       :   Don't ignore case for the pattern.
     :1,$s/from/to/g     ：  对第一行到最后一行的内容进行替换（即全部文本）。
     :1,.s/from/to/g     ：  对第一行到当前行的内容进行替换。
     :.,$s/from/to/g     ：  对当前行到最后一行的内容进行替换。
-    :'a,'bs/from/to/g   ：  对标记a和b之间的行（含a和b所在的行）进行替换。
-                            其中a和b是之前用m命令所做的标记。
+    :'a,'bs/from/to/g   ：  对标记a和b之间的行（含a和b所在的行）进行替换。其中a和b是之前用m命令所做的标记。
 
 4.  替换所有行的内容：      :%s/from/to/g
     :%s/from/to/g   ：  对所有行的内容进行替换。
@@ -247,12 +248,12 @@ I       :   Don't ignore case for the pattern.
 
 ### Deleting text
 
-| 命令                                                       | 描述                                                         |
-| ---------------------------------------------------------- | ------------------------------------------------------------ |
-| `:[range]d[elete] [x]`                                     | Delete `[range]` lines (default: current line) [into register `x`]. |
-| `:[range]d[elete] [x] {count}`                             | Delete `{count}` lines, starting with `[range]`(default: current line) [into register `x`]. |
-| `:[range]j[oin][!] [flags]`                                | Join `[range]` lines.                                        |
-| `:[range]j[oin][!] {count} [flags]`                        | Join `{count}` lines, starting with `[range]` (default: current line). |
+| 命令                                    | 描述                                                         |
+| --------------------------------------- | ------------------------------------------------------------ |
+| :`[range]`d[elete] [x]                  | Delete `[range]` lines (default: current line) [into register `x`]. |
+| :`[range]`d[elete] [x] `{count}`        | Delete `{count}` lines, starting with `[range]`(default: current line) [into register `x`]. |
+| :`[range]`j[oin][!] `[flags]`           | Join `[range]` lines.                                        |
+| :`[range]`j[oin][!] `{count}` `[flags]` | Join `{count}` lines, starting with `[range]` (default: current line). |
 
 例子：
 
@@ -263,39 +264,61 @@ I       :   Don't ignore case for the pattern.
 
 ### Copying and moving text
 
-| 命令                                                       | 描述                                                         |
-| ---------------------------------------------------------- | ------------------------------------------------------------ |
-| `:[range]y[ank] [x]`                                       | Yank `[range]` lines [into register `x`].                    |
-| `:[range]y[ank] [x] {count}`                               | Yank {count} lines, starting with last line number in [range] (default: current line), [into register `x`]. |
-| `:[range]co[py] {address}`                                 | Copy the lines given by `[range]` to below the line given by `{address}`. |
-| `:[range]m[ove] {address}`                                 | Move the lines given by `[range]` to below the line given by `{address}`. |
+| 命令                           | 描述                                                         |
+| ------------------------------ | ------------------------------------------------------------ |
+| :`[range]`y[ank] [x]           | Yank `[range]` lines [into register `x`].                    |
+| :`[range]`y[ank] [x] `{count}` | Yank {count} lines, starting with last line number in [range] (default: current line), [into register `x`]. |
+| :`[range]`co[py] `{address}`   | Copy the lines given by `[range]` to below the line given by `{address}`. |
+| :`[range]`m[ove] `{address}`   | Move the lines given by `[range]` to below the line given by `{address}`. |
 
 ### Formatting text
 
 Shifting lines left or right: 
 
-| 命令                        | 描述                                                         |
-| --------------------------- | ------------------------------------------------------------ |
-| `:[range]<`                 | Shift `[range]` lines one `'shiftwidth'` left.  Repeat `'<'` for shifting multiple `'shiftwidth'`s. |
-| `:[range]< {count}`         | Shift `{count}` lines one `'shiftwidth'` left, starting with `[range]` (default current line). Repeat '<' for shifting multiple `'shiftwidth'`s. |
-| `:[range]> [flags]`         | Shift `{count}` `[range]` lines one `'shiftwidth'` right. Repeat `'>'` for shifting multiple `'shiftwidth'`s. |
-| `:[range]> {count} [flags]` | Shift `{count}` lines one `'shiftwidth'` right, starting with `[range]` (default current line). Repeat `'>'` for shifting multiple `'shiftwidth'`s. |
+| 命令                            | 描述                                                         |
+| ------------------------------- | ------------------------------------------------------------ |
+| :`[range]`<                     | Shift `[range]` lines one `'shiftwidth'` left.  Repeat `'<'` for shifting multiple `'shiftwidth'`s. |
+| :`[range]`< `{count}`           | Shift `{count}` lines one `'shiftwidth'` left, starting with `[range]` (default current line). Repeat '<' for shifting multiple `'shiftwidth'`s. |
+| :`[range]`> `[flags]`           | Shift `{count}` `[range]` lines one `'shiftwidth'` right. Repeat `'>'` for shifting multiple `'shiftwidth'`s. |
+| :`[range]`> `{count}` `[flags]` | Shift `{count}` lines one `'shiftwidth'` right, starting with `[range]` (default current line). Repeat `'>'` for shifting multiple `'shiftwidth'`s. |
 
 Left-align, right-align lines or center lines: 
 
-| 命令                        | 描述                                                         |
-| --------------------------- | ------------------------------------------------------------ |
-| `:[range]le[ft] [indent]`   | Left-align lines in `[range]`.  Sets the indent in the lines to `[indent]` (default `0`). |
-| `:[range]ri[ght] [width]`   | Right-align lines in `[range]` at `[width]` columns<br/>(default `'textwidth'` or `80` when `'textwidth'` is `0`). |
-| `:[range]ce[nter] [width]`  | Center lines in `[range]` between `[width]` columns<br/>(default `'textwidth'` or `80` when `'textwidth'` is `0`). |
+| 命令                         | 描述                                                         |
+| ---------------------------- | ------------------------------------------------------------ |
+| :`[range]`le[ft] `[indent]`  | Left-align lines in `[range]`.  Sets the indent in the lines to `[indent]` (default `0`). |
+| :`[range]`ri[ght] `[width]`  | Right-align lines in `[range]` at `[width]` columns<br/>(default `'textwidth'` or `80` when `'textwidth'` is `0`). |
+| :`[range]`ce[nter] `[width]` | Center lines in `[range]` between `[width]` columns<br/>(default `'textwidth'` or `80` when `'textwidth'` is `0`). |
 
 ### Sorting text
 
-| 命令                                                       | 描述                                                         |
-| ---------------------------------------------------------- | ------------------------------------------------------------ |
-| `:[range]sor[t][!] [b][f][i][n][o][r][u][x] [/{pattern}/]` | Sort lines in `[range]`.  When no range is given all lines are sorted.<br/>With `[!]` the order is reversed.<br/>With `[i]` case is ignored.<br/>... |
+| 命令                                                         | 描述                                                         |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| :`[range]`sor[t][!] [b][f][i][n][o][r][u][x] [/`{pattern}`/] | Sort lines in `[range]`.  When no range is given all lines are sorted.<br/>With `[!]` the order is reversed.<br/>With `[i]` case is ignored.<br/>... |
 
-### 其它
+# 配置
+
+使用 Vim 年月较久后总会定制一套个性化的 Vim 配置，例如截取一段常用的 `~/.vimrc` 配置：
+
+```
+set number                  " 显示行号
+set cursorline              " 突出显示当前行
+set ruler                   " 打开状态栏标尺
+set shiftwidth=4            " 设定 << 和 >> 命令缩进时的宽度为 4
+set softtabstop=4           " 使得按退格键时可以一次删掉 4 个空格
+set tabstop=4               " 设定 tab 长度为 4
+set nowrapscan              " 禁止在搜索到文件两端时重新搜索
+set incsearch               " 输入搜索内容时就显示搜索结果
+set hlsearch                " 高亮显示搜索结果
+syntax on                   " 程序语法开关
+inoremap jj <ESC>           " 重映射 ESCAPE 键
+" 定义缩写：ab [缩写] [要替换的文字]
+ab asap as soon as possible
+```
+
+另外注意，Vim 的操作记录会写入 `~/.viminfo` 。
+
+## JSON 格式化
 
 ```bash
 # JSON 格式化
@@ -323,28 +346,6 @@ command! JsonFormat :execute '%!python -m json.tool'
   \ | :1
 ```
 
-# 配置
-
-使用 Vim 年月较久后总会定制一套个性化的 Vim 配置，例如截取一段常用的 `~/.vimrc` 配置：
-
-```
-set number                  " 显示行号
-set cursorline              " 突出显示当前行
-set ruler                   " 打开状态栏标尺
-set shiftwidth=4            " 设定 << 和 >> 命令缩进时的宽度为 4
-set softtabstop=4           " 使得按退格键时可以一次删掉 4 个空格
-set tabstop=4               " 设定 tab 长度为 4
-set nowrapscan              " 禁止在搜索到文件两端时重新搜索
-set incsearch               " 输入搜索内容时就显示搜索结果
-set hlsearch                " 高亮显示搜索结果
-syntax on                   " 程序语法开关
-inoremap jj <ESC>           " 重映射 ESCAPE 键
-" 定义缩写：ab [缩写] [要替换的文字]
-ab asap as soon as possible
-```
-
-另外注意，Vim 的操作记录会写入 `~/.viminfo` 。
-
 ## 设置键盘映射
 
 https://blog.csdn.net/lym152898/article/details/52171494
@@ -369,10 +370,32 @@ GVim 的多标签切换：
 
 # 参考
 
-* 《[Vim - wikipedia](https://zh.wikipedia.org/wiki/Vim)》
-* 《[简明 Vim 练级攻略](http://coolshell.cn/articles/5426.html)》
-* 《[如何在 Vim 中得到你最喜爱的 IDE 特性](http://coolshell.cn/articles/894.html)》
-* 《[为什么 Vim 使用 HJKL 键作为方向键](http://www.oschina.net/news/28608/vim-direction-keys)》
-* 《[vim文本替换命令](https://www.cnblogs.com/wind-wang/p/5768000.html)》
-* 《[5分钟学会 Vim 分屏操作方方面面](https://mp.weixin.qq.com/s?__biz=MzU3NTgyODQ1Nw==&mid=2247499367&idx=2&sn=bfd12789b31b0a6c7810769ec24ba842&chksm=fd1f86e1ca680ff7c7d212139b022ebeefa77f848513fe913359eee5297e8825b0c98ad27e61)》
-* VIM 插件：https://vimawesome.com/plugin/json-vim
+https://en.wikipedia.org/wiki/Vim_(text_editor)
+
+https://zh.wikipedia.org/wiki/Vim
+
+https://en.wikipedia.org/wiki/Editor_war
+
+https://zh.wikipedia.org/zh-hk/编辑器之战
+
+
+
+https://missing-semester-cn.github.io/
+
+- https://missing-semester-cn.github.io/2020/editors/
+
+
+
+《[为什么 Vim 使用 HJKL 键作为方向键](http://www.oschina.net/news/28608/vim-direction-keys)》
+
+《[简明 Vim 练级攻略](http://coolshell.cn/articles/5426.html)》
+
+《[如何在 Vim 中得到你最喜爱的 IDE 特性](http://coolshell.cn/articles/894.html)》
+
+《[Vim文本替换命令](https://www.cnblogs.com/wind-wang/p/5768000.html)》
+
+《[5 分钟学会 Vim 分屏操作方方面面](https://mp.weixin.qq.com/s?__biz=MzU3NTgyODQ1Nw==&mid=2247499367&idx=2&sn=bfd12789b31b0a6c7810769ec24ba842&chksm=fd1f86e1ca680ff7c7d212139b022ebeefa77f848513fe913359eee5297e8825b0c98ad27e61)》
+
+VIM 插件：https://vimawesome.com/plugin/json-vim
+
+Vim philosophy
