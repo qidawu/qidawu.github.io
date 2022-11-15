@@ -6,6 +6,8 @@ tags: [并发编程, Java]
 typora-root-url: ..
 ---
 
+# 背景
+
 为什么要用线程池？
 
 > 线程的创建和销毁是有代价的。
@@ -24,7 +26,7 @@ typora-root-url: ..
 
 ![thread_pool_design](/img/java/concurrent/thread_pool_design.png)
 
-使用 Executor Framework 的第一步就是创建一个 `ThreadPoolExecutor` 类的对象。你可以使用这个类提供的 **四个构造方法**或 `Executors` **工厂类**来创建 `ThreadPoolExecutor` 。一旦有了执行者，你就可以提交 `Runnable` 或 `Callable` 对象给执行者来执行。
+使用 Executor Framework 的第一步就是创建一个 `ThreadPoolExecutor` 类的对象。你可以使用这个类提供的 **四个构造方法**或 `Executors` **工厂类**来创建 `ThreadPoolExecutor` 。一旦有了执行器，你就可以提交 `Runnable` 或 `Callable` 对象给执行器来执行。
 
 # 自定义线程池
 
@@ -129,6 +131,8 @@ private static final RuntimePermission shutdownPerm =
     new RuntimePermission("modifyThread");
 ```
 
+### ctl
+
 作为一个线程池，首先有两个关键属性：
 
 * 线程池状态 `runState`
@@ -197,7 +201,7 @@ private static int workerCountOf(int c)  { return c & CAPACITY; }
 =     11111111111111111111111111111
 ```
 
-### 线程池状态
+#### 线程池状态
 
 线程池状态用于标识线程池内部的一些运行情况，线程池的开启到关闭的过程就是线程池状态的一个流转的过程。
 
@@ -213,7 +217,7 @@ private static int workerCountOf(int c)  { return c & CAPACITY; }
 | `TIDYING`    | 010        | 整理状态，此时任务都已经执行完毕，并且也没有工作线程 执行 `terminated` 方法后进入 `TERMINATED` 状态。 |
 | `TERMINATED` | 011        | 终止状态，此时线程池完全终止了，并完成了所有资源的释放。     |
 
-### 工作线程数
+#### 工作线程数
 
 尽管理论上线程池最大线程数量可达 `CAPACITY` 数，但是实际上都会通过 `maximumPoolSize` 限制最大线程数。因此工作线程数 `workerCnt` 的个数可能在 0 至 `maximumPoolSize` 之间变化。
 
@@ -229,13 +233,81 @@ private static int workerCountOf(int c)  { return c & CAPACITY; }
 
 ### 线程工厂
 
-通过提供不同的 `ThreadFactory` 接口实现，可以改变被创建线程 `Thread` 的名称、线程组、优先级、守护进程状态，等等。
+通过提供不同的 `ThreadFactory` 接口实现，可以定制被创建线程 `Thread` 的**属性**。`ThreadFactory` 有几种创建方式：
 
-参考《[Java 并发编程系列（一）常用包总结](/2018/07/10/java-concurrent-package/#ThreadFactory)》
+1、完全自定义方式。缺点是需要在 `newThread` 方法中实现的代码较多：
+
+```java
+ThreadFactory threadFactory = runnable -> {
+    Thread t = new Thread(runnable);
+    t.setName("wechat-notify-1");
+    t.setDaemon(false);
+    t.setPriority(1);
+    t.setUncaughtExceptionHandler((thread, exception) -> {});
+    return t;
+};
+```
+
+2、使用 `Executors` 工具类提供的方法：
+
+```java
+ThreadFactory threadFactory = Executors.defaultThreadFactory();
+```
+
+这也是 `Executors` 工具类提供的几种默认线程池所使用的 `ThreadFactory`。
+
+* 缺点：只能使用默认属性，不提供任何定制参数，无法修改。
+* 优点：实现了基本的线程名称自增。
+
+3、使用 Guava 提供的 `ThreadFactoryBuilder`。优点是可以轻松定制四个线程属性，且支持线程名称自增：
+
+```java
+ThreadFactory threadFactory = new ThreadFactoryBuilder()
+  .setNameFormat("wechat-notify-%d")
+  .setDaemon(false)
+  .setPriority(1)
+  .setUncaughtExceptionHandler((thread, exception) -> {})
+  .build();
+```
+
+该实现如下，如果未提供自定义的 `ThreadFactory`，将基于 `Executors.defaultThreadFactory()` 进行二次修改：
+
+```java
+  private static ThreadFactory build(ThreadFactoryBuilder builder) {
+    final String nameFormat = builder.nameFormat;
+    final Boolean daemon = builder.daemon;
+    final Integer priority = builder.priority;
+    final UncaughtExceptionHandler uncaughtExceptionHandler = builder.uncaughtExceptionHandler;
+    final ThreadFactory backingThreadFactory = (builder.backingThreadFactory != null)
+            ? builder.backingThreadFactory
+            : Executors.defaultThreadFactory();
+    final AtomicLong count = (nameFormat != null) ? new AtomicLong(0) : null;
+
+    return new ThreadFactory() {
+      @Override
+      public Thread newThread(Runnable runnable) {
+        Thread thread = backingThreadFactory.newThread(runnable);
+        if (nameFormat != null) {
+          thread.setName(format(nameFormat, count.getAndIncrement()));
+        }
+        if (daemon != null) {
+          thread.setDaemon(daemon);
+        }
+        if (priority != null) {
+          thread.setPriority(priority);
+        }
+        if (uncaughtExceptionHandler != null) {
+          thread.setUncaughtExceptionHandler(uncaughtExceptionHandler);
+        }
+        return thread;
+      }
+    };
+  }
+```
 
 ### 阻塞队列
 
-阻塞队列的使用详见另一篇《[Java 集合框架系列（八）并发实现总结](/2018/05/25/java-collections-framework-concurrent-impl/)》。
+阻塞队列的使用详见另一篇《[Java 集合框架系列（八）并发实现总结](/posts/java-collections-framework-concurrent-impl/)》。
 
 ![work_queue](/img/java/concurrent/work_queue.png)
 
@@ -250,7 +322,7 @@ private static int workerCountOf(int c)  { return c & CAPACITY; }
 
 ![RejectedExecutionHandler](/img/java/concurrent/RejectedExecutionHandler.png)
 
-通过 `RejectedExecutionHandler` 接口可以实现更多策略，例如记录日志或持久化不能处理的任务，或者发出告警。
+通过 `RejectedExecutionHandler` 接口可以实现更多策略，例如记录日志或持久化不能处理的任务，或者计数并发出告警。
 
 ```java
 public interface RejectedExecutionHandler {
@@ -258,38 +330,11 @@ public interface RejectedExecutionHandler {
 }
 ```
 
-## 执行流程
-
-`execute` 方法的整体执行流程如下：
-
-```
-        /*
-         * Proceed in 3 steps:
-         *
-         * 1. If fewer than corePoolSize threads are running, try to
-         * start a new thread with the given command as its first
-         * task.  The call to addWorker atomically checks runState and
-         * workerCount, and so prevents false alarms that would add
-         * threads when it shouldn't, by returning false.
-         *
-         * 2. If a task can be successfully queued, then we still need
-         * to double-check whether we should have added a thread
-         * (because existing ones died since last checking) or that
-         * the pool shut down since entry into this method. So we
-         * recheck state and if necessary roll back the enqueuing if
-         * stopped, or start a new thread if there are none.
-         *
-         * 3. If we cannot queue task, then we try to add a new
-         * thread.  If it fails, we know we are shut down or saturated
-         * and so reject the task.
-         */
-```
-
-![work_flow_of_execute_method](/img/java/concurrent/work_flow_of_execute_method.png)
+⚠️ 注意：`rejectedExecution` 方法是在主线程中执行的。
 
 ## 构造方法
 
-`ThreadPoolExecutor` 提供了四个构造方法，以参数最多的为例：
+`java.util.concurrent.ThreadPoolExecutor` 提供了四个构造方法，以参数最多的为例：
 
 ```java
 public ThreadPoolExecutor(int corePoolSize,
@@ -375,6 +420,58 @@ public class MdcAwareThreadPoolExecutor extends ThreadPoolExecutor {
 }
 ```
 
+## 执行流程
+
+`execute` 方法的整体执行流程如下：
+
+```
+        /*
+         * Proceed in 3 steps:
+         *
+         * 1. If fewer than corePoolSize threads are running, try to
+         * start a new thread with the given command as its first
+         * task.  The call to addWorker atomically checks runState and
+         * workerCount, and so prevents false alarms that would add
+         * threads when it shouldn't, by returning false.
+         *
+         * 2. If a task can be successfully queued, then we still need
+         * to double-check whether we should have added a thread
+         * (because existing ones died since last checking) or that
+         * the pool shut down since entry into this method. So we
+         * recheck state and if necessary roll back the enqueuing if
+         * stopped, or start a new thread if there are none.
+         *
+         * 3. If we cannot queue task, then we try to add a new
+         * thread.  If it fails, we know we are shut down or saturated
+         * and so reject the task.
+         */
+```
+
+![work_flow_of_execute_method](/img/java/concurrent/work_flow_of_execute_method.png)
+
+## 统计指标
+
+虽然我们用上了线程池，但是该如何了解线程池的运行情况，例如有多少线程在执行、多少在队列中等待？下表提供了方法：
+
+| Modifier and Type       | Method and Description                                       | 备注 |
+| :---------------------- | :----------------------------------------------------------- | ------------------------------------------------------------ |
+| `long`                  | `getTaskCount()`<br/>Returns the approximate total number of tasks that have ever been scheduled for execution. | 任务总数（已完成任务数 + 当前活跃线程数） |
+| `long`                  | `getCompletedTaskCount()`<br/>Returns the approximate total number of tasks that have completed execution. | 已完成任务数 |
+| `int`                   | `getActiveCount()`<br/>Returns the approximate number of threads that are actively executing tasks. | 当前活跃中的工作线程数 |
+| `int` | `getPoolSize()`<br/>Returns the current number of threads in the pool. | 当前工作线程数 |
+| `int`                   | `getLargestPoolSize()`<br/>Returns the largest number of threads that have ever simultaneously been in the pool. | 最大工作线程数 |
+| `BlockingQueue<Runnable>` | `getQueue()`<br/>Returns the task queue used by this executor. **Access to the task queue is intended primarily for debugging and monitoring.** | 当前排队数 |
+
+```java
+logger.info("{}, taskCount [{}], completedTaskCount [{}], activeCount [{}], queueSize [{}]",
+                threadPoolExecutor.getThreadNamePrefix(),
+                threadPoolExecutor.getTaskCount(),
+                threadPoolExecutor.getCompletedTaskCount(),
+                threadPoolExecutor.getActiveCount(),
+                threadPoolExecutor.getQueue().size()
+);
+```
+
 # 使用工厂类创建线程池
 
 `java.util.concurrent.ThreadPoolExecutor` 提供了四个不同的构造方法，但由于它们的复杂性（参数较多），Java 并发 API 提供了 `java.util.concurrent.Executors` 工厂类来简化线程池的构造，常用方法如下：
@@ -416,7 +513,7 @@ public static ExecutorService newSingleThreadExecutor() {
 上述方法中，关键在于对 `java.util.concurrent.LinkedBlockingQueue` 的构造，使用了默认的无参构造方法：
 
 ```java
-// 允许的请求队列长度（capacity）为 Integer.MAX_VALUE，可能会堆积大量的请求，从而导致 OOM。
+// ⚠️ 允许的请求队列长度（capacity）为 Integer.MAX_VALUE，可能会堆积大量的请求，从而导致 OOM。
 public LinkedBlockingQueue() {
     this(Integer.MAX_VALUE);
 }
@@ -425,7 +522,7 @@ public LinkedBlockingQueue() {
 然后是 `newCachedThreadPool(...)` 和 `newScheduledThreadPool(...)`：
 
 ```java
-// 允许的创建线程数量（maximumPoolSize）为 Integer.MAX_VALUE，可能会创建大量的线程，从而导致 OOM。
+// ⚠️ 允许的创建线程数量（maximumPoolSize）为 Integer.MAX_VALUE，可能会创建大量的线程，从而导致 OOM。
 public static ExecutorService newCachedThreadPool() {
     return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
                                   60L, TimeUnit.SECONDS,
@@ -441,9 +538,24 @@ public static ScheduledExecutorService newScheduledThreadPool(int corePoolSize) 
 看下 `java.util.concurrent.ScheduledThreadPoolExecutor` 的构造方法：
 
 ```java
-// ScheduledThreadPoolExecutor 构造方法中，允许的创建线程数量（maximumPoolSize）为 Integer.MAX_VALUE，可能会创建大量的线程，从而导致 OOM。
+// ⚠️ 允许的创建线程数量（maximumPoolSize）为 Integer.MAX_VALUE，可能会创建大量的线程，从而导致 OOM。
 public ScheduledThreadPoolExecutor(int corePoolSize) {
     super(corePoolSize, Integer.MAX_VALUE, 0, NANOSECONDS,
           new DelayedWorkQueue());
 }
 ```
+
+⚠️ 注意：`ScheduledThreadPoolExecutor` 使用的是 `DelayedWorkQueue` 队列，这个队列是无界的（无法设置 `capacity`），也就是说 `maximumPoolSize` 的设置其实是没有什么意义的。
+
+* `corePoolSize` 设置的太小，会导致并发任务量大时，延迟任务得不到及时处理，造成阻塞。
+* `corePoolSize` 设置的太大，会导致并发任务量少时，造成大量的线程资源浪费。
+
+# 参考
+
+https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ThreadPoolExecutor.html
+
+《[Java 线程池实现原理，及其在美团业务中的实践](https://tech.meituan.com/2020/04/02/java-pooling-pratice-in-meituan.html)》
+
+《[如何合理地估算线程池大小？](https://blog.csdn.net/yangguosb/article/details/81327785)》
+
+《[线程池执行的任务抛出异常会怎样？](https://blog.csdn.net/qq_26824159/article/details/126767372)》

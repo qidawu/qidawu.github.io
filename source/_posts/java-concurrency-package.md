@@ -14,11 +14,11 @@ JDK 中涉及到线程的包如下：
 
 > 内含基础并发类。
 
-## Runnable
+## `Runnable`
 
 无返回结果的异步任务。
 
-## Thread
+## `Thread`
 
 程序中的执行线程。
 
@@ -78,9 +78,13 @@ JDK 中涉及到线程的包如下：
 
 * 线程协作 `Object.wait/notify`
 
-## ThreadLocal<T>
+![Thread state](/img/java/concurrent/thread_state.png)
+
+## `ThreadLocal<T>`
 
 `ThreadLocal` 存放的值是线程内共享的，线程间互斥的，主要用于在线程内共享一些数据。
+
+### try-with-resources
 
 可以通过实现 `AutoCloseable` 以使用 try-with-resources 语法简化 `ThreadLocal` 资源清理：
 
@@ -131,17 +135,13 @@ public class ChannelContext implements AutoCloseable {
 }
 ```
 
-## ThreadGroup
+### 父子线程的值传递
 
-# java.util
+https://docs.oracle.com/javase/8/docs/api/java/lang/InheritableThreadLocal.html
 
-## TimerTask
+### 异步执行的上下文传递
 
-`Timer` 是 JDK 中提供的一个定时器工具类，使用的时候会在主线程之外起一个单独的线程执行指定的定时任务 `TimerTask`，可以指定执行一次或者反复执行多次。
-
-`TimerTask` 是一个实现了 `Runnable` 接口的抽象类，代表一个可以被 `Timer` 执行的任务。
-
-![TimerTask](/img/java/concurrent/TimerTask.png)
+https://github.com/alibaba/transmittable-thread-local
 
 # java.util.concurrent
 
@@ -149,109 +149,19 @@ public class ChannelContext implements AutoCloseable {
 
 ![Package concurrent](/img/java/concurrent/package_concurrent.png)
 
-## ThreadFactory
+## `Callable`
 
-通过提供不同的 `ThreadFactory` 接口实现，可以改变被创建线程 `Thread` 的**属性**。`ThreadFactory` 有几种创建方式：
+有返回结果的异步任务。
 
-1、完全自定义方式。缺点是需要在 `newThread` 方法中实现的代码较多：
+Executor Framework 的一个重要优点是提供了 `java.util.concurrent.Callable<V>` 接口用于返回异步任务的结果。它的用法跟 `Runnable` 接口很相似，但它提供了两种改进：
 
-```java
-ThreadFactory threadFactory = runnable -> {
-    Thread thread = new Thread(runnable);
-    thread.setName("...");
-    return thread;
-};
-```
+* `Callable` 接口中主要的方法叫 `call()` ，可以返回结果。
 
-2、使用 `Executors` 工具类，这也是 `Executors` 工具类中提供的几种默认线程池所使用的方式。
+  ![Callable](/img/java/concurrent/Runnable_and_Callable.png)
 
-缺点是只能使用默认属性，无法修改：
+* 当你将 `Callable` 对象 `submit` 到 `Executor` 执行者，你可以获取一个实现 `Future` 对象，你可以用这个对象来控制和获取 `Callable` 对象的状态和结果。
 
-```java
-ThreadFactory threadFactory = Executors.defaultThreadFactory();
-```
-
-优点是实现了基本的线程名称自增，该实现如下：
-
-```java
-    /**
-     * The default thread factory
-     */
-    static class DefaultThreadFactory implements ThreadFactory {
-        private static final AtomicInteger poolNumber = new AtomicInteger(1);
-        private final ThreadGroup group;
-        private final AtomicInteger threadNumber = new AtomicInteger(1);
-        private final String namePrefix;
-
-        DefaultThreadFactory() {
-            SecurityManager s = System.getSecurityManager();
-            group = (s != null) ? s.getThreadGroup() :
-                                  Thread.currentThread().getThreadGroup();
-            namePrefix = "pool-" +
-                          poolNumber.getAndIncrement() +
-                         "-thread-";
-        }
-
-        public Thread newThread(Runnable r) {
-            Thread t = new Thread(group, r,
-                                  namePrefix + threadNumber.getAndIncrement(),
-                                  0);
-            if (t.isDaemon())
-                t.setDaemon(false);
-            if (t.getPriority() != Thread.NORM_PRIORITY)
-                t.setPriority(Thread.NORM_PRIORITY);
-            return t;
-        }
-    }
-```
-
-3、通过 Guava 提供的 `ThreadFactoryBuilder`。优点是可以轻易自定义任何属性：
-
-```java
-ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("wechat-notify-%d").build()
-```
-
-该实现如下，如果未提供自定义的 `ThreadFactory`，将使用 `Executors` 工具类提供的默认 `ThreadFactory` 并进行二次修改：
-
-```java
-  private static ThreadFactory build(ThreadFactoryBuilder builder) {
-    final String nameFormat = builder.nameFormat;
-    final Boolean daemon = builder.daemon;
-    final Integer priority = builder.priority;
-    final UncaughtExceptionHandler uncaughtExceptionHandler = builder.uncaughtExceptionHandler;
-    final ThreadFactory backingThreadFactory = (builder.backingThreadFactory != null)
-            ? builder.backingThreadFactory
-            : Executors.defaultThreadFactory();
-    final AtomicLong count = (nameFormat != null) ? new AtomicLong(0) : null;
-
-    return new ThreadFactory() {
-      @Override
-      public Thread newThread(Runnable runnable) {
-        Thread thread = backingThreadFactory.newThread(runnable);
-        if (nameFormat != null) {
-          thread.setName(format(nameFormat, count.getAndIncrement()));
-        }
-        if (daemon != null) {
-          thread.setDaemon(daemon);
-        }
-        if (priority != null) {
-          thread.setPriority(priority);
-        }
-        if (uncaughtExceptionHandler != null) {
-          thread.setUncaughtExceptionHandler(uncaughtExceptionHandler);
-        }
-        return thread;
-      }
-    };
-  }
-```
-
-## Callable
-
-有返回结果的异步任务。Executor Framework 的一个重要优点是提供了 `java.util.concurrent.Callable<V>` 接口用于返回异步任务的结果。它的用法跟 `Runnable` 接口很相似，但它提供了两种改进：
-
-* 这个接口中主要的方法叫 `call()` ，可以返回结果。
-* 当你提交 `Callable` 对象到 `Executor` 执行者，你可以获取一个实现 `Future` 接口的对象，你可以用这个对象来控制和获取 `Callable` 对象的状态和结果。
+  ![ThreadPoolExecutor](/img/java/concurrent/Executor.png)
 
 ## 工具类
 
@@ -277,11 +187,11 @@ ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("wechat-n
 
 ## 线程池
 
-参考另一篇《Java 并发编程系列（二）线程池总结》。
+参考另一篇《[并发编程系列（三）Java 线程池总结](/posts/java-concurrency-threadpool/)》。
 
 ## 并发集合
 
-详见另一个篇《Java 集合框架系列（三）并发实现总结》。
+详见另一个篇《[Java 集合框架系列（九）并发实现总结](/posts/java-collections-framework-concurrent-impl/)》。
 
 ## 显式锁
 
@@ -319,6 +229,8 @@ JDK 8 新增 `Striped64` 累加计数器这个并发组件，64 指的是计数 
 
 # Spring 包简介
 
+[Task Execution and Scheduling - Spring Framework](https://docs.spring.io/spring-framework/docs/current/reference/html/integration.html#scheduling)
+
 ## org.springframework.scheduling
 
 Spring Framework 中并发编程相关的类主要位于 `spring-context` 下的 `org.springframework.scheduling`，例如其子包 `concurrent`：
@@ -344,7 +256,11 @@ Spring Framework 中并发编程相关的类主要位于 `spring-context` 下的
 
 ![ThreadPoolTaskExecutor 方法列表](/img/java/concurrent/ThreadPoolTaskExecutor.png)
 
-当我们在实例化 `ThreadPoolTaskExecutor` 类的时候，其调用堆栈如下：
+当我们在实例化 `ThreadPoolTaskExecutor` 对象之后，其变量如下：
+
+![ThreadPoolTaskExecutor variables](/img/java/concurrent/ThreadPoolTaskExecutor_variables.png)
+
+其调用堆栈如下：
 
 ![](/img/java/concurrent/ThreadPoolTaskExecutor_threads.png)
 

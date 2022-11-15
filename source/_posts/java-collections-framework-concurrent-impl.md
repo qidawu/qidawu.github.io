@@ -170,7 +170,7 @@ synchronizedNavigableMap
 
 ![Queue_implementations](/img/java/collection/queue/queue_impl.png)
 
-参考：《[线性表之 Queue 实现总结](/2018/05/12/java-collections-queue/)》
+参考：《[Java 集合框架系列（六）线性表之 Queue 总结](/posts/java-collections-queue/)》
 
 ## 并发队列（非阻塞实现）
 
