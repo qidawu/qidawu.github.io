@@ -8,42 +8,50 @@ typora-root-url: ..
 
 # Roadmap
 
-截止 2021.9，Spring Boot 的最新版本情况：
+https://spring.io/projects/spring-boot#support
 
-|                             版本                             |  发布时间  | 停止维护时间 |
-| :----------------------------------------------------------: | :--------: | :----------: |
-|                            2.7.0                             |  2022/05   |      -       |
-|                            2.6.0                             | 2021/12/18 |      -       |
-| [2.5.x](https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247530679&idx=1&sn=32b3a0458c269df212556c1620ee93fa&scene=21#wechat_redirect) | 2021/05/20 |  2023/02/20  |
-| [2.4.x](https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247514253&idx=1&sn=7bb0d45039d35740981e98858f550647&scene=21#wechat_redirect) | 2020/12/12 |  2022/08/12  |
-| [2.3.x](https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247496866&idx=2&sn=6304a068d392d05ab86caf0c4fe2c514&scene=21#wechat_redirect) | 2020/05/15 |  2022/02/15  |
-| [2.2.x](https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247489065&idx=1&sn=3efba2d3ab5894f30158507154db6af5&scene=21#wechat_redirect) |  2019/10   |  已停止维护  |
-| [2.1.x](https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247487615&idx=1&sn=87e870f0d3e9b359bb3912d39d8a4c45&scene=21#wechat_redirect) |  2018/10   |  已停止维护  |
-| [2.0.x](https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247485347&idx=1&sn=ff480a238c6cb84c1bb8363272781b43&scene=21#wechat_redirect) |  2018/03   |  已停止维护  |
-| [1.5.x](https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247485192&idx=1&sn=915e013ebb0ce4166c685d1747fdd47c&scene=21#wechat_redirect) |  2017/01   |  已停止维护  |
+https://github.com/spring-projects/spring-boot/wiki
+
+https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-Config-Data-Migration-Guide
+
+参考：
+
+- [2.5.x](https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247530679&idx=1&sn=32b3a0458c269df212556c1620ee93fa&scene=21#wechat_redirect)
+- [2.4.x](https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247514253&idx=1&sn=7bb0d45039d35740981e98858f550647&scene=21#wechat_redirect)
+- [2.3.x](https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247496866&idx=2&sn=6304a068d392d05ab86caf0c4fe2c514&scene=21#wechat_redirect)
+- [2.2.x](https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247489065&idx=1&sn=3efba2d3ab5894f30158507154db6af5&scene=21#wechat_redirect)
+- [2.1.x](https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247487615&idx=1&sn=87e870f0d3e9b359bb3912d39d8a4c45&scene=21#wechat_redirect)
+- [2.0.x](https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247485347&idx=1&sn=ff480a238c6cb84c1bb8363272781b43&scene=21#wechat_redirect)、[Spring Boot 2.0 正式发布，新特性解读](https://www.infoq.cn/article/spring-boot-2.0-new-feature)
+
 
 # Getting Started
 
 有几种方式可以搭建基于 Spring Boot 的项目：
 
-1. [Spring Initializr](https://start.spring.io/) 在线生成项目
+## Spring Initializr
+
+[Spring Initializr](https://start.spring.io/) 在线生成项目
 
   > Spring Initializr 从本质上来说就是一个Web应用程序，它能为你生成 Spring Boot 项目结构。虽然不能生成应用程序代码，但它能为你提供一个基本的项目结构，以及一个用于构建代码的 Maven 或 Gradle 构建说明文件。你只需要写应用程序的代码就好了。
 
 ![Spring Initializr](/img/spring/spring-boot/spring-initializr.png)
 
-2. [Spring Boot CLI](https://docs.spring.io/spring-boot/docs/current/reference/html/cli.html) 命令行工具，下载地址[点我](http://repo.spring.io/release/org/springframework/boot/spring-boot-cli/)，命令如下：
+## Spring Boot CLI
+
+[Spring Boot CLI](https://docs.spring.io/spring-boot/docs/current/reference/html/cli.html) 命令行工具，下载地址[点我](http://repo.spring.io/release/org/springframework/boot/spring-boot-cli/)，命令如下：
 
   ```bash
   $ spring init -dweb,data-jpa,h2,thymeleaf --build gradle readingList
   ```
 
-3. [Spring Tool Suite](https://spring.io/tools/sts)，一款官方定制的 IDE 插件，支持：Eclipse、VS Code、Theia。
+## Spring Tools
 
-4. IntelliJ IDEA
+[Spring Tools](https://spring.io/tools/)，官方定制的 IDE 插件，支持：Eclipse、VS Code、Theia。
 
-   1. 社区版：离线安装 [Spring Assistant](http://plugins.jetbrains.com/plugin/10229-spring-assistant) 插件（在线安装方式被墙）
-   2. 收费版：直接使用 Spring Initializr 插件
+## IntelliJ IDEA
+
+1. 收费版：直接使用 Spring Initializr 插件
+1. 社区版：离线安装 [Spring Assistant](http://plugins.jetbrains.com/plugin/10229-spring-assistant) 插件（在线安装方式被墙）
 
 # Spring Boot 组成
 
@@ -358,7 +366,6 @@ https://docs.spring.io/spring-boot/docs/current/reference/html/index.html
 * [14.2 Installing Spring Boot Applications](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing)
   * [14.2.2 Unix/Linux Services - Customizing the Startup Script](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services.script-customization)
 
+[安全同学讲 Maven 重打包的故事 | 阿里技术](https://mp.weixin.qq.com/s/xsJkB0onUkakrVH0wejcIg)
+
 [Spring Boot 的 16 条最佳实践](https://mp.weixin.qq.com/s/alLpto0ZCnkv7ew2tWLtKQ)
-
-[Spring Boot Tomcat 配置](https://yq.aliyun.com/articles/619390)
-
