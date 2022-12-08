@@ -350,17 +350,46 @@ Timestamp.valueOf(localDateTime);
   >
   > 现在，具体的维护工作由互联网分配号码管理局（Internet Assigned Numbers Authority， IANA）负责。Paul Eggert 是时区数据库的项目负责人，该职位被称为 TZ 协调员。
 
-时区工具：
+UTC：
+
+* https://en.wikipedia.org/wiki/Coordinated_Universal_Time
+* https://zh.wikipedia.org/wiki/协调世界时
+* [闰秒](https://en.wikipedia.org/wiki/Leap_second)终于要被取消了！
+
+  > 2022 年 11 月 20 日消息，[负责协调世界时的国际计量局（BIPM）](https://www.bipm.org/en/time-metrology)表示，科学家和政府代表 18 日在法国举行的一次会议上投票决定到 2035 年取消闰秒。BIPM 时间部门负责人帕特里齐亚·塔维拉表示，这项“历史性决定”将允许“秒数连续流动，而不会出现目前由不规则闰秒造成的不连续性。”
+  >
+  > **更多阅读：**
+  >
+  > [为什么闰秒调整将从 2035 年开始暂停 | InfoQ](https://mp.weixin.qq.com/s/6F6pHKrTCMKxpaMJOYK1JA)
+  >
+  > [正式宣布取消！能让 Linus 本人同谷歌微软达成一致的，只有它了！](https://mp.weixin.qq.com/s/yyDyRUE6_0Co_1PRjgeOCQ)
+  >
+  > [让大厂抓狂的“额外一秒”：谷歌、微软、Meta 和亚马逊纷纷提议放弃](https://www.infoq.cn/article/3qXArL5XGJZXmAh90ZlD)
+  >
+  > [闰秒这个困扰程序员 50 年的问题，终于要被解决了？](https://mp.weixin.qq.com/s/K6YGA6Dc9w3iTuiA8U-PYA)
+  >
+  > > 当闰秒发生时，就需要通过[网络时间协议 NTP (Network time protocol)](https://en.wikipedia.org/wiki/Network_Time_Protocol) 来进行时间同步，NTP 服务器会一级一级地下发闰秒事件通知直到最边缘的 NTP 服务器，然后 NTP 服务器就会把闰秒通知发给客户端的操作系统，由操作系统来处理闰秒通知。
+  > >
+  > > 如果你的计算机系统没有开启 NTP 服务，那么导致的问题就是你的计算机上的机器时间就会比世界时间慢 1 秒。
+  > >
+  > > 如果开了 NTP 服务的话，就需要操作系统来处理这个闰秒。
 
 * [协调世界时（UTC） - 维基百科](https://zh.wikipedia.org/wiki/%E5%8D%8F%E8%B0%83%E4%B8%96%E7%95%8C%E6%97%B6)
 * https://time.is/UTC
 * [时区转换器：计算世界各个时区的时差](https://www.zeitverschiebung.net/cn/)
 * [Time Zone Converter](http://www.timezoneconverter.com/cgi-bin/zoneinfo)
 
+时间协议：
+
+* https://en.wikipedia.org/wiki/Time_Protocol
+* https://en.wikipedia.org/wiki/Network_Time_Protocol
+* https://en.wikipedia.org/wiki/Network_Time_Protocol#SNTP
+* 《[每天学一个 Linux 命令（96）：`ntpdate`](https://mp.weixin.qq.com/s/b5JqzO9nqmef9RdlosloPw)》
+
+
 其它：
 
 * 《Java 8 实战》
 * Java SE Docs
-* [《Java 时区数据库与 IANA 数据》](https://www.coder.work/article/6269420)
-* [《Mysql JDBC里的useTimezone参数是做什么用的？》](https://segmentfault.com/q/1010000000262788)
 * 《八十天环游地球》【法】儒勒·凡尔纳
+* [《Java 时区数据库与 IANA 数据》](https://www.coder.work/article/6269420)

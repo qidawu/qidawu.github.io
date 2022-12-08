@@ -112,10 +112,4 @@ Y2K problem
 - [微软也栽了，“千年虫”啥时候是个头 | InfoQ](https://mp.weixin.qq.com/s/6YHSZavAv4GC-cpDja4YjQ)
 - [微软开年就出大 bug——Y2K22 bug，大量程序员连夜加班：年都没跨好](https://mp.weixin.qq.com/s/QvWnzZ5-thbDFXyYBs1iQA)
 
-[计算机时间到底是怎么来的？程序员必看的时间知识！](https://mp.weixin.qq.com/s/Xw-CQV0QvxhKw0zMgbHpQA)
-
-https://en.wikipedia.org/wiki/Time_Protocol
-
-https://en.wikipedia.org/wiki/Network_Time_Protocol
-
-https://en.wikipedia.org/wiki/Network_Time_Protocol#SNTP
+[计算机时间到底是怎么来的？程序员必看的时间知识！](https://mp.weixin.qq.com/s/Xw-CQV0QvxhKw0zMgbHpQA) 
