@@ -16,7 +16,7 @@ typora-root-url: ..
 
 在大型项目中，BOM 用于将一组相关的、可以良好协作的构建（Maven Artifact）组合在一起，提供版本管理，避免构件间潜在的版本不兼容风险。
 
-BOM 如下：
+BOM 配置如下：
 
 ```XML
 <project>
@@ -34,67 +34,13 @@ BOM 如下：
 </project>
 ```
 
-常用的例如：
-
-* [Reactor](/posts/java-reactor-startup)
-* Spring Framework
-* [Spring Boot](/posts/spring-boot-getting-started)
-* Spring Cloud
-* Jackson
-* OpenFeign
+BOM 引用如下：
 
 ```XML
 <!-- 每个公司可能都拥有自己的标准父项目，为了解决 Maven 单继承问题，可以使用 `<dependencyManagement>` 通过组合方式来享受其提供的依赖版本统一管理的好处 -->
 <dependencyManagement>
   <dependencies>
-    <!-- Import dependency management from Reactor -->
-    <dependency>
-      <groupId>io.projectreactor</groupId>
-      <artifactId>reactor-bom</artifactId>
-      <version>${reactor.version}</version>
-      <type>pom</type>
-      <scope>import</scope>
-    </dependency>
-
-    <!-- Import dependency management from Spring Framework -->
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-framework-bom</artifactId>
-        <version>${spring-framework.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-
-    <!-- Import dependency management from Spring Boot -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-dependencies</artifactId>
-      <version>${spring-boot.version}</version>
-      <type>pom</type>
-      <scope>import</scope>
-    </dependency>
-
-    <!-- Import dependency management from Spring Cloud -->
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-dependencies</artifactId>
-      <version>${spring-cloud.version}</version>
-      <type>pom</type>
-      <scope>import</scope>
-    </dependency>
-    
-    <!-- https://github.com/FasterXML/jackson-bom -->
-    <dependency>
-      <groupId>com.fasterxml.jackson</groupId>
-      <artifactId>jackson-bom</artifactId>
-      <version>${jackson.version}</version>
-      <type>pom</type>
-      <scope>import</scope>
-    </dependency>
-    
-    <!-- https://github.com/OpenFeign/feign#mavens-bill-of-material-bom -->
+    <!-- https://mvnrepository.com/artifact/io.github.openfeign/feign-bom -->
     <dependency>
       <groupId>io.github.openfeign</groupId>
       <artifactId>feign-bom</artifactId>
@@ -105,6 +51,26 @@ BOM 如下：
   </dependencies>
 </dependencyManagement>
 ```
+
+常用的 BOM 如下：https://mvnrepository.com/tags/bom
+
+| Project                                                      | Maven URL                                                    |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [JUnit 5](https://github.com/junit-team/junit5)              | https://mvnrepository.com/artifact/org.junit/junit-bom       |
+| [Log4j 2](https://github.com/apache/logging-log4j2)          | https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-bom |
+| [Jackson](https://github.com/FasterXML/jackson-bom)          | https://mvnrepository.com/artifact/com.fasterxml.jackson/jackson-bom |
+| [OpenFeign](https://github.com/OpenFeign/feign#mavens-bill-of-material-bom) | https://mvnrepository.com/artifact/io.github.openfeign/feign-bom |
+| [Reactor](https://github.com/reactor/reactor)                | https://mvnrepository.com/artifact/io.projectreactor/reactor-bom |
+| [Netty](https://github.com/netty/netty)                      | https://mvnrepository.com/artifact/io.netty/netty-bom        |
+| [Jetty](https://github.com/eclipse/jetty.project)            | https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-bom |
+| [Jersey](https://github.com/eclipse-ee4j/jersey)             | https://mvnrepository.com/artifact/org.glassfish.jersey/jersey-bom |
+| [Micrometer](https://github.com/micrometer-metrics/micrometer) | https://mvnrepository.com/artifact/io.micrometer/micrometer-bom |
+| [Spring Framework](https://github.com/spring-projects/spring-framework) | https://mvnrepository.com/artifact/org.springframework/spring-framework-bom |
+| Spring Session                                               | https://mvnrepository.com/artifact/org.springframework.session/spring-session-bom |
+| Spring Security                                              | https://mvnrepository.com/artifact/org.springframework.security/spring-security-bom |
+| Spring Integration                                           | https://mvnrepository.com/artifact/org.springframework.integration/spring-integration-bom |
+| [Spring Boot](https://github.com/spring-projects/spring-boot) | https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies |
+| [Spring Cloud](https://github.com/spring-cloud)              | https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-dependencies |
 
 # 实践例子
 
