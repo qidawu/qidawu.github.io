@@ -154,9 +154,23 @@ javax.net.ssl.SSLException: closing inbound before receiving peer's close_notify
 ** END NESTED EXCEPTION **
 ```
 
+解决方法一：`useSSL=false`
+
+解决方法二：注释掉 `java.security` 文件中的 `jdk.tls.disabledAlgorithms` 配置：
+
+```
+$ vim ~/.sdkman/candidates/java/8.0.362-zulu/zulu-8.jdk/Contents/Home/jre/lib/security/java.security
+
+# jdk.tls.disabledAlgorithms=SSLv3, TLSv1, TLSv1.1, RC4, DES, MD5withRSA, \
+#     DH keySize < 1024, EC keySize < 224, 3DES_EDE_CBC, anon, NULL, \
+#     include jdk.disabled.namedCurves
+```
+
 #### connectionTimeZone
 
 https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-connp-props-datetime-types-processing.html#cj-conn-prop_connectionTimeZone
+
+[Setting the MySQL JDBC Timezone Using Spring Boot Configuration](https://www.baeldung.com/mysql-jdbc-timezone-spring-boot)
 
 #### useServerPrepStmts
 

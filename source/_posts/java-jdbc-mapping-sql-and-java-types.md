@@ -32,8 +32,6 @@ JDBC API 在 [`java.sql.Types`](https://docs.oracle.com/javase/8/docs/api/java/s
 
 ## 静态数据访问
 
-### 标准映射
-
 Java 程序从数据库中检索数据时，都必然会有某种形式的数据映射和数据转换。大多数情况下，JDBC 开发是知道目标数据库的 schema 的，例如表结构及其每列的数据类型。因此，JDBC 开发可以使用 `ResultSet`、`PreparedStatement`、`CallableStatement` 接口的强类型访问方法进行类型转换，如下：
 
 * `PreparedStatement` 接口：
@@ -56,14 +54,6 @@ Java 程序从数据库中检索数据时，都必然会有某种形式的数据
   int getInt(String columnLabel) throws SQLException;
   ...
   ```
-
-### 自定义映射
-
-自定义映射（SQL user-defined type (UDT) 到 Java 类）使用如下接口：
-
-- `java.sql.SQLData` 接口
-- `java.sql.SQLInput` 接口
-- `java.sql.SQLOutput` 接口
 
 ## 动态数据访问
 
@@ -96,6 +86,10 @@ Java 程序从数据库中检索数据时，都必然会有某种形式的数据
   
   ![java.sql.SQLException](/img/java/jdbc/java.sql.SQLException.png)
 
+  例如 MyBatis Plus [`com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler`](https://github.com/baomidou/mybatis-plus/blob/master/mybatis-plus-core/src/main/java/com/baomidou/mybatisplus/core/handlers/MybatisEnumTypeHandler.java#L118) 就使用到了 `ResultSet#getObject` 方法，如果类型转换失败则报错如上。
+  
+  例如 MyBatis 自动映射（automatic mapping）时，如果构造方法未指定 `@AutomapConstructor`，会按字段类型查找匹配的构造方法。如果找不到该构造方法，则会报错。
+  
   关于 MySQL 类型与 Java 类型的映射关系，参考：https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-reference-type-conversions.html
 
 示例代码如下：
