@@ -3,6 +3,7 @@ title: Nginx 反向代理
 date: 2017-05-06 15:17:37
 updated:
 tags: Nginx
+typora-root-url: ..
 ---
 
 # 什么是代理？
@@ -35,7 +36,21 @@ http {
 
 `proxy_pass` 指令用于配置被代理服务器的协议和地址。除了配置单机，还可以配置集群，详见 [Nginx 负载均衡](/posts/nginx-upstream/) 。
 
-# 解决代理后的问题
+# 常见问题
+
+## To slash or not to slash
+
+Here is a handy table that shows you how the request will be received by your WebApp, depending on how you write the `location` and `proxy_pass` declarations. Assume all requests go to http://localhost:8080:
+
+| location | proxy_pass                 | Request             | Received by upstream |
+| :------- | :------------------------- | :------------------ | :------------------- |
+| /webapp/ | http://localhost:8080/api/ | /webapp/foo?bar=baz | /api/foo?bar=baz ✅   |
+| /webapp/ | http://localhost:8080/api  | /webapp/foo?bar=baz | /apifoo?bar=baz      |
+| /webapp  | http://localhost:8080/api/ | /webapp/foo?bar=baz | /api//foo?bar=baz    |
+| /webapp  | http://localhost:8080/api  | /webapp/foo?bar=baz | /api/foo?bar=baz     |
+| /webapp  | http://localhost:8080/api  | /webappfoo?bar=baz  | /apifoo?bar=baz      |
+
+In other words: **You usually always want a trailing slash**, never want to mix with and without trailing slash, and only want without trailing slash when you want to concatenate a certain path component together (which I guess is quite rarely the case).
 
 ## 上游无法获取真实的访问来源信息
 
@@ -137,3 +152,10 @@ http {
 ![proxy_set_header 失效](/img/nginx/problem_of_proxy_set_header.png)
 
 解决办法是在 `location` 中重新配置这四个请求头。
+
+# 参考
+
+[How nginx processes a request ?](http://nginx.org/en/docs/http/request_processing.html)
+
+《[万字多图，搞懂 Nginx 高性能网络工作原理！](https://mp.weixin.qq.com/s/xb66aZKXDsY1XCYodUFuzw)》
+
