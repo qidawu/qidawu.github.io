@@ -275,3 +275,8 @@ https://docs.oracle.com/javase/tutorial/collections/streams/index.html
 《Java 8 函数式编程》
 
 《Java 8 实战》
+
+《[万字长文详解 Java lambda 表达式 | 阿里技术](https://mp.weixin.qq.com/s/ud5TckFLXWrVpilmobynhQ)》
+
+《[Java8 Lambda 实现源码解析 | 阿里技术](https://mp.weixin.qq.com/s/d8BQ1-lEbeLuhZbn-t68yQ)》
+

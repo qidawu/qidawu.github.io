@@ -225,3 +225,4 @@ https://www.baeldung.com/category/java/tag/java-streams/
 
 《[用了 Stream API 之后，代码反而越写越丑？——写出具有可维护性的 Stream API 代码](https://mp.weixin.qq.com/s/a_QYX5z1AJhITYaXD-Gzag)》
 
+《[IntelliJ IDEA 如何优雅的调试 Java Stream 操作？](https://www.didispace.com/idea-tips/debug/debug-stream.html#%E8%B0%83%E8%AF%95stream%E6%93%8D%E4%BD%9C)》

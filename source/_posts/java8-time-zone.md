@@ -333,6 +333,10 @@ Timestamp.valueOf(localDateTime);
 
 ![after_convert_time_zone+8](/img/java/time/after_convert_time_zone+8.png)
 
+参考：
+
+[不指定时区会踩坑：MySQL JDBC 8.0.22 驱动升级遇到的 Bug 分析](https://mp.weixin.qq.com/s/tYQ6fXH4x74pLwkbKtnDjQ)
+
 # 参考
 
 时区数据库：

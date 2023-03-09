@@ -554,8 +554,10 @@ public ScheduledThreadPoolExecutor(int corePoolSize) {
 
 https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ThreadPoolExecutor.html
 
-《[Java 线程池实现原理，及其在美团业务中的实践](https://tech.meituan.com/2020/04/02/java-pooling-pratice-in-meituan.html)》
-
 《[如何合理地估算线程池大小？](https://blog.csdn.net/yangguosb/article/details/81327785)》
 
 《[线程池执行的任务抛出异常会怎样？](https://blog.csdn.net/qq_26824159/article/details/126767372)》
+
+《[Java 线程池实现原理，及其在美团业务中的实践](https://tech.meituan.com/2020/04/02/java-pooling-pratice-in-meituan.html)》
+
+《[美团动态线程池实践思路及代码](https://mp.weixin.qq.com/s/h-sUbl9jCRTGipVcfHjgBw)》

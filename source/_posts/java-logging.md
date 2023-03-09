@@ -396,3 +396,5 @@ https://github.com/logstash/logstash-logback-encoder
 《[Java 中打印日志的正确姿势](https://mp.weixin.qq.com/s/v3aF1zVwsP5g8KcuJFP4fQ)》
 
 《[细说 Java 主流日志工具库](https://mp.weixin.qq.com/s/68QncZycXgWPWgYg71wZGQ)》
+
+《[SpringBoot + MDC 实现全链路调用日志跟踪](https://juejin.cn/post/6844904101483020295)》

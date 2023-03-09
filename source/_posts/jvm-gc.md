@@ -40,6 +40,14 @@ Java 9 [JEP 158: Unified JVM Logging](https://openjdk.org/jeps/158)
 
 Java 9 [JEP 271: Unified GC Logging](https://openjdk.org/jeps/271)
 
+
+
+在线 GC 日志分析工具：https://gceasy.io/
+
+```
+-XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintHeapAtGC -Xloggc:E:/logs/gc-default.log
+```
+
 # 参考
 
 [HotSpot Virtual Machine Garbage Collection Tuning Guide - Java 17](https://docs.oracle.com/en/java/javase/17/gctuning/index.html)
