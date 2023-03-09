@@ -138,13 +138,18 @@ public void go(HttpEntity<String> httpEntity) {
 
 [`@RequestParam`](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestParam.html) 用于标注某个方法参数与某个 *HTTP 请求参数（HTTP request parameter）* 的绑定关系。
 
-使用时需要注意 `required` 这个属性：
+> Annotation which indicates that a method parameter should be bound to a web request parameter.
+>
+> Supported for annotated handler methods in Spring MVC and Spring WebFlux as follows:
+>
+> - In Spring MVC, "request parameters" map to **query parameters, form data, and parts in multipart requests**. This is because the [Servlet API](https://docs.oracle.com/cd/E17802_01/products/products/servlet/2.5/docs/servlet-2_5-mr2/overview-tree.html) combines query parameters and form data into [a single map called "parameters"](https://docs.oracle.com/cd/E17802_01/products/products/servlet/2.5/docs/servlet-2_5-mr2/javax/servlet/ServletRequest.html#getParameterMap()), and that includes automatic parsing of the request body.
+> - In Spring WebFlux, "request parameters" map to query parameters only. To work with all 3, query, form data, and multipart data, you can use data binding to a command object annotated with [`ModelAttribute`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/ModelAttribute.html).
+>
+> If the method parameter type is [`Map`](https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true) and a request parameter name is specified, then the request parameter value is converted to a [`Map`](https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true) assuming an appropriate conversion strategy is available.
+>
+> If the method parameter is [`Map`](https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true) or [`MultiValueMap`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/util/MultiValueMap.html) and a parameter name is not specified, then the map parameter is populated with all request parameter names and values.
 
-* 方法参数不写 `@RequestParam`，默认的 `required` 为 `false`
-* 方法参数写了 `@RequestParam`，默认的 `required` 为 `true`
-* 方法参数同时写了 `@RequestParam` + `defaultValue`，默认的 `required` 为 `false`
-
-例子：
+例子 1：`POST` with *form data*
 
 ```
 POST /test HTTP/1.1
@@ -154,10 +159,14 @@ Content-Type: application/x-www-form-urlencoded
 data=123,234
 ```
 
+例子 2：`GET` with *query string parameters*
+
 ```
 GET /test?data=123,234 HTTP/1.1
 Host: localhost:8080
 ```
+
+代码：
 
 ```java
 @RequestMapping("/test")
@@ -184,14 +193,22 @@ public void test(@RequestParam("data") Map<String, String> data) {
 }
 ```
 
+使用时需要注意 `required` 这个属性：
+
+* 方法参数不写 `@RequestParam`，默认的 `required` 为 `false`
+* 方法参数写了 `@RequestParam`，默认的 `required` 为 `true`
+* 方法参数同时写了 `@RequestParam` + `defaultValue`，默认的 `required` 为 `false`
+
 ### @RequestBody
 
-[`@RequestBody`](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestBody.html) 用于标注某个方法参数与某个 *HTTP 请求体（HTTP request body）* 的绑定关系。 `@RequestBody` 会调用合适的 [message converters](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/http/converter/HttpMessageConverter.html) 将 *HTTP 请求体（HTTP request body）* 写入指定对象，默认的 `HttpMessageConverter 如下：
+[`@RequestBody`](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestBody.html) 用于标注某个方法参数与某个 *HTTP 请求体（HTTP request body）* 的绑定关系。 `@RequestBody` 会调用合适的 [message converters](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/http/converter/HttpMessageConverter.html) 将 *HTTP 请求体（HTTP request body）* 写入指定对象，默认的 `HttpMessageConverter` 如下：
 
-* `ByteArrayHttpMessageConverter` converts byte arrays.
-* `StringHttpMessageConverter` converts strings.
-* `FormHttpMessageConverter` converts form data to/from a MultiValueMap<String, String>.
-* `SourceHttpMessageConverter` converts to/from a javax.xml.transform.Source.
+| `content-type`                      | Description                                                  |
+| ----------------------------------- | ------------------------------------------------------------ |
+|                                     | `ByteArrayHttpMessageConverter` converts byte arrays.        |
+|                                     | `StringHttpMessageConverter` converts strings.               |
+| `application/x-www-form-urlencoded` | `FormHttpMessageConverter` converts form data to/from a `MultiValueMap<String, String>`. |
+| `application/json`                  | `MappingJackson2HttpMessageConverter` converts JSON.         |
 
 例子：
 

@@ -26,6 +26,14 @@ Spring Bean Factory 负责管理 bean 的生命周期，可以分为三个阶段
 
 * 调用该 Bean 实现的各种生命周期回调接口。
 
+## ApplicationContextInitializer
+
+[ApplicationContextInitializer](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/ApplicationContextInitializer.html)
+
+> Callback interface for initializing a Spring [`ConfigurableApplicationContext`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/ConfigurableApplicationContext.html) prior to being [refreshed](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/ConfigurableApplicationContext.html#refresh--).
+>
+> Typically used within web applications that require some programmatic initialization of the application context. For example, registering property sources or activating profiles against the [context's environment](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/ConfigurableApplicationContext.html#getEnvironment--).
+
 ## 初始化和销毁方法
 
 Spring 框架提供了以下几种方式指定 bean 生命周期的初始化和销毁回调方法：
@@ -154,3 +162,7 @@ public class XxxHandlerFactoryBean implements ApplicationContextAware {
 # 参考
 
 [org.springframework.beans.factory.Aware](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/beans/factory/Aware.html)
+
+[The IoC Container - Bean Scopes](https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-factory-scopes)
+
+[](https://segmentfault.com/a/1190000023033670)
