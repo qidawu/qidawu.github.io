@@ -213,10 +213,15 @@ SSH 相关文件和配置：
 | ---------------------- | ------------------------------------------------------------ |
 | ~/.ssh/id_rsa.pub      | 公钥（Public Key）                                           |
 | ~/.ssh/id_rsa          | 私钥（Private Key）                                          |
-| ~/.ssh/known_hosts     | 位于客户端的公钥列表文件，首次与目标主机建立 SSH 连接时，需要添加对方的公钥到这个文件以便后续通信 |
+| ~/.ssh/known_hosts     | 位于客户端的公钥列表文件，首次与目标主机建立 SSH 连接时，需要添加对方的公钥到这个文件以便后续通信<br/>[《关于 Linux 中 known_hosts 文件的必知必会》](https://mp.weixin.qq.com/s/SHWRgcJ3bd1s3OKr2KzIgg) |
 | ~/.ssh/authorized_keys | 位于服务端的公钥列表文件，列出了所有被允许登录进来的可信公钥信息（Lists the public keys that are permitted for logging in） |
-| ~/.ssh/config          | 用户配置文件，可以通过 `man ssh_config` 命令查看帮助。       |
-| /etc/ssh/ssh_config    | 系统配置文件                                                 |
+| ~/.ssh/config          | 客户端用户配置文件，可以通过 `man ssh_config` 命令查看帮助。 |
+| /etc/ssh/ssh_config    | 客户端系统配置文件                                           |
+| /etc/ssh/sshd_config   | 服务端配置文件                                               |
+
+### ssh banner
+
+https://en.wikipedia.org/wiki/ASCII_art
 
 # OpenSSL
 
@@ -312,11 +317,17 @@ https://en.wikipedia.org/wiki/Telnet
 
 https://en.wikipedia.org/wiki/Secure_Shell
 
+
+
 [在 Linux 上保护 SSH 服务器连接的 8 种方法 | 良许 Linux](https://mp.weixin.qq.com/s/wfyH4wrMrwp-zM4dOUdMSw)
 
 《[5 Unix / Linux ssh-add Command Examples to Add SSH Key to Agent](http://linux.101hacks.com/unix/ssh-add/)》
 
 《[ssh keygen 中生成的 randomart image 是什么](https://www.jianshu.com/p/c6a7ffe01ac3)》
+
+《[SSH Not Working In MacOS Ventura: How To Fix](https://www.droidwin.com/ssh-not-working-in-macos-ventura-fix/)》
+
+
 
 https://wizardzines.com/comics/ssh/
 ![SSH](https://wizardzines.com/comics/ssh/ssh.png)
