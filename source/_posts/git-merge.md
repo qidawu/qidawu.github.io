@@ -3,6 +3,7 @@ title: Git 实战系列（五）git merge 分支合并策略
 date: 2015-08-17 22:48:24
 updated:
 tags: Git
+typora-root-url: ..
 ---
 
 # 快进式合并
@@ -16,7 +17,7 @@ $ git merge feature-test
 
 什么是“快进式合并（fast-forward merge）”？如果顺着一个分支走下去可以直接到达另一个分支的话，那么 Git 在合并两者时，只会简单地把指针右移，因为这种单线的历史分支不存在任何需要解决的分歧，所以这种合并过程可以称为快进（Fast forward）。
 
-![fast-forward merge](/img/git/fast-forward merge.png)
+![fast-forward merge](/img/git/fast-forward-merge.png)
 
 # 非快进式合并
 
@@ -29,7 +30,7 @@ $ git merge --no-ff feature-test
 
 其祖先图谱如下：
 
-![no-fast-forward merge](/img/git/no-fast-forward merge.png)
+![no-fast-forward merge](/img/git/no-fast-forward-merge.png)
 
 可见，合并后保留有分支历史痕迹（每一次提交），能看得出来曾经做过分支合并，版本演进比较清晰。
 

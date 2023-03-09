@@ -12,7 +12,6 @@ tags: Git
 
 早年的时候，为了获取优质的项目和资源，注册了 GitHub 的账号，但仅仅简单用了 Star 和 Clone 功能。后来开始想在 GitHub 上面托管一些资源，陆续做了一些功课：
 
-* LinuxCast Git 视频教程，手把手指导，可惜教程不再维护了。
 * [Git 官方文档](http://git-scm.com/book/)，第一手官方材料，由浅入深，涉及 Git 各方面的内容，建议有实操经验的同学深入阅读。
 * [GitHub 帮助文档](https://help.github.com)，偏向实操，建议初学者阅读。而且里面涉及到一些 GitHub 特性（图形化操作、Social、Pages）可以与 Git 互补。
 * 廖雪峰的博客
@@ -57,3 +56,9 @@ tags: Git
 学习的轨迹应当是螺旋向上，难易度逐轮递增。每一轮的学习主题还应有所侧重，意图一口一个大胖子的行为会噎死自己 :)
 
 如今 Git 对我来说不止是门技术，更是一种生活方式。除了工作中每天都要用到，通过它还“连接”了我与开源世界。
+
+# 参考
+
+https://learngitbranching.js.org/
+
+《[告别 SVN，Git 成 “独苗”：GitHub 在 13 年后宣布淘汰 Subversion 支持](https://www.infoq.cn/article/9W1zPkwUqT1Zyx0QGt3J)》

@@ -54,12 +54,12 @@ $ git lg
 
 格式化输出，代码着色，而且附上了作者、提交时间和祖先图谱。
 
-## 筛选提交历史
-
-当某个特性分支开发完成之后，我们想要筛选并看清将要合并到主干的是哪些代码，从而理解它们到底做了些什么，是否真的要并入。可以用 `--not` 选项屏蔽 `master` 分支，这样就会剔除重复的提交历史，看起来更清晰：
+## 求差集
 
 ```bash
-$ git log feature-cache --not origin/master
+$ git log HEAD --not origin/master
+$ git log HEAD ^origin/master
+$ git log origin/master..HEAD
 ```
 
 也可用于筛选出准备 `push` 到远程仓库的提交，例如：
