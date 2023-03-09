@@ -350,7 +350,9 @@ command! JsonFormat :execute '%!python -m json.tool'
 
 https://blog.csdn.net/lym152898/article/details/52171494
 
-# GVim
+# 各种版本
+
+## GVim
 
 [GVim](http://www.vim.org) 是 Windows 版的 Vim，因为有了标准的 Windows 风格的图形界面，所以叫 G(Graphical)Vim。
 
@@ -367,6 +369,10 @@ GVim 的多标签切换：
 | `:tablast`  | 移动到最后一个标签页  |
 
 字符集配置参考 [这里](http://sunchuanzhen.blog.51cto.com/3076506/670193)，其它小技巧参考 [这里](http://www.cnblogs.com/alphaqiu/archive/2012/04/12/2444147.html) 。
+
+## MacVim
+
+https://github.com/macvim-dev/macvim
 
 # 参考
 
@@ -390,11 +396,11 @@ https://missing-semester-cn.github.io/
 
 《[简明 Vim 练级攻略](http://coolshell.cn/articles/5426.html)》
 
-《[如何在 Vim 中得到你最喜爱的 IDE 特性](http://coolshell.cn/articles/894.html)》
-
 《[Vim文本替换命令](https://www.cnblogs.com/wind-wang/p/5768000.html)》
 
-《[5 分钟学会 Vim 分屏操作方方面面](https://mp.weixin.qq.com/s?__biz=MzU3NTgyODQ1Nw==&mid=2247499367&idx=2&sn=bfd12789b31b0a6c7810769ec24ba842&chksm=fd1f86e1ca680ff7c7d212139b022ebeefa77f848513fe913359eee5297e8825b0c98ad27e61)》
+[12 个关于 vim 的编辑技巧](https://mp.weixin.qq.com/s/9hJLmv_J7UpSi_mYeGrvrQ)
+
+《[Vim 分屏基本操作详解](https://www.linuxmi.com/vim-fenping.html)》
 
 VIM 插件：https://vimawesome.com/plugin/json-vim
 
