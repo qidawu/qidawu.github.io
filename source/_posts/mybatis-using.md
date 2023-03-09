@@ -6,9 +6,30 @@ tags: [Java, JDBC]
 typora-root-url: ..
 ---
 
-# MyBatis Core
-
 ![](/img/java/mybatis/mybatis_core.png)
+
+# Configuration XML
+
+## TypeHandler
+
+https://mybatis.org/mybatis-3/configuration.html#typeHandlers
+
+> Whenever MyBatis sets a parameter on a `PreparedStatement` or retrieves a value from a `ResultSet`, a `TypeHandler` is used to retrieve the value in a means appropriate to the Java type.
+
+`org.apache.ibatis.type.TypeHandler` 接口实现类：
+
+![TypeHandler](/img/java/mybatis/mybatis_api_TypeHandler.png)
+
+[TypeHandler](https://mybatis.org/mybatis-3/configuration.html#typeHandlers) 可用于以下场景：
+
+* 枚举字段处理
+* 敏感字段脱敏、加解密处理
+* [Binary-to-text encoding](https://en.wikipedia.org/wiki/Binary-to-text_encoding)
+* ...
+
+# Mapper XML Files
+
+https://mybatis.org/mybatis-3/sqlmap-xml.html
 
 ## 查询
 
@@ -264,21 +285,6 @@ public class StudentQO extends StudentPO {
 </resultMap>
 ```
 
-#### TypeHandler
-
-> Whenever MyBatis sets a parameter on a `PreparedStatement` or retrieves a value from a `ResultSet`, a `TypeHandler` is used to retrieve the value in a means appropriate to the Java type.
-
-[TypeHandler](https://mybatis.org/mybatis-3/configuration.html#typeHandlers) 可用于以下场景：
-
-* 枚举字段处理
-* 敏感字段脱敏、加解密处理
-* [Binary-to-text encoding](https://en.wikipedia.org/wiki/Binary-to-text_encoding)
-* ...
-
-实现 `org.apache.ibatis.type.TypeHandler` 接口：
-
-![TypeHandler](/img/java/mybatis/mybatis_api_TypeHandler.png)
-
 ### 自动结果映射
 
 https://mybatis.org/mybatis-3/sqlmap-xml.html#Auto-mapping
@@ -379,6 +385,14 @@ The `selectKey` element is described as follows:
 @Insert("insert into Author(id, username, password, email,bio, favourite_section) values (#{id}, #{username}, #{password}, #{email}, #{bio}, #{favouriteSection,jdbcType=VARCHAR})")
 @SelectKey(keyProperty = "id", resultType = Long.class, before = false, statement = "SELECT LAST_INSERT_ID()")
 ```
+
+# Dynamic SQL
+
+https://mybatis.org/mybatis-3/dynamic-sql.html
+
+## script
+
+> For using dynamic SQL in annotated mapper class, `script` element can be used.
 
 # 与 Spring 整合
 
