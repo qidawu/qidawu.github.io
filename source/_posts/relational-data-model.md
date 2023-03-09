@@ -51,3 +51,5 @@ typora-root-url: ..
 [关系代数（维基百科）](https://zh.wikipedia.org/wiki/%E5%85%B3%E7%B3%BB%E4%BB%A3%E6%95%B0_(%E6%95%B0%E6%8D%AE%E5%BA%93))
 
 [关系代数（百度百度）](https://baike.baidu.com/item/%E5%85%B3%E7%B3%BB%E4%BB%A3%E6%95%B0)
+
+[SQL 能完成哪方面的计算？一文详解关系代数和 SQL 语法 | 阿里技术](https://mp.weixin.qq.com/s/D8Rv-E_gSYFhnscVMK1WGg)
