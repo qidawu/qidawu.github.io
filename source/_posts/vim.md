@@ -374,6 +374,12 @@ GVim 的多标签切换：
 
 https://github.com/macvim-dev/macvim
 
+# 其它
+
+## Editing a .jar with `vim`
+
+一般来说，jar 包可以通用 vim 直接编辑。但要注意的是，Spring Boot 插件打包的可执行的 jar 无法使用 vim 浏览并编辑内部文件。
+
 # 参考
 
 https://en.wikipedia.org/wiki/Vim_(text_editor)
@@ -401,6 +407,8 @@ https://missing-semester-cn.github.io/
 [12 个关于 vim 的编辑技巧](https://mp.weixin.qq.com/s/9hJLmv_J7UpSi_mYeGrvrQ)
 
 《[Vim 分屏基本操作详解](https://www.linuxmi.com/vim-fenping.html)》
+
+《[Vim 最全图解](https://mp.weixin.qq.com/s/Wf90QDh6H3EZYJjSQToChg)》
 
 VIM 插件：https://vimawesome.com/plugin/json-vim
 

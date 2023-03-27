@@ -284,6 +284,14 @@ $ java -jar -Dspring.profiles.active=prod target/myapplication-0.0.1-SNAPSHOT.ja
 
 通过在 jar 中添加启动脚本，为 *nix 系统制作一个完全可执行的 jar。常用于生产环境。
 
+参考：[Optional parameter `executable` of spring-boot:repackage](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-repackage-parameters-details-executable)
+
+> Make a fully executable jar for *nix machines by prepending a **launch script** to the jar.
+
+> ⚠️ Caution
+>
+> 该方式打包的可执行的 jar **无法使用 VIM 浏览并编辑内部文件**。
+
 参考：[14.2 Installing Spring Boot Applications](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing)
 
 > In addition to running Spring Boot applications by using `java -jar`, it is also possible to make **fully executable** applications for Unix systems. A fully executable jar can be executed like any other executable binary or it can be [registered with `init.d` or `systemd`](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#deployment.installing.nix-services). This helps when installing and managing Spring Boot applications in common production environments.
@@ -305,10 +313,6 @@ $ java -jar -Dspring.profiles.active=prod target/myapplication-0.0.1-SNAPSHOT.ja
 > ```
 >
 > You can then run your application by typing `./my-application.jar` (where `my-application` is the name of your artifact). The directory containing the jar is used as your application’s working directory.
-
-参考：[Optional parameter `executable` of spring-boot:repackage](https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-repackage-parameters-details-executable)
-
-> Make a fully executable jar for *nix machines by prepending a **launch script** to the jar.
 
 #### Unix/Linux Services
 
