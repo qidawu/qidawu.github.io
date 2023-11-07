@@ -354,6 +354,10 @@ Timestamp.valueOf(localDateTime);
   >
   > 现在，具体的维护工作由互联网分配号码管理局（Internet Assigned Numbers Authority， IANA）负责。Paul Eggert 是时区数据库的项目负责人，该职位被称为 TZ 协调员。
 
+* [Get Time Zone info of the World Countries](http://www.world-timedate.com/timezone/timezone_info_by_country.php)
+
+* [逐渐成为历史的 “新疆时间” —— Asia/Urumqi (UTC+06:00)](https://zhuanlan.zhihu.com/p/352366074)
+
 UTC：
 
 * https://en.wikipedia.org/wiki/Coordinated_Universal_Time

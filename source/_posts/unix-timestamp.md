@@ -106,9 +106,16 @@ SELECT UNIX_TIMESTAMP()
 Y2K problem
 
 - https://en.wikipedia.org/wiki/Year_2000_problem
-- https://en.wikipedia.org/wiki/Year_2038_problem
 - [Y2K 千年虫（计算机 2000 年问题）](https://baike.baidu.com/item/%E5%8D%83%E5%B9%B4%E8%99%AB/2954)
 - [Y2K 千年虫——一个 Bug 让人类科技倒退几十年？|良许 Linux](https://mp.weixin.qq.com/s/PayHgx8ifLsnJPuqxJr_GA)
+
+Y2K38 problem
+
+- https://en.wikipedia.org/wiki/Year_2038_problem
+- [Unix Epoch Time（Unix 纪元时间）的 Y2K38 问题](https://mp.weixin.qq.com/s/RoSRwTLsZApvQjU7Fpy0vw)
+
+Y2K22 problem
+
 - [微软也栽了，“千年虫”啥时候是个头 | InfoQ](https://mp.weixin.qq.com/s/6YHSZavAv4GC-cpDja4YjQ)
 - [微软开年就出大 bug——Y2K22 bug，大量程序员连夜加班：年都没跨好](https://mp.weixin.qq.com/s/QvWnzZ5-thbDFXyYBs1iQA)
 

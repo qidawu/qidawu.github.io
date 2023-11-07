@@ -170,6 +170,8 @@ public class XxxHandlerFactoryBean {
 
 # 循环依赖问题
 
+《[Spring 循环依赖那些事儿（含 Spring 详细流程图）| 阿里技术](https://mp.weixin.qq.com/s/cqkZEvmmh7jnNt2K5r_lXg)》
+
 # 参考
 
 https://en.wikipedia.org/wiki/Dependency_injection
@@ -180,6 +182,11 @@ https://en.wikipedia.org/wiki/Dependency_injection
 
 《[IoC模式（依赖、依赖倒置、依赖注入、控制反转）](https://www.cnblogs.com/fuchongjundream/p/3873073.html)》
 
+《[Spring 探索丨既生 `@Resource`，何生 `@Autowired`？| 阿里技术](https://mp.weixin.qq.com/s/apRe5krnRROxfKVHCHXnZg)》
+
 《[`@Autowired`, `@Resource`, `@Inject` 这几个关于Spring 依赖注入的问题你清楚吗？](https://juejin.cn/post/6844904056230690824)》
 
 《[注解 `@Autowired` 是如何实现的？](https://blog.csdn.net/topdeveloperr/article/details/87971446)》
+
+《[使用 `@Autowired` 为什么会被 IDEA 警告，应该怎么修改最佳？](https://mp.weixin.qq.com/s/QIloPpE-CbZrxv1p5gi2hg)》
+

@@ -117,7 +117,7 @@ https://docs.oracle.com/javase/8/docs/api/java/time/chrono/Era.html
 >
 > 这里提供了一个常见的[纪年对照表](https://zh.wikipedia.org/wiki/%E6%B0%91%E5%9C%8B%E7%B4%80%E5%B9%B4#%E7%B4%80%E5%B9%B4%E5%B0%8D%E7%85%A7)，可供参考。 
 
-> [年号](https://zh.wikipedia.org/wiki/%E5%B9%B4%E5%8F%B7)是中国历史君主时代帝王纪年所立的名号，缘起于西汉汉武帝时期，后来朝鲜新罗在6世纪、日本在7世纪后期、越南在10世纪都因为中国的影响，开始使用年号；台湾岛的郑氏王朝与台湾民主国、朝鲜半岛大韩帝国与高丽、蒙古国建国初年受到中国影响，都还使用过年号，目前唯一使用年号的是仍保持君主制的日本。
+> [年号](https://zh.wikipedia.org/wiki/%E5%B9%B4%E5%8F%B7)是中国历史君主时代帝王纪年所立的名号，缘起于西汉汉武帝时期，后来朝鲜新罗在6世纪、日本在7世纪后期、越南在10世纪都因为中国的影响，开始使用年号；台湾岛的郑氏王朝与台湾民主国、朝鲜半岛大韩帝国与高丽、蒙古国建国初年受到中国影响，都还使用过年号，目前唯一使用年号的是仍保持君主制的日本（[日本年号](https://zh.wikipedia.org/wiki/%E6%97%A5%E6%9C%AC%E5%B9%B4%E8%99%9F%E5%88%97%E8%A1%A8)）。
 >
 > 值得一提，[中华民国](https://zh.wikipedia.org/wiki/中華民國)所用的[民国纪年](https://zh.wikipedia.org/wiki/民國紀年)、以及[朝鲜民主主义人民共和国](https://zh.wikipedia.org/wiki/朝鮮民主主義人民共和國)使用的[主体纪年](https://zh.wikipedia.org/wiki/主体纪年)，常被误认为是年号，实际上仅是单纯的纪年[历法](https://zh.wikipedia.org/wiki/曆法)。
 

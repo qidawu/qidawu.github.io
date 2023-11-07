@@ -434,3 +434,5 @@ public class GlobalExceptionHandler {
 《[Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)》
 
 《[Enabling Cross Origin Requests for a RESTful Web Service](https://spring.io/guides/gs/rest-service-cors/)》
+
+《[告别混乱代码: Spring 后端接口规范](https://mp.weixin.qq.com/s/ck9b8aO1uQI77H5z5J9IJg)》

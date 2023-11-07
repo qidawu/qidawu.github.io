@@ -393,8 +393,10 @@ try (MDC.MDCCloseable mdc = MDCUtils.addTraceId(...)) {
 
 https://github.com/logstash/logstash-logback-encoder
 
-《[Java 中打印日志的正确姿势](https://mp.weixin.qq.com/s/v3aF1zVwsP5g8KcuJFP4fQ)》
-
 《[细说 Java 主流日志工具库](https://mp.weixin.qq.com/s/68QncZycXgWPWgYg71wZGQ)》
 
 《[SpringBoot + MDC 实现全链路调用日志跟踪](https://juejin.cn/post/6844904101483020295)》
+
+《[Java 中打印日志的正确姿势](https://mp.weixin.qq.com/s/v3aF1zVwsP5g8KcuJFP4fQ)》
+
+《[实战总结 | 系统日志规范及最佳实践 | 阿里技术](https://mp.weixin.qq.com/s/V-TIT1Cw5fH8xSYAEMyukQ)》

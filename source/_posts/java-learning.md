@@ -277,6 +277,8 @@ https://jakarta.ee/specifications/platform/9/jakarta-platform-spec-9.html#a84
 
 
 
+[从 Java 8 升级到 Java 17 踩坑全过程](https://mp.weixin.qq.com/s/d0U_d7D9RzEfn1u5STBNHg)
+
 [从 JDK8 飞升到 JDK17，再到未来的 JDK21 | 阿里技术](https://mp.weixin.qq.com/s/YPJ-sfx04-fOGt4WuPDwIQ)
 
 [升级指南之 JDK 11+ 新特性和阿里巴巴 AJDK | 阿里技术](https://mp.weixin.qq.com/s/4YtXx1JVsCdGoExpF8Se3Q)
@@ -284,3 +286,5 @@ https://jakarta.ee/specifications/platform/9/jakarta-platform-spec-9.html#a84
 [从 JDK 9 到 19，我们帮您提炼了和云原生场景有关的能力列表 | 阿里技术](https://xie.infoq.cn/article/1ca130cadfa18a513c6e04fde)
 
 [从 JDK 9 到 19，认识一个新的 Java 形态（内存篇）| 阿里技术](https://mp.weixin.qq.com/s/cF6JgJIOCF6Jxg520rRbLA)
+
+[从 JDK 9 开始，一些关键特性 | 阿里技术](https://mp.weixin.qq.com/s/Ul8-sidDZNtBuZJqhMxbGg)

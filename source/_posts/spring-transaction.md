@@ -274,3 +274,5 @@ https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframe
 https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/annotation/Propagation.html
 
 《[@Transactional 注解失效的 3 种原因及解决方案](https://mp.weixin.qq.com/s/0x0PnH-HNeqN6Ls56c1M9A)》
+
+《[如何将 @Transactional 事务注解运用到炉火纯青？](https://mp.weixin.qq.com/s/OKryWWDBo-MV26uKhIYMxA)》

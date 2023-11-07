@@ -42,6 +42,9 @@ Commons Lang 提供了以下 package：
 - `org.apache.commons.lang3.text.translate`
 - `org.apache.commons.lang3.time`
 - `org.apache.commons.lang3.tuple`
+  - `Pair`、`MutablePair`、`ImmutablePair`
+  - `Triple`、`MutableTriple`、`ImmutableTriple`
+
 
 下面重点来看下最常用的几个工具：
 

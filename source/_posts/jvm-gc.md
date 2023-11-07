@@ -63,4 +63,4 @@ https://www.baeldung.com/java-verbose-gc
 
 《深入理解 Java 虚拟机》
 
-[从 Java 8 升级到 Java 17 踩坑全过程](https://mp.weixin.qq.com/s/d0U_d7D9RzEfn1u5STBNHg)
+[CMS 和 G1 改用三色标记法，可达性分析到底做错了什么？](https://mp.weixin.qq.com/s/LfGrLo0fVrR85qOXAZxnvw)
