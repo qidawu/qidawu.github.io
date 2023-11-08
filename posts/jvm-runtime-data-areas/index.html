@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="背景最近为了做春节大型活动，研究了下性能压测和 JVM 调优，先来看一张 JVM 监控图（硬件：4 核 8G）。  6 小时的吞吐量为：(21600s - Young GC 35s + Old GC 0s) &#x2F; 21600s &#x3D; 99.8%，总吞吐量还是不错的（吞吐量就是 CPU 用于运行用户代码的时间与 CPU 总消耗时间的比值，即 吞吐量 &#x3D; 运行用户代码时间 &#x2F; (运行用户代码时间 + GC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 虚拟机系列（二）运行时数据区总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/jvm-runtime-data-areas/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="背景最近为了做春节大型活动，研究了下性能压测和 JVM 调优，先来看一张 JVM 监控图（硬件：4 核 8G）。  6 小时的吞吐量为：(21600s - Young GC 35s + Old GC 0s) &#x2F; 21600s &#x3D; 99.8%，总吞吐量还是不错的（吞吐量就是 CPU 用于运行用户代码的时间与 CPU 总消耗时间的比值，即 吞吐量 &#x3D; 运行用户代码时间 &#x2F; (运行用户代码时间 + GC">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/java/jvm/jvm_monitor.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/jvm/runtime_data_areas.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/jvm/SOF.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/jvm/OOM.png">
+<meta property="article:published_time" content="2019-09-01T03:20:46.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.922Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="JVM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/java/jvm/jvm_monitor.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/jvm-runtime-data-areas/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/jvm-runtime-data-areas/","path":"posts/jvm-runtime-data-areas/","title":"Java 虚拟机系列（二）运行时数据区总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Java 虚拟机系列（二）运行时数据区总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA"><span class="nav-number">2.</span> <span class="nav-text">运行时数据区</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#java-Command"><span class="nav-number">3.</span> <span class="nav-text">java Command</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#JVM-Stack"><span class="nav-number">3.1.</span> <span class="nav-text">JVM Stack</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Heap"><span class="nav-number">3.2.</span> <span class="nav-text">Heap</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Xms%E3%80%81-Xmx"><span class="nav-number">3.2.1.</span> <span class="nav-text">-Xms、-Xmx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Xmn"><span class="nav-number">3.2.2.</span> <span class="nav-text">-Xmn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#XX-NewRatio"><span class="nav-number">3.2.3.</span> <span class="nav-text">-XX:NewRatio</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#XX-SurvivorRatio"><span class="nav-number">3.2.4.</span> <span class="nav-text"> -XX:SurvivorRatio</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Method-Area"><span class="nav-number">3.3.</span> <span class="nav-text">Method Area</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PermGen"><span class="nav-number">3.3.1.</span> <span class="nav-text">PermGen</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Metaspace"><span class="nav-number">3.3.2.</span> <span class="nav-text">Metaspace</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Direct-Memory"><span class="nav-number">3.4.</span> <span class="nav-text">Direct Memory</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8"><span class="nav-number">4.</span> <span class="nav-text">异常</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#java-lang-StackOverflowError"><span class="nav-number">4.1.</span> <span class="nav-text">java.lang.StackOverflowError</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#java-lang-OutOfMemoryError-Java-heap-space"><span class="nav-number">4.2.</span> <span class="nav-text">java.lang.OutOfMemoryError: Java heap space</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#java-lang-OutOfMemoryError-PermGen-space"><span class="nav-number">4.3.</span> <span class="nav-text">java.lang.OutOfMemoryError: PermGen space</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/jvm-runtime-data-areas/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Java 虚拟机系列（二）运行时数据区总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java 虚拟机系列（二）运行时数据区总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-09-01 11:20:46" itemprop="dateCreated datePublished" datetime="2019-09-01T11:20:46+08:00">2019-09-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>最近为了做春节大型活动，研究了下性能压测和 JVM 调优，先来看一张 JVM 监控图（硬件：4 核 8G）。</p>
+<p><img src="/img/java/jvm/jvm_monitor.png" alt="JVM 监控"></p>
+<p>6 小时的吞吐量为：(21600s - Young GC 35s + Old GC 0s) / 21600s = 99.8%，总吞吐量还是不错的（吞吐量就是 CPU 用于运行用户代码的时间与 CPU 总消耗时间的比值，即 <code>吞吐量 = 运行用户代码时间 / (运行用户代码时间 + GC 时间)</code>。如果虚拟机总共运行了 100 分钟，其中 GC 总耗时 1 分钟，那么吞吐量就是 99%。）。同时单次 Young GC 的平均耗时仅为 35s / 639 = 55 ms，停顿时间较短。</p>
+<p>如果还需要进一步优化，思路如下：</p>
+<ul>
+<li>合理调整 Old Gen 与 Young Gen 大小比例，以减少 Young GC 次数，但单次 GC 耗时可能会相应延长，具体需测试。</li>
+<li>更换垃圾收集器，并对垃圾收集器参数进行调优。</li>
+</ul>
+<p>下面介绍一些基础知识。</p>
+<h1 id="运行时数据区"><a href="#运行时数据区" class="headerlink" title="运行时数据区"></a>运行时数据区</h1><p>手绘的运行时数据区如下：</p>
+<p><img src="/img/java/jvm/runtime_data_areas.png" alt="jvm"></p>
+<p>JVM 定义了在程序执行期间使用的各种运行时数据区：</p>
+<ul>
+<li>其中一些数据区是在 JVM 启动时创建、仅在 JVM 退出时才被销毁。</li>
+<li>另外一些数据区是随每个线程创建及销毁。</li>
+</ul>
+<h1 id="java-Command"><a href="#java-Command" class="headerlink" title="java Command"></a><code>java</code> Command</h1><p><strong>java</strong> [<em>options</em>] <em>classname</em> [<em>args</em>]</p>
+<p><strong>java</strong> [<em>options</em>] <strong>-jar</strong> <em>filename</em> [<em>args</em>]</p>
+<ul>
+<li><em>options</em>: Command-line options separated by spaces.</li>
+<li><em>classname</em>: The name of the class to be launched.</li>
+<li><em>filename</em>: The name of the Java Archive (JAR) file to be called. Used only with the <code>-jar</code> option.</li>
+<li><em>args</em>: The arguments passed to the <code>main()</code> method separated by spaces.</li>
+</ul>
+<p><code>java</code> 命令用于启动 Java 应用程序。它通过启动 JRE，加载指定类并调用其 <code>main()</code> 方法来实现启动。<code>main()</code> 方法声明如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>java</code> 命令支持以下几类选项：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#BABDJJFI">标准选项</a>，JVM 的所有实现所支持的最常用选项。</li>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#BABHDABI">非标准选项</a>，特定于 Java HotSpot VM 的通用选项。</li>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#BABCBGHF">高级运行时选项</a>，用于控制 Java HotSpot VM 的运行时行为。</li>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#BABDDFII">高级 JIT 编译器选项</a>，用于控制 Java HotSpot VM 执行动态实时（JIT）编译。</li>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#BABFJDIC">高级可维修性选项</a>，提供了收集系统信息和执行调试的能力。</li>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#BABFAFAE">高级垃圾收集选项</a>，用于控制 Java HotSpot VM 如何执行垃圾回收（GC）。</li>
+</ul>
+<p>说明：</p>
+<ul>
+<li>所有 JVM 实现都需要保证支持<em>标准选项</em>。标准选项用于执行常见操作，例如检查 JRE 版本、设置类路径、启用详细输出等。</li>
+<li><em>非标准选项</em>是针对 Java HotSpot VM 的通用选项，因此不能保证所有 JVM 实现都能支持，并且随时可能改变。非标组选项以 <code>-X</code> 开头。</li>
+<li><em>高级选项</em>不建议随意使用。这些是开发人员用于调整 Java HotSpot VM 特定区域的选项。这些区域通常具有特定的系统要求，并且可能需要对系统配置参数的访问权限。这些选项也不能保证所有 JVM 实现都能支持，并且随时可能改变。高级选项以 <code>-XX</code> 开头。</li>
+</ul>
+<p>想跟踪最新版本中被弃用或删除的选项，参考<a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#BABDCEGG">已废弃与已移除的选项</a>（JDK 8）。</p>
+</blockquote>
+<blockquote>
+<p>布尔类型的选项无需参数，格式如下：</p>
+<ul>
+<li><code>-XX:+</code><em>OptionName</em> 用于启用 默认情况下禁用的功能；</li>
+<li><code>-XX:-</code><em>OptionName</em> 用于禁用 默认情况下启用的功能。</li>
+</ul>
+<p>对于需要参数的选项，每个选项的确切语法有所差异：</p>
+<ul>
+<li>参数可以用空格、冒号（<code>:</code>）或等号（<code>=</code>）与选项名分开，或者参数可以直接跟在选项后面，具体参考文档。</li>
+</ul>
+</blockquote>
+<blockquote>
+<p>如果需要指定字节大小，可以使用以下几种格式：</p>
+<ul>
+<li>no suffix</li>
+<li><code>k</code> or <code>K</code> for kilobytes (KB)</li>
+<li><code>m</code> or <code>M</code> for megabytes (MB)</li>
+<li><code>g</code> or <code>G</code> for gigabytes (GB)</li>
+</ul>
+<p>例如：</p>
+<ul>
+<li>大小为 8 GB，参数可以设为 <code>8g</code>, <code>8192m</code>, <code>8388608k</code>, <code>8589934592</code>。</li>
+<li>大小为 1.5 GB，参数不能设为 <code>1.5g</code>，可以设为 <code>1536m</code>。</li>
+<li>如果需要指定百分比，使用 0 到 1 之间的数字（例如， <code>0.25</code> for 25%）。</li>
+</ul>
+</blockquote>
+<h2 id="JVM-Stack"><a href="#JVM-Stack" class="headerlink" title="JVM Stack"></a>JVM Stack</h2><p><code>-Xss</code><em>size</em></p>
+<blockquote>
+<p>Sets the thread stack size (in bytes). Append the letter <code>k</code> or <code>K</code> to indicate KB, <code>m</code> or <code>M</code> to indicate MB, <code>g</code> or <code>G</code> to indicate GB. The default value depends on the platform:</p>
+<ul>
+<li>Linux/ARM (32-bit): <code>320 KB</code></li>
+<li>Linux/i386 (32-bit): <code>320 KB</code></li>
+<li>Linux/x64 (64-bit): <code>1024 KB</code></li>
+<li>OS X (64-bit): <code>1024 KB</code></li>
+<li>Oracle Solaris/i386 (32-bit): <code>320 KB</code></li>
+<li>Oracle Solaris/x64 (64-bit): <code>1024 KB</code></li>
+</ul>
+<p>The following examples set the thread stack size to <code>1024 KB</code> in different units:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-Xss1m</span><br><span class="line">-Xss1024k</span><br><span class="line">-Xss1048576</span><br></pre></td></tr></table></figure>
+
+<p>This option is equivalent to <code>-XX:ThreadStackSize</code>.</p>
+</blockquote>
+<h2 id="Heap"><a href="#Heap" class="headerlink" title="Heap"></a>Heap</h2><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-Xms</code>、<code>-XX:InitialHeapSize</code><br/><code>-Xmx</code>、<code>-XX:MaxHeapSize</code></td>
+<td>设置 Heap 堆区的初始值和最大值，Server 端 JVM 建议将 <code>-Xms</code> 和 <code>-Xmx</code> 设为相同值。</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-Xmn</code></td>
+<td>设置 Heap 堆内 Young Generation，而 Old Generation 等于：堆区减去 <code>-Xmn</code>。<br/>设置 <code>-Xmn</code> 等同于设置了相同的 Young Generation 初始值 <code>-XX:NewSize</code> 和最大值 <code>-XX:MaxNewSize</code>。</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-XX:NewRatio</code></td>
+<td>Sets the ratio between <strong>young and old generation</strong> sizes. By default, this option is set to <code>2</code> (Young Gen can get up to 1/3 (<code>Y=H/(R+1)</code>) of the Heap).</td>
+</tr>
+<tr>
+<td><code> -XX:SurvivorRatio</code></td>
+<td>Sets the ratio between <strong>eden and survivor space</strong> sizes. By default, this option is set to <code>8</code> (S0/S1 can get up to 1/10 (<code>S=Y/(R+2)</code>) of Young Gen).</td>
+</tr>
+</tbody></table>
+<h3 id="Xms、-Xmx"><a href="#Xms、-Xmx" class="headerlink" title="-Xms、-Xmx"></a><code>-Xms</code>、<code>-Xmx</code></h3><p><code>-Xms</code><em>size</em></p>
+<blockquote>
+<p>Sets the initial size (in bytes) of the heap. This value must be a multiple of 1024 and greater than 1 MB. Append the letter <code>k</code> or <code>K</code> to indicate kilobytes, <code>m</code> or <code>M</code> to indicate megabytes, <code>g</code> or <code>G</code> to indicate gigabytes.</p>
+<p>The following examples show how to set the size of allocated memory to 6 MB using various units:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-Xms6291456</span><br><span class="line">-Xms6144k</span><br><span class="line">-Xms6m</span><br></pre></td></tr></table></figure>
+
+<p>If you do not set this option, then the initial size will be set as the sum of the sizes allocated for the old generation and the young generation.</p>
+<p>The <code>-Xms</code> option is equivalent to <code>-XX:InitialHeapSize</code>.</p>
+</blockquote>
+<p><code>-Xmx</code><em>size</em></p>
+<blockquote>
+<p>Specifies the maximum size (in bytes) of the memory allocation pool in bytes. This value must be a multiple of 1024 and greater than 2 MB. Append the letter <code>k</code> or <code>K</code> to indicate kilobytes, <code>m</code> or <code>M</code> to indicate megabytes, <code>g</code> or <code>G</code> to indicate gigabytes. The default value is chosen at runtime based on system configuration. </p>
+<blockquote>
+<p>For server deployments, <code>-Xms</code> and <code>-Xmx</code> are often set to the same value. See the section “Ergonomics” in <em>Java SE HotSpot Virtual Machine Garbage Collection Tuning Guide</em> at <a target="_blank" rel="noopener" href="http://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/index.html">http://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/index.html</a>.</p>
+</blockquote>
+<p>The following examples show how to set the maximum allowed size of allocated memory to 80 MB using various units:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-Xmx83886080</span><br><span class="line">-Xmx81920k</span><br><span class="line">-Xmx80m</span><br></pre></td></tr></table></figure>
+
+<p>The <code>-Xmx</code> option is equivalent to <code>-XX:MaxHeapSize</code>.</p>
+</blockquote>
+<h3 id="Xmn"><a href="#Xmn" class="headerlink" title="-Xmn"></a><code>-Xmn</code></h3><p><code>-Xmn</code><em>size</em></p>
+<blockquote>
+<p>Sets the initial and maximum size (in bytes) of the heap for the <strong>young generation</strong> (nursery).</p>
+<blockquote>
+<p>The young generation region of the heap is used for new objects. GC is performed in this region more often than in other regions. </p>
+<ul>
+<li>If the size is too small, then a lot of minor garbage collections will be performed. </li>
+<li>If the size is too large, then only full garbage collections will be performed, which can take a long time to complete. </li>
+</ul>
+<p>⚠️ <strong>Oracle recommends that you keep the size for the young generation between a half and a quarter of the overall heap size.</strong></p>
+</blockquote>
+<p>Append the letter <code>k</code> or <code>K</code> to indicate kilobytes, <code>m</code> or <code>M</code> to indicate megabytes, <code>g</code> or <code>G</code> to indicate gigabytes. The following examples show how to set the initial and maximum size of young generation to 256 MB using various units:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-Xmn256m</span><br><span class="line">-Xmn262144k</span><br><span class="line">-Xmn268435456</span><br></pre></td></tr></table></figure>
+
+<p>Instead of the <code>-Xmn</code> option to set both the initial and maximum size of the heap for the young generation, you can use <code>-XX:NewSize</code> to set the initial size and <code>-XX:MaxNewSize</code> to set the maximum size.</p>
+</blockquote>
+<h3 id="XX-NewRatio"><a href="#XX-NewRatio" class="headerlink" title="-XX:NewRatio"></a><code>-XX:NewRatio</code></h3><p><code>-XX:NewRatio</code>=<em>ratio</em></p>
+<p>Sets the ratio between <strong>young and old generation</strong> sizes. By default, this option is set to <code>2</code>.</p>
+<blockquote>
+<p>The <code>NewRatio</code> is the ratio of old generation to young generation (e.g. value 2 means max size of old will be twice the max size of young, i.e. young can get up to 1/3 of the heap).</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Y=H/(R+1)</span><br></pre></td></tr></table></figure>
+
+</blockquote>
+<p>设置 Young Generation 和 Old Generation 的比值，例如该值默认为 2，则表示 Young Generation 和 Old Generation 比值为1:2。</p>
+<h3 id="XX-SurvivorRatio"><a href="#XX-SurvivorRatio" class="headerlink" title=" -XX:SurvivorRatio"></a><code> -XX:SurvivorRatio</code></h3><p><code>-XX:SurvivorRatio</code>=<em>ratio</em></p>
+<p>Sets the ratio between <strong>eden and survivor space</strong> sizes. By default, this option is set to <code>8</code>.</p>
+<blockquote>
+<p>The following formula can be used to calculate the initial size of survivor space (S) based on the size of the young generation (Y), and the initial survivor space ratio (R):</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">S=Y/(R+2)</span><br></pre></td></tr></table></figure>
+
+<p>The 2 in the equation denotes two survivor spaces. The larger the value specified as the initial survivor space ratio, the smaller the initial survivor space size.</p>
+<p>By default, the initial survivor space ratio is set to 8. If the default value for the young generation space size is used (2 MB), the initial size of the survivor space will be 0.2 MB.</p>
+</blockquote>
+<h2 id="Method-Area"><a href="#Method-Area" class="headerlink" title="Method Area"></a>Method Area</h2><h3 id="PermGen"><a href="#PermGen" class="headerlink" title="PermGen"></a>PermGen</h3><p>JDK 7 及以下版本：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-XX:PermSize</code></td>
+<td>Perm 的初始值</td>
+</tr>
+<tr>
+<td><code>-XX:MaxPermSize</code></td>
+<td>Perm 的最大值</td>
+</tr>
+</tbody></table>
+<p>JVM 的永久代(PermGen)主要用于存放 Class 的 meta-data，Class 在被 Loader 加载时就会被放到 PermGen space，GC 在主程序运行期间不会对该区进行清理，默认是 64M 大小，当程序需要加载的对象比较多时，超过 64M 就会报这部分内存溢出了，需要加大内存分配。 </p>
+<h3 id="Metaspace"><a href="#Metaspace" class="headerlink" title="Metaspace"></a>Metaspace</h3><p>JDK 8 及以上版本，永久代（PermGen）的概念被废弃掉了，参考 <a target="_blank" rel="noopener" href="http://openjdk.java.net/jeps/122">JEP 122: Remove the Permanent Generation</a>：</p>
+<blockquote>
+<p>The proposed implementation will <strong>allocate class meta-data in native memory</strong> and <strong>move interned Strings and class static variables to the Java heap</strong>. </p>
+<p>Hotspot will explicitly allocate and free the native memory for the class meta-data. Allocation of new class meta-data would be <strong>limited by the amount of available native memory</strong> rather than fixed by the value of <code>-XX:MaxPermSize</code>, whether the default or specified on the command line.</p>
+</blockquote>
+<p>取而代之的是一个称为 Metaspace 的存储空间。Metaspace 使用的是本地内存，而不是堆内存，也就是说在默认情况下 Metaspace 的大小只与本地内存大小有关。可以通过以下的几个参数对 Metaspace 进行控制： </p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-XX:MetaspaceSize</code></td>
+<td>Metaspace 的初始值</td>
+</tr>
+<tr>
+<td><code>-XX:MaxMetaspaceSize</code></td>
+<td>Metaspace 的最大值</td>
+</tr>
+</tbody></table>
+<h2 id="Direct-Memory"><a href="#Direct-Memory" class="headerlink" title="Direct Memory"></a>Direct Memory</h2><p><code>-XX:MaxDirectMemorySize</code>=<em>size</em></p>
+<blockquote>
+<p>Sets the maximum total size (in bytes) of the New I/O (the <code>java.nio</code> package) direct-buffer allocations. Append the letter <code>k</code> or <code>K</code> to indicate kilobytes, <code>m</code> or <code>M</code> to indicate megabytes, <code>g</code> or <code>G</code> to indicate gigabytes. By default, the size is set to 0, meaning that the JVM chooses the size for NIO direct-buffer allocations automatically.</p>
+<p>The following examples illustrate how to set the NIO size to 1024 KB in different units:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-XX:MaxDirectMemorySize=1m</span><br><span class="line">-XX:MaxDirectMemorySize=1024k</span><br><span class="line">-XX:MaxDirectMemorySize=1048576</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h1 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h1><h2 id="java-lang-StackOverflowError"><a href="#java-lang-StackOverflowError" class="headerlink" title="java.lang.StackOverflowError"></a>java.lang.StackOverflowError</h2><p><code>java.lang.StackOverflowError</code>：线程栈溢出，要么是方法调用层次过多（比如存在无限递归调用）：</p>
+<p><img src="/img/java/jvm/SOF.png" alt="StackOverflow"></p>
+<p>要么是线程栈太小，可调整 <code>-Xss</code> 参数增加线程栈大小。</p>
+<h2 id="java-lang-OutOfMemoryError-Java-heap-space"><a href="#java-lang-OutOfMemoryError-Java-heap-space" class="headerlink" title="java.lang.OutOfMemoryError: Java heap space"></a>java.lang.OutOfMemoryError: Java heap space</h2><p><code>java.lang.OutOfMemoryError: Java heap space</code>：这种是堆内存不够，一个原因是真不够，另一个原因是程序中有死循环，例如：</p>
+<p><img src="/img/java/jvm/OOM.png" alt="OutOfMemory"></p>
+<p>如果是堆内存不足，可调整 <code>-Xms</code>、<code>-Xmx</code>，或者新老生代的比例。</p>
+<h2 id="java-lang-OutOfMemoryError-PermGen-space"><a href="#java-lang-OutOfMemoryError-PermGen-space" class="headerlink" title="java.lang.OutOfMemoryError: PermGen space"></a>java.lang.OutOfMemoryError: PermGen space</h2><p><code>java.lang.OutOfMemoryError: PermGen space</code>：这种是P区内存不够，可调整：<code>-XX:PermSize</code>、<code>-XX:MaxPermSize</code>。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a target="_blank" rel="noopener" href="https://item.jd.com/11703581.html">Java 虚拟机规范（Java SE 8 版 - 中文版）</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/specs/jvms/se8/html/index.html">Java 虚拟机规范（Java SE 8 版 - 英文版）</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="http://openjdk.java.net/jeps/122">JEP 122: Remove the Permanent Generation - Release on JDK 8</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html">Command Line Options - JDK 8 HotSpot VM</a>》</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/jvm-runtime-data-areas/" title="Java 虚拟机系列（二）运行时数据区总结">https://qidawu.github.io/posts/jvm-runtime-data-areas/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/JVM/" rel="tag"># JVM</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/jvm-impl/" rel="prev" title="Java 虚拟机系列（一）厂商实现总结">
+                  <i class="fa fa-chevron-left"></i> Java 虚拟机系列（一）厂商实现总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/jvm-gc/" rel="next" title="Java 虚拟机系列（三）垃圾收集器总结">
+                  Java 虚拟机系列（三）垃圾收集器总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

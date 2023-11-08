@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="年初也转投 IDEA 阵营了，相比 Eclipse 确实顺畅很多，尤其是多开项目的时候，已经有种回不去的感觉了。这里介绍一些两个 IDE 之间的区别。 版本选择首先是 IDEA 版本的选择，建议使用 Community 社区免费版即可，对比 Ultimate 收费版并无太大区别。都支持 Java、Maven、Git 等基本功能。但社区版会少了一些插件，例如 Spring Initializr。 版">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IDEA 的一些使用总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/java-idea/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="年初也转投 IDEA 阵营了，相比 Eclipse 确实顺畅很多，尤其是多开项目的时候，已经有种回不去的感觉了。这里介绍一些两个 IDE 之间的区别。 版本选择首先是 IDEA 版本的选择，建议使用 Community 社区免费版即可，对比 Ultimate 收费版并无太大区别。都支持 Java、Maven、Git 等基本功能。但社区版会少了一些插件，例如 Spring Initializr。 版">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/java/idea/hello_world.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/idea/add_new_tomcat_server_config.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/idea/tomcat_server_config.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/idea/tomcat_server_config2.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/idea/deployment.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/idea/project_structure_modules.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/idea/import_module.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/idea/import_module_search_for_projects_recursively.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/idea/new_branch.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/idea/merge_into_current.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/idea/conflicts.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/idea/version_control_local_changes.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/idea/IdeaVim.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/idea/use_secure_connection.png">
+<meta property="og:image" content="https://qidawu.github.io/posts/java-idea/img/java/idea/git_branch_management.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/idea/keymap.png">
+<meta property="article:published_time" content="2018-07-29T04:01:58.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.918Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/java/idea/hello_world.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/java-idea/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/java-idea/","path":"posts/java-idea/","title":"IDEA 的一些使用总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>IDEA 的一些使用总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%89%88%E6%9C%AC%E9%80%89%E6%8B%A9"><span class="nav-number">1.</span> <span class="nav-text">版本选择</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE"><span class="nav-number">2.</span> <span class="nav-text">创建项目</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-Tomcat"><span class="nav-number">3.</span> <span class="nav-text">配置 Tomcat</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA-java-resource-%E7%9B%AE%E5%BD%95"><span class="nav-number">4.</span> <span class="nav-text">创建 java&#x2F;resource 目录</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9C%BA%E6%99%AF%E6%BC%94%E7%A4%BA"><span class="nav-number">5.</span> <span class="nav-text">场景演示</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E6%80%A7%E5%BC%80%E5%8F%91"><span class="nav-number">5.1.</span> <span class="nav-text">特性开发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E6%80%A7%E5%90%88%E7%89%88"><span class="nav-number">5.2.</span> <span class="nav-text">特性合版</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E9%85%8D%E7%BD%AE"><span class="nav-number">6.</span> <span class="nav-text">全局配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#JDK"><span class="nav-number">6.1.</span> <span class="nav-text">JDK</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Maven"><span class="nav-number">6.2.</span> <span class="nav-text">Maven</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Terminal"><span class="nav-number">6.3.</span> <span class="nav-text">Terminal</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Layout"><span class="nav-number">6.4.</span> <span class="nav-text">Layout</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Code-Template"><span class="nav-number">6.5.</span> <span class="nav-text">Code Template</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Auto-Import"><span class="nav-number">6.6.</span> <span class="nav-text">Auto Import</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Quick-documentation"><span class="nav-number">6.7.</span> <span class="nav-text">Quick documentation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Show-tabs-in-one-row"><span class="nav-number">6.8.</span> <span class="nav-text">Show tabs in one row</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%97%E4%BD%93"><span class="nav-number">7.</span> <span class="nav-text">字体</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8F%92%E4%BB%B6"><span class="nav-number">8.</span> <span class="nav-text">插件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Git"><span class="nav-number">9.</span> <span class="nav-text">Git</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86"><span class="nav-number">9.1.</span> <span class="nav-text">分支管理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="nav-number">10.</span> <span class="nav-text">快捷键</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89-keymap"><span class="nav-number">10.1.</span> <span class="nav-text">自定义 keymap</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VCS"><span class="nav-number">10.2.</span> <span class="nav-text">VCS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E7%B1%BB"><span class="nav-number">10.3.</span> <span class="nav-text">创建类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E6%89%BE-%E6%9B%BF%E6%8D%A2%E7%B1%BB"><span class="nav-number">10.4.</span> <span class="nav-text">查找&#x2F;替换类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8F%E8%A7%88%E7%B1%BB"><span class="nav-number">10.5.</span> <span class="nav-text">浏览类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%BE%91%E7%B1%BB"><span class="nav-number">10.6.</span> <span class="nav-text">编辑类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E6%9E%84%E7%B1%BB"><span class="nav-number">10.7.</span> <span class="nav-text">重构类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E8%AF%95%E7%B1%BB"><span class="nav-number">10.8.</span> <span class="nav-text">调试类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">10.9.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">11.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/java-idea/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="IDEA 的一些使用总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          IDEA 的一些使用总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-07-29 12:01:58" itemprop="dateCreated datePublished" datetime="2018-07-29T12:01:58+08:00">2018-07-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>年初也转投 IDEA 阵营了，相比 Eclipse 确实顺畅很多，尤其是多开项目的时候，已经有种回不去的感觉了。这里介绍一些两个 IDE 之间的区别。</p>
+<h1 id="版本选择"><a href="#版本选择" class="headerlink" title="版本选择"></a>版本选择</h1><p>首先是 IDEA 版本的选择，建议使用 Community 社区免费版即可，对比 Ultimate 收费版并无太大区别。都支持 Java、Maven、Git 等基本功能。但社区版会少了一些插件，例如 Spring Initializr。</p>
+<p>版本区别详见：<a target="_blank" rel="noopener" href="https://www.jetbrains.com/idea/features/editions_comparison_matrix.html">https://www.jetbrains.com/idea/features/editions_comparison_matrix.html</a></p>
+<h1 id="创建项目"><a href="#创建项目" class="headerlink" title="创建项目"></a>创建项目</h1><p>其次创建项目，需要了解 IDEA 的 Project 和 Module 两个概念：</p>
+<ul>
+<li>IntelliJ 系中的 Module 相当于 Eclipse 系中的 Project；</li>
+<li>IntelliJ 系中的 Project 相当于 Eclipse 系中的 Workspace。可以选择创建一个 Empty project without modules，之后再放入同一类型的 module 集合，此时只会生成一个 .idea 目录。也可以选择直接创建某一类型的 Project，如 Maven Project，此时需要添加 Maven 项目信息，完成后会生成 pom.xml、src 目录、*.iml。</li>
+</ul>
+<p>最后尝试新建一个 HelloWorld 示例项目，<code>.idea</code> 文件夹和 <code>HelloWorld.iml</code> 是 IDEA 帮助我们建立的辅助文件夹和文件，类似于 Eclipse 在我们的 Workspace 下建立的 <code>.settings</code> 文件夹和 <code>.classpath</code> 、<code>.project</code> 文件。 </p>
+<p><img src="/img/java/idea/hello_world.png" alt="IDEA Hello World"></p>
+<p>Project 作为工作空间可以自由切换、多开，从 File &gt; Open Recent 中选择即可。</p>
+<h1 id="配置-Tomcat"><a href="#配置-Tomcat" class="headerlink" title="配置 Tomcat"></a>配置 Tomcat</h1><p>1、下载 Tomcat</p>
+<p>2、IDEA 新建 Tomcat（Run &gt; Edit Configurations）</p>
+<p><img src="/img/java/idea/add_new_tomcat_server_config.png" alt="add_new_tomcat_server_config"></p>
+<p>3、新建完毕，配置本地 Tomcat 安装目录：</p>
+<p><img src="/img/java/idea/tomcat_server_config.png" alt="tomcat_server_config"></p>
+<p>4、配置端口号、必要的 VM options：</p>
+<p><img src="/img/java/idea/tomcat_server_config2.png" alt="tomcat_server_config2"></p>
+<p>5、配置运行项目，配置上下文：</p>
+<p><img src="/img/java/idea/deployment.png" alt="deployment"></p>
+<h1 id="创建-java-resource-目录"><a href="#创建-java-resource-目录" class="headerlink" title="创建 java/resource 目录"></a>创建 java/resource 目录</h1><p><code>Ctrl+Alt+Shift+S</code>，打开 Project Structure &gt; Modules：</p>
+<p><img src="/img/java/idea/project_structure_modules.png" alt="Project Structure &gt; Modules"></p>
+<h1 id="场景演示"><a href="#场景演示" class="headerlink" title="场景演示"></a>场景演示</h1><p>以特性开发与合版这个场景为例，看下如何利用 IDEA 完成整个流程：</p>
+<h2 id="特性开发"><a href="#特性开发" class="headerlink" title="特性开发"></a>特性开发</h2><p>第一步，本地建一个工作目录，以特性名称命名：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">mkdir</span> feature-xxx</span><br></pre></td></tr></table></figure>
+
+<p>第二步，从远程仓库 <code>clone</code> 该特性涉及的所有模块到该工作目录：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> !$</span><br><span class="line">$ git <span class="built_in">clone</span> module1</span><br><span class="line">$ git <span class="built_in">clone</span> moduleN</span><br></pre></td></tr></table></figure>
+
+<p>第三步，新建 Project。打开 IDEA，File &gt; New &gt; Project from Existing Sources… &gt; 选择该工作目录，并按如下操作：</p>
+<p><img src="/img/java/idea/import_module.png" alt="Import Module"></p>
+<p><img src="/img/java/idea/import_module_search_for_projects_recursively.png" alt="Import Module"></p>
+<p>第四步，开始特性开发，批量从 master 分支 <code>checkout</code> 创建出特性分支 <code>feature-xxx</code>。并批量修改 <code>pom.xml</code> 的版本号：</p>
+<p><img src="/img/java/idea/new_branch.png" alt="new_branch"></p>
+<h2 id="特性合版"><a href="#特性合版" class="headerlink" title="特性合版"></a>特性合版</h2><p>第一步，项目管理员创建发布分支，根据本次发布周期涉及的所有特性，批量从 master 分支 <code>checkout</code> 创建出发布分支 <code>release-xxx</code>（操作同上）。该操作只能由项目管理员操作，因为 <code>release-*</code> 是受保护分支。</p>
+<p>第二步，升级 <code>pom.xml</code> 版本号并推送。</p>
+<p>第三步，批量 <code>merge</code> 特性分支：</p>
+<p><img src="/img/java/idea/merge_into_current.png" alt="merge_into_current"></p>
+<p>第四步，解决冲突（例如 <code>pom.xml</code> 版本号冲突、代码冲突，如有）：</p>
+<p><img src="/img/java/idea/conflicts.png" alt="conflicts"></p>
+<p><img src="/img/java/idea/version_control_local_changes.png" alt="version_control_local_changes"></p>
+<p>第五步，合版完毕，<code>Ctrl+K</code> 批量提交并推送到远程分支 <code>release-xxx</code> 即可。</p>
+<h1 id="全局配置"><a href="#全局配置" class="headerlink" title="全局配置"></a>全局配置</h1><p>File &gt; Other Setting &gt; Default Settings</p>
+<p>全局配置 IDE 的界面、编辑器、VCS、构建、终端等</p>
+<p>File &gt; Other Setting &gt; Default Project Structure</p>
+<p>全局配置项目的 SDK 版本、类库等。</p>
+<h2 id="JDK"><a href="#JDK" class="headerlink" title="JDK"></a>JDK</h2><p>File &gt; Other Setting &gt; Default Settings，<code>Projects SDK</code> 可控制全局版本，<code>Language Level</code> 可控制语言级别，方便使用其特性。配置后全部 project modules 都会生效。</p>
+<h2 id="Maven"><a href="#Maven" class="headerlink" title="Maven"></a>Maven</h2><p>File &gt; Other Setting &gt; Default Settings &gt; Build, Execution, Deployment &gt; Build Tools &gt; Maven</p>
+<ul>
+<li><p>可配置 <code>Maven home directory</code>、<code>User settings file</code> (自定义 setting.xml)、<code>Local repository</code> 本地仓库。</p>
+</li>
+<li><p>自动下载源码：Importing，找到<code>Automatically download</code> 并勾选 <code>Sources</code> 和 <code>Documentation</code>，然后 reimport 即可。</p>
+</li>
+</ul>
+<h2 id="Terminal"><a href="#Terminal" class="headerlink" title="Terminal"></a>Terminal</h2><p>File &gt; Other Setting &gt; Default Settings &gt; Terminal，修改 <code>Shell path</code> 为：<code>D:\Developer\PortableGit\bin\sh.exe</code>，可配置 Terminal 终端为 GitBash。</p>
+<h2 id="Layout"><a href="#Layout" class="headerlink" title="Layout"></a>Layout</h2><p>调整完当前窗口的布局之后，可以保存当前的窗口布局，以便全局生效：Window &gt; Store Current Layout as Default</p>
+<h2 id="Code-Template"><a href="#Code-Template" class="headerlink" title="Code Template"></a>Code Template</h2><p>File &gt; Other Setting &gt; Default Settings &gt; 搜索 File and Code Templates，打开 Includes &gt; File Header，配置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * &lt;p&gt;</span><br><span class="line"> *</span><br><span class="line"> * &lt;/p&gt;</span><br><span class="line"> *</span><br><span class="line"> * @author abc@xyz.com</span><br><span class="line"> * @since $&#123;DATE&#125;</span><br><span class="line"> **/</span><br></pre></td></tr></table></figure>
+
+<h2 id="Auto-Import"><a href="#Auto-Import" class="headerlink" title="Auto Import"></a>Auto Import</h2><p>File &gt; Settings &gt; Editor &gt; General &gt; Auto Import，然后勾选：</p>
+<p><code>Add unambiguous imports on the fly</code>：快速添加明确的导入。</p>
+<p><code>Optimize imports on the fly</code>：快速优化导入，优化的意思即自动帮助删除无用的导入。</p>
+<h2 id="Quick-documentation"><a href="#Quick-documentation" class="headerlink" title="Quick documentation"></a>Quick documentation</h2><p>File &gt; Settings &gt; Editor &gt; General &gt; 开启 <code>Show quick documentation on mouse move</code>，可用于鼠标放到类、方法、变量上时显示完整 java doc 注释</p>
+<h2 id="Show-tabs-in-one-row"><a href="#Show-tabs-in-one-row" class="headerlink" title="Show tabs in one row"></a>Show tabs in one row</h2><p>File &gt; Settings &gt; Editor &gt; General &gt; Editor Tabs，去掉勾选 <code>Show tabs in one row</code></p>
+<h1 id="字体"><a href="#字体" class="headerlink" title="字体"></a>字体</h1><p>老版本可以<a target="_blank" rel="noopener" href="https://www.jetbrains.com/lp/mono/#how-to-install">安装 JetBrains Mono 字体</a>，v2019.3 版本后自带。</p>
+<h1 id="插件"><a href="#插件" class="headerlink" title="插件"></a>插件</h1><p>官方插件（内置）：</p>
+<ul>
+<li>Maven Integration：官方 Maven 插件，参考：<a href="/2018/05/01/maven-build-lifecycle/">IDEA Maven 插件</a></li>
+<li>JUnit：快速创建、运行、查看单元测试，在单元测试和目标之间跳转。</li>
+</ul>
+<p>官方插件（需安装）：</p>
+<ul>
+<li>IdeaVim：Vim 程序员必装。</li>
+<li>NodeJS：运行前端项目、or 构建前端项目时都是需要的。</li>
+</ul>
+<p>规范类：</p>
+<ul>
+<li>Alibaba Java Coding Guidelines：阿里巴巴 Java 开发规范</li>
+<li>Git Commit Template：参考<ul>
+<li><a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2016/01/commit_message_change_log.html">Git 代码提交规范</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzIzOTU0NTQ0MA==&mid=2247498589&idx=1&sn=c0419f08bd455de9147e47387778943e">如何规范你的Git commit？</a></li>
+</ul>
+</li>
+</ul>
+<p>代码生成类：</p>
+<ul>
+<li>Lombok Plugin：用于精简冗余代码，必装。</li>
+<li><a target="_blank" rel="noopener" href="https://plugins.jetbrains.com/plugin/6585-builder-generator">Builder-Generator</a>：如果项目可以使用 Lombok，就不必装。</li>
+</ul>
+<p>MyBatis：</p>
+<ul>
+<li><del><a target="_blank" rel="noopener" href="https://plugins.jetbrains.com/plugin/7293-mybatis-plugin">MyBatis Plugin</a>：最强大的 MyBatis 插件，不过是收费版。</del></li>
+<li>Free MyBatis plugin：免费的 MyBatis 插件，提供了一些基本的跳转和代码生成功能。</li>
+<li>MyBatis Log Plugin：把 MyBatis 输出的 SQL 日志还原成完整的 SQL 语句。将日志输出的 SQL 语句中的问号 ? 替换成真正的参数值。</li>
+</ul>
+<p>辅助类：</p>
+<ul>
+<li>Maven Helper：方便查询依赖树及排除依赖</li>
+<li>Grep Console：Grep, tail, filter, highlight… everything you need for a console. Also can highlight the editor - nice for analyzing logs…</li>
+<li>SequenceDiagram for IntelliJ IDEA：查看类调用时序图</li>
+<li>Rainbow Brackets：彩色括号</li>
+<li>HighlightBracketPair：高亮提示括号的开始结尾</li>
+</ul>
+<p>其它：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://plugins.jetbrains.com/plugin/8006-material-theme-ui">Material Theme UI</a>：将默认外观改为 <a target="_blank" rel="noopener" href="https://material.io/">Material Design</a> 风格。</li>
+<li><a target="_blank" rel="noopener" href="https://plugins.jetbrains.com/plugin/9492-smart-tomcat">Smart Tomcat</a>：社区版没有提供该功能（<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/22047860/tomcat-in-intellij-idea-community-edition">点我</a>），可以用这个插件替代，参考<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247509848&idx=3&sn=bec775d8f6bf98027625511491ec74cf">这篇</a>。</li>
+<li><a target="_blank" rel="noopener" href="http://kidneyball.iteye.com/blog/1814028">Ace Jump</a>：使用这个插件，直接使用键盘定位到你想去的地方 。</li>
+</ul>
+<p>IdeaVim 如果与原 IDEA 快捷键冲突，可以修改如下：</p>
+<p><img src="/img/java/idea/IdeaVim.png" alt="IdeaVim"></p>
+<p>如果被墙导致无法连接到 Marketplace 或插件无法下载，可以配置如下：</p>
+<p><img src="/img/java/idea/use_secure_connection.png" alt="IDEA 无法下载插件"></p>
+<h1 id="Git"><a href="#Git" class="headerlink" title="Git"></a>Git</h1><h2 id="分支管理"><a href="#分支管理" class="headerlink" title="分支管理"></a>分支管理</h2><p><img src="img/java/idea/git_branch_management.png" alt="git branch management"></p>
+<table>
+<thead>
+<tr>
+<th>分支操作</th>
+<th>对应命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Checkout</td>
+<td><code>git checkout [selected-branch]</code></td>
+</tr>
+<tr>
+<td>New Branch from Selected…</td>
+<td><code>git checkout -b [new-branch] [selected-branch]</code></td>
+</tr>
+<tr>
+<td>Checkout and Rebase onto Current</td>
+<td><code>git rebase HEAD [selected-branch]</code></td>
+</tr>
+<tr>
+<td>Rebase Current onto Selected</td>
+<td><code>git rebase [selected-branch]</code></td>
+</tr>
+<tr>
+<td>Merge into Current</td>
+<td><code>git merge [selected-branch]</code></td>
+</tr>
+<tr>
+<td>Delete</td>
+<td><code>git branch -d [selected-branch]</code></td>
+</tr>
+</tbody></table>
+<h1 id="快捷键"><a href="#快捷键" class="headerlink" title="快捷键"></a>快捷键</h1><h2 id="自定义-keymap"><a href="#自定义-keymap" class="headerlink" title="自定义 keymap"></a>自定义 keymap</h2><p>自定义快捷键，例如我配置了：</p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>快捷键</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Close</td>
+<td><code>Alt+W</code></td>
+</tr>
+<tr>
+<td>Hide All Tool Windows</td>
+<td><code>Alt+M</code></td>
+</tr>
+<tr>
+<td>Delete Line</td>
+<td><code>Alt+D</code></td>
+</tr>
+<tr>
+<td>Redo</td>
+<td><code>Ctrl+Y</code></td>
+</tr>
+<tr>
+<td>Rename</td>
+<td><code>Alt+R</code></td>
+</tr>
+<tr>
+<td>Completion</td>
+<td><code>Alt+/</code></td>
+</tr>
+</tbody></table>
+<h2 id="VCS"><a href="#VCS" class="headerlink" title="VCS"></a>VCS</h2><p>Git 自定义快捷键：</p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>快捷键</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Reset HEAD</td>
+<td><code>Ctrl+Alt+Q</code></td>
+</tr>
+<tr>
+<td>Annotate（git blame）</td>
+<td><code>Ctrl+Alt+1</code></td>
+</tr>
+<tr>
+<td>Compare with the Same Repository Version</td>
+<td><code>Ctrl+Alt+2</code></td>
+</tr>
+<tr>
+<td>Show History</td>
+<td><code>Ctrl+Alt+3</code></td>
+</tr>
+<tr>
+<td>Commit File</td>
+<td><code>Ctrl+Alt+4</code></td>
+</tr>
+<tr>
+<td>PULL</td>
+<td><code>Ctrl+Alt+5</code></td>
+</tr>
+</tbody></table>
+<p>Git 默认的其它命令：</p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>快捷键</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Add</td>
+<td><code>Ctrl+Alt+A</code></td>
+</tr>
+<tr>
+<td>Revert Changes 回退更改</td>
+<td><code>Ctrl+Alt+Z</code></td>
+</tr>
+<tr>
+<td>Commit Changes 提交更改</td>
+<td><code>Ctrl+K</code></td>
+</tr>
+<tr>
+<td>Push Commits 推送</td>
+<td><code>Ctrl+Shift+K</code></td>
+</tr>
+<tr>
+<td>Update Project（批量 git pull）</td>
+<td><code>Ctrl+T</code></td>
+</tr>
+</tbody></table>
+<h2 id="创建类"><a href="#创建类" class="headerlink" title="创建类"></a>创建类</h2><blockquote>
+<p>Alt + Insert 创造万物</p>
+</blockquote>
+<h2 id="查找-替换类"><a href="#查找-替换类" class="headerlink" title="查找/替换类"></a>查找/替换类</h2><blockquote>
+<p>Ctrl + F 在当前文件中查找（关键字）</p>
+<p>Ctrl + R 在当前文件中替换（关键字）</p>
+<p>Ctrl + Shift + F 在路径中查找（关键字）</p>
+<p>Ctrl + Shift + R 在路径中替换（关键字）</p>
+</blockquote>
+<h2 id="浏览类"><a href="#浏览类" class="headerlink" title="浏览类"></a>浏览类</h2><blockquote>
+<p>Ctrl+N 查找类</p>
+<p>Ctrl+Shift+N 查找文件</p>
+<p>Shift+Shift 查找所有（包括类、资源、配置项、方法等等）</p>
+</blockquote>
+<blockquote>
+<p>Ctrl+E 最近打开的文件</p>
+<p>Alt+F7 查找引用（Find Usage）</p>
+<p>Ctrl+Shift+Backspace 回到上次修改的地方</p>
+<p>Ctrl+Alt+Left/Right 返回/前进至上次浏览的位置</p>
+<p>Ctrl+鼠标左键：打开接口（Declaration）</p>
+<p>Ctrl+Alt+鼠标左键：打开实现（Implementation(s)）</p>
+</blockquote>
+<blockquote>
+<p>Ctrl+H 打开类层次窗口（继承关系）</p>
+<p>Ctrl+F12 查看当前类的所有方法</p>
+<p>Ctrl+Alt+U 类关系图、Maven关系图</p>
+</blockquote>
+<h2 id="编辑类"><a href="#编辑类" class="headerlink" title="编辑类"></a>编辑类</h2><blockquote>
+<p>Ctrl+D 复制行</p>
+<p>Ctrl+Y 删除行</p>
+<p>Alt+Shift+向上箭头 Move Line Up</p>
+<p>Alt+Shift+向下箭头 Move Line Down</p>
+<p>Ctrl+Shift+U 大小写转换</p>
+<p>Ctrl+Alt+L 格式化代码</p>
+<p>Ctrl+W、Ctrl+Shift+W 这个动作的实际操作是选中更上一层的语法结构。例如，如果你在一个字符串的一个单词中，按一下Ctrl+W，会选中光标所在单词。再按一下，会选中整个字符串的内容，不包括引号。再按一下，会选中包括引号的字符串。再按一下，会选中整个表达式（如果表达式含有括号，会逐层选中）。再按一下，会选中整个语句块。再按一下，会选中整个方法。再按一下，会选中整个类。</p>
+</blockquote>
+<h2 id="重构类"><a href="#重构类" class="headerlink" title="重构类"></a>重构类</h2><blockquote>
+<p>// Ctrl+Alt+Shift+T 重构菜单</p>
+<p>// Ctrl+f6 修改类\方法签名<br><a target="_blank" rel="noopener" href="https://www.jetbrains.com/help/idea/change-class-signature.html">https://www.jetbrains.com/help/idea/change-class-signature.html</a></p>
+<p>// F6 Move 类、方法、变量移动</p>
+<p>// Ctrl+Shift+f6 重构变量的类型</p>
+<p>// Shift+f6 重命类、方法、变量</p>
+<p>// Ctrl+Alt+C 提取常量<br>// Ctrl+Alt+V 提取变量<br>// Ctrl+Alt+F 提取成员变量<br>// Ctrl+Alt+P 提取方法入参</p>
+<p>// Refactor | Generify 泛型自动补全<br>// Refactor | Invert Boolean 布尔类型取反<br>// Refactor | Make Static 将类、方法设置成静态<br>// Refactor | Find and Replace Code Duplicates</p>
+<p>// Safe Delete 安全删除</p>
+<p>// Ctrl+Alt+M 方法提取<br>// Ctrl+alt+N 方法内联(变量\方法\构造函数)<br><a target="_blank" rel="noopener" href="https://www.jetbrains.com/help/idea/inline.html">https://www.jetbrains.com/help/idea/inline.html</a></p>
+<p>// Pull Members Up 将方法提升到父类<br>// Pull Members Down 将方法推迟到之类</p>
+</blockquote>
+<h2 id="调试类"><a href="#调试类" class="headerlink" title="调试类"></a>调试类</h2><blockquote>
+<p>调试：F7/F8/F9 分别对应 Step into，Step over，Continue。</p>
+<p>运行：Alt+Shift+F10 运行程序，Shift+F9 启动调试，Ctrl+F2 停止。</p>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><img src="/img/java/idea/keymap.png" alt="IDEA 快捷键"></p>
+<p>摘录 10 个最常用的快捷键：</p>
+<blockquote>
+<p>Top #10切来切去：Ctrl+Tab</p>
+<p>Top #9选你所想：Ctrl+W</p>
+<p>Top #8代码生成：Template/Postfix +Tab</p>
+<p>Top #7发号施令：Ctrl+Shift+A</p>
+<p>Top #6无处藏身：Shift+Shift</p>
+<p>Top #5自动完成：Ctrl+Shift+Enter</p>
+<p>Top #4创造万物：Alt+Insert</p>
+<p>Top #3智能补全：Ctrl+Shift+Space</p>
+<p>Top #2自我修复：Alt+Enter</p>
+<p>Top #1重构一切：Ctrl+Shift+Alt+T</p>
+</blockquote>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>下载地址：<br><a target="_blank" rel="noopener" href="http://www.jetbrains.com/idea/download/#section=windows">http://www.jetbrains.com/idea/download/#section=windows</a></p>
+<p>插件：<br><a target="_blank" rel="noopener" href="https://plugins.jetbrains.com/idea">https://plugins.jetbrains.com/idea</a></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzI4Njc5NjM1NQ==&mid=2247488006&idx=1&sn=d5c66d84724b1deebac6604749d04bf5&chksm=ebd62d2adca1a43cb136b5740621e25854537054b9b3cac7451fd21ea55c0fc247e07a49d8cd&mpshare=1&scene=23&srcid=#rd">常用插件推荐</a></p>
+<p>IDEA 重构官方文档：<br><a target="_blank" rel="noopener" href="https://www.jetbrains.com/help/idea/refactoring-source-code.html">https://www.jetbrains.com/help/idea/refactoring-source-code.html</a></p>
+<p>IDEA 高级调试技巧：</p>
+<p><a target="_blank" rel="noopener" href="http://www.mamicode.com/info-detail-1761996.html">http://www.mamicode.com/info-detail-1761996.html</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/java-idea/" title="IDEA 的一些使用总结">https://qidawu.github.io/posts/java-idea/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/cryptography/" rel="prev" title="密码学几种常用算法总结">
+                  <i class="fa fa-chevron-left"></i> 密码学几种常用算法总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/financial-market/" rel="next" title="《金融学》读书笔记——金融市场总结">
+                  《金融学》读书笔记——金融市场总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

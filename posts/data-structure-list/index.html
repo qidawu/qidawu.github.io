@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="数组线性表顺序存储的方法是：将表中的结点依次存放在计算机内存中一组连续的存储单元中，数据元素在线性表中的邻按关系决定它们在存储空间中的存储位置，即：逻辑结构中相邻的结点其存储位置也相邻。用顺序存储实现的线性表称为顺序表。一般使用数组来表示顺序表。因此，数组可以看成线性表的一种推广。 一维数组存储结构一维数组又称向量（Vector），它由一组具有相同类型的数据元素组成，并存储在一组连续的存储单元中">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构系列（二）线性结构总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/data-structure-list/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="数组线性表顺序存储的方法是：将表中的结点依次存放在计算机内存中一组连续的存储单元中，数据元素在线性表中的邻按关系决定它们在存储空间中的存储位置，即：逻辑结构中相邻的结点其存储位置也相邻。用顺序存储实现的线性表称为顺序表。一般使用数组来表示顺序表。因此，数组可以看成线性表的一种推广。 一维数组存储结构一维数组又称向量（Vector），它由一组具有相同类型的数据元素组成，并存储在一组连续的存储单元中">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/data-structure/list/list.jpg">
+<meta property="og:image" content="https://qidawu.github.io/img/data-structure/list/sequence_list.png">
+<meta property="og:image" content="https://qidawu.github.io/img/data-structure/list/sequence_list_operations.png">
+<meta property="og:image" content="https://qidawu.github.io/img/data-structure/list/linked_list.png">
+<meta property="og:image" content="https://qidawu.github.io/img/data-structure/list/singly_linked_list_operations.png">
+<meta property="og:image" content="https://qidawu.github.io/img/data-structure/list/doubly_linked_list_operations.png">
+<meta property="og:image" content="https://qidawu.github.io/img/data-structure/list/stack_impl.png">
+<meta property="og:image" content="https://qidawu.github.io/img/data-structure/list/queue_impl.png">
+<meta property="article:published_time" content="2021-10-03T09:13:35.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.912Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="数据结构">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/data-structure/list/list.jpg">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/data-structure-list/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/data-structure-list/","path":"posts/data-structure-list/","title":"数据结构系列（二）线性结构总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>数据结构系列（二）线性结构总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E7%BB%84"><span class="nav-number">1.</span> <span class="nav-text">数组</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E7%BB%B4%E6%95%B0%E7%BB%84"><span class="nav-number">1.1.</span> <span class="nav-text">一维数组</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84"><span class="nav-number">1.1.1.</span> <span class="nav-text">存储结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E8%BF%90%E7%AE%97"><span class="nav-number">1.1.2.</span> <span class="nav-text">基本运算</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E7%BB%B4%E6%95%B0%E7%BB%84"><span class="nav-number">1.2.</span> <span class="nav-text">二维数组</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%93%BE%E8%A1%A8"><span class="nav-number">2.</span> <span class="nav-text">链表</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84-1"><span class="nav-number">2.1.</span> <span class="nav-text">存储结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E8%BF%90%E7%AE%97-1"><span class="nav-number">2.2.</span> <span class="nav-text">基本运算</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%88"><span class="nav-number">3.</span> <span class="nav-text">栈</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%BA%E5%BA%8F%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84"><span class="nav-number">3.1.</span> <span class="nav-text">顺序存储结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%93%BE%E5%BC%8F%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84"><span class="nav-number">3.2.</span> <span class="nav-text">链式存储结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E8%BF%90%E7%AE%97-2"><span class="nav-number">3.3.</span> <span class="nav-text">基本运算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">3.4.</span> <span class="nav-text">使用场景</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%98%9F%E5%88%97"><span class="nav-number">4.</span> <span class="nav-text">队列</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%BA%E5%BA%8F%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84-1"><span class="nav-number">4.1.</span> <span class="nav-text">顺序存储结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%93%BE%E5%BC%8F%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84-1"><span class="nav-number">4.2.</span> <span class="nav-text">链式存储结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E8%BF%90%E7%AE%97-3"><span class="nav-number">4.3.</span> <span class="nav-text">基本运算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF-1"><span class="nav-number">4.4.</span> <span class="nav-text">使用场景</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/data-structure-list/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="数据结构系列（二）线性结构总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据结构系列（二）线性结构总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-10-03 17:13:35" itemprop="dateCreated datePublished" datetime="2021-10-03T17:13:35+08:00">2021-10-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><img src="/img/data-structure/list/list.jpg" alt="线性结构"></p>
+<h1 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h1><p>线性表顺序存储的方法是：将表中的结点依次存放在计算机内存中一组连续的存储单元中，数据元素在线性表中的邻按关系决定它们在存储空间中的存储位置，即：<strong>逻辑结构中相邻的结点其存储位置也相邻。</strong>用顺序存储实现的线性表称为顺序表。<strong>一般使用数组来表示顺序表。</strong>因此，数组可以看成线性表的一种推广。</p>
+<h2 id="一维数组"><a href="#一维数组" class="headerlink" title="一维数组"></a>一维数组</h2><h3 id="存储结构"><a href="#存储结构" class="headerlink" title="存储结构"></a>存储结构</h3><p>一维数组又称<strong>向量（Vector）</strong>，它由一组具有相同类型的数据元素组成，并存储在一组连续的存储单元中。其存储结构如下图：</p>
+<p><img src="/img/data-structure/list/sequence_list.png" alt="顺序表"></p>
+<h3 id="基本运算"><a href="#基本运算" class="headerlink" title="基本运算"></a>基本运算</h3><p>对于<strong>可变长数组（Resizable Array）</strong>的插入、删除操作，其元素移动情况如下：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>元素移动次数<br/>（n 为数组大小, i 为操作位置）</th>
+<th>平均移动次数</th>
+<th>时间复杂度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>插入</td>
+<td>$n-i+1$ 次</td>
+<td>$n/2$ 次</td>
+<td><code>O(n)</code></td>
+</tr>
+<tr>
+<td>删除</td>
+<td>$n-i$ 次</td>
+<td>$(n-1)/2$ 次</td>
+<td><code>O(n)</code></td>
+</tr>
+</tbody></table>
+<p><img src="/img/data-structure/list/sequence_list_operations.png" alt="顺序表操作"></p>
+<h2 id="二维数组"><a href="#二维数组" class="headerlink" title="二维数组"></a>二维数组</h2><p>若一维数组中的数据元素又是一维数组结构，则称为二维数组，以此类推。一般地，一个 <code>n</code> 维数组可以看成元素为 <code>n-1</code> 维数组的线性表。</p>
+<p>二维数组的地址计算（行优先）如下：</p>
+<p>$$<br>loc[i,\ j]=loc[0,\ 0]+(n*i+j)*k<br>$$</p>
+<p>其中，$i$ 为行坐标，$j$ 为列坐标，$n$ 为总列数，$k$ 为存储单元。</p>
+<p>由公式可知，数组元素的存储位置是下标的<strong>线性函数</strong>。</p>
+<blockquote>
+<p>矩阵（Matrix）是很多科学计算问题研究的对象，<strong>矩阵可以用二维数组来表示</strong>。</p>
+<p>在数值分析中经常出现一些高阶矩阵，这些高阶矩阵中有许多<strong>值相同的元素或者零元素</strong>，如果值相同的元素或者零元素在矩阵中的分布有一定规律，称此类矩阵为<strong>特殊矩阵</strong>。矩阵的非零元素个数很少的矩阵称为<strong>稀疏矩阵</strong>。</p>
+<p>为了节省存储空间，对这类矩阵采用<strong>多个值相同的元素只分配一个存储空间，零元素不存储的策略</strong>，这一方法称为矩阵的<strong>压缩存储</strong>。</p>
+</blockquote>
+<h1 id="链表"><a href="#链表" class="headerlink" title="链表"></a>链表</h1><h2 id="存储结构-1"><a href="#存储结构-1" class="headerlink" title="存储结构"></a>存储结构</h2><p>四种链表对比：</p>
+<table>
+<thead>
+<tr>
+<th>四种链表</th>
+<th>非循环</th>
+<th>循环（Cycle）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>单向（Singly）</td>
+<td>单向链表</td>
+<td>单向循环链表</td>
+</tr>
+<tr>
+<td>双向（Doubly）</td>
+<td>双向链表</td>
+<td>双向循环链表</td>
+</tr>
+</tbody></table>
+<p>其中，是否循环的关键代码差异如下：</p>
+<table>
+<thead>
+<tr>
+<th>关键代码</th>
+<th>非循环链表</th>
+<th>循环链表</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>判断是否空链表</td>
+<td><code>head-&gt;next == NULL</code></td>
+<td><code>head-&gt;next == head</code></td>
+</tr>
+<tr>
+<td>判断是否尾结点</td>
+<td><code>p-&gt;next == NULL</code></td>
+<td><code>p-&gt;next == head</code></td>
+</tr>
+</tbody></table>
+<p><img src="/img/data-structure/list/linked_list.png" alt="四种链表对比"></p>
+<h2 id="基本运算-1"><a href="#基本运算-1" class="headerlink" title="基本运算"></a>基本运算</h2><p>单链表插入（insert p before i）、删除（delete i）结点操作如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 单链表需要先找到 i - 1 结点以便进行插入、删除操作</span></span><br><span class="line">q = get(i - <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 插入结点（注意操作顺序：先新再旧）</span></span><br><span class="line">p-&gt;next = q-&gt;next;</span><br><span class="line">q-&gt;next = p;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 删除结点</span></span><br><span class="line">p = q-&gt;next;</span><br><span class="line">q-&gt;next = p-&gt;next;</span><br><span class="line"><span class="built_in">free</span>(p);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：等号左边是指针，等号右边是结点。</p>
+</blockquote>
+<p><img src="/img/data-structure/list/singly_linked_list_operations.png" alt="单链表操作"></p>
+<p>双向循环链表插入（insert p after i）、删除（delete i）结点操作如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 双向循环链表直接获取 i 结点即可，因为可以通过其前驱、后继指针直接进行插入、删除操作</span></span><br><span class="line">q = get(i);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 插入结点（注意操作顺序）</span></span><br><span class="line">p-&gt;prev = q;</span><br><span class="line">p-&gt;next = q-&gt;next;</span><br><span class="line">q-&gt;next-&gt;prev = p;</span><br><span class="line">q-&gt;next = p;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 删除结点（注意操作顺序）</span></span><br><span class="line">q-&gt;prev-&gt;next = q-&gt;next;</span><br><span class="line">q-&gt;next-&gt;prev = q-&gt;prev;</span><br><span class="line"><span class="built_in">free</span>(q);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：等号左边是指针，等号右边是结点</p>
+</blockquote>
+<p><img src="/img/data-structure/list/doubly_linked_list_operations.png" alt="双向循环链表操作"></p>
+<h1 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h1><h2 id="顺序存储结构"><a href="#顺序存储结构" class="headerlink" title="顺序存储结构"></a>顺序存储结构</h2><h2 id="链式存储结构"><a href="#链式存储结构" class="headerlink" title="链式存储结构"></a>链式存储结构</h2><h2 id="基本运算-2"><a href="#基本运算-2" class="headerlink" title="基本运算"></a>基本运算</h2><p><img src="/img/data-structure/list/stack_impl.png" alt="栈"></p>
+<h2 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h2><h1 id="队列"><a href="#队列" class="headerlink" title="队列"></a>队列</h1><h2 id="顺序存储结构-1"><a href="#顺序存储结构-1" class="headerlink" title="顺序存储结构"></a>顺序存储结构</h2><h2 id="链式存储结构-1"><a href="#链式存储结构-1" class="headerlink" title="链式存储结构"></a>链式存储结构</h2><h2 id="基本运算-3"><a href="#基本运算-3" class="headerlink" title="基本运算"></a>基本运算</h2><p><img src="/img/data-structure/list/queue_impl.png" alt="队列"></p>
+<h2 id="使用场景-1"><a href="#使用场景-1" class="headerlink" title="使用场景"></a>使用场景</h2>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/data-structure-list/" title="数据结构系列（二）线性结构总结">https://qidawu.github.io/posts/data-structure-list/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag"># 数据结构</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/data-structure/" rel="prev" title="数据结构系列（一）概论总结">
+                  <i class="fa fa-chevron-left"></i> 数据结构系列（一）概论总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/data-structure-tree/" rel="next" title="数据结构系列（三）树结构总结">
+                  数据结构系列（三）树结构总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

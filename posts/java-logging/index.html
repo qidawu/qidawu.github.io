@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="日志门面：  Apache Commons Logging (JCL) 是 Apache Commons 的一个开源项目。官网：https:&#x2F;&#x2F;commons.apache.org&#x2F;proper&#x2F;commons-logging&#x2F; SLF4J 全称为 Simple Logging Facade for Java，即 Java 简单日志门面。官网：http:&#x2F;&#x2F;www.slf4j.org&#x2F;  日志门面">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 日志框架总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/java-logging/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="日志门面：  Apache Commons Logging (JCL) 是 Apache Commons 的一个开源项目。官网：https:&#x2F;&#x2F;commons.apache.org&#x2F;proper&#x2F;commons-logging&#x2F; SLF4J 全称为 Simple Logging Facade for Java，即 Java 简单日志门面。官网：http:&#x2F;&#x2F;www.slf4j.org&#x2F;  日志门面">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/java/logging/concrete-bindings.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/logging/logback/basicSyntax.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/logging/logback/appenderSyntax.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/logging/logback/Appender.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/logging/logback/OutputStreamAppender.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/logging/logback/Policy.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/logging/logback/UnsynchronizedAppenderBase.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/logging/logback/ILoggingEvent.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/logging/logback/Encoder_and_Layout.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/logging/logback/TraceIdInterceptor.png">
+<meta property="article:published_time" content="2021-01-03T14:07:11.000Z">
+<meta property="article:modified_time" content="2023-11-07T08:39:43.377Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/java/logging/concrete-bindings.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/java-logging/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/java-logging/","path":"posts/java-logging/","title":"Java 日志框架总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Java 日志框架总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E9%97%A8%E9%9D%A2%E2%80%94%E2%80%94SLF4J"><span class="nav-number">1.</span> <span class="nav-text">日志门面——SLF4J</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#SLF4J-bindings"><span class="nav-number">1.1.</span> <span class="nav-text">SLF4J bindings</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Logback"><span class="nav-number">1.1.1.</span> <span class="nav-text">Logback</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Log4j-2-x"><span class="nav-number">1.1.2.</span> <span class="nav-text">Log4j 2.x</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Log4j-1-x"><span class="nav-number">1.1.3.</span> <span class="nav-text">Log4j 1.x</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#java-util-logging-JUL"><span class="nav-number">1.1.4.</span> <span class="nav-text">java.util.logging (JUL)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E6%A1%86%E6%9E%B6%E2%80%94%E2%80%94Logback"><span class="nav-number">2.</span> <span class="nav-text">日志框架——Logback</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Configuration"><span class="nav-number">2.1.</span> <span class="nav-text">Configuration</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Appenders"><span class="nav-number">2.2.</span> <span class="nav-text">Appenders</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%98%E6%96%B9-Appenders"><span class="nav-number">2.2.1.</span> <span class="nav-text">官方 Appenders</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%96%B9-Appenders"><span class="nav-number">2.2.2.</span> <span class="nav-text">第三方 Appenders</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89-Appenders"><span class="nav-number">2.2.3.</span> <span class="nav-text">自定义 Appenders</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Encoders-amp-Layouts"><span class="nav-number">2.3.</span> <span class="nav-text">Encoders &amp; Layouts</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89-Pattern-%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.3.1.</span> <span class="nav-text">自定义 Pattern 格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%84%E5%AE%9A%E4%B9%89%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.3.2.</span> <span class="nav-text">预定义格式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mapped-Diagnostic-Contexts-MDC"><span class="nav-number">2.4.</span> <span class="nav-text">Mapped Diagnostic Contexts (MDC)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MDC-And-Managed-Threads"><span class="nav-number">2.4.1.</span> <span class="nav-text">MDC And Managed Threads</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MDCInsertingServletFilter"><span class="nav-number">2.4.2.</span> <span class="nav-text">MDCInsertingServletFilter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">2.4.3.</span> <span class="nav-text">例子</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/java-logging/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Java 日志框架总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java 日志框架总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-03 22:07:11" itemprop="dateCreated datePublished" datetime="2021-01-03T22:07:11+08:00">2021-01-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-11-07 16:39:43" itemprop="dateModified" datetime="2023-11-07T16:39:43+08:00">2023-11-07</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>日志门面：</p>
+<ul>
+<li>Apache Commons Logging (JCL) 是 Apache Commons 的一个开源项目。官网：<a target="_blank" rel="noopener" href="https://commons.apache.org/proper/commons-logging/">https://commons.apache.org/proper/commons-logging/</a></li>
+<li>SLF4J 全称为 Simple Logging Facade for Java，即 Java 简单日志门面。官网：<a target="_blank" rel="noopener" href="http://www.slf4j.org/">http://www.slf4j.org/</a></li>
+</ul>
+<h1 id="日志门面——SLF4J"><a href="#日志门面——SLF4J" class="headerlink" title="日志门面——SLF4J"></a>日志门面——SLF4J</h1><p>优点：</p>
+<ul>
+<li><p>通过依赖配置，在编译期静态绑定真正的日志框架库。</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="http://www.slf4j.org/faq.html#changesInVersion200"><strong>What has changed in SLF4J version 2.0.0?</strong></a></p>
+<p>More visibly, slf4j-api now relies on the <a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html">ServiceLoader</a> mechanism to find its logging backend. SLF4J 1.7.x and earlier versions relied on the static binder mechanism which is no loger honored by slf4j-api version 2.0.x. More specifically, when initializing the <code>LoggerFactory</code> class will no longer search for the <code>StaticLoggerBinder</code> class on the class path.</p>
+<p>Instead of “bindings” now <code>org.slf4j.LoggerFactory</code> searches for “providers”. These ship for example with <em>slf4j-nop-2.0.x.jar</em>, <em>slf4j-simple-2.0.x.jar</em> or <em>slf4j-jdk14-2.0.x.jar</em>.</p>
+</blockquote>
+</li>
+<li><p>不需要使用 <code>logger.isDebugEnabled()</code> 来解决日志因为字符拼接产生的性能问题。SLF4J 的方式是使用 <code>&#123;&#125;</code> 作为字符串替换符。</p>
+</li>
+<li><p>提供了很多<a target="_blank" rel="noopener" href="http://www.slf4j.org/manual.html#swapping">桥接方案</a>，以便灵活替换日志库。</p>
+</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li><p>旧版不支持 Lambda 表达式（slf4j-api-2.0.0-alpha 支持但还未 GA）。但日志框架 Log4j 2.4 及以上版本支持 Java 8 Lambda，参考 <a target="_blank" rel="noopener" href="https://logging.apache.org/log4j/2.x/manual/api.html#LambdaSupport">1</a>、<a target="_blank" rel="noopener" href="https://www.baeldung.com/log4j-2-lazy-logging">2</a>，例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">logger.debug(<span class="string">&quot;This &#123;&#125; and &#123;&#125; with &#123;&#125; &quot;</span>, () -&gt; <span class="built_in">this</span>, () -&gt; that, () -&gt; compute());</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="SLF4J-bindings"><a href="#SLF4J-bindings" class="headerlink" title="SLF4J bindings"></a>SLF4J bindings</h2><p><a target="_blank" rel="noopener" href="http://www.slf4j.org/manual.html#swapping">http://www.slf4j.org/manual.html#swapping</a></p>
+<p><img src="/img/java/logging/concrete-bindings.png" alt="concrete bindings"></p>
+<h3 id="Logback"><a href="#Logback" class="headerlink" title="Logback"></a>Logback</h3><p><a target="_blank" rel="noopener" href="https://logback.qos.ch/">https://logback.qos.ch/</a></p>
+<p>推荐使用 SLF4J bound to logback-classic 的经典组合：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>ch.qos.logback<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>logback-classic<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.2.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>传递依赖如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ch.qos.logback:logback-classic:jar:1.2.3:compile</span><br><span class="line">+- ch.qos.logback:logback-core:jar:1.2.3:compile</span><br><span class="line">\- org.slf4j:slf4j-api:jar:1.7.25:compile</span><br></pre></td></tr></table></figure>
+
+<h3 id="Log4j-2-x"><a href="#Log4j-2-x" class="headerlink" title="Log4j 2.x"></a>Log4j 2.x</h3><p><a target="_blank" rel="noopener" href="https://logging.apache.org/log4j/2.x/">https://logging.apache.org/log4j/2.x/</a></p>
+<p>需引入适配层依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.logging.log4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>log4j-slf4j-impl<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.16.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>传递依赖如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">org.apache.logging.log4j:log4j-slf4j-impl:jar:2.16.0:compile</span><br><span class="line">+- org.slf4j:slf4j-api:jar:1.7.25:compile</span><br><span class="line">+- org.apache.logging.log4j:log4j-api:jar:2.16.0:compile</span><br><span class="line">\- org.apache.logging.log4j:log4j-core:jar:2.16.0:runtime</span><br></pre></td></tr></table></figure>
+
+<p>参考：</p>
+<ul>
+<li>《<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/HCbTSvacZCwwleCdbrcGMw">试试这款性能最强的日志框架 Log4j 2</a>》</li>
+<li>&lt;<a target="_blank" rel="noopener" href="https://logback.qos.ch/reasonsToSwitch.html">Reasons to prefer logback over log4j 1.x</a>&gt;<ul>
+<li><a target="_blank" rel="noopener" href="https://logback.qos.ch/translator/"><em>log4j.properties</em> to <em>logback.xml</em> Translator</a></li>
+</ul>
+</li>
+<li>《<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Yq9k1eBquz3mM1sCinneiA">突发！Log4j 2 爆“核弹级”漏洞，Flink、Kafka 等至少十多个项目受影响</a>》</li>
+<li>《<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/lTlZ_vAy0_Vo15UpFl4jSw">Log4j 2 再发新版本 2.16.0，完全删除 Message Lookups 的支持，加固漏洞防御！</a>》</li>
+</ul>
+<h3 id="Log4j-1-x"><a href="#Log4j-1-x" class="headerlink" title="Log4j 1.x"></a>Log4j 1.x</h3><p><a target="_blank" rel="noopener" href="https://logging.apache.org/log4j/1.2/">https://logging.apache.org/log4j/1.2/</a></p>
+<blockquote>
+<p>On August 5, 2015 the Logging Services Project Management Committee announced that Log4j 1.x had reached end of life.</p>
+</blockquote>
+<p>需引入适配层依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.slf4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>slf4j-log4j12<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.7.32<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>传递依赖如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">org.slf4j:slf4j-log4j12:jar:1.7.32:compile</span><br><span class="line">+- org.slf4j:slf4j-api:jar:1.7.32:compile</span><br><span class="line">\- log4j:log4j:jar:1.2.17:compile</span><br></pre></td></tr></table></figure>
+
+<h3 id="java-util-logging-JUL"><a href="#java-util-logging-JUL" class="headerlink" title="java.util.logging (JUL)"></a>java.util.logging (JUL)</h3><p>需引入适配层依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-jdk14 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.slf4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>slf4j-jdk14<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.7.32<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>传递依赖如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">org.slf4j:slf4j-jdk14:jar:1.7.32:compile</span><br><span class="line">\- org.slf4j:slf4j-api:jar:1.7.32:compile</span><br></pre></td></tr></table></figure>
+
+<h1 id="日志框架——Logback"><a href="#日志框架——Logback" class="headerlink" title="日志框架——Logback"></a>日志框架——Logback</h1><h2 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h2><p><a target="_blank" rel="noopener" href="https://logback.qos.ch/manual/configuration.html">https://logback.qos.ch/manual/configuration.html</a></p>
+<p><img src="/img/java/logging/logback/basicSyntax.png" alt="Configuration file syntax"></p>
+<p><img src="/img/java/logging/logback/appenderSyntax.png" alt="Configuring Appenders"></p>
+<p>Logback 配置文件样例：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">configuration</span> <span class="attr">debug</span>=<span class="string">&quot;false&quot;</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">springProperty</span> <span class="attr">scope</span>=<span class="string">&quot;context&quot;</span> <span class="attr">name</span>=<span class="string">&quot;LOG_PATH&quot;</span> <span class="attr">source</span>=<span class="string">&quot;log.path&quot;</span> <span class="attr">defaultValue</span>=<span class="string">&quot;/data/logs&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">springProperty</span> <span class="attr">scope</span>=<span class="string">&quot;context&quot;</span> <span class="attr">name</span>=<span class="string">&quot;ACTIVE_PROFILE&quot;</span> <span class="attr">source</span>=<span class="string">&quot;spring.profiles.active&quot;</span> <span class="attr">defaultValue</span>=<span class="string">&quot;dev&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">springProperty</span> <span class="attr">scope</span>=<span class="string">&quot;context&quot;</span> <span class="attr">name</span>=<span class="string">&quot;LOG_PATTERN&quot;</span> <span class="attr">source</span>=<span class="string">&quot;log.pattern&quot;</span> <span class="attr">defaultValue</span>=<span class="string">&quot;[%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125;] %5p [%t] %logger&#123;50&#125;:%L [%X&#123;traceId&#125;] --&gt; %m%n&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">springProperty</span> <span class="attr">scope</span>=<span class="string">&quot;context&quot;</span> <span class="attr">name</span>=<span class="string">&quot;MONGO_URI&quot;</span> <span class="attr">source</span>=<span class="string">&quot;spring.data.mongodb.uri&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- 控制台输出 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">&quot;STDOUT&quot;</span> <span class="attr">class</span>=<span class="string">&quot;ch.qos.logback.core.ConsoleAppender&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">encoder</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">pattern</span>&gt;</span>$&#123;LOG_PATTERN&#125;<span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">encoder</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- 每天归档日志文件 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">&quot;FILE&quot;</span> <span class="attr">class</span>=<span class="string">&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">file</span>&gt;</span>$&#123;LOG_PATH&#125;/project-$&#123;ACTIVE_PROFILE&#125;.log<span class="tag">&lt;/<span class="name">file</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">rollingPolicy</span> <span class="attr">class</span>=<span class="string">&quot;ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy&quot;</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--日志文件输出的文件名--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">fileNamePattern</span>&gt;</span>$&#123;LOG_PATH&#125;/project-$&#123;ACTIVE_PROFILE&#125;-%i.log.%d&#123;yyyyMMdd&#125;<span class="tag">&lt;/<span class="name">fileNamePattern</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--日志文件保留天数--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">maxHistory</span>&gt;</span>90<span class="tag">&lt;/<span class="name">maxHistory</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">maxFileSize</span>&gt;</span>100MB<span class="tag">&lt;/<span class="name">maxFileSize</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">totalSizeCap</span>&gt;</span>20GB<span class="tag">&lt;/<span class="name">totalSizeCap</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">rollingPolicy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">encoder</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">pattern</span>&gt;</span>$&#123;LOG_PATTERN&#125;<span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">encoder</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- 自定义 MongoDB Appender --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">&quot;MONGO&quot;</span> <span class="attr">class</span>=<span class="string">&quot;com.test.MongoDBAppender&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">logger</span> <span class="attr">name</span>=<span class="string">&quot;org.springframework&quot;</span> <span class="attr">level</span>=<span class="string">&quot;WARN&quot;</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">root</span> <span class="attr">level</span>=<span class="string">&quot;INFO&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">&quot;FILE&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">&quot;STDOUT&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">&quot;MONGO&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">root</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Appenders"><a href="#Appenders" class="headerlink" title="Appenders"></a>Appenders</h2><p>有三种 Appenders：</p>
+<ol>
+<li>Logback 官方提供的 Appenders。</li>
+<li>第三方提供的 Appenders（logstash、…）。</li>
+<li>自定义 Appenders。</li>
+</ol>
+<h3 id="官方-Appenders"><a href="#官方-Appenders" class="headerlink" title="官方 Appenders"></a>官方 Appenders</h3><p>Logback 官方提供的 Appenders 如下：<a target="_blank" rel="noopener" href="http://logback.qos.ch/manual/appenders.html">http://logback.qos.ch/manual/appenders.html</a></p>
+<p><img src="/img/java/logging/logback/Appender.png" alt="Appender"></p>
+<p>其中，常用的两个 Appender 继承结构如下：</p>
+<ul>
+<li><code>ch.qos.logback.core.ConsoleAppender</code></li>
+<li><code>ch.qos.logback.core.rolling.RollingFileAppender</code></li>
+</ul>
+<p><img src="/img/java/logging/logback/OutputStreamAppender.png" alt="OutputStreamAppender"></p>
+<p>其中，<code>ch.qos.logback.core.rolling.RollingFileAppender</code> 可选的策略类如下：</p>
+<p><img src="/img/java/logging/logback/Policy.png" alt="Policy"></p>
+<h3 id="第三方-Appenders"><a href="#第三方-Appenders" class="headerlink" title="第三方 Appenders"></a>第三方 Appenders</h3><p><a target="_blank" rel="noopener" href="https://github.com/logstash/logstash-logback-encoder">https://github.com/logstash/logstash-logback-encoder</a></p>
+<blockquote>
+<p>Provides <a target="_blank" rel="noopener" href="http://logback.qos.ch/">logback</a> encoders, layouts, and appenders to log in JSON and <a target="_blank" rel="noopener" href="https://github.com/logstash/logstash-logback-encoder#data-format">other formats supported by Jackson</a>.</p>
+</blockquote>
+<h3 id="自定义-Appenders"><a href="#自定义-Appenders" class="headerlink" title="自定义 Appenders"></a>自定义 Appenders</h3><p>通过自定义 Appenders，可以将日志输出到任意位置，如 MongoDB、Kafka 等服务。</p>
+<p>下面演示一个简单的同步 Appender，如需异步 Appender，参考<a target="_blank" rel="noopener" href="http://logback.qos.ch/manual/appenders.html#AsyncAppender">这里</a>。</p>
+<p>首先，新建 Appender，继承自抽象类：</p>
+<p><img src="/img/java/logging/logback/UnsynchronizedAppenderBase.png" alt="UnsynchronizedAppenderBase"></p>
+<p><img src="/img/java/logging/logback/ILoggingEvent.png" alt="ILoggingEvent"></p>
+<p>代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> ch.qos.logback.classic.spi.ILoggingEvent;</span><br><span class="line"><span class="keyword">import</span> ch.qos.logback.core.UnsynchronizedAppenderBase;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.mongodb.core.MongoTemplate;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.mongodb.core.SimpleMongoClientDbFactory;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MongoDBAppender</span> <span class="keyword">extends</span> <span class="title class_">UnsynchronizedAppenderBase</span>&lt;ILoggingEvent&gt; &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> SimpleMongoClientDbFactory mongoDbFactory;</span><br><span class="line">    <span class="keyword">private</span> MongoTemplate mongoTemplate;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">ReentrantLock</span> <span class="variable">lock</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ReentrantLock</span>(<span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">start</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">uri</span> <span class="operator">=</span> <span class="built_in">this</span>.getContext().getProperty(<span class="string">&quot;MONGO_URI&quot;</span>);</span><br><span class="line">        mongoDbFactory = <span class="keyword">new</span> <span class="title class_">SimpleMongoClientDbFactory</span>(uri);</span><br><span class="line">        mongoTemplate = <span class="keyword">new</span> <span class="title class_">MongoTemplate</span>(mongoDbFactory);</span><br><span class="line">        <span class="built_in">super</span>.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">append</span><span class="params">(ILoggingEvent eventObject)</span> &#123;</span><br><span class="line">        lock.lock();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">PayLog</span> <span class="variable">log</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">PayLog</span>();</span><br><span class="line">            log.setTraceId(eventObject.getMDCPropertyMap().getOrDefault(MDCUtils.LOG_TRACE_ID, <span class="literal">null</span>));</span><br><span class="line">            log.setOper(eventObject.getMDCPropertyMap().getOrDefault(MDCUtils.OPER, <span class="literal">null</span>));</span><br><span class="line">            log.setLevel(eventObject.getLevel().toString());</span><br><span class="line">            log.setLogger(eventObject.getLoggerName());</span><br><span class="line">            log.setThread(eventObject.getThreadName());</span><br><span class="line">            log.setMessage(eventObject.getFormattedMessage());</span><br><span class="line">            log.setTimestamp(eventObject.getTimeStamp());</span><br><span class="line">            mongoTemplate.insert(log, <span class="string">&quot;payLog&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            lock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后，验证 MongoDB 数据。</p>
+<h2 id="Encoders-amp-Layouts"><a href="#Encoders-amp-Layouts" class="headerlink" title="Encoders &amp; Layouts"></a>Encoders &amp; Layouts</h2><p><a target="_blank" rel="noopener" href="https://logback.qos.ch/manual/encoders.html">https://logback.qos.ch/manual/encoders.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://logback.qos.ch/manual/layouts.html">https://logback.qos.ch/manual/layouts.html</a></p>
+<p>Logback 提供的 <code>ch.qos.logback.core.encoder.Encoder</code> 和 <code>ch.qos.logback.core.Layout</code> 的默认实现如下：</p>
+<p><img src="/img/java/logging/logback/Encoder_and_Layout.png" alt="Layout"></p>
+<p>一般有几种使用组合方式：</p>
+<h3 id="自定义-Pattern-格式"><a href="#自定义-Pattern-格式" class="headerlink" title="自定义 Pattern 格式"></a>自定义 Pattern 格式</h3><p>基于自定义 <a target="_blank" rel="noopener" href="http://logback.qos.ch/manual/layouts.html#PatternLayout">Pattern</a> 格式，直接使用 <code>ch.qos.logback.classic.encoder.PatternLayoutEncoder</code> 即可：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">&quot;FILE&quot;</span> <span class="attr">class</span>=<span class="string">&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;</span>&gt;</span></span><br><span class="line">  ...</span><br><span class="line">  <span class="tag">&lt;<span class="name">encoder</span> <span class="attr">class</span>=<span class="string">&quot;ch.qos.logback.classic.encoder.PatternLayoutEncoder&quot;</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">pattern</span>&gt;</span>%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125; [%thread] %-5level %logger&#123;50&#125; - %msg%n<span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">encoder</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>还可以输出扩展信息，例如 <code>%X&#123;traceId&#125;</code>。</p>
+<h3 id="预定义格式"><a href="#预定义格式" class="headerlink" title="预定义格式"></a>预定义格式</h3><p>基于预定义格式，需要使用 <code>ch.qos.logback.core.encoder.LayoutWrappingEncoder</code>，并搭配相应 <code>Layout</code> 实现。例如输出成 HTML 格式：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">&quot;FILE&quot;</span> <span class="attr">class</span>=<span class="string">&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;</span>&gt;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="tag">&lt;<span class="name">encoder</span> <span class="attr">class</span>=<span class="string">&quot;ch.qos.logback.core.encoder.LayoutWrappingEncoder&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">layout</span> <span class="attr">class</span>=<span class="string">&quot;ch.qos.logback.classic.html.HTMLLayout&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">encoder</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Mapped-Diagnostic-Contexts-MDC"><a href="#Mapped-Diagnostic-Contexts-MDC" class="headerlink" title="Mapped Diagnostic Contexts (MDC)"></a>Mapped Diagnostic Contexts (MDC)</h2><p><a target="_blank" rel="noopener" href="https://logback.qos.ch/manual/mdc.html">https://logback.qos.ch/manual/mdc.html</a></p>
+<blockquote>
+<p>To uniquely stamp each request, the user puts contextual information into the <code>MDC</code>, the abbreviation of <em>Mapped Diagnostic Context</em>.</p>
+<p>The <code>MDC</code> class contains only static methods. It lets the developer place information in a <em>diagnostic context</em> that can be subsequently retrieved by certain logback components. The <code>MDC</code> manages contextual information on a <em>per thread basis</em>. Typically, while starting to service a new client request, the developer will insert pertinent contextual information, such as the client id, client’s IP address, request parameters etc. into the <code>MDC</code>. Logback components, if appropriately configured, will automatically include this information in each log entry.</p>
+<p>Please note that MDC as implemented by logback-classic assumes that values are placed into the MDC with moderate frequency. Also note that a child thread does not automatically inherit a copy of the mapped diagnostic context of its parent.</p>
+<p>Logback leverages SLF4J API:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.slf4j.org/api/org/slf4j/MDC.html">org.slf4j.MDC</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.slf4j.org/api/org/slf4j/MDC.MDCCloseable.html">org.slf4j.MDC.MDCCloseable</a></li>
+</ul>
+</blockquote>
+<h3 id="MDC-And-Managed-Threads"><a href="#MDC-And-Managed-Threads" class="headerlink" title="MDC And Managed Threads"></a>MDC And Managed Threads</h3><p><a target="_blank" rel="noopener" href="https://logback.qos.ch/manual/mdc.html#managedThreads">https://logback.qos.ch/manual/mdc.html#managedThreads</a></p>
+<h3 id="MDCInsertingServletFilter"><a href="#MDCInsertingServletFilter" class="headerlink" title="MDCInsertingServletFilter"></a><code>MDCInsertingServletFilter</code></h3><p><a target="_blank" rel="noopener" href="https://logback.qos.ch/manual/mdc.html#mis">https://logback.qos.ch/manual/mdc.html#mis</a></p>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><p>一、创建 MDCUtils</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> lombok.experimental.UtilityClass;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.MDC;</span><br><span class="line"></span><br><span class="line"><span class="meta">@UtilityClass</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MDCUtils</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">TRACE_ID</span> <span class="operator">=</span> <span class="string">&quot;traceId&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> MDC.MDCCloseable <span class="title function_">addTraceId</span><span class="params">(String traceId)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> MDC.putCloseable(TRACE_ID, traceId);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>二、在合适的位置设置上下文：</p>
+<ul>
+<li>在 http 接口的拦截器</li>
+<li>在定时任务执行之前</li>
+<li>…</li>
+</ul>
+<p>代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (MDC.<span class="type">MDCCloseable</span> <span class="variable">mdc</span> <span class="operator">=</span> MDCUtils.addTraceId(...)) &#123;</span><br><span class="line">  <span class="comment">// TODO</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/img/java/logging/logback/TraceIdInterceptor.png" alt="TraceIdInterceptor"></p>
+<p>三、选择合适的 Appender 并加以配置，参考 Logback 配置文件样例。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://github.com/logstash/logstash-logback-encoder">https://github.com/logstash/logstash-logback-encoder</a></p>
+<p>《<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/68QncZycXgWPWgYg71wZGQ">细说 Java 主流日志工具库</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904101483020295">SpringBoot + MDC 实现全链路调用日志跟踪</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/v3aF1zVwsP5g8KcuJFP4fQ">Java 中打印日志的正确姿势</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/V-TIT1Cw5fH8xSYAEMyukQ">实战总结 | 系统日志规范及最佳实践 | 阿里技术</a>》</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/java-logging/" title="Java 日志框架总结">https://qidawu.github.io/posts/java-logging/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/java-jackson/" rel="prev" title="JSON 框架系列之 Jackson 总结">
+                  <i class="fa fa-chevron-left"></i> JSON 框架系列之 Jackson 总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/cpp-ide/" rel="next" title="C/C++ 语言系列（一）IDE 准备">
+                  C/C++ 语言系列（一）IDE 准备 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

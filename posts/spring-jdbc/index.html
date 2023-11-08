@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Spring JDBC 简介Spring 的 JDBC 框架承担了资源管理和异常处理的工作，从而简化了底层 JDBC API 代码，让我们只需编写从数据库读写数据所需的代码。具体特性如下：  Spring 为读取和写入数据库的几乎所有错误提供了丰富的异常，且不与特定的持久化框架相关联（如下图）。异常都继承自的父类 DataAccessException，是一个非受检异常，无需捕获，因为 Sprin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 数据持久化系列（四）Spring JDBC 使用总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/spring-jdbc/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="Spring JDBC 简介Spring 的 JDBC 框架承担了资源管理和异常处理的工作，从而简化了底层 JDBC API 代码，让我们只需编写从数据库读写数据所需的代码。具体特性如下：  Spring 为读取和写入数据库的几乎所有错误提供了丰富的异常，且不与特定的持久化框架相关联（如下图）。异常都继承自的父类 DataAccessException，是一个非受检异常，无需捕获，因为 Sprin">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/spring/jdbc/data-access-exceptions.png">
+<meta property="og:image" content="https://qidawu.github.io/img/spring/jdbc/data-access-templates.png">
+<meta property="og:image" content="https://qidawu.github.io/img/spring/jdbc/JdbcOperations.png">
+<meta property="article:published_time" content="2018-02-20T14:26:25.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.929Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="JDBC">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/spring/jdbc/data-access-exceptions.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/spring-jdbc/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/spring-jdbc/","path":"posts/spring-jdbc/","title":"Java 数据持久化系列（四）Spring JDBC 使用总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Java 数据持久化系列（四）Spring JDBC 使用总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring-JDBC-%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">Spring JDBC 简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">依赖安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E8%A7%A3%E6%9E%90"><span class="nav-number">3.</span> <span class="nav-text">配置解析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-JDBC-Template"><span class="nav-number">4.</span> <span class="nav-text">使用 JDBC Template</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E6%95%B0%E6%8D%AE%E6%BA%90"><span class="nav-number">4.1.</span> <span class="nav-text">配置数据源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#API-%E4%BB%8B%E7%BB%8D"><span class="nav-number">4.2.</span> <span class="nav-text">API 介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JdbcOperations"><span class="nav-number">4.2.1.</span> <span class="nav-text">JdbcOperations</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NamedParameterJdbcTemplate"><span class="nav-number">4.2.2.</span> <span class="nav-text">NamedParameterJdbcTemplate</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/spring-jdbc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Java 数据持久化系列（四）Spring JDBC 使用总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java 数据持久化系列（四）Spring JDBC 使用总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-02-20 22:26:25" itemprop="dateCreated datePublished" datetime="2018-02-20T22:26:25+08:00">2018-02-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="Spring-JDBC-简介"><a href="#Spring-JDBC-简介" class="headerlink" title="Spring JDBC 简介"></a>Spring JDBC 简介</h1><p>Spring 的 JDBC 框架承担了资源管理和异常处理的工作，从而简化了底层 JDBC API 代码，让我们只需编写从数据库读写数据所需的代码。具体特性如下：</p>
+<ul>
+<li><p>Spring 为读取和写入数据库的几乎所有错误提供了丰富的异常，且不与特定的持久化框架相关联（如下图）。异常都继承自的父类 <code>DataAccessException</code>，是一个非受检异常，无需捕获，因为 Spring 认为触发异常的很多问题是不能在 <code>catch</code> 代码块中修复，因此不强制开发人员编写 <code>catch</code> 代码块。这把是否要捕获异常的权利留给了开发人员。</p>
+<p><img src="/img/spring/jdbc/data-access-exceptions.png" alt="data-access-exceptions"></p>
+</li>
+<li><p>Spring 将数据访问过程中固定的和可变的部分明确划分为两个不同的类：<em>模板（template）</em> 和 <em>回调（callback）</em>。模板管理过程中固定的部分（如事务控制、资源管理、异常处理），而回调处理自定义的数据访问代码（如 SQL 语句、绑定参数、整理结果集）。针对不同的持久化平台，Spring 提供了多个可选的模板：</p>
+<p><img src="/img/spring/jdbc/data-access-templates.png" alt="data-access-templates"></p>
+</li>
+</ul>
+<h1 id="依赖安装"><a href="#依赖安装" class="headerlink" title="依赖安装"></a>依赖安装</h1><p>要在 Spring 中使用 JDBC，需要依赖 <code>spring-jdbc</code>。如果使用 Spring Boot 的话，可以直接导入起步依赖 <code>spring-boot-starter-jdbc</code>：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Spring JDBC 起步依赖 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-jdbc<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- MySQL JDBC 驱动程序 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>mysql<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mysql-connector-java<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>mvn dependency:tree</code> 分析传递依赖如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">[INFO] +- mysql:mysql-connector-java:jar:8.0.13:compile</span><br><span class="line">[INFO] \- org.springframework.boot:spring-boot-starter-jdbc:jar:2.1.2.RELEASE:compile</span><br><span class="line">[INFO]    +- org.springframework.boot:spring-boot-starter:jar:2.1.2.RELEASE:compile</span><br><span class="line">[INFO]    |  +- org.springframework.boot:spring-boot:jar:2.1.2.RELEASE:compile</span><br><span class="line">[INFO]    |  |  \- org.springframework:spring-context:jar:5.1.4.RELEASE:compile</span><br><span class="line">[INFO]    |  |     +- org.springframework:spring-aop:jar:5.1.4.RELEASE:compile</span><br><span class="line">[INFO]    |  |     \- org.springframework:spring-expression:jar:5.1.4.RELEASE:compile</span><br><span class="line">[INFO]    |  +- org.springframework.boot:spring-boot-autoconfigure:jar:2.1.2.RELEASE:compile</span><br><span class="line">[INFO]    |  +- org.springframework.boot:spring-boot-starter-logging:jar:2.1.2.RELEASE:compile</span><br><span class="line">[INFO]    |  |  +- ch.qos.logback:logback-classic:jar:1.2.3:compile</span><br><span class="line">[INFO]    |  |  |  \- ch.qos.logback:logback-core:jar:1.2.3:compile</span><br><span class="line">[INFO]    |  |  +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.11.1:compile</span><br><span class="line">[INFO]    |  |  |  \- org.apache.logging.log4j:log4j-api:jar:2.11.1:compile</span><br><span class="line">[INFO]    |  |  \- org.slf4j:jul-to-slf4j:jar:1.7.25:compile</span><br><span class="line">[INFO]    |  +- javax.annotation:javax.annotation-api:jar:1.3.2:compile</span><br><span class="line">[INFO]    |  +- org.springframework:spring-core:jar:5.1.4.RELEASE:compile</span><br><span class="line">[INFO]    |  |  \- org.springframework:spring-jcl:jar:5.1.4.RELEASE:compile</span><br><span class="line">[INFO]    |  \- org.yaml:snakeyaml:jar:1.23:runtime</span><br><span class="line">[INFO]    +- com.zaxxer:HikariCP:jar:3.2.0:compile</span><br><span class="line">[INFO]    |  \- org.slf4j:slf4j-api:jar:1.7.25:compile</span><br><span class="line">[INFO]    \- org.springframework:spring-jdbc:jar:5.1.4.RELEASE:compile</span><br><span class="line">[INFO]       +- org.springframework:spring-beans:jar:5.1.4.RELEASE:compile</span><br><span class="line">[INFO]       \- org.springframework:spring-tx:jar:5.1.4.RELEASE:compile</span><br></pre></td></tr></table></figure>
+
+<p>可见，<code>spring-boot-starter-jdbc</code> 引入了如下传递依赖：</p>
+<ul>
+<li><code>spring-boot-starter</code><ul>
+<li><code>spring-boot-autoconfigure</code> Spring Boot 自动配置类</li>
+</ul>
+</li>
+<li><code>spring-jdbc</code> Spring JDBC 核心库</li>
+<li><code>HikariCP</code>，Spring Boot 2 的默认数据库连接池</li>
+<li>……</li>
+</ul>
+<h1 id="配置解析"><a href="#配置解析" class="headerlink" title="配置解析"></a>配置解析</h1><p><code>spring-boot-autoconfigure</code> 依赖内含几个关键的配置类，提供了如下外部配置：</p>
+<ul>
+<li><p><code>org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration</code>，用于自动配置嵌入式数据源 或 连接池数据源</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">datasource:</span></span><br><span class="line">    <span class="attr">driver-class-name:</span></span><br><span class="line">    <span class="attr">url:</span></span><br><span class="line">    <span class="attr">username:</span></span><br><span class="line">    <span class="attr">password:</span></span><br></pre></td></tr></table></figure></li>
+<li><p><code>org.springframework.boot.autoconfigure.jdbc.JndiDataSourceAutoConfiguration</code>，用于自动配置 JNDI 数据源</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">datasource:</span></span><br><span class="line">    <span class="attr">jndi-name:</span></span><br></pre></td></tr></table></figure></li>
+<li><p><code>org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration</code>，用于自动配置分布式事务的数据源</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">datasource:</span></span><br><span class="line">    <span class="attr">xa:</span></span><br><span class="line">      <span class="attr">data-source-class-name:</span></span><br><span class="line">      <span class="attr">properties:</span></span><br></pre></td></tr></table></figure></li>
+<li><p><code>org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration</code>，用于导入配置类：<code>JdbcTemplateConfiguration</code>、<code>NamedParameterJdbcTemplateConfiguration</code></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">jdbc:</span></span><br><span class="line">    <span class="attr">template:</span></span><br><span class="line">      <span class="attr">fetch-size:</span> </span><br><span class="line">      <span class="attr">max-rows:</span> </span><br><span class="line">      <span class="attr">query-timeout:</span> </span><br></pre></td></tr></table></figure></li>
+<li><p><code>org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration</code> 用于自动配置 <code>DataSourceTransactionManager</code></p>
+</li>
+<li><p><code>org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration</code></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">transaction:</span></span><br><span class="line">    <span class="attr">defaultTimeout:</span></span><br><span class="line">    <span class="attr">rollbackOnCommitFailure:</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="使用-JDBC-Template"><a href="#使用-JDBC-Template" class="headerlink" title="使用 JDBC Template"></a>使用 JDBC Template</h1><h2 id="配置数据源"><a href="#配置数据源" class="headerlink" title="配置数据源"></a>配置数据源</h2><p>为了让 <code>JdbcTemplate</code> 正常工作，只需要为其设置 <code>DataSource</code> 数据源即可。Spring Boot 下直接使用外部配置：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">datasource:</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">com.zaxxer.hikari.HikariDataSource</span>  <span class="comment">#使用 HikariCP，Spring Boot 2 的默认数据库连接池</span></span><br><span class="line">    <span class="attr">driver-class-name:</span> <span class="string">com.mysql.cj.jdbc.Driver</span></span><br><span class="line">    <span class="attr">url:</span> <span class="string">jdbc:mysql://localhost:3306/test?useUnicode=true;characterEncoding=utf-8</span></span><br><span class="line">    <span class="attr">username:</span> </span><br><span class="line">    <span class="attr">password:</span> </span><br></pre></td></tr></table></figure>
+
+<p>如果未使用 Spring Boot，Java Config 如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> DataSource <span class="title function_">dataSource</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">HikariDataSource</span> <span class="variable">ds</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HikariDataSource</span>();</span><br><span class="line">    ds.setDriverClassName(<span class="string">&quot;com.mysql.cj.jdbc.Driver&quot;</span>);</span><br><span class="line">    ds.setJdbcUrl(<span class="string">&quot;jdbc:mysql://localhost:3306/test?useUnicode=true;characterEncoding=utf-8&quot;</span>);</span><br><span class="line">    ds.setUsername(<span class="string">&quot;&quot;</span>);</span><br><span class="line">    ds.setPassword(<span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> ds;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="API-介绍"><a href="#API-介绍" class="headerlink" title="API 介绍"></a>API 介绍</h2><p><img src="/img/spring/jdbc/JdbcOperations.png" alt="JdbcOperations"></p>
+<ul>
+<li><p><code>org.springframework.jdbc.core.JdbcOperations</code> 是 Spring 封装 JDBC 操作的核心接口，提供的方法如下，基于<strong>索引参数</strong>进行 SQL 参数绑定。实现类为 <code>org.springframework.jdbc.core.JdbcTemplate</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;T&gt; T <span class="title function_">execute</span><span class="params">(...)</span></span><br><span class="line">&lt;T&gt; List&lt;T&gt; <span class="title function_">query</span><span class="params">(String, RowMapper&lt;T&gt;, Object...)</span>  <span class="comment">// 多列查询</span></span><br><span class="line">Map&lt;String, Object&gt; <span class="title function_">queryForMap</span><span class="params">(String, Object...)</span>  <span class="comment">// 单行多列查询</span></span><br><span class="line">&lt;T&gt; T <span class="title function_">queryForObject</span><span class="params">(String, Class&lt;T&gt;, Object...)</span>  <span class="comment">// 单行单列查询</span></span><br><span class="line">&lt;T&gt; T <span class="title function_">queryForObject</span><span class="params">(String, RowMapper&lt;T&gt;, Object...)</span>  <span class="comment">// 单行多列查询</span></span><br><span class="line">&lt;T&gt; List&lt;T&gt; <span class="title function_">queryForList</span><span class="params">(String, Class&lt;T&gt;, Object...)</span>  <span class="comment">// 多行单列查询</span></span><br><span class="line">List&lt;Map&lt;String, Object&gt;&gt; <span class="title function_">queryForList</span><span class="params">(String, Object...)</span>  <span class="comment">// 多行多列查询</span></span><br><span class="line">SqlRowSet <span class="title function_">queryForRowSet</span><span class="params">(...)</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">update</span><span class="params">(...)</span>  <span class="comment">// 执行单个增删改</span></span><br><span class="line"><span class="type">int</span>[] batchUpdate(...)  <span class="comment">// 执行批量增删改</span></span><br><span class="line">Map&lt;String, Object&gt; <span class="title function_">call</span><span class="params">(...)</span>  <span class="comment">// 执行存储过程和函数</span></span><br><span class="line">......</span><br></pre></td></tr></table></figure></li>
+<li><p><code>org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations</code> 接口支持将值以<strong>命名参数</strong>的形式绑定到 SQL，实现类为 <code>org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate</code>，其底层使用的仍然是 <code>JdbcOperations</code>，是一个二次封装的 API，推荐使用。</p>
+</li>
+</ul>
+<p>如果使用 Spring Boot 的话，可以直接导入起步依赖 <code>spring-boot-starter-jdbc</code>，会引入自动配置类 <code>org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration</code>，用于导入配置类：<code>JdbcTemplateConfiguration</code>、<code>NamedParameterJdbcTemplateConfiguration</code>，源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration(proxyBeanMethods = false)</span></span><br><span class="line"><span class="meta">@ConditionalOnClass(&#123; DataSource.class, JdbcTemplate.class &#125;)</span></span><br><span class="line"><span class="meta">@ConditionalOnSingleCandidate(DataSource.class)</span></span><br><span class="line"><span class="meta">@AutoConfigureAfter(DataSourceAutoConfiguration.class)</span></span><br><span class="line"><span class="meta">@EnableConfigurationProperties(JdbcProperties.class)</span></span><br><span class="line"><span class="meta">@Import(&#123; JdbcTemplateConfiguration.class, NamedParameterJdbcTemplateConfiguration.class &#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">JdbcTemplateAutoConfiguration</span> &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>只要满足几个条件，该自动配置类就会生效：</p>
+<ul>
+<li>classpath 包含 <code>DataSource</code>、<code>JdbcTemplate</code> 类</li>
+<li><code>DataSource</code> bean 有且只有一个</li>
+</ul>
+<h3 id="JdbcOperations"><a href="#JdbcOperations" class="headerlink" title="JdbcOperations"></a>JdbcOperations</h3><p>依赖注入 <code>JdbcTemplate</code> 实现之后，使用如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">List&lt;TestPO&gt; testPOList = jdbcOperations.query(</span><br><span class="line">        <span class="string">&quot;SELECT id, name, city FROM test WHERE name = ? AND city = ?&quot;</span>, </span><br><span class="line">        (rs, rowNum) -&gt; <span class="keyword">new</span> <span class="title class_">TestPO</span>(</span><br><span class="line">            rs.getLong(<span class="string">&quot;id&quot;</span>),</span><br><span class="line">            rs.getString(<span class="string">&quot;name&quot;</span>),</span><br><span class="line">            rs.getString(<span class="string">&quot;city&quot;</span>)</span><br><span class="line">        ), </span><br><span class="line">        <span class="string">&quot;李四&quot;</span>, <span class="string">&quot;beijing&quot;</span></span><br><span class="line">    );</span><br><span class="line">log.info(<span class="string">&quot;Result is &#123;&#125;&quot;</span>, testPOList);  <span class="comment">// Result is [TestPO(id=2, name=李四, city=beijing)]</span></span><br><span class="line"></span><br><span class="line"><span class="type">TestPO</span> <span class="variable">testPO</span> <span class="operator">=</span> jdbcOperations.queryForObject(</span><br><span class="line">        <span class="string">&quot;SELECT id, name, city FROM test WHERE id = ?&quot;</span>, </span><br><span class="line">        (rs, rowNum) -&gt; <span class="keyword">new</span> <span class="title class_">TestPO</span>(</span><br><span class="line">            rs.getLong(<span class="string">&quot;id&quot;</span>),</span><br><span class="line">            rs.getString(<span class="string">&quot;name&quot;</span>),</span><br><span class="line">            rs.getString(<span class="string">&quot;city&quot;</span>)</span><br><span class="line">        ), </span><br><span class="line">        <span class="number">2</span></span><br><span class="line">    );</span><br><span class="line">log.info(<span class="string">&quot;Result is &#123;&#125;&quot;</span>, testPO);  <span class="comment">// Result is TestPO(id=2, name=李四, city=beijing)</span></span><br><span class="line"></span><br><span class="line"><span class="type">String</span> <span class="variable">name</span> <span class="operator">=</span> jdbcOperations.queryForObject(<span class="string">&quot;SELECT name FROM test WHERE id = ?&quot;</span>, String.class, <span class="number">2</span>);</span><br><span class="line">log.info(<span class="string">&quot;Result is &#123;&#125;&quot;</span>, name);  <span class="comment">// Result is 李四</span></span><br><span class="line"></span><br><span class="line">List&lt;String&gt; names = jdbcOperations.queryForList(<span class="string">&quot;SELECT name FROM test WHERE city = ?&quot;</span>, String.class, <span class="string">&quot;beijing&quot;</span>);</span><br><span class="line">log.info(<span class="string">&quot;Result is &#123;&#125;&quot;</span>, names);  <span class="comment">// Result is [李四, 王五]</span></span><br><span class="line"></span><br><span class="line">List&lt;Map&lt;String, Object&gt;&gt; testMapList = jdbcOperations.queryForList(<span class="string">&quot;SELECT id, name, city FROM test WHERE city = ?&quot;</span>, <span class="string">&quot;beijing&quot;</span>);</span><br><span class="line">log.info(<span class="string">&quot;Result is &#123;&#125;&quot;</span>, testMapList);  <span class="comment">// Result is [&#123;id=2, name=李四, city=beijing&#125;, &#123;id=3, name=王五, city=beijing&#125;]</span></span><br><span class="line"></span><br><span class="line">Map&lt;String, Object&gt; testMap = jdbcOperations.queryForMap(<span class="string">&quot;SELECT id, name, city FROM test WHERE id = ?&quot;</span>, <span class="number">2</span>);</span><br><span class="line">log.info(<span class="string">&quot;Result is &#123;&#125;&quot;</span>, testMap);  <span class="comment">// Result is &#123;id=2, name=李四, city=beijing&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="NamedParameterJdbcTemplate"><a href="#NamedParameterJdbcTemplate" class="headerlink" title="NamedParameterJdbcTemplate"></a>NamedParameterJdbcTemplate</h3><p>使用 <code>JdbcOperations</code> 需要特别注意索引参数的正确顺序，如果在修改 SQL 时忘记修改参数顺序，将导致查询出错。因此更建议使用命名参数，按照名字来绑定值：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Map&lt;String, Object&gt; cityParamMap = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">paramMap.put(<span class="string">&quot;city&quot;</span>, <span class="string">&quot;beijing&quot;</span>);</span><br><span class="line">paramMap.put(<span class="string">&quot;name&quot;</span>, <span class="string">&quot;李四&quot;</span>);</span><br><span class="line"></span><br><span class="line">List&lt;TestPO&gt; testPOList = namedParameterJdbcOperations.query(</span><br><span class="line">        <span class="string">&quot;SELECT id, name, city FROM test WHERE name = :name AND city = :city&quot;</span>, </span><br><span class="line">        paramMap, </span><br><span class="line">        (rs, rowNum) -&gt; <span class="keyword">new</span> <span class="title class_">TestPO</span>(</span><br><span class="line">            rs.getLong(<span class="string">&quot;id&quot;</span>),</span><br><span class="line">            rs.getString(<span class="string">&quot;name&quot;</span>),</span><br><span class="line">            rs.getString(<span class="string">&quot;city&quot;</span>)</span><br><span class="line">        )</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">log.info(<span class="string">&quot;Result is &#123;&#125;&quot;</span>, testPOList);  <span class="comment">// Result is [TestPO(id=2, name=李四, city=beijing)]</span></span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/spring-jdbc/" title="Java 数据持久化系列（四）Spring JDBC 使用总结">https://qidawu.github.io/posts/spring-jdbc/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/JDBC/" rel="tag"># JDBC</a>
+              <a href="/tags/Spring/" rel="tag"># Spring</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/java-jdbc-mapping-sql-and-java-types/" rel="prev" title="Java 数据持久化系列（三）JDBC SQL 和 Java 数据类型映射总结">
+                  <i class="fa fa-chevron-left"></i> Java 数据持久化系列（三）JDBC SQL 和 Java 数据类型映射总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/spring-transaction/" rel="next" title="Java 数据持久化系列（五）Spring 事务管理总结">
+                  Java 数据持久化系列（五）Spring 事务管理总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="GSLB（Global Server Load Balance，全局负载均衡）作为 CDN 系统架构中最核心的部分，负责流量调度。本文站在服务提供方的视角，做一些技术总结。 GSLB 横向对比下表是三种常见的实现方式对比：    比较项 基于 DNS 解析方式 基于 HTTP 重定向方式 基于 IP 路由方式    性能 本地 DNS 服务器和用户终端 DNS 缓存能力使 GSLB 的负载得到有效">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅析基于 DNS 解析方式的 GSLB">
+<meta property="og:url" content="https://qidawu.github.io/posts/cdn-gslb-dns/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="GSLB（Global Server Load Balance，全局负载均衡）作为 CDN 系统架构中最核心的部分，负责流量调度。本文站在服务提供方的视角，做一些技术总结。 GSLB 横向对比下表是三种常见的实现方式对比：    比较项 基于 DNS 解析方式 基于 HTTP 重定向方式 基于 IP 路由方式    性能 本地 DNS 服务器和用户终端 DNS 缓存能力使 GSLB 的负载得到有效">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/en/thumb/4/4f/ICANN.svg/171px-ICANN.svg.png">
+<meta property="article:published_time" content="2015-09-30T14:33:55.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.910Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="计算机网络">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/en/thumb/4/4f/ICANN.svg/171px-ICANN.svg.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/cdn-gslb-dns/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/cdn-gslb-dns/","path":"posts/cdn-gslb-dns/","title":"浅析基于 DNS 解析方式的 GSLB"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>浅析基于 DNS 解析方式的 GSLB | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#GSLB-%E6%A8%AA%E5%90%91%E5%AF%B9%E6%AF%94"><span class="nav-number">1.</span> <span class="nav-text">GSLB 横向对比</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%86%E7%A1%AE%E5%BA%A6"><span class="nav-number">1.1.</span> <span class="nav-text">准确度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98"><span class="nav-number">1.2.</span> <span class="nav-text">缓存</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%99%BA%E8%83%BD-DNS-%E5%AE%9E%E7%8E%B0%E6%B5%85%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">智能 DNS 实现浅析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#IP-%E5%9C%B0%E5%9D%80%E6%94%B6%E9%9B%86%E7%AD%96%E7%95%A5"><span class="nav-number">2.1.</span> <span class="nav-text">IP 地址收集策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IP-%E5%9C%B0%E5%9D%80%E6%94%B6%E9%9B%86%E6%96%B9%E6%B3%95"><span class="nav-number">2.2.</span> <span class="nav-text">IP 地址收集方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IP-%E5%9C%B0%E5%9D%80%E5%88%97%E8%A1%A8%E4%BD%BF%E7%94%A8"><span class="nav-number">2.3.</span> <span class="nav-text">IP 地址列表使用</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/cdn-gslb-dns/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="浅析基于 DNS 解析方式的 GSLB | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          浅析基于 DNS 解析方式的 GSLB
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2015-09-30 22:33:55" itemprop="dateCreated datePublished" datetime="2015-09-30T22:33:55+08:00">2015-09-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>GSLB（Global Server Load Balance，全局负载均衡）作为 CDN 系统架构中最核心的部分，负责流量调度。本文站在服务提供方的视角，做一些技术总结。</p>
+<h1 id="GSLB-横向对比"><a href="#GSLB-横向对比" class="headerlink" title="GSLB 横向对比"></a>GSLB 横向对比</h1><p>下表是三种常见的实现方式对比：</p>
+<table>
+<thead>
+<tr>
+<th>比较项</th>
+<th>基于 DNS 解析方式</th>
+<th>基于 HTTP 重定向方式</th>
+<th>基于 IP 路由方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>性能</td>
+<td>本地 DNS 服务器和用户终端 DNS 缓存能力使 GSLB 的负载得到有效分担</td>
+<td>GSLB 处理压力大，容易成为系统性能的瓶颈</td>
+<td>借助 IP 网络设备完成负载均衡，没有单点性能瓶颈</td>
+</tr>
+<tr>
+<td>准确度</td>
+<td>定位准确度取决于本地 DNS 覆盖范围，用户的<strong>本地 DNS 设置错误会造成定位不准确</strong></td>
+<td>在对用户 IP 地址数据进行有效维护的前提下，定位准确且精度高</td>
+<td>就近性调度准确，但对设备健康性等动态信息响应会有延迟</td>
+</tr>
+<tr>
+<td>效率</td>
+<td>效率约等于 DNS 系统本身处理效率</td>
+<td>依靠服务器做处理，对硬件资源的要求高</td>
+<td>效率约等于 IP 设备本身效率</td>
+</tr>
+<tr>
+<td>扩展性</td>
+<td>扩展性和通用性好</td>
+<td>扩展性较差，需对各种应用协议进行定制开发</td>
+<td>通用性好，但适用范围有限</td>
+</tr>
+<tr>
+<td>商用性</td>
+<td>在 Web 加速领域使用较多</td>
+<td>国内流媒体 CDN 应用较多</td>
+<td>尚无商用案例</td>
+</tr>
+</tbody></table>
+<p>其中，基于 DNS 解析方式的 GSLB 有两个注意点：</p>
+<h2 id="准确度"><a href="#准确度" class="headerlink" title="准确度"></a>准确度</h2><p>本地 DNS 服务器（英文：Local DNS Server，缩写：LDNS）是用户所在局域网或 ISP 网络中使用的域名服务器，定位准确度就取决于它了。因为当用户在浏览器里访问某个域名时，浏览器会首先向 LDNS 发起查询，LDNS 再<strong>代为</strong>向整个 DNS 域名系统发起查询，直到找到解析结果。域名解析流程详见<a target="_blank" rel="noopener" href="http://www.cnblog.me/2015/09/24/dns/">本文</a>。</p>
+<p>如果 LDNS 设置不当，例如没有使用当前 ISP 提供的当地 LDNS，如 8.8.8.8，这种实现方式可能会误判用户的位置，从而将用户误导到错误的 CDN 缓存节点，造成加速效果差的问题。</p>
+<h2 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h2><p>DNS 的查询机制给使用它的互联网应用带来额外的时延，有时时延还比较大，为了解决问题，引入了“缓存”机制。缓存是指 DNS 查询结果在 LDNS 中缓存，当其它主机向它发起查询请求时，它就直接向主机返回缓存中能够找到的结果，直到数据过期。</p>
+<p>在基于 DNS 解析方式下无论采用何种工作方式，都会有一些请求不会到达 GSLB，这是 DNS 系统本身的缓存机制在起作用。当用户请求的域名在本地 DNS 或本机（客户端浏览器）得到了解析结果，这些请求就不会达到 GSLB。Cache 更新时间越短，用户请求到达 GSLB 的几率越大。由于 DNS 的缓存机制屏蔽掉相当一部分用户请求，从而大大减轻了 GSLB 处理压力，使得系统抗流量冲击能力显著提升，这也是很多商业 CDN 选择 DNS 机制做全局负载均衡的原因之一。但弊端在于，如果在 DNS 缓存刷新间隔之内系统发生影响用户服务的变化，比如某个节点故障，某个链路拥塞等，用户依然会被调度到故障点去。</p>
+<h1 id="智能-DNS-实现浅析"><a href="#智能-DNS-实现浅析" class="headerlink" title="智能 DNS 实现浅析"></a>智能 DNS 实现浅析</h1><p>基于 DNS 解析方式的 GSLB 的实现关键，就在于使 DNS “智能化”。简单来说，就是通过建立 IP 地址访问列表，判断用户的访问来源，以确定其访问节点的位置。下面浅析如何实现智能 DNS：</p>
+<h2 id="IP-地址收集策略"><a href="#IP-地址收集策略" class="headerlink" title="IP 地址收集策略"></a>IP 地址收集策略</h2><p>由于基于 DNS 解析方式的 CDN 使用 LDNS 进行寻址，因此我们只需要收集互联网上 DNS 服务器的 IP 地址。这样一来，收集的数量就会大大降低。为了更进一步缩小范围，一般使用 IP 地址加子网掩码的形式，如 123.175.0.0/16。在 IP 地址列表文件，就这么一行，却可以囊括很多 DNS 服务器。</p>
+<h2 id="IP-地址收集方法"><a href="#IP-地址收集方法" class="headerlink" title="IP 地址收集方法"></a>IP 地址收集方法</h2><p>除了可以跟第三方购买 IP 地址段之外，这里重点介绍下如何自行收集 IP 地址段。</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/en/thumb/4/4f/ICANN.svg/171px-ICANN.svg.png" alt="ICANN"></p>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/ICANN">ICANN</a> —— 一个负责 IP 地址分配以及域名管理的机构，与之关联的五个 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Regional_Internet_registry">RIR</a> 机构负责替 ICANN 分配与登记部分区域的 IP 地址段：</p>
+<table>
+<thead>
+<tr>
+<th>RIR</th>
+<th>Region</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a target="_blank" rel="noopener" href="http://www.afrinic.net/">AFRINIC</a></td>
+<td>Africa region</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="http://www.apnic.net/">APNIC</a></td>
+<td>Asia and Pacific region</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="http://www.arin.net/">ARIN</a></td>
+<td>Canada, many Caribbean and North Atlantic islands, and the United States</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="http://www.lacnic.net/">LACNIC</a></td>
+<td>Latin America and parts of the Caribbean</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="http://www.ripe.net/">RIPE NCC</a></td>
+<td>Europe, the Middle East and parts of Central Asia</td>
+</tr>
+</tbody></table>
+<p>可见，亚太地区的 IP 地址由 APNIC 分配，访问<a target="_blank" rel="noopener" href="https://www.apnic.net/publications/research-and-insights/stats">这里</a>可以知道在何处得到 IP 地址分配的有用信息。进入 FTP ，阅读 README 以了解该下载哪个文件以及文件的格式。下载 <a target="_blank" rel="noopener" href="https://ftp.apnic.net/stats/apnic/delegated-apnic-latest"><code>delegated-apnic-latest</code></a> 文件，过滤出分配给中国大陆（CN）的 IP 地址。</p>
+<p>然后可以通过 <a target="_blank" rel="noopener" href="https://lookup.icann.org/zh/lookup">ICANN Lookup</a> 或 <a target="_blank" rel="noopener" href="http://ipwhois.cnnic.cn/">CNNIC IP 地址注册信息查询系统</a>查询这个地址段属于哪个运营商，但一次只能查询一个地址段，根本无法手工完成所有地址段的查询，因此推荐在 Linux 下使用 <code>whois</code> 命令以遍历的方式逐个查询，然后按关键字归类、去重、排序，按运营商产生几个独立的文件。如果各 IP 地址租用方未能按统一的标准在 APNIC 提交注册信息则需要特殊处理。</p>
+<h2 id="IP-地址列表使用"><a href="#IP-地址列表使用" class="headerlink" title="IP 地址列表使用"></a>IP 地址列表使用</h2><p>最后，将每个 IP 地址列表文件关联一个 Bind 的视图 View。定义视图的目的在于，当有来自某个文件所列 IP 范围内的客户发起查询请求时，使用本视图的区文件进行域名解析。通俗的说，就是让某个运营商线路的用户，去访问某个运营商机房的服务器。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/cdn-gslb-dns/" title="浅析基于 DNS 解析方式的 GSLB">https://qidawu.github.io/posts/cdn-gslb-dns/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag"># 计算机网络</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/vim/" rel="prev" title="Vim 使用总结">
+                  <i class="fa fa-chevron-left"></i> Vim 使用总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/gnu-coreutils/" rel="next" title="GNU/CoreUtils 常用命令总结">
+                  GNU/CoreUtils 常用命令总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="引言计算机解决一个具体问题时，一般需要经过以下几个步骤：  从具体的问题抽象出一个适当的数学模型；什么是数学模型呢？数学模型常常是现实世界的一个简化，是抽取对象的本质特性构造出来的。尽管数学是一门精准的科学，但是我们建立数学模型却要从实际出发，要针对问题做必要简化，简化的标准有两个：够用、易解。  设计一个求解该数学模型的算法； 用某种计算机编程语言编写实现该算法的程序，调试和运行程序直至最终得到">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构系列（一）概论总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/data-structure/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="引言计算机解决一个具体问题时，一般需要经过以下几个步骤：  从具体的问题抽象出一个适当的数学模型；什么是数学模型呢？数学模型常常是现实世界的一个简化，是抽取对象的本质特性构造出来的。尽管数学是一门精准的科学，但是我们建立数学模型却要从实际出发，要针对问题做必要简化，简化的标准有两个：够用、易解。  设计一个求解该数学模型的算法； 用某种计算机编程语言编写实现该算法的程序，调试和运行程序直至最终得到">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/data-structure/problem_solution_steps.png">
+<meta property="og:image" content="https://qidawu.github.io/img/data-structure/data_structure_terms.png">
+<meta property="og:image" content="https://qidawu.github.io/img/data-structure/set.png">
+<meta property="og:image" content="https://qidawu.github.io/img/data-structure/list/list.jpg">
+<meta property="og:image" content="https://qidawu.github.io/img/data-structure/tree/terms_of_tree.png">
+<meta property="og:image" content="https://qidawu.github.io/img/data-structure/tree_and_graph.jpg">
+<meta property="og:image" content="https://qidawu.github.io/img/data-structure/time_complexity.jpg">
+<meta property="og:image" content="https://qidawu.github.io/img/data-structure/time_complexity_2.jpg">
+<meta property="og:image" content="https://qidawu.github.io/img/data-structure/data_structure.png">
+<meta property="article:published_time" content="2021-10-01T09:13:35.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.912Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="数据结构">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/data-structure/problem_solution_steps.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/data-structure/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/data-structure/","path":"posts/data-structure/","title":"数据结构系列（一）概论总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>数据结构系列（一）概论总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E5%92%8C%E6%9C%AF%E8%AF%AD"><span class="nav-number">2.</span> <span class="nav-text">基本概念和术语</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84"><span class="nav-number">2.1.</span> <span class="nav-text">逻辑结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9B%86%E5%90%88%E7%BB%93%E6%9E%84"><span class="nav-number">2.1.1.</span> <span class="nav-text">集合结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E7%BB%93%E6%9E%84"><span class="nav-number">2.1.2.</span> <span class="nav-text">线性结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%91%E5%BD%A2%E7%BB%93%E6%9E%84"><span class="nav-number">2.1.3.</span> <span class="nav-text">树形结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE%E7%BB%93%E6%9E%84"><span class="nav-number">2.1.4.</span> <span class="nav-text">图结构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84"><span class="nav-number">2.2.</span> <span class="nav-text">存储结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%BA%E5%BA%8F%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F"><span class="nav-number">2.2.1.</span> <span class="nav-text">顺序存储方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%93%BE%E5%BC%8F%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F"><span class="nav-number">2.2.2.</span> <span class="nav-text">链式存储方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%A3%E5%88%97%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F"><span class="nav-number">2.2.3.</span> <span class="nav-text">散列存储方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F"><span class="nav-number">2.2.4.</span> <span class="nav-text">索引存储方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E8%BF%90%E7%AE%97"><span class="nav-number">2.3.</span> <span class="nav-text">基本运算</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%97%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="nav-number">3.1.</span> <span class="nav-text">时间复杂度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A9%BA%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="nav-number">3.2.</span> <span class="nav-text">空间复杂度</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">4.</span> <span class="nav-text">常用数据结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/data-structure/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="数据结构系列（一）概论总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据结构系列（一）概论总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-10-01 17:13:35" itemprop="dateCreated datePublished" datetime="2021-10-01T17:13:35+08:00">2021-10-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>计算机解决一个具体问题时，一般需要经过以下几个步骤：</p>
+<ol>
+<li>从具体的问题抽象出一个适当的<strong>数学模型</strong>；什么是数学模型呢？数学模型常常是现实世界的一个简化，是抽取对象的本质特性构造出来的。尽管数学是一门精准的科学，但是我们建立数学模型却要从实际出发，要针对问题做必要简化，简化的标准有两个：够用、易解。 </li>
+<li>设计一个求解该数学模型的<strong>算法</strong>；</li>
+<li>用某种计算机编程语言编写实现该算法的<strong>程序</strong>，调试和运行程序直至最终得到问题的解。</li>
+</ol>
+<p><img src="/img/data-structure/problem_solution_steps.png" alt="计算机解决问题的步骤"></p>
+<h1 id="基本概念和术语"><a href="#基本概念和术语" class="headerlink" title="基本概念和术语"></a>基本概念和术语</h1><p><img src="/img/data-structure/data_structure_terms.png" alt="data_structure"></p>
+<ul>
+<li>数据：所有被计算机存储、处理的对象。</li>
+<li>数据对象：是<strong>性质相同</strong>的数据元素的集合，是数据的子集。</li>
+<li>数据元素：数据的<strong>基本单位</strong>，也是运算的基本单位。例如在数据库中，又称为记录（Record）/元组（Tuple）。</li>
+<li>数据项：数据不可分割的<strong>最小单位</strong>。例如在数据库中，又称为字段（Field）/域（Domain）。</li>
+<li>数据结构：是相互之间存在一种或多种特定关系的数据元素的集合。它包括：<ul>
+<li>数据的逻辑结构</li>
+<li>数据的存储结构</li>
+<li>数据的基本运算</li>
+</ul>
+</li>
+</ul>
+<h2 id="逻辑结构"><a href="#逻辑结构" class="headerlink" title="逻辑结构"></a>逻辑结构</h2><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Abstract_data_type">https://en.wikipedia.org/wiki/Abstract_data_type</a></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Set_(abstract_data_type)">https://en.wikipedia.org/wiki/Set_(abstract_data_type)</a><ul>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Multiset">https://en.wikipedia.org/wiki/Multiset</a></li>
+</ul>
+</li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/List_(abstract_data_type)">https://en.wikipedia.org/wiki/List_(abstract_data_type)</a><ul>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Stack_(abstract_data_type)">https://en.wikipedia.org/wiki/Stack_(abstract_data_type)</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Queue_(abstract_data_type)">https://en.wikipedia.org/wiki/Queue_(abstract_data_type)</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Priority_queue">https://en.wikipedia.org/wiki/Priority_queue</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Double-ended_queue">https://en.wikipedia.org/wiki/Double-ended_queue</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Double-ended_priority_queue">https://en.wikipedia.org/wiki/Double-ended_priority_queue</a></li>
+</ul>
+</li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Tree_(data_structure)">https://en.wikipedia.org/wiki/Tree_(data_structure)</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Graph_(abstract_data_type)">https://en.wikipedia.org/wiki/Graph_(abstract_data_type)</a></li>
+</ul>
+<h3 id="集合结构"><a href="#集合结构" class="headerlink" title="集合结构"></a>集合结构</h3><p>任意两个结点之间都没有邻接关系，组织形式松散：</p>
+<p><img src="/img/data-structure/set.png" alt="集合结构"></p>
+<p>集合的三大特性：</p>
+<ul>
+<li>确定性：给定一个集合，任给一个元素，该元素或者属于或者不属于该集合，二者必居其一，不允许有模棱两可的情况出现。</li>
+<li>互异性：一个集合中，任何两个元素都认为是不相同的，即每个元素只能出现一次。有时需要对同一元素出现多次的情形进行刻画，可以使用多重集，其中的元素允许出现多次。</li>
+<li>无序性：一个集合中，每个元素的地位都是相同的，元素之间是无序的。集合上可以定义序关系，定义了序关系后，元素之间就可以按照序关系排序。但就集合本身的特性而言，元素之间没有必然的序。</li>
+</ul>
+<p>集合之间可以进行运算：</p>
+<table>
+<thead>
+<tr>
+<th>数学符号</th>
+<th>含义</th>
+<th>英文</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>∩</td>
+<td>交</td>
+<td>Intersection</td>
+</tr>
+<tr>
+<td>∪</td>
+<td>并</td>
+<td>Union</td>
+</tr>
+<tr>
+<td>−</td>
+<td>差</td>
+<td>Difference</td>
+</tr>
+</tbody></table>
+<h3 id="线性结构"><a href="#线性结构" class="headerlink" title="线性结构"></a>线性结构</h3><blockquote>
+<p>顾名思义，线性表就是数据排成像一条线一样的结构。每个线性表上的数据最多只有前和后两个方向。其实除了数组，链表、队列、栈等也是线性表结构。</p>
+<p>而与它相对立的概念是<strong>非线性表</strong>，比如二叉树、堆、图等。之所以叫非线性，是因为，在非线性表中，数据之间并不是简单的前后关系。</p>
+</blockquote>
+<p><img src="/img/data-structure/list/list.jpg" alt="线性结构"></p>
+<p>特征：</p>
+<ul>
+<li>排队（1:1）</li>
+<li>起始节点无直接前驱</li>
+<li>终端节点无直接后继</li>
+<li>中间节点都有直接前驱和直接后继</li>
+</ul>
+<h3 id="树形结构"><a href="#树形结构" class="headerlink" title="树形结构"></a>树形结构</h3><p>父子（1:N）</p>
+<p><img src="/img/data-structure/tree/terms_of_tree.png" alt="树形结构的相关术语"></p>
+<blockquote>
+<p>有没有想过为啥只有二叉树，而没有一叉树？实际上链表就是特殊的树，即一叉树。</p>
+</blockquote>
+<h3 id="图结构"><a href="#图结构" class="headerlink" title="图结构"></a>图结构</h3><p>地图（N:M）</p>
+<p><img src="/img/data-structure/tree_and_graph.jpg" alt="图结构"></p>
+<h2 id="存储结构"><a href="#存储结构" class="headerlink" title="存储结构"></a>存储结构</h2><p>数据的逻辑结构在计算机中的实现，称为数据的存储结构（或物理结构）。</p>
+<p>一般情况下，一个存储结构包括以下两个部分：</p>
+<ul>
+<li>存储数据元素本身</li>
+<li>数据元素之间的关联方式</li>
+</ul>
+<p>逻辑结构常见的存储结构实现如下：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>顺序存储方式</th>
+<th>链式存储方式</th>
+<th>散列存储方式</th>
+<th>索引存储方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>集合结构</strong></td>
+<td></td>
+<td></td>
+<td>散列表（Hash Table）</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>线性结构</strong></td>
+<td>数组（一维、二维）<br/>顺序栈<br/>循环队列（取余运算）</td>
+<td>链表（单向/双向、是否循环）<br/>链栈<br/>链队列</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>树形结构</strong><br/>(二叉树)</td>
+<td>一维数组<li>满二叉树</li><li>完全二叉树</li><li>非完全二叉树（需增设虚拟结点转为完全二叉树）</li></td>
+<td>链表<li>二叉链表</li><li>三叉链表</li></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>树形结构</strong><br/>(树)</td>
+<td>双亲表示法（一维数组）</td>
+<td>孩子链表表示法（一维数组 + 单链表）<br/>孩子兄弟表示法（二叉链表，LC-RS）</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>图结构</strong></td>
+<td>邻接矩阵（二维数组）</td>
+<td>邻接表（一维数组 + 单链表）</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h3 id="顺序存储方式"><a href="#顺序存储方式" class="headerlink" title="顺序存储方式"></a>顺序存储方式</h3><p>所有存储结点存放在一个连续的存储区中。利用结点在存储区中的<strong>相对位置</strong>来表示数据元素之间的逻辑关系。</p>
+<h3 id="链式存储方式"><a href="#链式存储方式" class="headerlink" title="链式存储方式"></a>链式存储方式</h3><p>每个存储结点除了含有一个数据元素之外，还包含<strong>指针</strong>，每个指针指向一个与本结点有逻辑关系的结点。利用指针表示数据元素之间的逻辑关系。</p>
+<h3 id="散列存储方式"><a href="#散列存储方式" class="headerlink" title="散列存储方式"></a>散列存储方式</h3><p>散列表（Hash Table）。</p>
+<h3 id="索引存储方式"><a href="#索引存储方式" class="headerlink" title="索引存储方式"></a>索引存储方式</h3><h2 id="基本运算"><a href="#基本运算" class="headerlink" title="基本运算"></a>基本运算</h2><p>基本运算，是指在某种逻辑结构上施加的操作，即对逻辑结构的加工。这种加工以数据的逻辑结构为对象。一般而言，在每个逻辑结构上，都定义了一组基本运算，这些运算包括：等。</p>
+<ul>
+<li>建立（Init）</li>
+<li>读取（Access）</li>
+<li>查找（Search）</li>
+<li>插入（Insert）</li>
+<li>删除（Delete）</li>
+</ul>
+<h1 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h1><p>定义：一个算法规定了求解给定问题所需的处理步骤及其执行顺序，使得给定问题能在有限时间内被求解。</p>
+<p>算法分析：</p>
+<ul>
+<li>正确性</li>
+<li>易读性</li>
+<li>健壮性</li>
+<li>时空性</li>
+</ul>
+<h2 id="时间复杂度"><a href="#时间复杂度" class="headerlink" title="时间复杂度"></a>时间复杂度</h2><p><img src="/img/data-structure/time_complexity.jpg"></p>
+<p><img src="/img/data-structure/time_complexity_2.jpg"></p>
+<h2 id="空间复杂度"><a href="#空间复杂度" class="headerlink" title="空间复杂度"></a>空间复杂度</h2><h1 id="常用数据结构"><a href="#常用数据结构" class="headerlink" title="常用数据结构"></a>常用数据结构</h1><p><img src="/img/data-structure/data_structure.png" alt="data_structure"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://www.cs.usfca.edu/~galles/visualization/Algorithms.html">https://www.cs.usfca.edu/~galles/visualization/Algorithms.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.bigocheatsheet.com/">https://www.bigocheatsheet.com</a></p>
+<p><a target="_blank" rel="noopener" href="https://the-algorithms.com/">https://the-algorithms.com/</a></p>
+<p><a target="_blank" rel="noopener" href="http://data.biancheng.net/">数据结构与算法教程 C 语言版教程</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.techiedelight.com/">Techie Delight</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/data-structure/" title="数据结构系列（一）概论总结">https://qidawu.github.io/posts/data-structure/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag"># 数据结构</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/cpp-dynamic-memory/" rel="prev" title="C/C++ 语言系列（十二）动态内存分配与回收">
+                  <i class="fa fa-chevron-left"></i> C/C++ 语言系列（十二）动态内存分配与回收
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/data-structure-list/" rel="next" title="数据结构系列（二）线性结构总结">
+                  数据结构系列（二）线性结构总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

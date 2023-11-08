@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="泛型术语泛型涉及的术语比较多，其与反射接口的对应关系如下：    术语 中文含义 举例 反射接口 备注    Generic type 泛型 List&lt;E&gt; ParameterizedType    Parameterized type 参数化类型 List&lt;String&gt; ParameterizedType    Raw type 原始类型 List Parameteri">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 反射篇（三）泛型 API 总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/java-reflection-generic-type/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="泛型术语泛型涉及的术语比较多，其与反射接口的对应关系如下：    术语 中文含义 举例 反射接口 备注    Generic type 泛型 List&lt;E&gt; ParameterizedType    Parameterized type 参数化类型 List&lt;String&gt; ParameterizedType    Raw type 原始类型 List Parameteri">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/java/reflection/Type.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/reflection/Type_methods.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/reflection/GenericDeclaration_method.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/reflection/GenericDeclaration.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/reflection/generic_type_example.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/reflection/ParameterizedType_example.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/reflection/WildcardType_example.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/reflection/TypeVariable_example.png">
+<meta property="article:published_time" content="2018-11-21T14:53:54.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.920Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/java/reflection/Type.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/java-reflection-generic-type/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/java-reflection-generic-type/","path":"posts/java-reflection-generic-type/","title":"Java 反射篇（三）泛型 API 总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Java 反射篇（三）泛型 API 总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%9B%E5%9E%8B%E6%9C%AF%E8%AF%AD"><span class="nav-number">1.</span> <span class="nav-text">泛型术语</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%9B%E5%9E%8B-API"><span class="nav-number">2.</span> <span class="nav-text">泛型 API</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#java-lang-reflect-Type"><span class="nav-number">2.1.</span> <span class="nav-text">java.lang.reflect.Type</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#java-lang-reflect-GenericDeclaration"><span class="nav-number">2.2.</span> <span class="nav-text">java.lang.reflect.GenericDeclaration</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">3.</span> <span class="nav-text">例子</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90%E4%B8%80"><span class="nav-number">3.1.</span> <span class="nav-text">例子一</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90%E4%BA%8C"><span class="nav-number">3.2.</span> <span class="nav-text">例子二</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90%E4%B8%89"><span class="nav-number">3.3.</span> <span class="nav-text">例子三</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90%E5%9B%9B"><span class="nav-number">3.4.</span> <span class="nav-text">例子四</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90%E4%BA%94"><span class="nav-number">3.5.</span> <span class="nav-text">例子五</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/java-reflection-generic-type/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Java 反射篇（三）泛型 API 总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java 反射篇（三）泛型 API 总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-11-21 22:53:54" itemprop="dateCreated datePublished" datetime="2018-11-21T22:53:54+08:00">2018-11-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="泛型术语"><a href="#泛型术语" class="headerlink" title="泛型术语"></a>泛型术语</h1><p>泛型涉及的术语比较多，其与反射接口的对应关系如下：</p>
+<table>
+<thead>
+<tr>
+<th>术语</th>
+<th>中文含义</th>
+<th>举例</th>
+<th>反射接口</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Generic type</td>
+<td>泛型</td>
+<td><code>List&lt;E&gt;</code></td>
+<td><code>ParameterizedType</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Parameterized type</td>
+<td>参数化类型</td>
+<td><code>List&lt;String&gt;</code></td>
+<td><code>ParameterizedType</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Raw type</td>
+<td>原始类型</td>
+<td><code>List</code></td>
+<td><code>ParameterizedType#getRawType</code></td>
+<td>该方法虽然返回  <code>Type</code> 类型，但实际类型是 <code>Class</code>，可以强转使用：<code>(Class&lt;?&gt;) type</code>。</td>
+</tr>
+<tr>
+<td>Unbounded wildcard type</td>
+<td>无限制通配符类型</td>
+<td><code>List&lt;?&gt;</code></td>
+<td><code>ParameterizedType</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Bounded wildcard type</td>
+<td>有限制通配符类型（上限）</td>
+<td><code>List&lt;? extends Number&gt;</code></td>
+<td><code>ParameterizedType</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Bounded wildcard type</td>
+<td>有限制通配符类型（下限）</td>
+<td><code>List&lt;? super Number&gt;</code></td>
+<td><code>ParameterizedType</code></td>
+<td></td>
+</tr>
+<tr>
+<td>wildcard type</td>
+<td>通配符类型</td>
+<td><code>?</code></td>
+<td><code>WildcardType</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Formal type parameter</td>
+<td>形式类型参数</td>
+<td><code>E</code></td>
+<td><code>TypeVariable</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Actual type parameter</td>
+<td>实际类型参数</td>
+<td><code>String</code></td>
+<td><code>ParameterizedType#getActualTypeArguments</code></td>
+<td>该方法虽然返回  <code>Type[]</code> 类型，但各元素实际类型是 <code>Class</code>，可以强转使用：<code>(Class&lt;?&gt;) type</code>。</td>
+</tr>
+<tr>
+<td>Bounded type parameter</td>
+<td>有限制类型参数</td>
+<td><code>&lt;E extends Number&gt;</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Recursive type bound</td>
+<td>递归类型限制</td>
+<td><code>&lt;T extends Comparable&lt;T&gt;&gt;</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Generic method</td>
+<td>泛型方法</td>
+<td><code>static &lt;E&gt; List&lt;E&gt; asList(E[] a)</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Type token</td>
+<td>类型令牌</td>
+<td><code>String.class</code></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h1 id="泛型-API"><a href="#泛型-API" class="headerlink" title="泛型 API"></a>泛型 API</h1><h2 id="java-lang-reflect-Type"><a href="#java-lang-reflect-Type" class="headerlink" title="java.lang.reflect.Type"></a>java.lang.reflect.Type</h2><p>JDK 1.5 引入了泛型特性，一同引入的还有 Java <code>Type</code> 类型体系。其中 <code>java.lang.reflect.Type</code> 接口作为核心，是 Java 编程语言中所有类型的通用超级接口（common superinterface），这些类型包括：</p>
+<ul>
+<li>原始类型（raw types）</li>
+<li>参数化类型（parameterized types）</li>
+<li>数组类型（array types）</li>
+<li>八大原始类型（primitive types）</li>
+<li>类型变量（type variables）</li>
+</ul>
+<p>调整后新引入的五个接口如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">java.lang.reflect.Type</span><br><span class="line">  java.lang.reflect.ParameterizedType // 最最常用</span><br><span class="line">  java.lang.reflect.TypeVariable</span><br><span class="line">  java.lang.reflect.WildcardType</span><br><span class="line">  java.lang.reflect.GenericArrayType</span><br></pre></td></tr></table></figure>
+
+<p><img src="/img/java/reflection/Type.png" alt="Type"></p>
+<p>它们的核心方法如下：</p>
+<p><img src="/img/java/reflection/Type_methods.png" alt="Type_methods"></p>
+<p>类、字段、方法、构造方法也相应增加了一组方法，用于获取 <code>Type</code>：</p>
+<ul>
+<li><p><code>java.lang.Class</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取普通 Class</span></span><br><span class="line">Class&lt;? <span class="built_in">super</span> T&gt; getSuperclass()</span><br><span class="line">Class&lt;?&gt;[] getInterfaces()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取 Type</span></span><br><span class="line">Type <span class="title function_">getGenericSuperclass</span><span class="params">()</span></span><br><span class="line">Type[] getGenericInterfaces()</span><br></pre></td></tr></table></figure></li>
+<li><p><code>java.lang.reflect.Field</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取普通 Class</span></span><br><span class="line">Class&lt;?&gt; getType()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取 Type</span></span><br><span class="line">Type <span class="title function_">getGenericType</span><span class="params">()</span></span><br></pre></td></tr></table></figure></li>
+<li><p><code>java.lang.reflect.Method</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取普通 Class</span></span><br><span class="line">Class&lt;?&gt; getReturnType()</span><br><span class="line">Class&lt;?&gt;[] getParameterTypes()</span><br><span class="line">Class&lt;?&gt;[] getExceptionTypes()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取 Type</span></span><br><span class="line">Type <span class="title function_">getGenericReturnType</span><span class="params">()</span></span><br><span class="line">Type[] getGenericParameterTypes()</span><br><span class="line">Type[] getGenericExceptionTypes()</span><br></pre></td></tr></table></figure></li>
+<li><p><code>java.lang.reflect.Constructor</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取普通 Class</span></span><br><span class="line">Class&lt;?&gt;[] getParameterTypes()</span><br><span class="line">Class&lt;?&gt;[] getExceptionTypes()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取 Type</span></span><br><span class="line">Type[] getGenericParameterTypes()</span><br><span class="line">Type[] getGenericExceptionTypes()</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="java-lang-reflect-GenericDeclaration"><a href="#java-lang-reflect-GenericDeclaration" class="headerlink" title="java.lang.reflect.GenericDeclaration"></a>java.lang.reflect.GenericDeclaration</h2><p>同时新增的接口还有 <code>java.lang.reflect.GenericDeclaration</code>，用于获取 <code>TypeVariable</code>：</p>
+<p><img src="/img/java/reflection/GenericDeclaration_method.png" alt="GenericDeclaration_method"></p>
+<p>从源码看，只有三个类实现了该接口（见下图）：</p>
+<ul>
+<li><code>java.lang.Class</code></li>
+<li><code>java.lang.reflect.Method</code></li>
+<li><code>java.lang.reflect.Constructor</code></li>
+</ul>
+<p><img src="/img/java/reflection/GenericDeclaration.png" alt="GenericDeclaration"></p>
+<p>因此只有这三个地方可以声明为泛型，并获取其类型参数（type variables）集合：<code>K</code>、<code>V</code></p>
+<ul>
+<li><p>类型（例如 <code>class</code>、<code>interface</code>）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span>&lt;K, V&gt; &#123; ... &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Test</span>&lt;K, V&gt; &#123; ... &#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>构造方法（<code>Constructor</code>）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> &lt;K, V&gt; Test(K k, V v) &#123; ... &#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>方法（<code>Method</code>）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> &lt;K, V&gt; K <span class="title function_">test</span><span class="params">(V v)</span> &#123; ... &#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>类、方法、构造方法也相应增加了一个方法，用于获取 <code>TypeVariable</code>：</p>
+<ul>
+<li><code>java.lang.Class</code></li>
+<li><code>java.lang.reflect.Method</code></li>
+<li><code>java.lang.reflect.Constructor</code></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">TypeVariable&lt;?&gt;[] getTypeParameters()</span><br></pre></td></tr></table></figure>
+
+<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><p>下面是几个获取 <code>Type</code> 的例子，先创建三个类：<code>BaseMapper</code>、<code>PersonMapper</code>、<code>Person</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">BaseMapper</span>&lt;T <span class="keyword">extends</span> <span class="title class_">Serializable</span> &amp; Comparable&lt;T&gt;, K <span class="keyword">extends</span> <span class="title class_">Serializable</span>&gt; &#123;</span><br><span class="line"></span><br><span class="line">    T <span class="title function_">getById</span><span class="params">(K id)</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PersonMapper</span> <span class="keyword">implements</span> <span class="title class_">BaseMapper</span>&lt;Person, Long&gt;, Serializable &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Person <span class="title function_">getById</span><span class="params">(Long id)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">log</span><span class="params">(List&lt;?&gt; list)</span> &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> &lt;T <span class="keyword">extends</span> <span class="title class_">Number</span>&gt; <span class="keyword">void</span> <span class="title function_">test</span><span class="params">(List&lt;T&gt; list1, List&lt;? extends Comparable&lt;T&gt;&gt; list2, T[] array, T item)</span> &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Person</span> <span class="keyword">implements</span> <span class="title class_">Serializable</span>, Comparable&lt;Person&gt; &#123;</span><br><span class="line">    <span class="keyword">private</span> String personName;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">compareTo</span><span class="params">(Person o)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>.personName.compareTo(o.getPersonName());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="例子一"><a href="#例子一" class="headerlink" title="例子一"></a>例子一</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test1</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">Method</span> <span class="variable">method</span> <span class="operator">=</span> PersonMapper.class.getMethod(<span class="string">&quot;test&quot;</span>, List.class, List.class, Number[].class, Number.class);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// [0] ParameterizedType</span></span><br><span class="line">    <span class="comment">// [1] ParameterizedType</span></span><br><span class="line">    <span class="comment">// [2] GenericArrayType</span></span><br><span class="line">    <span class="comment">// [3] TypeVariable</span></span><br><span class="line">    Type[] genericParameterTypes = method.getGenericParameterTypes();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// Class</span></span><br><span class="line">    <span class="type">Type</span> <span class="variable">genericReturnType</span> <span class="operator">=</span> method.getGenericReturnType();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// Class[0]</span></span><br><span class="line">    Type[] genericExceptionTypes = method.getGenericExceptionTypes();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>三个 <code>Type</code> 变量的内容如下：</p>
+<p><img src="/img/java/reflection/generic_type_example.png" alt="generic_type_examples"></p>
+<h2 id="例子二"><a href="#例子二" class="headerlink" title="例子二"></a>例子二</h2><p>接下来看下 <code>ParameterizedType</code> 的使用，可以用于获取泛型的原始类型（Raw type）、实际类型参数（Actual type parameter）列表：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test2</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// com.github.reflection.BaseMapper&lt;com.github.reflection.Person, java.lang.Long&gt;</span></span><br><span class="line">    <span class="type">Type</span> <span class="variable">genericInterface</span> <span class="operator">=</span> PersonMapper.class.getGenericInterfaces()[<span class="number">0</span>];</span><br><span class="line">    assertTrue(genericInterface <span class="keyword">instanceof</span> ParameterizedType);</span><br><span class="line">    <span class="type">ParameterizedType</span> <span class="variable">parameterizedType</span> <span class="operator">=</span> (ParameterizedType) genericInterface;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 获取原始类型：BaseMapper.class</span></span><br><span class="line">    assertEquals(BaseMapper.class, parameterizedType.getRawType());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取实际类型参数列表：Person.class、Long.class</span></span><br><span class="line">    Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();</span><br><span class="line">    assertEquals(<span class="string">&quot;There are two actual type arguments&quot;</span>, <span class="number">2</span>, actualTypeArguments.length);</span><br><span class="line">    <span class="comment">// class com.github.reflection.Person</span></span><br><span class="line">    assertClass(<span class="string">&quot;One is Person&quot;</span>, actualTypeArguments[<span class="number">0</span>], Person.class);</span><br><span class="line">    <span class="comment">// class java.lang.Long</span></span><br><span class="line">    assertClass(<span class="string">&quot;Another is Long&quot;</span>, actualTypeArguments[<span class="number">1</span>], Long.class);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">assertClass</span><span class="params">(Type type, Class expectedClass)</span> &#123;</span><br><span class="line">    assertTrue(type <span class="keyword">instanceof</span> Class);</span><br><span class="line">    <span class="type">Class</span> <span class="variable">clazz</span> <span class="operator">=</span> (Class) type;</span><br><span class="line">    assertEquals(expectedClass, clazz);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>genericInterface</code> 变量的内容如下，接口返回类型虽然为 <code>Type</code>，实际类型为 <code>ParameterizedType</code>，因此可以强转。该泛型变量的原始类型、实际类型参数列表如下，实际都为 <code>Class</code> 类型，因此可以强转 <code>(Class&lt;?&gt;) type</code>：</p>
+<p><img src="/img/java/reflection/ParameterizedType_example.png" alt="ParameterizedType_example"></p>
+<h2 id="例子三"><a href="#例子三" class="headerlink" title="例子三"></a>例子三</h2><p><code>WildcardType</code> 的使用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test3</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// java.util.List&lt;?&gt;</span></span><br><span class="line">    <span class="type">Method</span> <span class="variable">method</span> <span class="operator">=</span> PersonMapper.class.getMethod(<span class="string">&quot;log&quot;</span>, List.class);</span><br><span class="line">    <span class="type">Type</span> <span class="variable">genericParameterType</span> <span class="operator">=</span> method.getGenericParameterTypes()[<span class="number">0</span>];</span><br><span class="line">    assertTrue(<span class="string">&quot;The first parameter type of log method is instance of ParameterizedType&quot;</span>, </span><br><span class="line">               genericParameterType <span class="keyword">instanceof</span> ParameterizedType);</span><br><span class="line">    <span class="type">ParameterizedType</span> <span class="variable">parameterType</span> <span class="operator">=</span> (ParameterizedType) genericParameterType;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// WildcardType</span></span><br><span class="line">    <span class="type">Type</span> <span class="variable">type</span> <span class="operator">=</span> parameterType.getActualTypeArguments()[<span class="number">0</span>];</span><br><span class="line">    assertTrue(<span class="string">&quot;The actual type argument of ParameterizedType is instance of WildcardType&quot;</span>, </span><br><span class="line">               type <span class="keyword">instanceof</span> WildcardType);</span><br><span class="line">    <span class="type">WildcardType</span> <span class="variable">wildcardType</span> <span class="operator">=</span> (WildcardType) type;</span><br><span class="line">    assertEquals(<span class="string">&quot;No lower bounds exist&quot;</span>, <span class="number">0</span>, wildcardType.getLowerBounds().length);</span><br><span class="line">    assertEquals(<span class="string">&quot;Only one upper bound exist&quot;</span>, <span class="number">1</span>, wildcardType.getUpperBounds().length);</span><br><span class="line">    <span class="comment">// 通配符默认上限类型为 Object</span></span><br><span class="line">    assertEquals(<span class="string">&quot;The upper bound is Object&quot;</span>, Object.class, wildcardType.getUpperBounds()[<span class="number">0</span>]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>Type</code> 类型变量 <code>genericParameterType</code> 的内容如下，实际类型是 <code>ParameterizedType</code>，其 <code>?</code> 通配符是 <code>WildcardType</code>：</p>
+<p><img src="/img/java/reflection/WildcardType_example.png" alt="WildcardType_example"></p>
+<h2 id="例子四"><a href="#例子四" class="headerlink" title="例子四"></a>例子四</h2><p><code>TypeVariable</code> 的使用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test4</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">Method</span> <span class="variable">method</span> <span class="operator">=</span> BaseMapper.class.getMethod(<span class="string">&quot;getById&quot;</span>, Serializable.class);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// TypeVariable</span></span><br><span class="line">    <span class="type">Type</span> <span class="variable">genericReturnType</span> <span class="operator">=</span> method.getGenericReturnType();</span><br><span class="line">    assertTrue(<span class="string">&quot;Return type of method is instance of TypeVariable&quot;</span>, genericReturnType <span class="keyword">instanceof</span> TypeVariable);</span><br><span class="line">    <span class="type">TypeVariable</span> <span class="variable">typeVariable</span> <span class="operator">=</span> (TypeVariable) genericReturnType;</span><br><span class="line">    assertEquals(<span class="string">&quot;First upper bound is Serializable&quot;</span>, Serializable.class, typeVariable.getBounds()[<span class="number">0</span>]);</span><br><span class="line">    <span class="type">ParameterizedType</span> <span class="variable">parameterizedType</span> <span class="operator">=</span> (ParameterizedType) typeVariable.getBounds()[<span class="number">1</span>];</span><br><span class="line">    assertEquals(<span class="string">&quot;Second upper bound is Comparable&quot;</span>, Comparable.class, parameterizedType.getRawType());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>Type</code> 类型变量 <code>genericReturnType</code> 的内容如下，实际类型是 <code>TypeVariable</code>，</p>
+<p><img src="/img/java/reflection/TypeVariable_example.png" alt="TypeVariable_example"></p>
+<h2 id="例子五"><a href="#例子五" class="headerlink" title="例子五"></a>例子五</h2><p>定义一个泛型工具类，用于获取 <code>T.class</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.lang.reflect.ParameterizedType;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Type;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GenericsUtils</span> &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 通过反射获得定义 Class 时声明的父类的泛型参数的类型</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> clazz </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 返回第一个类型</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Class <span class="title function_">getSuperClassGenricType</span><span class="params">(Class clazz)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> getSuperClassGenricType(clazz, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 通过反射获得定义 Class 时声明的父类的泛型参数的类型</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> clazz</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> 返回某个下标的类型</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Class <span class="title function_">getSuperClassGenricType</span><span class="params">(Class clazz, <span class="type">int</span> index)</span></span><br><span class="line">            <span class="keyword">throws</span> IndexOutOfBoundsException &#123;</span><br><span class="line">        <span class="type">Type</span> <span class="variable">genType</span> <span class="operator">=</span> clazz.getGenericSuperclass();</span><br><span class="line">        <span class="keyword">if</span> (!(genType <span class="keyword">instanceof</span> ParameterizedType)) &#123;</span><br><span class="line">            <span class="keyword">return</span> Object.class;</span><br><span class="line">        &#125;</span><br><span class="line">        Type[] params = ((ParameterizedType) genType).getActualTypeArguments();</span><br><span class="line">        <span class="keyword">if</span> (index &gt;= params.length || index &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> Object.class;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!(params[index] <span class="keyword">instanceof</span> Class)) &#123;</span><br><span class="line">            <span class="keyword">return</span> Object.class;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> (Class) params[index];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>API：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Type.html">https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Type.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/ParameterizedType.html">https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/ParameterizedType.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/TypeVariable.html">https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/TypeVariable.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/WildcardType.html">https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/WildcardType.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/GenericArrayType.html">https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/GenericArrayType.html</a></li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://www.baeldung.com/java-generics-vs-extends-object">https://www.baeldung.com/java-generics-vs-extends-object</a></p>
+<p><a target="_blank" rel="noopener" href="http://tutorials.jenkov.com/java-generics/wildcards.html">Java Generic’s Wildcards</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/faed45dbfa0c">Java Reflection API 介绍</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/ShuSheng0007/article/details/89520530">读懂 Java 类型（Type）系统</a></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/aJzNSXo80MVFJZOZVhurQQ">现代编程语言需要泛型 —— 排序例子</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/java-reflection-generic-type/" title="Java 反射篇（三）泛型 API 总结">https://qidawu.github.io/posts/java-reflection-generic-type/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/java-reflection-annotation/" rel="prev" title="Java 反射篇（二）注解 API 总结">
+                  <i class="fa fa-chevron-left"></i> Java 反射篇（二）注解 API 总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/java-jdk-proxy/" rel="next" title="Java 反射篇（四）动态代理之 JDK Proxy 总结">
+                  Java 反射篇（四）动态代理之 JDK Proxy 总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

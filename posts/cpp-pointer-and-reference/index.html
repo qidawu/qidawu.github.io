@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="引用引用是一个别名，也就是说，它是某个已存在变量的另一个名字。修改引用等同于修改被引用变量自身。 一个变量可以有多个引用。 声明引用不存在空引用。声明引用的同时，必须初始化，否则报编译错误如下： 1int &amp;ref;  &#x2F;&#x2F; declaration of reference variable &amp;#x27;ref&amp;#x27; requires an initializer  引用一旦初始化，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C&#x2F;C++ 语言系列（四）复合数据类型之指针、引用">
+<meta property="og:url" content="https://qidawu.github.io/posts/cpp-pointer-and-reference/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="引用引用是一个别名，也就是说，它是某个已存在变量的另一个名字。修改引用等同于修改被引用变量自身。 一个变量可以有多个引用。 声明引用不存在空引用。声明引用的同时，必须初始化，否则报编译错误如下： 1int &amp;ref;  &#x2F;&#x2F; declaration of reference variable &amp;#x27;ref&amp;#x27; requires an initializer  引用一旦初始化，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/c/pointer_and_reference.png">
+<meta property="article:published_time" content="2021-02-06T14:07:11.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.911Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="C&#x2F;C++">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/c/pointer_and_reference.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/cpp-pointer-and-reference/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/cpp-pointer-and-reference/","path":"posts/cpp-pointer-and-reference/","title":"C/C++ 语言系列（四）复合数据类型之指针、引用"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>C/C++ 语言系列（四）复合数据类型之指针、引用 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">引用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A3%B0%E6%98%8E%E5%BC%95%E7%94%A8"><span class="nav-number">1.1.</span> <span class="nav-text">声明引用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%87%E9%92%88"><span class="nav-number">2.</span> <span class="nav-text">指针</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A3%B0%E6%98%8E%E6%8C%87%E9%92%88"><span class="nav-number">2.1.</span> <span class="nav-text">声明指针</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E6%8C%87%E9%92%88%E5%A4%A7%E5%B0%8F"><span class="nav-number">2.2.</span> <span class="nav-text">获取指针大小</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E9%92%88%E7%9A%84%E7%AE%97%E6%95%B0%E8%BF%90%E7%AE%97"><span class="nav-number">2.3.</span> <span class="nav-text">指针的算数运算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E7%82%B9%E8%80%83%E7%82%B9"><span class="nav-number">2.4.</span> <span class="nav-text">重点考点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E6%8C%87%E9%92%88"><span class="nav-number">2.4.1.</span> <span class="nav-text">常指针</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E5%90%91%E5%B8%B8%E9%87%8F%E7%9A%84%E6%8C%87%E9%92%88"><span class="nav-number">2.4.2.</span> <span class="nav-text">指向常量的指针</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E5%90%91%E5%B8%B8%E9%87%8F%E7%9A%84%E5%B8%B8%E6%8C%87%E9%92%88"><span class="nav-number">2.4.3.</span> <span class="nav-text">指向常量的常指针</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E6%8C%87%E9%92%88"><span class="nav-number">2.5.</span> <span class="nav-text">常见指针</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%8C%87%E9%92%88"><span class="nav-number">2.5.1.</span> <span class="nav-text">字符串指针</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E7%BB%84%E6%8C%87%E9%92%88"><span class="nav-number">2.5.2.</span> <span class="nav-text">数组指针</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%84%E4%BD%93%E6%8C%87%E9%92%88"><span class="nav-number">2.5.3.</span> <span class="nav-text">结构体指针</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B1%BB%E6%8C%87%E9%92%88"><span class="nav-number">2.5.4.</span> <span class="nav-text">类指针</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E7%94%A8%E4%B8%8E%E6%8C%87%E9%92%88%E5%AF%B9%E6%AF%94"><span class="nav-number">3.</span> <span class="nav-text">引用与指针对比</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/cpp-pointer-and-reference/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="C/C++ 语言系列（四）复合数据类型之指针、引用 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C/C++ 语言系列（四）复合数据类型之指针、引用
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-02-06 22:07:11" itemprop="dateCreated datePublished" datetime="2021-02-06T22:07:11+08:00">2021-02-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><p>引用是一个别名，也就是说，它是某个已存在变量的另一个名字。修改引用等同于修改被引用变量自身。</p>
+<p>一个变量可以有多个引用。</p>
+<h2 id="声明引用"><a href="#声明引用" class="headerlink" title="声明引用"></a>声明引用</h2><p>不存在<strong>空引用</strong>。声明引用的同时，必须初始化，否则报编译错误如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> &amp;ref;  <span class="comment">// declaration of reference variable &#x27;ref&#x27; requires an initializer</span></span><br></pre></td></tr></table></figure>
+
+<p>引用一旦初始化，就不能再指向另一个变量。修改引用等同于修改被引用变量本身。</p>
+<h1 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h1><p>指针是一个变量，其值为另一个变量的地址，即，内存位置的直接地址。</p>
+<h2 id="声明指针"><a href="#声明指针" class="headerlink" title="声明指针"></a>声明指针</h2><p>一元运算符 <code>*</code> 用于声明一个指针变量：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">bool</span>   *bp;    <span class="comment">// 声明一个布尔型的空指针</span></span><br><span class="line"><span class="type">char</span>   *ch;    <span class="comment">// 声明一个字符型的空指针</span></span><br><span class="line"><span class="type">int</span>    *ip;    <span class="comment">// 声明一个整型的空指针</span></span><br><span class="line"><span class="type">double</span> *dp;    <span class="comment">// 声明声明一个 double 型的空指针</span></span><br><span class="line"><span class="type">float</span>  *fp;    <span class="comment">// 声明一个浮点型的空指针</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>可以声明空指针。</li>
+<li>除了常指针，其它指针可以在任何时间被初始化。</li>
+<li>所有指针的值的实际数据类型，不管是布尔型、字符型、整型、浮点型，还是其它的数据类型，都是一样的，其值都是一个<strong>代表内存地址</strong>的<strong>十六进制数</strong>。</li>
+<li>不同数据类型的指针之间唯一的不同是，指针所指向的变量或常量的数据类型不同，<strong>因此执行递增或递减时的步长不同</strong>。</li>
+</ul>
+<h2 id="获取指针大小"><a href="#获取指针大小" class="headerlink" title="获取指针大小"></a>获取指针大小</h2><table>
+<thead>
+<tr>
+<th>操作系统</th>
+<th>指针变量的存储大小</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>32 bits</td>
+<td>4 Bytes</td>
+</tr>
+<tr>
+<td>64 bits</td>
+<td>8 Bytes</td>
+</tr>
+</tbody></table>
+<p>本机为 64 位操作系统，验证如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">sizeof</span>(<span class="type">bool</span>*)  <span class="comment">// 8</span></span><br><span class="line"><span class="keyword">sizeof</span>(<span class="type">char</span>*)  <span class="comment">// 8</span></span><br><span class="line"><span class="keyword">sizeof</span>(<span class="type">int</span>*)    <span class="comment">// 8</span></span><br><span class="line"><span class="keyword">sizeof</span>(<span class="type">float</span>*)  <span class="comment">// 8</span></span><br><span class="line"><span class="keyword">sizeof</span>(<span class="type">double</span>*) <span class="comment">// 8</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="指针的算数运算"><a href="#指针的算数运算" class="headerlink" title="指针的算数运算"></a>指针的算数运算</h2><p>可以对指针进行四种算术运算：<code>++</code>、<code>--</code>、<code>+</code>、<code>-</code>。运算后，指针保存新的地址。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> a = <span class="number">0</span>;</span><br><span class="line"><span class="type">int</span> b = <span class="number">1</span>;</span><br><span class="line"><span class="type">int</span> * p = &amp;a;</span><br><span class="line"></span><br><span class="line">p = &amp;b;</span><br><span class="line">p += <span class="number">1</span>;</span><br><span class="line">p -= <span class="number">1</span>;</span><br><span class="line">p++;</span><br><span class="line">p--;</span><br><span class="line">++p;</span><br><span class="line">--p;</span><br></pre></td></tr></table></figure>
+
+<h2 id="重点考点"><a href="#重点考点" class="headerlink" title="重点考点"></a>重点考点</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 常指针</span></span><br><span class="line"><span class="type">int</span>* <span class="type">const</span> p = &amp;a;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 指向常量的指针</span></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> * p;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 指向常量的常指针</span></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> * <span class="type">const</span> p = &amp;a;</span><br></pre></td></tr></table></figure>
+
+<h3 id="常指针"><a href="#常指针" class="headerlink" title="常指针"></a>常指针</h3><p>顾名思义，指针本身是个常量，不能修改。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> a = <span class="number">0</span>;</span><br><span class="line"><span class="type">int</span> b = <span class="number">1</span>;</span><br><span class="line"><span class="type">int</span>* <span class="type">const</span> p = &amp;a;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 表达式必须是可修改的左值</span></span><br><span class="line"><span class="comment">// cannot assign to variable &#x27;p&#x27; with const-qualified type &#x27;int *const&#x27;</span></span><br><span class="line">p = &amp;b;</span><br><span class="line">p += <span class="number">1</span>;</span><br><span class="line">p -= <span class="number">1</span>;</span><br><span class="line">p++;</span><br><span class="line">p--;</span><br><span class="line">++p;</span><br><span class="line">--p;</span><br></pre></td></tr></table></figure>
+
+<p>常见的常指针，例如：</p>
+<ul>
+<li>数组名</li>
+</ul>
+<h3 id="指向常量的指针"><a href="#指向常量的指针" class="headerlink" title="指向常量的指针"></a>指向常量的指针</h3><p>顾名思义，指针指向的是常量，不能修改其值。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> a = <span class="number">0</span>;</span><br><span class="line"><span class="type">int</span> b = <span class="number">1</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> * p = &amp;a;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 指针本身可以重新赋值</span></span><br><span class="line">p = &amp;b;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 但不能修改指针指向的常量的值，否则报编译错误：</span></span><br><span class="line"><span class="comment">// 表达式必须是可修改的左值</span></span><br><span class="line"><span class="comment">// read-only variable is not assignable</span></span><br><span class="line">*p += <span class="number">1</span>;</span><br><span class="line">*p -= <span class="number">1</span>;</span><br><span class="line">(*p)++;</span><br><span class="line">(*p)--;</span><br><span class="line">++(*p);</span><br><span class="line">--(*p);</span><br></pre></td></tr></table></figure>
+
+<h3 id="指向常量的常指针"><a href="#指向常量的常指针" class="headerlink" title="指向常量的常指针"></a>指向常量的常指针</h3><p>结合了上述两种特性。</p>
+<h2 id="常见指针"><a href="#常见指针" class="headerlink" title="常见指针"></a>常见指针</h2><h3 id="字符串指针"><a href="#字符串指针" class="headerlink" title="字符串指针"></a>字符串指针</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 字符串指针（指向一个常量字符串，它被存放在程序的静态数据区，一旦定义就不能改变）</span></span><br><span class="line"><span class="type">char</span> * str = <span class="string">&quot;hello world&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="数组指针"><a href="#数组指针" class="headerlink" title="数组指针"></a>数组指针</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> arrayName[<span class="number">5</span>] = &#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;;  <span class="comment">// &amp;arrayName = 0x7ffee7376620</span></span><br><span class="line"><span class="type">int</span> * p = arrayName;  <span class="comment">// // 数组指针（Pointers to array，即指向数组中第一个元素的地址）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">  cout &lt;&lt; p &lt;&lt; endl;  <span class="comment">// 0x7ffee7376620 0x7ffee7376624 0x7ffee7376628 0x7ffee737662c 0x7ffee7376630</span></span><br><span class="line">  cout &lt;&lt; *p++ &lt;&lt; endl;  <span class="comment">// 1 2 3 4 5</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="结构体指针"><a href="#结构体指针" class="headerlink" title="结构体指针"></a>结构体指针</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">product apple;</span><br><span class="line"><span class="comment">// 结构体指针（Pointers to struct）</span></span><br><span class="line">product * p = &amp;apple;</span><br><span class="line"><span class="comment">// The arrow operator (-&gt;) is a dereference operator that is used exclusively with pointers to objects that have members. This operator serves to access the member of an object directly from its address.</span></span><br><span class="line">p-&gt;weight;</span><br><span class="line"><span class="comment">// equivalent to:</span></span><br><span class="line">(*p).weight;</span><br></pre></td></tr></table></figure>
+
+<h3 id="类指针"><a href="#类指针" class="headerlink" title="类指针"></a>类指针</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Rectangle <span class="title">rect</span><span class="params">(<span class="number">3</span>, <span class="number">4</span>)</span></span>;</span><br><span class="line"><span class="comment">// 类指针（Pointers to classes），主要用于多态性</span></span><br><span class="line">Shape * p = &amp;rect;</span><br><span class="line"></span><br><span class="line"><span class="comment">// member y of object x</span></span><br><span class="line">rect.<span class="built_in">area</span>();  <span class="comment">// 12</span></span><br><span class="line"><span class="comment">// member y of object pointed to by x</span></span><br><span class="line">p-&gt;<span class="built_in">area</span>();    <span class="comment">// 12</span></span><br><span class="line"><span class="comment">// equivalent to:</span></span><br><span class="line">(*p).<span class="built_in">area</span>();  <span class="comment">// 12</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="引用与指针对比"><a href="#引用与指针对比" class="headerlink" title="引用与指针对比"></a>引用与指针对比</h1><p>常见问题，下列代码的区别？</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">*p</span><br><span class="line">&amp;p</span><br><span class="line">*&amp;p</span><br><span class="line">&amp;*p</span><br></pre></td></tr></table></figure>
+
+<p>要解决这个问题，首先需要了解这两个运算符的区别：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>在赋值运算符左侧</th>
+<th>在赋值运算符右侧</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>*</code></td>
+<td>表示声明指针</td>
+<td>表示<strong>取值运算符</strong></td>
+</tr>
+<tr>
+<td><code>&amp;</code></td>
+<td>表示声明引用</td>
+<td>表示<strong>取址运算符</strong></td>
+</tr>
+</tbody></table>
+<p>代码示例如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> a = <span class="number">10</span>;</span><br><span class="line"><span class="type">int</span>&amp; b = a;</span><br><span class="line"><span class="type">int</span>* p = &amp;a;</span><br><span class="line"></span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;a = &quot;</span> &lt;&lt; a &lt;&lt; <span class="string">&quot;, &amp;a = &quot;</span> &lt;&lt; &amp;a &lt;&lt; <span class="string">&quot;, *&amp;a = &quot;</span> &lt;&lt; *&amp;a &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;b = &quot;</span> &lt;&lt; b &lt;&lt; <span class="string">&quot;, &amp;b = &quot;</span> &lt;&lt; &amp;b &lt;&lt; <span class="string">&quot;, *&amp;b = &quot;</span> &lt;&lt; *&amp;b &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;p = &quot;</span> &lt;&lt; p &lt;&lt; <span class="string">&quot;, &amp;p = &quot;</span> &lt;&lt; &amp;p &lt;&lt; <span class="string">&quot;, *p = &quot;</span> &lt;&lt; *p &lt;&lt; <span class="string">&quot;, &amp;*p = &quot;</span> &lt;&lt; &amp;*p &lt;&lt; <span class="string">&quot;, *&amp;p = &quot;</span> &lt;&lt; *&amp;p &lt;&lt; <span class="built_in">endl</span></span><br></pre></td></tr></table></figure>
+
+<p>输出结果如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a = 10, &amp;a = 0x7ffee483763c, *&amp;a = 10</span><br><span class="line">b = 10, &amp;b = 0x7ffee483763c, *&amp;b = 10</span><br><span class="line">p = 0x7ffee483763c, &amp;p = 0x7ffee4837628, *p = 10, &amp;*p = 0x7ffee483763c, *&amp;p = 0x7ffee483763c</span><br></pre></td></tr></table></figure>
+
+<p>总结如下：</p>
+<table>
+<thead>
+<tr>
+<th>指针变量</th>
+<th>结果</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>p</code></td>
+<td>0x7ffee483763c</td>
+<td>返回指针变量 <code>p</code> 保存的地址</td>
+</tr>
+<tr>
+<td><code>*p</code></td>
+<td>10</td>
+<td>返回指针变量 <code>p</code> 保存的地址的实际值</td>
+</tr>
+<tr>
+<td><code>&amp;p</code></td>
+<td>0x7ffee4837628</td>
+<td>返回指针变量 <code>p</code> 自身的地址</td>
+</tr>
+<tr>
+<td><code>&amp;*p</code></td>
+<td>0x7ffee483763c</td>
+<td>返回指针变量 <code>p</code> 保存的地址的实际值的地址</td>
+</tr>
+<tr>
+<td><code>*&amp;p</code></td>
+<td>0x7ffee483763c</td>
+<td>返回指针变量 <code>p</code> 自身的地址的实际值</td>
+</tr>
+</tbody></table>
+<p>引用与指针的区别，如下图：</p>
+<p><img src="/img/c/pointer_and_reference.png" alt="引用与指针对比"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="http://www.cplusplus.com/doc/tutorial/pointers/">http://www.cplusplus.com/doc/tutorial/pointers/</a></p>
+<p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/4995899/difference-between-pointer-and-reference-in-c">Difference between pointer and reference in C ?</a></p>
+<p><a target="_blank" rel="noopener" href="https://cdlwhm1217096231.github.io/C/C-%E4%B8%AD%E7%9A%84%E5%8F%82%E6%95%B0%E4%BC%A0%E9%80%92%E6%96%B9%E5%BC%8F%EF%BC%9A%E4%BC%A0%E5%80%BC%E3%80%81%E4%BC%A0%E5%9C%B0%E5%9D%80%E3%80%81%E4%BC%A0%E5%BC%95%E7%94%A8%E6%80%BB%E7%BB%93/">C++ 中的参数传递方式：传值、传地址、传引用总结</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.crucial.cn/learn-with-crucial/memory/how-much-memory-does-your-windows-support">32/64 位系统支持多大内存？</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/cpp-pointer-and-reference/" title="C&#x2F;C++ 语言系列（四）复合数据类型之指针、引用">https://qidawu.github.io/posts/cpp-pointer-and-reference/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/C-C/" rel="tag"># C/C++</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/cpp-function/" rel="prev" title="C/C++ 语言系列（三）函数总结">
+                  <i class="fa fa-chevron-left"></i> C/C++ 语言系列（三）函数总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/cpp-array/" rel="next" title="C/C++ 语言系列（五）复合数据类型之数组">
+                  C/C++ 语言系列（五）复合数据类型之数组 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

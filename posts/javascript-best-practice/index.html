@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言本文总结出一些广受认可的编程最佳实践，用于解决特定领域的问题。 编程最佳实践避免使用全局变量在 JavaScript 所有的糟糕特性之中，最为糟糕的一个就是它对全局变量的依赖。JS 大神 Douglas Crockford 甚至称之为“毒瘤”。想象一下，一个全局变量可以被程序的任何部分在任意时间修改，将使得程序的行为变得极度复杂。可怕的全局变量还带来了以下问题：  命名冲突 代码的脆弱性 难以">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Javascript 编程最佳实践">
+<meta property="og:url" content="https://qidawu.github.io/posts/javascript-best-practice/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="前言本文总结出一些广受认可的编程最佳实践，用于解决特定领域的问题。 编程最佳实践避免使用全局变量在 JavaScript 所有的糟糕特性之中，最为糟糕的一个就是它对全局变量的依赖。JS 大神 Douglas Crockford 甚至称之为“毒瘤”。想象一下，一个全局变量可以被程序的任何部分在任意时间修改，将使得程序的行为变得极度复杂。可怕的全局变量还带来了以下问题：  命名冲突 代码的脆弱性 难以">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-03-10T14:03:01.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.921Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="前端">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/javascript-best-practice/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/javascript-best-practice/","path":"posts/javascript-best-practice/","title":"Javascript 编程最佳实践"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Javascript 编程最佳实践 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%96%E7%A8%8B%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="nav-number">2.</span> <span class="nav-text">编程最佳实践</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%81%BF%E5%85%8D%E4%BD%BF%E7%94%A8%E5%85%A8%E5%B1%80%E5%8F%98%E9%87%8F"><span class="nav-number">2.1.</span> <span class="nav-text">避免使用全局变量</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9B%B6%E5%85%A8%E5%B1%80%E5%8F%98%E9%87%8F"><span class="nav-number">2.1.1.</span> <span class="nav-text">零全局变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E5%85%A8%E5%B1%80%E5%8F%98%E9%87%8F"><span class="nav-number">2.1.2.</span> <span class="nav-text">单全局变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9D%97%E5%8C%96"><span class="nav-number">2.1.3.</span> <span class="nav-text">模块化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8D%E6%98%AF%E4%BD%A0%E7%9A%84%E5%AF%B9%E8%B1%A1%E4%B8%8D%E8%A6%81%E5%8A%A8"><span class="nav-number">2.2.</span> <span class="nav-text">不是你的对象不要动</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E5%88%99"><span class="nav-number">2.2.1.</span> <span class="nav-text">原则</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8D%E8%A6%86%E7%9B%96%E6%96%B9%E6%B3%95"><span class="nav-number">2.2.1.1.</span> <span class="nav-text">不覆盖方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8D%E6%96%B0%E5%A2%9E%E6%96%B9%E6%B3%95"><span class="nav-number">2.2.1.2.</span> <span class="nav-text">不新增方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8D%E5%88%A0%E9%99%A4%E6%96%B9%E6%B3%95"><span class="nav-number">2.2.1.3.</span> <span class="nav-text">不删除方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="nav-number">2.2.2.</span> <span class="nav-text">解决办法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%A7%E6%89%BF"><span class="nav-number">2.2.2.1.</span> <span class="nav-text">继承</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%A8%E9%9D%A2%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.2.2.2.</span> <span class="nav-text">门面模式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86"><span class="nav-number">2.3.</span> <span class="nav-text">事件处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E8%80%A6%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86"><span class="nav-number">2.3.1.</span> <span class="nav-text">解耦事件处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E4%BA%8B%E4%BB%B6%E5%A7%94%E6%89%98"><span class="nav-number">2.3.2.</span> <span class="nav-text">使用事件委托</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#UI-%E5%B1%82%E4%BF%9D%E6%8C%81%E6%9D%BE%E8%80%A6%E5%90%88"><span class="nav-number">2.4.</span> <span class="nav-text">UI 层保持松耦合</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%86-JavaScript-%E4%BB%8E-CSS-%E4%B8%AD%E6%8A%BD%E7%A6%BB"><span class="nav-number">2.4.1.</span> <span class="nav-text">将 JavaScript 从 CSS 中抽离</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%86-CSS-%E4%BB%8E-JavaScript-%E4%B8%AD%E6%8A%BD%E7%A6%BB"><span class="nav-number">2.4.2.</span> <span class="nav-text">将 CSS 从 JavaScript 中抽离</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%86-JavaScript-%E4%BB%8E-HTML-%E4%B8%AD%E6%8A%BD%E7%A6%BB"><span class="nav-number">2.4.3.</span> <span class="nav-text">将 JavaScript 从 HTML 中抽离</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%86-HTML-%E4%BB%8E-JavaScript-%E4%B8%AD%E6%8A%BD%E7%A6%BB"><span class="nav-number">2.4.4.</span> <span class="nav-text">将 HTML 从 JavaScript 中抽离</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/javascript-best-practice/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Javascript 编程最佳实践 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Javascript 编程最佳实践
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-03-10 22:03:01" itemprop="dateCreated datePublished" datetime="2016-03-10T22:03:01+08:00">2016-03-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文总结出一些广受认可的编程最佳实践，用于解决特定领域的问题。</p>
+<h1 id="编程最佳实践"><a href="#编程最佳实践" class="headerlink" title="编程最佳实践"></a>编程最佳实践</h1><h2 id="避免使用全局变量"><a href="#避免使用全局变量" class="headerlink" title="避免使用全局变量"></a>避免使用全局变量</h2><p>在 JavaScript 所有的糟糕特性之中，最为糟糕的一个就是它对全局变量的依赖。JS 大神 Douglas Crockford 甚至称之为“毒瘤”。想象一下，一个全局变量可以被程序的任何部分在任意时间修改，将使得程序的行为变得极度复杂。可怕的全局变量还带来了以下问题：</p>
+<ol>
+<li>命名冲突</li>
+<li>代码的脆弱性</li>
+<li>难以测试</li>
+</ol>
+<p>共有三种方式定义全局变量，这些方式都是我们要避免的：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> foo = value;       <span class="comment">// 1、在任何函数之外放置一个 var 语句</span></span><br><span class="line"><span class="variable language_">window</span>.<span class="property">foo</span> = value;    <span class="comment">// 2、直接给全局对象添加属性</span></span><br><span class="line">foo = value;           <span class="comment">// 3、直接使用未经声明的变量，即隐式的全局变量。一般都是开发者忘记声明，这将导致查找 bug 非常困难</span></span><br></pre></td></tr></table></figure>
+
+<p>下面是一些解决办法：</p>
+<h3 id="零全局变量"><a href="#零全局变量" class="headerlink" title="零全局变量"></a>零全局变量</h3><p>如果你编写的是一段不会被其它脚本访问到的完全独立的脚本，可以使用一个立即执行的匿名函数来<a href="/2016/03/09/javascript-style-guideline/#%E5%88%9B%E5%BB%BA%E7%A7%81%E6%9C%89%E4%BD%9C%E7%94%A8%E5%9F%9F">创建私有作用域</a>。</p>
+<h3 id="单全局变量"><a href="#单全局变量" class="headerlink" title="单全局变量"></a>单全局变量</h3><p>最小化使用全局变量的方法之一是为你的应用创建唯一一个全局变量，并将你所有的功能代码都挂载到这个全局对象上。这种做法既降低了模块之间发生冲突的可能，又能保证模块之间的正常通信。可以参考 <a target="_blank" rel="noopener" href="http://www.adequatelygood.com/JavaScript-Module-Pattern-In-Depth.html">JavaScript 模块模式</a>。</p>
+<p>目前这种单全局变量模式已经在各种流行的库中广泛使用了：</p>
+<ul>
+<li>jQuery 定义了两个全局对象，<code>$</code> 和 <code>jQuery</code>。只有在 <code>$</code> 被其它库使用了的情况下，为了避免冲突，才使用 <code>jQuery</code>。</li>
+<li>YUI 定义了唯一一个 <code>YUI</code> 全局对象。</li>
+<li>Dojo 定义了唯一一个 <code>dojo</code> 全局对象。</li>
+<li>……</li>
+</ul>
+<h3 id="模块化"><a href="#模块化" class="headerlink" title="模块化"></a>模块化</h3><p>最后一种、也是最为推崇的做法是使用“模块化”方式组织代码：</p>
+<ul>
+<li>ECMAScript 6 可以使用最新的原生模块标准语法；</li>
+<li>使用主流的模块框架规范，如 AMD 和 CMD（<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/20351507/answer/14859415">AMD 和 CMD 的区别有哪些？</a>）。</li>
+</ul>
+<h2 id="不是你的对象不要动"><a href="#不是你的对象不要动" class="headerlink" title="不是你的对象不要动"></a>不是你的对象不要动</h2><p>JavaScript 独一无二之处在于任何东西都不是神圣不可侵犯的。默认情况下，你可以修改任何你可以触及的对象。解析器根本就不在乎这些对象是开发者定义的还是默认执行环境的一部分——只要是能访问到的对象都可以修改。如果你的代码没有创建这些对象，禁止修改它们，包括：</p>
+<ul>
+<li>原生对象（<code>Object</code>、<code>Array</code> 等等）；</li>
+<li>文档对象模型（DOM）（<code>document</code> 等等）；</li>
+<li>浏览器对象模型（BOM）（<code>window</code> 等等）；</li>
+<li>类库的对象（<code>$</code>、<code>jQuery</code> 等等）。</li>
+</ul>
+<h3 id="原则"><a href="#原则" class="headerlink" title="原则"></a>原则</h3><h4 id="不覆盖方法"><a href="#不覆盖方法" class="headerlink" title="不覆盖方法"></a>不覆盖方法</h4><p>覆盖方法将会导致所有依赖该方法的代码失效：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 不好的写法 - 覆盖了 DOM 方法</span></span><br><span class="line"><span class="variable language_">document</span>.<span class="property">getElementById</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="comment">// 任意代码</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="不新增方法"><a href="#不新增方法" class="headerlink" title="不新增方法"></a>不新增方法</h4><p>新增方法将会导致未来潜在的命名冲突，因为一个对象此刻没有某个方法不代表它未来没有。更糟糕的是如果将来原生的方法和你新增的方法行为不一致，将会陷入一场代码维护的噩梦：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 不好的写法，在 DOM 对象上增加了方法</span></span><br><span class="line"><span class="variable language_">document</span>.<span class="property">getElementsByClassName</span> = <span class="keyword">function</span>(<span class="params">classes</span>) &#123;</span><br><span class="line">    <span class="comment">// 非原生实现。</span></span><br><span class="line">    <span class="comment">// 该新增方法在 HTML 5 中被官方实现了，这将会导致所有依赖该方法的代码报错。</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 不好的写法，在原生对象上增加了方法</span></span><br><span class="line"><span class="title class_">Array</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">reverseSort</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="title function_">sort</span>().<span class="title function_">reverse</span>();</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 不好的写法，在库对象上增加了方法</span></span><br><span class="line">$.doSomeThing = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="comment">// 任意代码</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="不删除方法"><a href="#不删除方法" class="headerlink" title="不删除方法"></a>不删除方法</h4><p>删除方法将会导致所有依赖该方法的代码运行时错误。对于已发布的库来说，无用的方法应该被标识位“废弃”而不是直接删掉：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 不好的写法 - 删除了 DOM 方法</span></span><br><span class="line"><span class="variable language_">document</span>.<span class="property">getElementById</span> = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h3><p>下面介绍一些解决方法：</p>
+<h4 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h4><p>如果一种类型的对象已经做到了你想要的大多数工作，那么继承它然后再新增一些功能是最好的做法。JavaScript 中有两种基本的继承形式：</p>
+<ul>
+<li>基于对象的继承</li>
+<li>基于类型的继承</li>
+</ul>
+<p>例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">MyError</span> = <span class="keyword">function</span>(<span class="params">message</span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">message</span> = message;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="title class_">MyError</span>.<span class="property"><span class="keyword">prototype</span></span> = <span class="keyword">new</span> <span class="title class_">Error</span>();    <span class="comment">// 基于类型的继承，继承自原生的 Error 类</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="门面模式"><a href="#门面模式" class="headerlink" title="门面模式"></a>门面模式</h4><p>JavaScript 的继承有一些很大的限制，就是无法继承自 DOM 或 BOM 对象。解决办法是利用门面模式为这些已存在的对象创建一个新的接口，达到二次封装的效果。jQuery 和 YUI 的 DOM 接口都使用了门面模式。例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 自定义一个 DOM 对象包装器</span></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">DOMWrapper</span> = <span class="keyword">function</span>(<span class="params">element</span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">element</span> = element;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="title class_">DOMWrapper</span>.<span class="property"><span class="keyword">prototype</span></span> = &#123;</span><br><span class="line">    <span class="attr">constructor</span>: <span class="title class_">DOMWrapper</span>,</span><br><span class="line">    <span class="attr">addClass</span>: <span class="keyword">function</span>(<span class="params">className</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">element</span>.<span class="property">className</span> += <span class="string">&#x27; &#x27;</span> + className;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">remove</span>: <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">element</span>.<span class="property">parentNode</span>.<span class="title function_">removeChild</span>(<span class="variable language_">this</span>.<span class="property">element</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 用法</span></span><br><span class="line"><span class="keyword">var</span> wrapper = <span class="keyword">new</span> <span class="title class_">DOMWrapper</span>(<span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;my-div&quot;</span>));</span><br><span class="line"><span class="comment">// 添加一个 className</span></span><br><span class="line">wrapper.<span class="title function_">addClass</span>(<span class="string">&quot;selected&quot;</span>);</span><br><span class="line"><span class="comment">// 删除元素</span></span><br><span class="line">wrapper.<span class="title function_">remove</span>();</span><br></pre></td></tr></table></figure>
+
+<h2 id="事件处理"><a href="#事件处理" class="headerlink" title="事件处理"></a>事件处理</h2><h3 id="解耦事件处理"><a href="#解耦事件处理" class="headerlink" title="解耦事件处理"></a>解耦事件处理</h3><p>事件处理常见的问题是将事件处理程序和业务逻辑紧紧耦合在一起，降低了代码的可维护性：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 不好的写法</span></span><br><span class="line"><span class="keyword">var</span> handleClick = <span class="keyword">function</span>(<span class="params">event</span>) &#123;</span><br><span class="line">    <span class="comment">// DOM Level 2</span></span><br><span class="line">    event.<span class="title function_">preventDefault</span>();</span><br><span class="line">    event.<span class="title function_">stopPropagation</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 耦合业务逻辑</span></span><br><span class="line">    <span class="keyword">var</span> popup = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;popup&quot;</span>);</span><br><span class="line">    popup.<span class="property">style</span>.<span class="property">left</span> = event.<span class="property">clientX</span> + <span class="string">&quot;px&quot;</span>;</span><br><span class="line">    popup.<span class="property">style</span>.<span class="property">top</span> = event.<span class="property">clientY</span> + <span class="string">&quot;px&quot;</span>;</span><br><span class="line">    popup.<span class="property">className</span> = <span class="string">&quot;reveal&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;btn-action&#x27;</span>)</span><br><span class="line">            .<span class="title function_">addEventListener</span>(<span class="string">&quot;click&quot;</span>, handleClick, <span class="literal">false</span>);    <span class="comment">// DOM Level 2</span></span><br></pre></td></tr></table></figure>
+
+<p>正确的做法应该是解耦事件处理程序和业务逻辑，提高代码的可维护性：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 好的写法</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 事件处理程序，唯一能接触 event 对象的函数</span></span><br><span class="line"><span class="keyword">var</span> handleClick = <span class="keyword">function</span>(<span class="params">event</span>) &#123;</span><br><span class="line">        <span class="comment">// DOM Level 2</span></span><br><span class="line">        event.<span class="title function_">preventDefault</span>();</span><br><span class="line">        event.<span class="title function_">stopPropagation</span>();</span><br><span class="line"></span><br><span class="line">        <span class="title function_">showPopup</span>(event.<span class="property">clientX</span>, event.<span class="property">clientY</span>);</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="comment">// 抽取业务逻辑，与事件隔离，便于重用与测试</span></span><br><span class="line">    showPopup = <span class="keyword">function</span>(<span class="params">x, y</span>) &#123;</span><br><span class="line">        <span class="keyword">var</span> popup = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;popup&quot;</span>);</span><br><span class="line">        popup.<span class="property">style</span>.<span class="property">left</span> = x + <span class="string">&quot;px&quot;</span>;</span><br><span class="line">        popup.<span class="property">style</span>.<span class="property">top</span> = y + <span class="string">&quot;px&quot;</span>;</span><br><span class="line">        popup.<span class="property">className</span> = <span class="string">&quot;reveal&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;btn-action&#x27;</span>)</span><br><span class="line">            .<span class="title function_">addEventListener</span>(<span class="string">&quot;click&quot;</span>, handleClick, <span class="literal">false</span>);    <span class="comment">// DOM Level 2</span></span><br></pre></td></tr></table></figure>
+
+<p>可见，业务逻辑不应该依赖于 <code>event</code> 对象来完成功能，原因如下：</p>
+<ul>
+<li>好的 API 一定是对于期望和依赖都是透明的，因此方法接口应该表明哪些数据是必要的。将 <code>event</code> 对象作为参数并不能告诉你 <code>event</code> 的哪些属性是有用的，用来干什么？</li>
+<li>如果想测试这个方法，你必须构建一个 <code>event</code> 对象并作为参数传入。这迫使你关注方法内部实现，以确切地知道这个方法使用了哪些信息，这样才能正确地写出测试代码。</li>
+</ul>
+<h3 id="使用事件委托"><a href="#使用事件委托" class="headerlink" title="使用事件委托"></a>使用事件委托</h3><p>关于“事件绑定（Event Binding）”和“事件委托（Event Delegation）”两种机制的区别在 <a href="/2016/05/22/javascript-event-delegation">本文</a> 有详细的描述。简而言之，从“内存消耗”、“处理速度”、“新增元素的处理”三方面考虑，都更建议使用“事件委托”。下例演示了如何使用 jQuery 语法进行“事件委托”：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="string">&#x27;#list&#x27;</span>).<span class="title function_">on</span>(<span class="string">&#x27;click&#x27;</span>, <span class="string">&#x27;li&#x27;</span>, <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="comment">//function code here.</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>当 <code>#list</code> 内任一 <code>li</code> 子元素被点击时，<code>click</code> 事件将冒泡到其父元素 <code>#list</code> 并触发 <code>#list</code> 的事件处理程序，即子元素的事件都委托给父元素进行处理。这种做法有利于提升性能，推荐使用。</p>
+<h2 id="UI-层保持松耦合"><a href="#UI-层保持松耦合" class="headerlink" title="UI 层保持松耦合"></a>UI 层保持松耦合</h2><p>保持 Web UI 层的松耦合，以便在以下场景中调试代码，定位问题：</p>
+<ul>
+<li>当发生了文本或结构相关的问题，通过查找 HTML 即可定位；</li>
+<li>当发生了样式相关的问题，通过查找 CSS 即可定位；</li>
+<li>当发生了行为和交互相关的问题，通过查找 JavaScript 即可定位。</li>
+</ul>
+<p>这种快速定位问题的能力是 Web 界面可维护性的核心关键。</p>
+<h3 id="将-JavaScript-从-CSS-中抽离"><a href="#将-JavaScript-从-CSS-中抽离" class="headerlink" title="将 JavaScript 从 CSS 中抽离"></a>将 JavaScript 从 CSS 中抽离</h3><p>禁止使用 CSS 表达式（CSS Expression）。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 不好的写法</span></span><br><span class="line">.<span class="property">box</span> &#123;</span><br><span class="line">    <span class="attr">width</span>: <span class="title function_">expression</span>(<span class="variable language_">document</span>.<span class="property">body</span>.<span class="property">offsetWidth</span> + <span class="string">&quot;px&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>CSS 表达式是 IE8 及更早版本中的一个特性，它允许你将 JavaScript 直接插入到 CSS 中，这样可以在 CSS 代码中直接执行运算或其它操作。但 CSS 表达式会带来两个问题：</p>
+<ul>
+<li>性能问题</li>
+<li>代码可维护性问题</li>
+</ul>
+<h3 id="将-CSS-从-JavaScript-中抽离"><a href="#将-CSS-从-JavaScript-中抽离" class="headerlink" title="将 CSS 从 JavaScript 中抽离"></a>将 CSS 从 JavaScript 中抽离</h3><p>禁止在 JavaScript 脚本中直接操作 CSS 样式：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 不好的写法</span></span><br><span class="line">element.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;red&#x27;</span>;</span><br><span class="line">element.<span class="property">style</span>.<span class="property">left</span> = <span class="string">&#x27;10px&#x27;</span>;</span><br><span class="line">element.<span class="property">style</span>.<span class="property">cssText</span> = <span class="string">&#x27;color: red; left: 10px&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>当需要通过 JavaScript 来操作元素样式的时候，最佳方法是操作 CSS 的 <code>className</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">element.<span class="property">className</span> = <span class="string">&#x27;className&#x27;</span>;    <span class="comment">// 原生方法</span></span><br><span class="line">$(element).<span class="title function_">addClass</span>(<span class="string">&#x27;className&#x27;</span>);   <span class="comment">// jQuery</span></span><br></pre></td></tr></table></figure>
+
+<p>CSS 的 <code>className</code> 应该成为 CSS 和 JavaScript 之间通信的桥梁。JavaScript 不应当直接操作 CSS 样式，以便保持和 CSS 的松耦合。</p>
+<h3 id="将-JavaScript-从-HTML-中抽离"><a href="#将-JavaScript-从-HTML-中抽离" class="headerlink" title="将 JavaScript 从 HTML 中抽离"></a>将 JavaScript 从 HTML 中抽离</h3><p>禁止在 HTML 标签中嵌入 JavaScript 脚本：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 不好的写法，不该直接为 <span class="variable constant_">HTML</span> 标签的 on 属性挂载事件处理程序 --&gt;</span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">button</span> <span class="attr">onclick</span>=<span class="string">&quot;doSomeThing()&quot;</span> <span class="attr">id</span>=<span class="string">&quot;btn-action&quot;</span>&gt;</span>Click Me<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<p>这样会导致 HTML 页面和 JavaScript 脚本紧紧耦合。正确的做法应当是在外部脚本文件中添加事件处理程序：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title function_">doSomeThing</span>(<span class="params"></span>) &#123;  &#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;btn-action&#x27;</span>)</span><br><span class="line">            .<span class="title function_">addEventListener</span>(<span class="string">&quot;click&quot;</span>, doSomeThing, <span class="literal">false</span>);    <span class="comment">// DOM Level 2</span></span><br><span class="line">$(<span class="string">&#x27;#btn-action&#x27;</span>).<span class="title function_">click</span>(doSomeThing);    <span class="comment">// jQuery</span></span><br></pre></td></tr></table></figure>
+
+<p>这种做法的优势在于，函数 <code>doSomeThing()</code> 的定义和事件处理程序的绑定都是在同一个文件中完成的。如果函数名称需要修改，则只需修改一个文件即可；如果点击发生时想额外做一些动作，也只需在一处做修改。</p>
+<p>此外，不到迫不得已，不建议在 HTML 页面中嵌入 JavaScript 脚本：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;!--  不好的做法 --&gt;</span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    doSomeThing();</span></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="将-HTML-从-JavaScript-中抽离"><a href="#将-HTML-从-JavaScript-中抽离" class="headerlink" title="将 HTML 从 JavaScript 中抽离"></a>将 HTML 从 JavaScript 中抽离</h3><p>不建议在 JavaScript 脚本文件中嵌入 HTML 操作：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 不好的做法</span></span><br><span class="line"><span class="keyword">var</span> div = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;my-div&#x27;</span>);</span><br><span class="line">div.<span class="property">innerHTML</span> = <span class="string">&quot;&lt;h3&gt;Error&lt;/h3&gt;&lt;p&gt;Invalid e-mail address.&lt;/p&gt;&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这样会导致 JavaScript 脚本和 HTML 标签紧紧耦合，从而降低了代码的可维护性，增加了跟踪文本和结构性问题的复杂度。正常来说，调试上述这段标签的典型方法，应当是先去浏览器调试工具中的 DOM 树中查找，然后打开页面的 HTML 源码对比其不同。一旦 JavaScript 脚本文件中做了除简单 DOM 操作之外的事情，如渲染标签，追踪 Bug 就变得很麻烦。因为脚本和标签都耦合成一坨了，让人望而却步。</p>
+<p>HTML 文本和标签应该只存放于一个地方：可以控制你 HTML 代码的地方。最为推崇的做法是利用 <strong>JavaScript 模板引擎</strong> 解决这个问题。</p>
+<p>项目中我引入了模板引擎 <a target="_blank" rel="noopener" href="https://github.com/aui/artTemplate">artTemplate</a> 进行 HTML 渲染，并通过修改源码内置了两个常用的格式化工具：</p>
+<ul>
+<li>货币格式化：<a target="_blank" rel="noopener" href="http://openexchangerates.github.io/accounting.js/">accounting.js</a></li>
+<li>日期格式化：datetime.js</li>
+</ul>
+<p>详见 DEMO：finance-marketres-mobi\js\utility\util-demo.html</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《编写可维护的 JavaScript》</li>
+<li>《JavaScript 高级程序设计》</li>
+<li>《JavaScript 权威指南》</li>
+<li>《JavaScript 语言精粹》</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/javascript-best-practice/" title="Javascript 编程最佳实践">https://qidawu.github.io/posts/javascript-best-practice/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag"># 前端</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/javascript-style-guideline/" rel="prev" title="Javascript 编程风格规范">
+                  <i class="fa fa-chevron-left"></i> Javascript 编程风格规范
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/git-diff/" rel="next" title="Git 实战系列（十）git diff 命令对比文件差异">
+                  Git 实战系列（十）git diff 命令对比文件差异 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="UNIX 时间戳 时间戳问题Y2K (Year 2000 problem)  Y2K 是一个合成词汇：Y &#x3D; Year，2 &#x3D; 2，K&#x3D; Kilo，因此 Y2K 的含义其实就是千禧之年 ——2000 年  https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Year_2000_problem Y2K38 (Year 2038 problem)2038 年问题又叫 Unix 千年虫或 Y2K">
+<meta property="og:type" content="article">
+<meta property="og:title" content="UNIX 时间戳总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/unix-timestamp/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="UNIX 时间戳 时间戳问题Y2K (Year 2000 problem)  Y2K 是一个合成词汇：Y &#x3D; Year，2 &#x3D; 2，K&#x3D; Kilo，因此 Y2K 的含义其实就是千禧之年 ——2000 年  https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Year_2000_problem Y2K38 (Year 2038 problem)2038 年问题又叫 Unix 千年虫或 Y2K">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/gnu-linux/unix_timestamp.png">
+<meta property="og:image" content="https://qidawu.github.io/img/gnu-linux/Y2K.jpeg">
+<meta property="og:image" content="https://qidawu.github.io/img/gnu-linux/Y2K38.GIF">
+<meta property="article:published_time" content="2020-02-28T14:23:38.000Z">
+<meta property="article:modified_time" content="2023-11-07T08:39:43.379Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="GNU&#x2F;Linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/gnu-linux/unix_timestamp.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/unix-timestamp/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/unix-timestamp/","path":"posts/unix-timestamp/","title":"UNIX 时间戳总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>UNIX 时间戳总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#UNIX-%E6%97%B6%E9%97%B4%E6%88%B3"><span class="nav-number">1.</span> <span class="nav-text">UNIX 时间戳</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E6%88%B3%E9%97%AE%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">时间戳问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Y2K-Year-2000-problem"><span class="nav-number">2.1.</span> <span class="nav-text">Y2K (Year 2000 problem)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Y2K38-Year-2038-problem"><span class="nav-number">2.2.</span> <span class="nav-text">Y2K38 (Year 2038 problem)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%84%E7%A7%8D%E5%BC%80%E5%8F%91%E8%AF%AD%E8%A8%80%E8%8E%B7%E5%8F%96%E5%BD%93%E5%89%8D%E6%97%B6%E9%97%B4%E6%88%B3"><span class="nav-number">3.</span> <span class="nav-text">各种开发语言获取当前时间戳</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/unix-timestamp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="UNIX 时间戳总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          UNIX 时间戳总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-02-28 22:23:38" itemprop="dateCreated datePublished" datetime="2020-02-28T22:23:38+08:00">2020-02-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-11-07 16:39:43" itemprop="dateModified" datetime="2023-11-07T16:39:43+08:00">2023-11-07</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="UNIX-时间戳"><a href="#UNIX-时间戳" class="headerlink" title="UNIX 时间戳"></a>UNIX 时间戳</h1><p><img src="/img/gnu-linux/unix_timestamp.png" alt="unix_timestamp"></p>
+<h1 id="时间戳问题"><a href="#时间戳问题" class="headerlink" title="时间戳问题"></a>时间戳问题</h1><h2 id="Y2K-Year-2000-problem"><a href="#Y2K-Year-2000-problem" class="headerlink" title="Y2K (Year 2000 problem)"></a>Y2K (Year 2000 problem)</h2><p><img src="/img/gnu-linux/Y2K.jpeg" alt="Y2K"></p>
+<blockquote>
+<p>Y2K 是一个合成词汇：Y = Year，2 = 2，K= Kilo，因此 Y2K 的含义其实就是千禧之年 ——2000 年</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Year_2000_problem">https://en.wikipedia.org/wiki/Year_2000_problem</a></p>
+<h2 id="Y2K38-Year-2038-problem"><a href="#Y2K38-Year-2038-problem" class="headerlink" title="Y2K38 (Year 2038 problem)"></a>Y2K38 (Year 2038 problem)</h2><p>2038 年问题又叫 Unix 千年虫或 Y2K38 问题。在时间值以带符号的 32 位整数来存储或计算的数据存储情况下，这个错误就有可能引发问题。</p>
+<p>下面这个动画显示了 Y2K38 问题将如何重置日期：</p>
+<p><img src="/img/gnu-linux/Y2K38.GIF" alt="Y2K38"></p>
+<p>这是因为：用 Unix 带符号的 32 位整数时间格式来表示的最大时间是 2038 年 1 月 19 日 03:14:07UTC（2038-01-19T03:14:07Z），这是自 1970-01-01T00:00:00Z 之后过了 2147483647 秒，值的边界如下：</p>
+<table>
+<thead>
+<tr>
+<th>时间</th>
+<th>时间戳</th>
+<th>二进制字面量</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1970-01-01T00:00:00Z</td>
+<td>0</td>
+<td>00000000 00000000 00000000 00000000</td>
+</tr>
+<tr>
+<td>2038-01-19T03:14:07Z</td>
+<td>2^31-1, 2147483647</td>
+<td>01111111 11111111 11111111 11111111</td>
+</tr>
+</tbody></table>
+<p>测试代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 0</span></span><br><span class="line"><span class="type">long</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"><span class="comment">// 2^31-1, 2147483647</span></span><br><span class="line"><span class="type">long</span> <span class="variable">b</span> <span class="operator">=</span> Integer.MAX_VALUE;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 1970-01-01T00:00:00.000Z</span></span><br><span class="line">Instant.ofEpochSecond(a).atZone(ZoneOffset.of(<span class="string">&quot;-00:00&quot;</span>)).toLocalDateTime()</span><br><span class="line"><span class="comment">// 2038-01-19T03:14:07.000Z</span></span><br><span class="line">Instant.ofEpochSecond(b).atZone(ZoneOffset.of(<span class="string">&quot;-00:00&quot;</span>)).toLocalDateTime()</span><br></pre></td></tr></table></figure>
+
+<p>过了最大时间后，由于整数溢出，时间值将作为负数来存储，系统会将日期读为 1901 年 12 月 13 日，而不是 2038 年 1 月 19 日。</p>
+<p>用简单的语言来说，Unix 机器最终将会耗尽存储空间来列举秒数。所以，到那一天，使用标准时间库的 C程序会开始出现日期问题。你可以在<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Year_2038_problem">维基百科</a>上详细阅读更多的相关内容：</p>
+<blockquote>
+<p>目前，2038年错误没有什么通行的解决方案。如果对用于存储时间值的time_t数据类型的定义进行更改，依赖带符号的32位time_t整数性质的应用程序就会出现一些代码兼容性问题。假设time_t的类型被更改为不带符号的32位整数，那将加大最新的时间限制。但是，这会对由负整数表示的1970年之前的日期造成混乱。</p>
+<p>使用64位架构的操作系统和程序使用64位time_t整数。使用带符号的64位值可以将日期延长至今后的2920亿年。</p>
+<p>已有人提出了许多建议，包括以带符号的64位整数来存储自某个时间点（1970年1月1日或2000年1月1日）以来的毫秒/微秒，以获得至少30万年的时间范围。其他建议包括用新的库重新编译程序，等等。这方面的工作正在开展之中；据专家们声称，2038年问题解决起来应该不难。</p>
+</blockquote>
+<h1 id="各种开发语言获取当前时间戳"><a href="#各种开发语言获取当前时间戳" class="headerlink" title="各种开发语言获取当前时间戳"></a>各种开发语言获取当前时间戳</h1><p>Java</p>
+<p><a href="/posts/java8-time/#Instant"><code>java.time.Instant</code></a></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 秒时间戳</span></span><br><span class="line">Instant.now().getEpochSecond()</span><br><span class="line"><span class="comment">// 毫秒时间戳</span></span><br><span class="line">Instant.now().toEpochMilli()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 毫秒时间戳</span></span><br><span class="line">System.currentTimeMillis()</span><br></pre></td></tr></table></figure>
+
+<p>Javascript</p>
+<p><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date</a></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Math</span>.<span class="title function_">round</span>(<span class="keyword">new</span> <span class="title class_">Date</span>() / <span class="number">1000</span>)</span><br></pre></td></tr></table></figure>
+
+<p>Shell</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">date +%s</span><br></pre></td></tr></table></figure>
+
+<p>MySQL</p>
+<p><a href="/posts/mysql-date-and-time-functions/#DATETIME-%E2%86%92-TIMESTAMP"><code>UNIX_TIMESTAMP([date])</code></a></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> UNIX_TIMESTAMP()</span><br></pre></td></tr></table></figure>
+
+<p>其它语言：…</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/zh/UNIX%E6%97%B6%E9%97%B4">UNIX时间 - 维基百科</a></p>
+<p>Y2K problem</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Year_2000_problem">https://en.wikipedia.org/wiki/Year_2000_problem</a></li>
+<li><a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E5%8D%83%E5%B9%B4%E8%99%AB/2954">Y2K 千年虫（计算机 2000 年问题）</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/PayHgx8ifLsnJPuqxJr_GA">Y2K 千年虫——一个 Bug 让人类科技倒退几十年？|良许 Linux</a></li>
+</ul>
+<p>Y2K38 problem</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Year_2038_problem">https://en.wikipedia.org/wiki/Year_2038_problem</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/RoSRwTLsZApvQjU7Fpy0vw">Unix Epoch Time（Unix 纪元时间）的 Y2K38 问题</a></li>
+</ul>
+<p>Y2K22 problem</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/6YHSZavAv4GC-cpDja4YjQ">微软也栽了，“千年虫”啥时候是个头 | InfoQ</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/QvWnzZ5-thbDFXyYBs1iQA">微软开年就出大 bug——Y2K22 bug，大量程序员连夜加班：年都没跨好</a></li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Xw-CQV0QvxhKw0zMgbHpQA">计算机时间到底是怎么来的？程序员必看的时间知识！</a> </p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/unix-timestamp/" title="UNIX 时间戳总结">https://qidawu.github.io/posts/unix-timestamp/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/GNU-Linux/" rel="tag"># GNU/Linux</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/mysql-innodb-features/" rel="prev" title="MySQL InnoDB 特性总结">
+                  <i class="fa fa-chevron-left"></i> MySQL InnoDB 特性总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/distributed-id-generator/" rel="next" title="分布式 ID 之雪花算法实现">
+                  分布式 ID 之雪花算法实现 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

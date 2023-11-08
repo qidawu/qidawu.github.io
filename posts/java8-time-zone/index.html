@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本文介绍时区处理的两种方式。时区涉及的接口及实现类如下：  （上图简化掉了 Serializable 接口、Comparable 接口及 FunctionalInterface 注解） 推荐方式ZoneId时区的处理是新版日期与时间 API 新增的重要功能，且 API 被极大简化。新的 java.time.ZoneId 类是老版本 java.util.TimeZone 类的替代品。它的设计目标就是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 常用类型系列（五）时区处理总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/java8-time-zone/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="本文介绍时区处理的两种方式。时区涉及的接口及实现类如下：  （上图简化掉了 Serializable 接口、Comparable 接口及 FunctionalInterface 注解） 推荐方式ZoneId时区的处理是新版日期与时间 API 新增的重要功能，且 API 被极大简化。新的 java.time.ZoneId 类是老版本 java.util.TimeZone 类的替代品。它的设计目标就是">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/java/time/classes_of_time_zone.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/time/instance_of_ZonedDateTime.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/time/after_convert_time_zone+2.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/time/after_convert_time_zone+8.png">
+<meta property="article:published_time" content="2018-04-06T11:39:32.000Z">
+<meta property="article:modified_time" content="2023-11-07T08:39:43.377Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/java/time/classes_of_time_zone.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/java8-time-zone/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/java8-time-zone/","path":"posts/java8-time-zone/","title":"Java 常用类型系列（五）时区处理总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Java 常用类型系列（五）时区处理总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8E%A8%E8%8D%90%E6%96%B9%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">推荐方式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ZoneId"><span class="nav-number">1.1.</span> <span class="nav-text">ZoneId</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ZonedDateTime"><span class="nav-number">1.2.</span> <span class="nav-text">ZonedDateTime</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%95%E5%B1%82%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.2.1.</span> <span class="nav-text">底层实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="nav-number">1.2.2.</span> <span class="nav-text">使用方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LocalDateTime-%E4%B8%8E-Instant-%E4%BA%92%E8%BD%AC"><span class="nav-number">1.2.3.</span> <span class="nav-text">LocalDateTime 与 Instant 互转</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%8D%E6%8E%A8%E8%8D%90%E6%96%B9%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">不推荐方式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ZoneOffset"><span class="nav-number">2.1.</span> <span class="nav-text">ZoneOffset</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OffsetDateTime"><span class="nav-number">2.2.</span> <span class="nav-text">OffsetDateTime</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%95%E5%B1%82%E5%AE%9E%E7%8E%B0-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">底层实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F-1"><span class="nav-number">2.2.2.</span> <span class="nav-text">使用方式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="nav-number">3.</span> <span class="nav-text">常见问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#java-sql-Timestamp"><span class="nav-number">3.1.</span> <span class="nav-text">java.sql.Timestamp</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#valueOf-LocalDateTime"><span class="nav-number">3.1.1.</span> <span class="nav-text">#valueOf(LocalDateTime)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#from-Instant"><span class="nav-number">3.1.2.</span> <span class="nav-text">#from(Instant)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/java8-time-zone/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Java 常用类型系列（五）时区处理总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java 常用类型系列（五）时区处理总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-04-06 19:39:32" itemprop="dateCreated datePublished" datetime="2018-04-06T19:39:32+08:00">2018-04-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-11-07 16:39:43" itemprop="dateModified" datetime="2023-11-07T16:39:43+08:00">2023-11-07</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>本文介绍时区处理的两种方式。时区涉及的接口及实现类如下：</p>
+<p><img src="/img/java/time/classes_of_time_zone.png" alt="classes_of_time_zone"></p>
+<p>（上图简化掉了 <code>Serializable</code> 接口、<code>Comparable</code> 接口及 <code>FunctionalInterface</code> 注解）</p>
+<h1 id="推荐方式"><a href="#推荐方式" class="headerlink" title="推荐方式"></a>推荐方式</h1><h2 id="ZoneId"><a href="#ZoneId" class="headerlink" title="ZoneId"></a>ZoneId</h2><p>时区的处理是新版日期与时间 API 新增的重要功能，且 API 被极大简化。新的 <code>java.time.ZoneId</code> 类是老版本 <code>java.util.TimeZone</code> 类的替代品。它的设计目标就是要让用户无需为时区处理的复杂和繁琐而操心，比如处理夏令时（DST）问题。</p>
+<p>每个特定的 <code>ZoneId</code> 对象都有一个地区 ID 标识。地区 ID 格式为“<code>&#123;区域&#125;/&#123;城市&#125;</code>”，这些地区集合的设定都由 <a target="_blank" rel="noopener" href="https://www.iana.org/time-zones">IANA  的时区数据库</a>提供。可以输出如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZoneId.getAvailableZoneIds().forEach(System.out::println);</span><br></pre></td></tr></table></figure>
+
+<p><code>ZoneId</code> 的静态工厂方法构造如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取服务器所在时区的 ZoneId，例如 Asia/Shanghai 为 UTC+8</span></span><br><span class="line"><span class="type">ZoneId</span> <span class="variable">currentZone</span> <span class="operator">=</span> ZoneId.systemDefault();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取指定城市的 ZoneId，即 UTC+1</span></span><br><span class="line"><span class="type">ZoneId</span> <span class="variable">zoneId</span> <span class="operator">=</span> ZoneId.of(<span class="string">&quot;Europe/Paris&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>一旦得到一个 <code>ZoneId</code> 对象，就可以与 <code>LocalDate</code>、<code>LocalDateTime</code>、<code>Instant</code> 对象整合起来，构造一个 <code>ZonedDateTime</code> 实例，它代表了<strong>相对于指定时区的时间点</strong>。</p>
+<h2 id="ZonedDateTime"><a href="#ZonedDateTime" class="headerlink" title="ZonedDateTime"></a>ZonedDateTime</h2><p><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/time/ZonedDateTime.html">https://docs.oracle.com/javase/8/docs/api/java/time/ZonedDateTime.html</a></p>
+<blockquote>
+<p>A date-time with a time-zone in the ISO-8601 calendar system, such as <code>2007-12-03T10:15:30+01:00 Europe/Paris</code>.</p>
+</blockquote>
+<p>Java 8 中 <code>ZonedDateTime</code> 基于 ISO-8601 实现，参考<a href="/posts/java8-time/#ISO-8601">这里</a>。</p>
+<h3 id="底层实现"><a href="#底层实现" class="headerlink" title="底层实现"></a>底层实现</h3><p><code>ZonedDateTime</code> 的底层实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">ZonedDateTime</span></span><br><span class="line">        <span class="keyword">implements</span> <span class="title class_">Temporal</span>, ChronoZonedDateTime&lt;LocalDate&gt;, Serializable &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The local date-time.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> LocalDateTime dateTime;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The offset from UTC/Greenwich.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ZoneOffset offset;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The time-zone.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ZoneId zone;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>ZonedDateTime</code> 的实例如下图：</p>
+<p><img src="/img/java/time/instance_of_ZonedDateTime.png" alt="instance_of_ZonedDateTime"></p>
+<p>图中可见，原本 <code>LocalDateTime</code> 对象作为一个<strong>本地</strong>日期与时间，是不包含时区信息的，即没有时区概念。而在结合了 <code>ZoneId</code> 构造成一个 <code>ZonedDateTime</code> 实例之后，才有了时区概念。它代表了<strong>相对于指定时区的时间点</strong>。</p>
+<h3 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1970-01-01</span></span><br><span class="line"><span class="type">LocalDate</span> <span class="variable">date</span> <span class="operator">=</span> LocalDate.ofEpochDay(<span class="number">0</span>);</span><br><span class="line"><span class="comment">// 1970-01-01T00:00</span></span><br><span class="line"><span class="type">LocalDateTime</span> <span class="variable">dateTime</span> <span class="operator">=</span> date.atStartOfDay();</span><br><span class="line"><span class="comment">// 1970-01-01T00:00:00Z</span></span><br><span class="line"><span class="type">Instant</span> <span class="variable">instant</span> <span class="operator">=</span> Instant.ofEpochSecond(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 1970-01-01T00:00+01:00[Europe/Paris]，底层调用 ZonedDateTime.of(this, zoneId)</span></span><br><span class="line"><span class="type">ZonedDateTime</span> <span class="variable">zonedDateTime</span> <span class="operator">=</span> date.atStartOfDay(zoneId);</span><br><span class="line"><span class="comment">// 1970-01-01T00:00+01:00[Europe/Paris]，底层调用 ZonedDateTime.of(this, zoneId)</span></span><br><span class="line"><span class="type">ZonedDateTime</span> <span class="variable">zonedDateTime1</span> <span class="operator">=</span> dateTime.atZone(zoneId);</span><br><span class="line"><span class="comment">// 1970-01-01T01:00+01:00[Europe/Paris]，底层调用 ZonedDateTime.ofInstant(this, zoneId)</span></span><br><span class="line"><span class="type">ZonedDateTime</span> <span class="variable">zonedDateTime2</span> <span class="operator">=</span> instant.atZone(zoneId);</span><br><span class="line"><span class="comment">// 2015-12-03T10:15:30+08:00[Asia/Shanghai]</span></span><br><span class="line"><span class="type">ZonedDateTime</span> <span class="variable">zonedDateTime3</span> <span class="operator">=</span> ZonedDateTime.parse(<span class="string">&quot;2015-12-03T10:15:30+05:30[Asia/Shanghai]&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="LocalDateTime-与-Instant-互转"><a href="#LocalDateTime-与-Instant-互转" class="headerlink" title="LocalDateTime 与 Instant 互转"></a>LocalDateTime 与 Instant 互转</h3><p>通过 <code>ZoneId</code> 可以将 <code>LocalDateTime</code> 和 <code>Instant</code> 进行互转，公式为 UTC + 时区差（东正西负）= 本地时间。</p>
+<p><code>LocalDateTime</code> &gt; <code>Instant</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 东八区的 1970-01-01T00:00，等于 UTC+0 的 1969-12-31T16:00:00Z</span></span><br><span class="line"><span class="type">Instant</span> <span class="variable">instant2</span> <span class="operator">=</span> dateTime.atZone(ZoneId.systemDefault()).toInstant();</span><br></pre></td></tr></table></figure>
+
+<p><code>Instant</code> &gt; <code>LocalDateTime</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1970-01-01T00:00</span></span><br><span class="line"><span class="type">LocalDateTime</span> <span class="variable">dateTime2</span> <span class="operator">=</span> LocalDateTime.ofInstant(instant2, ZoneId.systemDefault());</span><br><span class="line"><span class="comment">// 1970-01-01T08:00</span></span><br><span class="line"><span class="type">LocalDateTime</span> <span class="variable">dateTime3</span> <span class="operator">=</span> instant.atZone(ZoneId.systemDefault()).toLocalDateTime();</span><br></pre></td></tr></table></figure>
+
+<h1 id="不推荐方式"><a href="#不推荐方式" class="headerlink" title="不推荐方式"></a>不推荐方式</h1><h2 id="ZoneOffset"><a href="#ZoneOffset" class="headerlink" title="ZoneOffset"></a>ZoneOffset</h2><p>另一种比较通用的表达时区的方式是利用当前时区和 UTC/格林尼治的固定偏差。可以使用 <code>ZoneOffset</code> 类，它是 <code>ZoneId</code> 的一个子类，表示的是当前时间和 UTC 的偏差：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ZoneOffset</span> <span class="variable">newYorkOffset</span> <span class="operator">=</span> ZoneOffset.of(<span class="string">&quot;-05:00&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="OffsetDateTime"><a href="#OffsetDateTime" class="headerlink" title="OffsetDateTime"></a>OffsetDateTime</h2><h3 id="底层实现-1"><a href="#底层实现-1" class="headerlink" title="底层实现"></a>底层实现</h3><p><code>ZoneOffset</code> 类可用于构造 <code>OffsetDateTime</code> 实例。<code>OffsetDateTime</code> 的底层实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">OffsetDateTime</span></span><br><span class="line">        <span class="keyword">implements</span> <span class="title class_">Temporal</span>, TemporalAdjuster, Comparable&lt;OffsetDateTime&gt;, Serializable &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The local date-time.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> LocalDateTime dateTime;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The offset from UTC/Greenwich.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ZoneOffset offset;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用方式-1"><a href="#使用方式-1" class="headerlink" title="使用方式"></a>使用方式</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1970-01-01T00:00-05:00</span></span><br><span class="line"><span class="type">OffsetDateTime</span> <span class="variable">dateTimeInNewYork</span> <span class="operator">=</span> OffsetDateTime.of(dateTime1, newYorkOffset); </span><br><span class="line"><span class="comment">// 1970-01-01T00:00-05:00</span></span><br><span class="line"><span class="type">OffsetDateTime</span> <span class="variable">dateTimeInNewYork2</span> <span class="operator">=</span> dateTime1.atOffset(newYorkOffset);</span><br></pre></td></tr></table></figure>
+
+<p>“-05:00” 的偏差实际上对应的是美国东部标准时间。注意，使用这种方式定义的 <code>ZoneOffset</code> 并未考虑任何夏令时的影响，所以在大多数情况下，不推荐使用。</p>
+<h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><h2 id="java-sql-Timestamp"><a href="#java-sql-Timestamp" class="headerlink" title="java.sql.Timestamp"></a>java.sql.Timestamp</h2><p>有时开发会使用 <code>java.sql.Timestamp</code> 作为 PO 实体类的时间字段，<code>java.sql.Timestamp</code> 底层实现使用<strong>格里历（公历）</strong>，并使用服务器所在时区（即<strong>本地时区</strong>），并受该时区影响。</p>
+<p>这里看一段代码，以 2021-01-04 00:00:00 为例演示转换过程：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">LocalDateTime</span> <span class="variable">localDateTime</span> <span class="operator">=</span> LocalDateTime.parse(</span><br><span class="line">  <span class="string">&quot;2021-01-04 00:00:00&quot;</span>, </span><br><span class="line">  DateTimeFormatter.ofPattern(<span class="string">&quot;yyyy-MM-dd HH:mm:ss&quot;</span>)</span><br><span class="line">);</span><br><span class="line"><span class="type">ZonedDateTime</span> <span class="variable">zonedDateTime</span> <span class="operator">=</span> ZonedDateTime.of(localDateTime, ZoneId.of(<span class="string">&quot;Asia/Jakarta&quot;</span>));</span><br><span class="line"></span><br><span class="line">Timestamp.from(zonedDateTime.toInstant());</span><br><span class="line">Timestamp.valueOf(localDateTime);</span><br></pre></td></tr></table></figure>
+
+<p>这里试验两个时区：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Europe/London (UTC)</th>
+<th>Asia/Shanghai (UTC+8)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ZoneId.systemDefault()</code></td>
+<td>Europe/London (UTC)</td>
+<td>Asia/Shanghai (UTC+8)</td>
+</tr>
+<tr>
+<td><code>TimeZone.getDefaultRef()</code></td>
+<td>Europe/London (UTC)</td>
+<td>Asia/Shanghai (UTC+8)</td>
+</tr>
+</tbody></table>
+<p>下面分别看下 <code>java.sql.Timestamp</code> 两个 API 会有什么问题：</p>
+<h3 id="valueOf-LocalDateTime"><a href="#valueOf-LocalDateTime" class="headerlink" title="#valueOf(LocalDateTime)"></a>#valueOf(LocalDateTime)</h3><p>转换过程：本地时间 &gt; 系统时区的时间 &gt; UTC-0 时区的时间戳</p>
+<table>
+<thead>
+<tr>
+<th>Europe/London (UTC)</th>
+<th>Asia/Shanghai (UTC+8)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2021-01-04T00:00 (<code>LocalDateTime</code>) → <br/>2021-01-04T00:00:00.000Z / 1609718400000 (<code>Timestamp</code>)</td>
+<td>2021-01-04T00:00 (<code>LocalDateTime</code>) → <br/>2021-01-04T00:00:00.000+0800 / 1609689600000 (<code>Timestamp</code>)</td>
+</tr>
+</tbody></table>
+<p>可见，由于 <code>LocalDateTime</code> 本身不含时区信息，在经由 <code>Timestamp#valueOf(LocalDateTime)</code> 转换时，源码中使用了 <code>TimeZone.getDefaultRef()</code> 并<strong>受系统默认时区的影响，导致结果前后不一致</strong>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns the reference to the default TimeZone object. This</span></span><br><span class="line"><span class="comment"> * method doesn&#x27;t create a clone.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">static</span> TimeZone <span class="title function_">getDefaultRef</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">TimeZone</span> <span class="variable">defaultZone</span> <span class="operator">=</span> defaultTimeZone;</span><br><span class="line">    <span class="keyword">if</span> (defaultZone == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="comment">// Need to initialize the default time zone.</span></span><br><span class="line">        defaultZone = setDefaultZone();</span><br><span class="line">        <span class="keyword">assert</span> defaultZone != <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Don&#x27;t clone here.</span></span><br><span class="line">    <span class="keyword">return</span> defaultZone;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="from-Instant"><a href="#from-Instant" class="headerlink" title="#from(Instant)"></a>#from(Instant)</h3><p>转换过程：本地时间 &gt; 指定时区的时间 &gt; UTC-0 时区的时间戳</p>
+<table>
+<thead>
+<tr>
+<th>Europe/London (UTC)</th>
+<th>Asia/Shanghai (UTC+8)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2021-01-04T00:00 (<code>LocalDateTime</code>) → <br/>2021-01-04T00:00+07:00[Asia/Jakarta] (<code>ZonedDateTime</code>) → <br/>2021-01-03T17:00:00Z / 1609693200 (<code>Instant</code>) →<br/>2021-01-03T17:00:00.000Z / 1609693200000(<code>Timestamp</code>)</td>
+<td>2021-01-04T00:00 (<code>LocalDateTime</code>) → <br/>2021-01-04T00:00+07:00[Asia/Jakarta] (<code>ZonedDateTime</code>) → <br/>2021-01-03T17:00:00Z / 1609693200 (<code>Instant</code>) →<br/>2021-01-04T01:00:00.000+0800 / 1609693200000 (<code>Timestamp</code>)</td>
+</tr>
+</tbody></table>
+<p>这里看似结果没有问题，<code>Instant</code> 和 <code>Timestamp</code> 对象在不同时区下都是相同时间戳。</p>
+<p>但有一种场景，就是<strong>应用服务器与数据库的时区不一致导致的问题</strong>。假如应用服务器时区为 <code>Asia/Shanghai (UTC+8)</code>，数据库时区为 <code>Europe/London (UTC)</code>，当把上表 <code>Timestamp</code> 对象保存到 MySQL 数据库的 <code>datetime</code> 字段时，如果未经时区转换，会导致错误结果。</p>
+<p>这里参考 <a target="_blank" rel="noopener" href="https://mvnrepository.com/artifact/mysql/mysql-connector-java">mysql-connector-java-5.1.42.jar</a> 源码如下，重点看 <code>java.sql.PreparedStatement#setTimestamp</code> 的方法实现，其使用了 <code>SimpleDateFormat</code> 将 <code>Timestamp</code> 对象格式化成字符串，<strong>如果未经时区转换，结果如下表，导致前后不一致</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>格式化前</th>
+<th>格式化后</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2021-01-03T17:00:00.000Z</td>
+<td>2021-01-03 17:00:00</td>
+</tr>
+<tr>
+<td>2021-01-04T01:00:00.000+0800</td>
+<td>2021-01-04 01:00:00</td>
+</tr>
+</tbody></table>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Set a parameter to a java.sql.Timestamp value. The driver converts this</span></span><br><span class="line"><span class="comment"> * to a SQL TIMESTAMP value when it sends it to the database.</span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> parameterIndex</span></span><br><span class="line"><span class="comment"> *            the first parameter is 1, the second is 2, ...</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> x</span></span><br><span class="line"><span class="comment"> *            the parameter value</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> tz</span></span><br><span class="line"><span class="comment"> *            the timezone to use</span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> SQLException</span></span><br><span class="line"><span class="comment"> *             if a database-access error occurs.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">setTimestampInternal</span><span class="params">(<span class="type">int</span> parameterIndex, Timestamp x, Calendar targetCalendar, TimeZone tz, <span class="type">boolean</span> rollForward)</span> <span class="keyword">throws</span> SQLException &#123;</span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">    x = TimeUtil.changeTimezone(<span class="built_in">this</span>.connection, sessionCalendar, targetCalendar, x, tz, <span class="built_in">this</span>.connection.getServerTimezoneTZ(), rollForward);</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">                <span class="keyword">synchronized</span> (<span class="built_in">this</span>) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (<span class="built_in">this</span>.tsdf == <span class="literal">null</span>) &#123;</span><br><span class="line">                        <span class="built_in">this</span>.tsdf = <span class="keyword">new</span> <span class="title class_">SimpleDateFormat</span>(<span class="string">&quot;&#x27;&#x27;yyyy-MM-dd HH:mm:ss&quot;</span>, Locale.US);</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    <span class="type">StringBuffer</span> <span class="variable">buf</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringBuffer</span>();</span><br><span class="line">                    buf.append(<span class="built_in">this</span>.tsdf.format(x));</span><br><span class="line">                    </span><br><span class="line">                    ...</span><br><span class="line">                    </span><br><span class="line">                    setInternal(parameterIndex, buf.toString());</span><br><span class="line">                &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述方法内部调用了 <code>com.mysql.jdbc.TimeUtil#changeTimezone</code> 方法，源码如下。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Change the given timestamp from one timezone to another</span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> conn</span></span><br><span class="line"><span class="comment"> *            the current connection to the MySQL server</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> tstamp</span></span><br><span class="line"><span class="comment"> *            the timestamp to change</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> fromTz</span></span><br><span class="line"><span class="comment"> *            the timezone to change from</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> toTz</span></span><br><span class="line"><span class="comment"> *            the timezone to change to</span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> the timestamp changed to the timezone &#x27;toTz&#x27;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Timestamp <span class="title function_">changeTimezone</span><span class="params">(MySQLConnection conn, Calendar sessionCalendar, Calendar targetCalendar, Timestamp tstamp, TimeZone fromTz,</span></span><br><span class="line"><span class="params">        TimeZone toTz, <span class="type">boolean</span> rollForward)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> ((conn != <span class="literal">null</span>)) &#123;</span><br><span class="line">        <span class="comment">// 开启 useTimezone=true，才能进入下面的时区转换逻辑</span></span><br><span class="line">        <span class="keyword">if</span> (conn.getUseTimezone()) &#123;</span><br><span class="line">            <span class="comment">// Convert the timestamp from GMT to the server&#x27;s timezone</span></span><br><span class="line">            <span class="type">Calendar</span> <span class="variable">fromCal</span> <span class="operator">=</span> Calendar.getInstance(fromTz);</span><br><span class="line">            fromCal.setTime(tstamp);</span><br><span class="line"></span><br><span class="line">            <span class="type">int</span> <span class="variable">fromOffset</span> <span class="operator">=</span> fromCal.get(Calendar.ZONE_OFFSET) + fromCal.get(Calendar.DST_OFFSET);</span><br><span class="line">            <span class="type">Calendar</span> <span class="variable">toCal</span> <span class="operator">=</span> Calendar.getInstance(toTz);</span><br><span class="line">            toCal.setTime(tstamp);</span><br><span class="line"></span><br><span class="line">            <span class="type">int</span> <span class="variable">toOffset</span> <span class="operator">=</span> toCal.get(Calendar.ZONE_OFFSET) + toCal.get(Calendar.DST_OFFSET);</span><br><span class="line">            <span class="type">int</span> <span class="variable">offsetDiff</span> <span class="operator">=</span> fromOffset - toOffset;</span><br><span class="line">            <span class="type">long</span> <span class="variable">toTime</span> <span class="operator">=</span> toCal.getTime().getTime();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (rollForward) &#123;</span><br><span class="line">                toTime += offsetDiff;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                toTime -= offsetDiff;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="type">Timestamp</span> <span class="variable">changedTimestamp</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Timestamp</span>(toTime);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> changedTimestamp;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (conn.getUseJDBCCompliantTimezoneShift()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (targetCalendar != <span class="literal">null</span>) &#123;</span><br><span class="line"></span><br><span class="line">                <span class="type">Timestamp</span> <span class="variable">adjustedTimestamp</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Timestamp</span>(jdbcCompliantZoneShift(sessionCalendar, targetCalendar, tstamp));</span><br><span class="line"></span><br><span class="line">                adjustedTimestamp.setNanos(tstamp.getNanos());</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> adjustedTimestamp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> tstamp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果 JDBC 连接参数未配置 <code>useTimezone=true</code>（默认值 <code>false</code>），会导致目标时区转换失效，从而产生上述问题。<strong>而如果开启之后，不管应用服务器设置什么时区，都能保证正确转换为数据库目标时区的时间值，反之亦然（数据库 -&gt; 应用服务器）。</strong>这里给两个例子，如下表：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>时区转换前</th>
+<th>时区转换后</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>UTC+2</td>
+<td>2021-01-03T19:00:00.000+0200 / 1609693200</td>
+<td>2021-01-03T17:00:00.000Z / 1609693200</td>
+</tr>
+<tr>
+<td>UTC+8</td>
+<td>2021-01-04T01:00:00.000+0800 / 1609693200</td>
+<td>2021-01-03T17:00:00.000Z / 1609693200</td>
+</tr>
+</tbody></table>
+<p><img src="/img/java/time/after_convert_time_zone+2.png" alt="after_convert_time_zone+2"></p>
+<p><img src="/img/java/time/after_convert_time_zone+8.png" alt="after_convert_time_zone+8"></p>
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/tYQ6fXH4x74pLwkbKtnDjQ">不指定时区会踩坑：MySQL JDBC 8.0.22 驱动升级遇到的 Bug 分析</a></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>时区数据库：</p>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://www.iana.org/time-zones">IANA  的时区数据库</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.infoq.cn/article/S7iIaYMTOecZowBxBCY3">《这个重要开源项目全靠一位低调的 “怪老头” 维护！他和比尔盖茨一样撑起了计算机世界》</a></p>
+<blockquote>
+<p>时区设置背后有一组大量关于全球许多代表性地点时间历史信息的代码和数据，这些代码和数据被称为<strong>时区数据库</strong>（即 tz、tzdata 或 zoneinfo），该数据库会定期进行更新以反映各政治实体对时区边界、UTC 差值和夏令时规则的更改。对 tz 的更新遵循 BCP 175 流程进行管理。</p>
+<p>尽管大多数计算机用户从未听说过时区数据库，但 tz 数据库对全世界的计算机非常重要。所有基于 Linux 和 Mac 的计算机都是从一个极其重要的数据库（时区数据库）中提取时区。目前，使用该数据库的项目包括：the GNU C Library (used in GNU/Linux), Android, FreeBSD, NetBSD, OpenBSD, Chromium OS, Cygwin, MariaDB, MINIX, MySQL, webOS, AIX, BlackBerry 10, iOS, macOS, Microsoft Windows, OpenVMS, Oracle Database, Oracle Solaris 等。</p>
+<p><strong>tz 数据库背后，一个人在维护</strong></p>
+<p>tz 数据库由 David Olson 创立，收集了自 1970 年以来被广泛认可的民用时钟的时区信息。2011 年，互联网域名与数字地址分配机构 ICANN 接管了这个被全球电脑和网站广泛使用的时区数据库，该机构通常只赞助对互联网发展非常重要的项目，</p>
+<p>现在，具体的维护工作由互联网分配号码管理局（Internet Assigned Numbers Authority， IANA）负责。Paul Eggert 是时区数据库的项目负责人，该职位被称为 TZ 协调员。</p>
+</blockquote>
+</li>
+<li><p><a target="_blank" rel="noopener" href="http://www.world-timedate.com/timezone/timezone_info_by_country.php">Get Time Zone info of the World Countries</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/352366074">逐渐成为历史的 “新疆时间” —— Asia/Urumqi (UTC+06:00)</a></p>
+</li>
+</ul>
+<p>UTC：</p>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Coordinated_Universal_Time">https://en.wikipedia.org/wiki/Coordinated_Universal_Time</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%8D%8F%E8%B0%83%E4%B8%96%E7%95%8C%E6%97%B6">https://zh.wikipedia.org/wiki/协调世界时</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Leap_second">闰秒</a>终于要被取消了！</p>
+<blockquote>
+<p>2022 年 11 月 20 日消息，<a target="_blank" rel="noopener" href="https://www.bipm.org/en/time-metrology">负责协调世界时的国际计量局（BIPM）</a>表示，科学家和政府代表 18 日在法国举行的一次会议上投票决定到 2035 年取消闰秒。BIPM 时间部门负责人帕特里齐亚·塔维拉表示，这项“历史性决定”将允许“秒数连续流动，而不会出现目前由不规则闰秒造成的不连续性。”</p>
+<p><strong>更多阅读：</strong></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/6F6pHKrTCMKxpaMJOYK1JA">为什么闰秒调整将从 2035 年开始暂停 | InfoQ</a></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/yyDyRUE6_0Co_1PRjgeOCQ">正式宣布取消！能让 Linus 本人同谷歌微软达成一致的，只有它了！</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.infoq.cn/article/3qXArL5XGJZXmAh90ZlD">让大厂抓狂的“额外一秒”：谷歌、微软、Meta 和亚马逊纷纷提议放弃</a></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/K6YGA6Dc9w3iTuiA8U-PYA">闰秒这个困扰程序员 50 年的问题，终于要被解决了？</a></p>
+<blockquote>
+<p>当闰秒发生时，就需要通过<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Network_Time_Protocol">网络时间协议 NTP (Network time protocol)</a> 来进行时间同步，NTP 服务器会一级一级地下发闰秒事件通知直到最边缘的 NTP 服务器，然后 NTP 服务器就会把闰秒通知发给客户端的操作系统，由操作系统来处理闰秒通知。</p>
+<p>如果你的计算机系统没有开启 NTP 服务，那么导致的问题就是你的计算机上的机器时间就会比世界时间慢 1 秒。</p>
+<p>如果开了 NTP 服务的话，就需要操作系统来处理这个闰秒。</p>
+</blockquote>
+</blockquote>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%8D%8F%E8%B0%83%E4%B8%96%E7%95%8C%E6%97%B6">协调世界时（UTC） - 维基百科</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://time.is/UTC">https://time.is/UTC</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.zeitverschiebung.net/cn/">时区转换器：计算世界各个时区的时差</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="http://www.timezoneconverter.com/cgi-bin/zoneinfo">Time Zone Converter</a></p>
+</li>
+</ul>
+<p>时间协议：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Time_Protocol">https://en.wikipedia.org/wiki/Time_Protocol</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Network_Time_Protocol">https://en.wikipedia.org/wiki/Network_Time_Protocol</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Network_Time_Protocol#SNTP">https://en.wikipedia.org/wiki/Network_Time_Protocol#SNTP</a></li>
+<li>《<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/b5JqzO9nqmef9RdlosloPw">每天学一个 Linux 命令（96）：<code>ntpdate</code></a>》</li>
+</ul>
+<p>其它：</p>
+<ul>
+<li>《Java 8 实战》</li>
+<li>Java SE Docs</li>
+<li>《八十天环游地球》【法】儒勒·凡尔纳</li>
+<li><a target="_blank" rel="noopener" href="https://www.coder.work/article/6269420">《Java 时区数据库与 IANA 数据》</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/java8-time-zone/" title="Java 常用类型系列（五）时区处理总结">https://qidawu.github.io/posts/java8-time-zone/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/java8-time/" rel="prev" title="Java 常用类型系列（四）日期与时间类型总结">
+                  <i class="fa fa-chevron-left"></i> Java 常用类型系列（四）日期与时间类型总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/java-enum/" rel="next" title="Java 常用类型系列（六）枚举类型总结">
+                  Java 常用类型系列（六）枚举类型总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

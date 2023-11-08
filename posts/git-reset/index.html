@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Git 相比 SVN 的其中一个卓越之处，就在于有各种“后悔药”可吃。其中一种“后悔药”叫做 reset 命令，相当好用。 三个工作区域理解 reset 命令的前提是理解文件流转的三个工作区域：  工作目录（working directory） 暂存区域（staging area） 本地仓库（repo）   命令reset 命令有三种参数形式，本文只介绍最常用的一种： 123git reset [">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git 实战系列（三）git reset 命令回退版本">
+<meta property="og:url" content="https://qidawu.github.io/posts/git-reset/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="Git 相比 SVN 的其中一个卓越之处，就在于有各种“后悔药”可吃。其中一种“后悔药”叫做 reset 命令，相当好用。 三个工作区域理解 reset 命令的前提是理解文件流转的三个工作区域：  工作目录（working directory） 暂存区域（staging area） 本地仓库（repo）   命令reset 命令有三种参数形式，本文只介绍最常用的一种： 123git reset [">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://git-scm.com/figures/18333fig0106-tn.png">
+<meta property="article:published_time" content="2015-08-09T14:11:03.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.914Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Git">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://git-scm.com/figures/18333fig0106-tn.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/git-reset/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/git-reset/","path":"posts/git-reset/","title":"Git 实战系列（三）git reset 命令回退版本"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Git 实战系列（三）git reset 命令回退版本 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E4%B8%AA%E5%B7%A5%E4%BD%9C%E5%8C%BA%E5%9F%9F"><span class="nav-number">1.</span> <span class="nav-text">三个工作区域</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4"><span class="nav-number">2.</span> <span class="nav-text">命令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#mode-%E5%8F%82%E6%95%B0"><span class="nav-number">2.1.</span> <span class="nav-text">mode 参数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#soft"><span class="nav-number">2.1.1.</span> <span class="nav-text">--soft</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mixed"><span class="nav-number">2.1.2.</span> <span class="nav-text">--mixed</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hard"><span class="nav-number">2.1.3.</span> <span class="nav-text">--hard</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#merge"><span class="nav-number">2.1.4.</span> <span class="nav-text">--merge</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#keep"><span class="nav-number">2.1.5.</span> <span class="nav-text">--keep</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#commit-%E5%8F%82%E6%95%B0"><span class="nav-number">2.2.</span> <span class="nav-text">commit 参数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SHA1"><span class="nav-number">2.2.1.</span> <span class="nav-text">SHA1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HEAD"><span class="nav-number">2.2.2.</span> <span class="nav-text">HEAD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HEAD-1"><span class="nav-number">2.2.3.</span> <span class="nav-text">HEAD@{}</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">3.</span> <span class="nav-text">例子</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/git-reset/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Git 实战系列（三）git reset 命令回退版本 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Git 实战系列（三）git reset 命令回退版本
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2015-08-09 22:11:03" itemprop="dateCreated datePublished" datetime="2015-08-09T22:11:03+08:00">2015-08-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>Git 相比 SVN 的其中一个卓越之处，就在于有各种“后悔药”可吃。其中一种“后悔药”叫做 <code>reset</code> 命令，相当好用。</p>
+<h1 id="三个工作区域"><a href="#三个工作区域" class="headerlink" title="三个工作区域"></a>三个工作区域</h1><p>理解 <code>reset</code> 命令的前提是理解文件流转的三个工作区域：</p>
+<ul>
+<li>工作目录（working directory）</li>
+<li>暂存区域（staging area）</li>
+<li>本地仓库（repo）</li>
+</ul>
+<p><img src="https://git-scm.com/figures/18333fig0106-tn.png"></p>
+<h1 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h1><p><code>reset</code> 命令有三种参数形式，本文只介绍最常用的一种：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git reset [&lt;mode&gt;] [&lt;commit&gt;]</span><br><span class="line"></span><br><span class="line">Reset the current branch <span class="built_in">head</span> (HEAD) to &lt;commit&gt;, optionally modifying index and working tree to match.</span><br></pre></td></tr></table></figure>
+
+<p>该命令用于回退本地仓库当前分支下的版本，并可以选择重置暂存区域、工作目录的修改。</p>
+<h2 id="mode-参数"><a href="#mode-参数" class="headerlink" title="mode 参数"></a>mode 参数</h2><p>mode 参数必须是以下五种中的一种：</p>
+<h3 id="soft"><a href="#soft" class="headerlink" title="--soft"></a><code>--soft</code></h3><blockquote>
+<p>HEAD Only</p>
+</blockquote>
+<p>Git 本地仓库的版本回退速度之所以快，全因为 Git 在内部有个指向当前版本的 HEAD 指针，当你回退版本的时候，Git 仅仅是把 HEAD 指针往回移动。</p>
+<h3 id="mixed"><a href="#mixed" class="headerlink" title="--mixed"></a><code>--mixed</code></h3><blockquote>
+<p>HEAD and Index</p>
+</blockquote>
+<p>默认参数。除了回退本地仓库的版本，还会重置暂存区域（也称为 Index File 索引文件）。</p>
+<p>这个默默无闻的 <code>--mixed</code> 参数其实很常见，每次运行 <code>git status</code> 时都会看到它的作用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Changes to be committed:</span><br><span class="line">  (use <span class="string">&quot;git reset HEAD &lt;file&gt;...&quot;</span> to unstage)</span><br><span class="line"></span><br><span class="line">        new file:   /there/is/a/new/file</span><br><span class="line">        modified:   README.md</span><br></pre></td></tr></table></figure>
+
+<p>由于该命令实在太常用了，因此会被设为 alias 以便使用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global alias.unstage <span class="string">&#x27;reset HEAD&#x27;</span></span><br><span class="line">$ git unstage</span><br></pre></td></tr></table></figure>
+
+<h3 id="hard"><a href="#hard" class="headerlink" title="--hard"></a><code>--hard</code></h3><blockquote>
+<p>HEAD, Index, and Working Directory</p>
+</blockquote>
+<p>终极武器，将包括工作目录在内的三个工作区域全部重置或回退，工作目录将重置得一干二净，慎用。</p>
+<p>常见的做法是回退到上一个版本，连同工作目录，就像一切从未发生过一样：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ git reset --hard HEAD~1</span><br><span class="line">HEAD is now at ......</span><br><span class="line"></span><br><span class="line">$ git status</span><br><span class="line">nothing to commit, working directory clean</span><br></pre></td></tr></table></figure>
+
+<p>如果“回退前的版本”已经 <code>push</code> 到远程仓库，则不建议这么做。</p>
+<h3 id="merge"><a href="#merge" class="headerlink" title="--merge"></a><code>--merge</code></h3><p>待补充。</p>
+<h3 id="keep"><a href="#keep" class="headerlink" title="--keep"></a><code>--keep</code></h3><p>待补充。</p>
+<h2 id="commit-参数"><a href="#commit-参数" class="headerlink" title="commit 参数"></a>commit 参数</h2><p>commit 参数有三种常见形式：</p>
+<h3 id="SHA1"><a href="#SHA1" class="headerlink" title="SHA1"></a>SHA1</h3><p>使用 SHA1 值回退到指定的版本，适用于 SH1 值已知的情况：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git reset 17ef24c</span><br></pre></td></tr></table></figure>
+
+<h3 id="HEAD"><a href="#HEAD" class="headerlink" title="HEAD"></a>HEAD</h3><p>更常用的参数，适用于偷懒：</p>
+<ul>
+<li><code>HEAD</code> 表示当前版本（默认参数）。</li>
+<li>上一个版本为 <code>HEAD^</code> ，上上一个版本为 <code>HEAD^^</code> ，以此类推。</li>
+<li>上 100 个版本，简写为 <code>HEAD~100</code> 。</li>
+<li><code>ORIG_HEAD</code> 表示上一个 <code>HEAD</code> ，一般用于撤销上一次 <code>reset</code> 。（”reset” copies the old head to .git/ORIG_HEAD）</li>
+</ul>
+<h3 id="HEAD-1"><a href="#HEAD-1" class="headerlink" title="HEAD@{}"></a>HEAD@{}</h3><p>Git 在 1.8.5 版本之后，加入了 <code>HEAD@&#123;&#125;</code> 功能，它通过一个链表记录 <code>HEAD</code> 的移动路径，链表头部的 <code>HEAD@&#123;0&#125;</code> 即 <code>HEAD</code> 指针。这个功能可以用于回退到一个早已忘记的提交。</p>
+<p>这个功能一般配合 <code>reflog</code> 命令使用。</p>
+<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><p>更多例子参见 <code>git help reset</code> 的 EXAMPLES 部分。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a target="_blank" rel="noopener" href="http://www.th7.cn/Program/c/201409/280832.shtml">Git 中 HEAD 和 ORIG_HEAD 指针分别指的是什么？</a>》</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/git-reset/" title="Git 实战系列（三）git reset 命令回退版本">https://qidawu.github.io/posts/git-reset/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Git/" rel="tag"># Git</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/git-log/" rel="prev" title="Git 实战系列（二）git log 查看提交历史">
+                  <i class="fa fa-chevron-left"></i> Git 实战系列（二）git log 查看提交历史
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/git-checkout/" rel="next" title="Git 实战系列（四）git checkout 命令撤销修改">
+                  Git 实战系列（四）git checkout 命令撤销修改 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

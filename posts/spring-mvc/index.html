@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="一张图简要描述 Spring MVC 的处理流程：   Spring MVC 的核心前端控制器 DispatcherServlet 接收 HTTP 请求并询问 Handler mapping 该请求应该转发到哪个 Controller 方法。 Controller 业务处理完毕，返回 逻辑视图名(通常是一个字符串) 。 最后 viewResolver 解析逻辑视图名并返回相应的 View，如 JS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring MVC 入门教程">
+<meta property="og:url" content="https://qidawu.github.io/posts/spring-mvc/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="一张图简要描述 Spring MVC 的处理流程：   Spring MVC 的核心前端控制器 DispatcherServlet 接收 HTTP 请求并询问 Handler mapping 该请求应该转发到哪个 Controller 方法。 Controller 业务处理完毕，返回 逻辑视图名(通常是一个字符串) 。 最后 viewResolver 解析逻辑视图名并返回相应的 View，如 JS">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/spring/spring-mvc.png">
+<meta property="article:published_time" content="2016-06-25T15:32:08.000Z">
+<meta property="article:modified_time" content="2023-11-07T08:39:43.379Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/spring/spring-mvc.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/spring-mvc/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/spring-mvc/","path":"posts/spring-mvc/","title":"Spring MVC 入门教程"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Spring MVC 入门教程 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA-Controller"><span class="nav-number">1.</span> <span class="nav-text">实现一个 Controller</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E4%B8%80%E4%B8%AA%E6%8E%A7%E5%88%B6%E5%99%A8"><span class="nav-number">1.1.</span> <span class="nav-text">定义一个控制器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Controller"><span class="nav-number">1.1.1.</span> <span class="nav-text">@Controller</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RestController"><span class="nav-number">1.1.2.</span> <span class="nav-text">@RestController</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%98%A0%E5%B0%84%E8%AF%B7%E6%B1%82"><span class="nav-number">1.2.</span> <span class="nav-text">映射请求</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RequestMapping"><span class="nav-number">1.2.1.</span> <span class="nav-text">@RequestMapping</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E5%8F%82%E6%95%B0%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.3.</span> <span class="nav-text">方法参数类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Request-Response"><span class="nav-number">1.3.1.</span> <span class="nav-text">Request &#x2F; Response</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InputStream-Reader"><span class="nav-number">1.3.2.</span> <span class="nav-text">InputStream &#x2F; Reader</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OutputStream-Writer"><span class="nav-number">1.3.3.</span> <span class="nav-text">OutputStream &#x2F; Writer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Session"><span class="nav-number">1.3.4.</span> <span class="nav-text">Session</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HttpEntity-lt-gt"><span class="nav-number">1.3.5.</span> <span class="nav-text">HttpEntity&lt;?&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Map-Model-ModelMap"><span class="nav-number">1.3.6.</span> <span class="nav-text">Map &#x2F; Model &#x2F; ModelMap</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E5%8F%82%E6%95%B0%E6%B3%A8%E8%A7%A3"><span class="nav-number">1.4.</span> <span class="nav-text">方法参数注解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PathVariable"><span class="nav-number">1.4.1.</span> <span class="nav-text">@PathVariable</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RequestParam"><span class="nav-number">1.4.2.</span> <span class="nav-text">@RequestParam</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RequestBody"><span class="nav-number">1.4.3.</span> <span class="nav-text">@RequestBody</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RequestHeader"><span class="nav-number">1.4.4.</span> <span class="nav-text">@RequestHeader</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CookieValue"><span class="nav-number">1.4.5.</span> <span class="nav-text">@CookieValue</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E5%8F%82%E6%95%B0%E9%AA%8C%E8%AF%81"><span class="nav-number">1.5.</span> <span class="nav-text">方法参数验证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E8%BF%94%E5%9B%9E%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.6.</span> <span class="nav-text">方法返回类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HttpEntity-lt-gt-1"><span class="nav-number">1.6.1.</span> <span class="nav-text">HttpEntity&lt;?&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ResponseEntity-lt-gt"><span class="nav-number">1.6.2.</span> <span class="nav-text">ResponseEntity&lt;?&gt;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ModelAndView"><span class="nav-number">1.6.3.</span> <span class="nav-text">ModelAndView</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#String"><span class="nav-number">1.6.4.</span> <span class="nav-text">String</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E8%BF%94%E5%9B%9E%E6%B3%A8%E8%A7%A3"><span class="nav-number">1.7.</span> <span class="nav-text">方法返回注解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ResponseBody"><span class="nav-number">1.7.1.</span> <span class="nav-text">@ResponseBody</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ResponseStatus"><span class="nav-number">1.7.2.</span> <span class="nav-text">@ResponseStatus</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%86%E5%9B%BE%E5%A4%84%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">视图处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%9F%E4%B8%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">统一异常处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CORS-%E6%94%AF%E6%8C%81"><span class="nav-number">4.</span> <span class="nav-text">CORS 支持</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E9%85%8D%E7%BD%AE"><span class="nav-number">5.</span> <span class="nav-text">核心配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/spring-mvc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Spring MVC 入门教程 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Spring MVC 入门教程
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-06-25 23:32:08" itemprop="dateCreated datePublished" datetime="2016-06-25T23:32:08+08:00">2016-06-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-11-07 16:39:43" itemprop="dateModified" datetime="2023-11-07T16:39:43+08:00">2023-11-07</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>一张图简要描述 Spring MVC 的处理流程：</p>
+<p><img src="/img/spring/spring-mvc.png" alt="Spring MVC"></p>
+<ul>
+<li>Spring MVC 的核心前端控制器 <code>DispatcherServlet</code> 接收 HTTP 请求并询问 <code>Handler mapping</code> 该请求应该转发到哪个 <code>Controller</code> 方法。</li>
+<li><code>Controller</code> 业务处理完毕，返回 <em>逻辑视图名(通常是一个字符串)</em> 。</li>
+<li>最后 <code>viewResolver</code> 解析逻辑视图名并返回相应的 <code>View</code>，如 JSP、FreeMarker。</li>
+</ul>
+<h1 id="实现一个-Controller"><a href="#实现一个-Controller" class="headerlink" title="实现一个 Controller"></a>实现一个 Controller</h1><p>下面介绍编写控制器过程中常用的注解：</p>
+<h2 id="定义一个控制器"><a href="#定义一个控制器" class="headerlink" title="定义一个控制器"></a>定义一个控制器</h2><h3 id="Controller"><a href="#Controller" class="headerlink" title="@Controller"></a>@Controller</h3><p>Traditional MVC controller relying on a <a target="_blank" rel="noopener" href="https://spring.io/understanding/view-templates">view technology</a> to perform server-side rendering.</p>
+<h3 id="RestController"><a href="#RestController" class="headerlink" title="@RestController"></a>@RestController</h3><p>RESTful web service controller simply populates and returns a object that will be written directly to the HTTP response as JSON. Thanks to Spring’s HTTP message converter support, you don’t need to do this conversion manually. Because <a target="_blank" rel="noopener" href="http://wiki.fasterxml.com/JacksonHome">Jackson 2</a> is on the classpath, Spring’s <a target="_blank" rel="noopener" href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/http/converter/json/MappingJackson2HttpMessageConverter.html"><code>MappingJackson2HttpMessageConverter</code></a> is automatically chosen to convert the object to JSON.</p>
+<p>It’s shorthand for <code>@Controller</code> and <code>@ResponseBody</code> rolled together. </p>
+<h2 id="映射请求"><a href="#映射请求" class="headerlink" title="映射请求"></a>映射请求</h2><h3 id="RequestMapping"><a href="#RequestMapping" class="headerlink" title="@RequestMapping"></a>@RequestMapping</h3><p><a target="_blank" rel="noopener" href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestMapping.html"><code>@RequestMapping</code></a> 用于将 HTTP 请求映射到指定的 <code>Controller</code> 类或方法。</p>
+<p>一、可匹配的请求属性如下：</p>
+<ul>
+<li><code>value</code> 用于匹配指定的请求路径，例如：<code>value = &quot;/index&quot;</code>。</li>
+<li><code>method</code> 用于匹配指定的请求方法，例如：<code>method = RequestMethod.POST</code>。</li>
+<li><code>consumes</code> 用于匹配指定的请求头 <code>Content-Type</code>，例如：<code>consumes = MediaType.APPLICATION_JSON_UTF8_VALUE</code>。</li>
+<li><code>produces</code> 用于匹配指定的请求头 <code>Accept</code>，例如：<code>produces = MediaType.APPLICATION_JSON_UTF8_VALUE</code>。</li>
+<li><code>params</code> 用于匹配指定的请求参数，例如：<ul>
+<li>匹配存在：<code>params = &quot;myParam&quot;</code></li>
+<li>匹配不存在：<code>params = &quot;!myParam&quot;</code></li>
+<li>匹配指定参数值：<code>params = &quot;myParam=myValue&quot;</code> </li>
+</ul>
+</li>
+<li><code>headers</code> 用于匹配指定的请求头，例如：<ul>
+<li>匹配存在：<code>headers = &quot;myHeader&quot;</code></li>
+<li>匹配不存在：<code>headers = &quot;!myHeader&quot;</code></li>
+<li>匹配指定值：<code>headers = &quot;myHeader=myValue&quot;</code></li>
+</ul>
+</li>
+</ul>
+<p>尽管你可以使用媒体类型通配符（例如：<code>content-type=text/*</code> 或 <code>accept=xxx</code>）去匹配 <code>Content-Type</code> 或 <code>Accept</code> 请求头，但还是更推荐使用 <code>consumes</code> 或 <code>produces</code> 属性。因为它们专门用于此目的。</p>
+<p>二、Spring Framework 4.3 还引入了五个等价的变体注解，相当于 <code>@RequestMapping</code> 注解与 <code>method</code> 属性的组合使用：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@GetMapping</span><br><span class="line">@PostMapping</span><br><span class="line">@PutMapping</span><br><span class="line">@DeleteMapping</span><br><span class="line">@PatchMapping</span><br></pre></td></tr></table></figure>
+
+<p>三、标注了 <code>@RequestMapping</code> 注解的方法可以拥有非常灵活的方法签名。支持以下参数类型/注解、返回类型/注解：</p>
+<h2 id="方法参数类型"><a href="#方法参数类型" class="headerlink" title="方法参数类型"></a>方法参数类型</h2><p><code>@RequestMapping</code> 注解的方法，参数可以是下列任一类型：</p>
+<h3 id="Request-Response"><a href="#Request-Response" class="headerlink" title="Request / Response"></a>Request / Response</h3><p>用于访问当前 <code>javax.servlet.http.HttpServletRequest</code> / <code>javax.servlet.http.HttpServletResponse</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;/index&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">go</span><span class="params">(HttpServletRequest request, HttpServletResponse response)</span> &#123;</span><br><span class="line">    request.getHeader(<span class="string">&quot;host&quot;</span>); <span class="comment">// 读取指定 HTTP 请求头</span></span><br><span class="line">    response.getWriter().write(<span class="string">&quot;hello world&quot;</span>); <span class="comment">// 浏览器将会显示：hello world</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用这类方法参数有点类似于传统的 Servlet 编程。</p>
+<h3 id="InputStream-Reader"><a href="#InputStream-Reader" class="headerlink" title="InputStream / Reader"></a>InputStream / Reader</h3><p>用于访问当前请求内容的 <code>java.io.InputStream</code> / <code>java.io.Reader</code></p>
+<h3 id="OutputStream-Writer"><a href="#OutputStream-Writer" class="headerlink" title="OutputStream / Writer"></a>OutputStream / Writer</h3><p>用于生成当前响应内容的 <code>java.io.OutputStream</code> / <code>java.io.Writer</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;/index&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">go</span><span class="params">(Writer writer)</span> &#123;</span><br><span class="line">    writer.write(<span class="string">&quot;hello world&quot;</span>); <span class="comment">// 浏览器将会显示：hello world</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Session"><a href="#Session" class="headerlink" title="Session"></a>Session</h3><p>用于访问当前 <code>javax.servlet.http.HttpSession</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;/index&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">go</span><span class="params">(HttpSession session)</span> &#123;</span><br><span class="line">    session.getAttribute(<span class="string">&quot;xxx&quot;</span>); <span class="comment">// 读取指定 Session 值</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="HttpEntity-lt-gt"><a href="#HttpEntity-lt-gt" class="headerlink" title="HttpEntity&lt;?&gt;"></a>HttpEntity&lt;?&gt;</h3><p><a target="_blank" rel="noopener" href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/http/HttpEntity.html"><code>HttpEntity&lt;?&gt;</code></a> 用于同时访问 <em>HTTP 请求头和请求体（HTTP request headers and contents）</em> 。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;/index&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">go</span><span class="params">(HttpEntity&lt;String&gt; httpEntity)</span> &#123;</span><br><span class="line">    <span class="type">String</span> <span class="variable">body</span> <span class="operator">=</span> httpEntity.getBody();</span><br><span class="line">    <span class="type">HttpHeaders</span> <span class="variable">headers</span> <span class="operator">=</span> httpEntity.getHeaders();</span><br><span class="line">    <span class="type">String</span> <span class="variable">host</span> <span class="operator">=</span> headers.getFirst(<span class="string">&quot;host&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Map-Model-ModelMap"><a href="#Map-Model-ModelMap" class="headerlink" title="Map / Model / ModelMap"></a>Map / Model / ModelMap</h3><p><code>Map</code> / <a target="_blank" rel="noopener" href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/ui/Model.html"><code>Model</code></a> / <a target="_blank" rel="noopener" href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/ui/ModelMap.html"><code>ModelMap</code></a> 用于在 <code>Controller</code> 层填充将会暴露给 <code>View</code> 层的 <code>Model</code> 对象。</p>
+<h2 id="方法参数注解"><a href="#方法参数注解" class="headerlink" title="方法参数注解"></a>方法参数注解</h2><p>尽管使用常规类型的方法参数更接近于人们所熟悉的传统 Servlet 编程，但在 Spring 编程中却不建议这么做。因为这样会导致 JavaBean 与 Servlet 容器耦合，侵入性强，难以进行单元测试（如 Mock 测试）。最佳实践应当是传入注解后被解析好的数据类型，下面介绍这些常用的注解：</p>
+<h3 id="PathVariable"><a href="#PathVariable" class="headerlink" title="@PathVariable"></a>@PathVariable</h3><p><a target="_blank" rel="noopener" href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/PathVariable.html"><code>@PathVariable</code></a> 用于标注某个方法参数与某个 <em>URI 模板变量（URI template variable）</em> 的绑定关系，常用于 <em>RESTful URL</em>，例如 <code>/hotels/&#123;hotel&#125;</code>。</p>
+<h3 id="RequestParam"><a href="#RequestParam" class="headerlink" title="@RequestParam"></a>@RequestParam</h3><p><a target="_blank" rel="noopener" href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestParam.html"><code>@RequestParam</code></a> 用于标注某个方法参数与某个 <em>HTTP 请求参数（HTTP request parameter）</em> 的绑定关系。</p>
+<blockquote>
+<p>Annotation which indicates that a method parameter should be bound to a web request parameter.</p>
+<p>Supported for annotated handler methods in Spring MVC and Spring WebFlux as follows:</p>
+<ul>
+<li>In Spring MVC, “request parameters” map to <strong>query parameters, form data, and parts in multipart requests</strong>. This is because the <a target="_blank" rel="noopener" href="https://docs.oracle.com/cd/E17802_01/products/products/servlet/2.5/docs/servlet-2_5-mr2/overview-tree.html">Servlet API</a> combines query parameters and form data into <a target="_blank" rel="noopener" href="https://docs.oracle.com/cd/E17802_01/products/products/servlet/2.5/docs/servlet-2_5-mr2/javax/servlet/ServletRequest.html#getParameterMap()">a single map called “parameters”</a>, and that includes automatic parsing of the request body.</li>
+<li>In Spring WebFlux, “request parameters” map to query parameters only. To work with all 3, query, form data, and multipart data, you can use data binding to a command object annotated with <a target="_blank" rel="noopener" href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/ModelAttribute.html"><code>ModelAttribute</code></a>.</li>
+</ul>
+<p>If the method parameter type is <a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true"><code>Map</code></a> and a request parameter name is specified, then the request parameter value is converted to a <a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true"><code>Map</code></a> assuming an appropriate conversion strategy is available.</p>
+<p>If the method parameter is <a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true"><code>Map</code></a> or <a target="_blank" rel="noopener" href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/util/MultiValueMap.html"><code>MultiValueMap</code></a> and a parameter name is not specified, then the map parameter is populated with all request parameter names and values.</p>
+</blockquote>
+<p>例子 1：<code>POST</code> with <em>form data</em></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">POST /test HTTP/1.1</span><br><span class="line">Host: localhost:8080</span><br><span class="line">Content-Type: application/x-www-form-urlencoded</span><br><span class="line"></span><br><span class="line">data=123,234</span><br></pre></td></tr></table></figure>
+
+<p>例子 2：<code>GET</code> with <em>query string parameters</em></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GET /test?data=123,234 HTTP/1.1</span><br><span class="line">Host: localhost:8080</span><br></pre></td></tr></table></figure>
+
+<p>代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;/test&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test</span><span class="params">(<span class="meta">@RequestParam(&quot;data&quot;)</span> String data)</span> &#123;</span><br><span class="line">    log.info(data);  <span class="comment">// 123, 234</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Type conversion is applied automatically if the target method parameter type is not String. See the section called “<a target="_blank" rel="noopener" href="http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-ann-typeconversion">Method Parameters And Type Conversion</a>”.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;/test&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test</span><span class="params">(<span class="meta">@RequestParam(&quot;data&quot;)</span> ArrayList&lt;String&gt; data)</span> &#123;</span><br><span class="line">    log.info(data.toString());  <span class="comment">// 123, 234</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>When an <code>@RequestParam</code> annotation is used on a <code>Map&lt;String, String&gt;</code> or <code>MultiValueMap&lt;String, String&gt;</code> argument, the map is populated with all request parameters.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;/test&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test</span><span class="params">(<span class="meta">@RequestParam(&quot;data&quot;)</span> Map&lt;String, String&gt; data)</span> &#123;</span><br><span class="line">    log.info(data.get(<span class="string">&quot;data&quot;</span>));  <span class="comment">// 123, 234</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用时需要注意 <code>required</code> 这个属性：</p>
+<ul>
+<li>方法参数不写 <code>@RequestParam</code>，默认的 <code>required</code> 为 <code>false</code></li>
+<li>方法参数写了 <code>@RequestParam</code>，默认的 <code>required</code> 为 <code>true</code></li>
+<li>方法参数同时写了 <code>@RequestParam</code> + <code>defaultValue</code>，默认的 <code>required</code> 为 <code>false</code></li>
+</ul>
+<h3 id="RequestBody"><a href="#RequestBody" class="headerlink" title="@RequestBody"></a>@RequestBody</h3><p><a target="_blank" rel="noopener" href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestBody.html"><code>@RequestBody</code></a> 用于标注某个方法参数与某个 <em>HTTP 请求体（HTTP request body）</em> 的绑定关系。 <code>@RequestBody</code> 会调用合适的 <a target="_blank" rel="noopener" href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/http/converter/HttpMessageConverter.html">message converters</a> 将 <em>HTTP 请求体（HTTP request body）</em> 写入指定对象，默认的 <code>HttpMessageConverter</code> 如下：</p>
+<table>
+<thead>
+<tr>
+<th><code>content-type</code></th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td><code>ByteArrayHttpMessageConverter</code> converts byte arrays.</td>
+</tr>
+<tr>
+<td></td>
+<td><code>StringHttpMessageConverter</code> converts strings.</td>
+</tr>
+<tr>
+<td><code>application/x-www-form-urlencoded</code></td>
+<td><code>FormHttpMessageConverter</code> converts form data to/from a <code>MultiValueMap&lt;String, String&gt;</code>.</td>
+</tr>
+<tr>
+<td><code>application/json</code></td>
+<td><code>MappingJackson2HttpMessageConverter</code> converts JSON.</td>
+</tr>
+</tbody></table>
+<p>例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">POST /test HTTP/1.1</span><br><span class="line">Host: localhost:8080</span><br><span class="line">Content-Type: application/json</span><br><span class="line"></span><br><span class="line">[&quot;123&quot;, &quot;234&quot;]</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;/test&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test</span><span class="params">(<span class="meta">@RequestBody</span> List&lt;String&gt; data)</span> &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>An <code>@RequestBody</code> method parameter can be annotated with <code>@Valid</code>, in which case it will be validated using the configured <code>Validator</code> instance. When using the MVC namespace or the MVC Java config, a JSR-303 validator is configured automatically assuming a JSR-303 implementation is available on the classpath.</p>
+<h3 id="RequestHeader"><a href="#RequestHeader" class="headerlink" title="@RequestHeader"></a>@RequestHeader</h3><p><a target="_blank" rel="noopener" href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestHeader.html"><code>@RequestHeader</code></a> 用于标注某个方法参数与某个 <em>HTTP 请求头（HTTP request header）</em> 的绑定关系。</p>
+<h3 id="CookieValue"><a href="#CookieValue" class="headerlink" title="@CookieValue"></a>@CookieValue</h3><p><a target="_blank" rel="noopener" href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/CookieValue.html"><code>@CookieValue</code></a> 用于标注某个方法参数与某个 <em>HTTP cookie</em> 的绑定关系。方法参数可以是 <code>javax.servlet.http.Cookie</code>，也可以是具体的 Cookie 值（如字符串、数字类型等）。</p>
+<p>举个例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/index&quot;)</span></span><br><span class="line"><span class="keyword">public</span> Employee <span class="title function_">getEmployeeBy</span><span class="params">(</span></span><br><span class="line"><span class="params">    <span class="meta">@RequestParam(&quot;name&quot;)</span> String name, </span></span><br><span class="line"><span class="params">    <span class="meta">@RequestHeader(&quot;host&quot;)</span> String host, </span></span><br><span class="line"><span class="params">    <span class="meta">@RequestBody</span> String body)</span> &#123;...&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="方法参数验证"><a href="#方法参数验证" class="headerlink" title="方法参数验证"></a>方法参数验证</h2><p>Spring MVC 可以快速整合 JSR 303 - Bean Validation 实现方法参数校验，用法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="meta">@RequestMapping(value = &quot;/test&quot;)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">test</span><span class="params">(<span class="meta">@Validated</span> RequestVO request, BindingResult bindingResult)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (bindingResult.hasErrors()) &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">errMsg</span> <span class="operator">=</span> bindingResult.getAllErrors().stream()</span><br><span class="line">                .map(DefaultMessageSourceResolvable::getDefaultMessage)</span><br><span class="line">                .collect(Collectors.joining(<span class="string">&quot;, &quot;</span>));</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>用到：</p>
+<p><code>org.springframework.validation.annotation.Validated</code> 注解</p>
+<p><code>org.springframework.validation.BindingResult</code> 接口</p>
+<p>参考：</p>
+<p>《<a target="_blank" rel="noopener" href="https://blog.csdn.net/VagueCoder/article/details/48398517">Spring4新特性——集成Bean Validation 1.1(JSR-349)到SpringMVC</a>》</p>
+<h2 id="方法返回类型"><a href="#方法返回类型" class="headerlink" title="方法返回类型"></a>方法返回类型</h2><p><code>@RequestMapping</code> 注解的方法，返回类型可以是下列任一常规类型：</p>
+<h3 id="HttpEntity-lt-gt-1"><a href="#HttpEntity-lt-gt-1" class="headerlink" title="HttpEntity&lt;?&gt;"></a>HttpEntity&lt;?&gt;</h3><p><code>org.springframework.http.HttpEntity</code></p>
+<p>Represents an HTTP request or response entity, consisting of headers and body.</p>
+<p>Typically used in combination with the <code>RestTemplate</code>, like so:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">HttpHeaders</span> <span class="variable">headers</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HttpHeaders</span>();</span><br><span class="line">headers.setContentType(MediaType.TEXT_PLAIN);</span><br><span class="line">HttpEntity&lt;String&gt; entity = <span class="keyword">new</span> <span class="title class_">HttpEntity</span>&lt;String&gt;(helloWorld, headers);</span><br><span class="line"><span class="type">URI</span> <span class="variable">location</span> <span class="operator">=</span> template.postForLocation(<span class="string">&quot;http://example.com&quot;</span>, entity);</span><br></pre></td></tr></table></figure>
+
+<p>or</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">HttpEntity&lt;String&gt; entity = template.getForEntity(<span class="string">&quot;http://example.com&quot;</span>, String.class);</span><br><span class="line"><span class="type">String</span> <span class="variable">body</span> <span class="operator">=</span> entity.getBody();</span><br><span class="line"><span class="type">MediaType</span> <span class="variable">contentType</span> <span class="operator">=</span> entity.getHeaders().getContentType();</span><br></pre></td></tr></table></figure>
+
+<p>Can also be used in Spring MVC, as a return value from a <code>@Controller</code> method:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;/handle&quot;)</span></span><br><span class="line"><span class="keyword">public</span> HttpEntity&lt;String&gt; <span class="title function_">handle</span><span class="params">()</span> &#123;</span><br><span class="line">  <span class="type">HttpHeaders</span> <span class="variable">responseHeaders</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HttpHeaders</span>();</span><br><span class="line">  responseHeaders.set(<span class="string">&quot;MyResponseHeader&quot;</span>, <span class="string">&quot;MyValue&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">HttpEntity</span>&lt;String&gt;(<span class="string">&quot;Hello World&quot;</span>, responseHeaders);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="ResponseEntity-lt-gt"><a href="#ResponseEntity-lt-gt" class="headerlink" title="ResponseEntity&lt;?&gt;"></a>ResponseEntity&lt;?&gt;</h3><p><code>org.springframework.http.ResponseEntity</code></p>
+<p>Extension of <code>HttpEntity</code> that adds a <code>HttpStatus</code> status code. Used in <code>RestTemplate</code> as well <code>@Controller</code> methods.</p>
+<p>In <code>RestTemplate</code>, this class is returned by <code>getForEntity()</code> and <code>exchange()</code>:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ResponseEntity&lt;String&gt; entity = template.getForEntity(<span class="string">&quot;http://example.com&quot;</span>, String.class);</span><br><span class="line"><span class="type">String</span> <span class="variable">body</span> <span class="operator">=</span> entity.getBody();</span><br><span class="line"><span class="type">MediaType</span> <span class="variable">contentType</span> <span class="operator">=</span> entity.getHeaders().getContentType();</span><br><span class="line"><span class="type">HttpStatus</span> <span class="variable">statusCode</span> <span class="operator">=</span> entity.getStatusCode();</span><br></pre></td></tr></table></figure>
+
+<p>Can also be used in Spring MVC, as the return value from a <code>@Controller</code> method:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;/handle&quot;)</span></span><br><span class="line"><span class="keyword">public</span> ResponseEntity&lt;String&gt; <span class="title function_">handle</span><span class="params">()</span> &#123;</span><br><span class="line">  <span class="type">URI</span> <span class="variable">location</span> <span class="operator">=</span> ...;</span><br><span class="line">  <span class="type">HttpHeaders</span> <span class="variable">responseHeaders</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HttpHeaders</span>();</span><br><span class="line">  responseHeaders.setLocation(location);</span><br><span class="line">  responseHeaders.set(<span class="string">&quot;MyResponseHeader&quot;</span>, <span class="string">&quot;MyValue&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">ResponseEntity</span>&lt;String&gt;(<span class="string">&quot;Hello World&quot;</span>, responseHeaders, HttpStatus.CREATED);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Or, by using a builder accessible via static methods:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;/handle&quot;)</span></span><br><span class="line"><span class="keyword">public</span> ResponseEntity&lt;String&gt; <span class="title function_">handle</span><span class="params">()</span> &#123;</span><br><span class="line">  <span class="type">URI</span> <span class="variable">location</span> <span class="operator">=</span> ...;</span><br><span class="line">  <span class="keyword">return</span> ResponseEntity.created(location).header(<span class="string">&quot;MyResponseHeader&quot;</span>, <span class="string">&quot;MyValue&quot;</span>).body(<span class="string">&quot;Hello World&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="ModelAndView"><a href="#ModelAndView" class="headerlink" title="ModelAndView"></a>ModelAndView</h3><p><code>org.springframework.web.servlet.ModelAndView</code></p>
+<p>Holder for both Model and View in the web MVC framework.</p>
+<h3 id="String"><a href="#String" class="headerlink" title="String"></a>String</h3><p>表示直接返回视图名。</p>
+<h2 id="方法返回注解"><a href="#方法返回注解" class="headerlink" title="方法返回注解"></a>方法返回注解</h2><h3 id="ResponseBody"><a href="#ResponseBody" class="headerlink" title="@ResponseBody"></a>@ResponseBody</h3><p>用于标注某个方法返回值与 <em>WEB 响应体（response body）</em> 的绑定关系。 <code>@ResponseBody</code> 会跳过 <code>ViewResolver</code> 部分，调用合适的 <a target="_blank" rel="noopener" href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/http/converter/HttpMessageConverter.html">message converters</a>，将方法返回值作为 <em>WEB 响应体（response body）</em> 写入输出流。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;/index&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="keyword">public</span> Date <span class="title function_">go</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Date</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="ResponseStatus"><a href="#ResponseStatus" class="headerlink" title="@ResponseStatus"></a>@ResponseStatus</h3><p><a target="_blank" rel="noopener" href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/ResponseStatus.html"><code>@ResponseStatus</code></a> 用于返回 HTTP 响应码，例如返回 404：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;/index&quot;)</span></span><br><span class="line"><span class="meta">@ResponseStatus(value = HttpStatus.NOT_FOUND, reason = &quot;找不到网页&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">go</span><span class="params">()</span> &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="视图处理"><a href="#视图处理" class="headerlink" title="视图处理"></a>视图处理</h1><h1 id="统一异常处理"><a href="#统一异常处理" class="headerlink" title="统一异常处理"></a>统一异常处理</h1><p>Classes annotated with <code>@ControllerAdvice</code> can contain <code>@ExceptionHandler</code>, <code>@InitBinder</code>, and <code>@ModelAttribute</code> annotated methods, and these methods will apply to <code>@RequestMapping</code> methods across all controller hierarchies as opposed to the controller hierarchy within which they are declared.</p>
+<p><code>@RestControllerAdvice</code> is an alternative where <code>@ExceptionHandler</code> methods assume <code>@ResponseBody</code> semantics by default.</p>
+<p>Both <code>@ControllerAdvice</code> and <code>@RestControllerAdvice</code> can target a subset of controllers:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// Target all Controllers annotated with @RestController</span><br><span class="line">@ControllerAdvice(annotations = RestController.class)</span><br><span class="line">public class AnnotationAdvice &#123;&#125;</span><br><span class="line"></span><br><span class="line">// Target all Controllers within specific packages</span><br><span class="line">@ControllerAdvice(&quot;org.example.controllers&quot;)</span><br><span class="line">public class BasePackageAdvice &#123;&#125;</span><br><span class="line"></span><br><span class="line">// Target all Controllers assignable to specific classes</span><br><span class="line">@ControllerAdvice(assignableTypes = &#123;ControllerInterface.class, AbstractController.class&#125;)</span><br><span class="line">public class AssignableTypesAdvice &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="meta">@RestControllerAdvice</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GlobalExceptionHandler</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ExceptionHandler(Throwable.class)</span></span><br><span class="line">    <span class="keyword">public</span> ResponseEntity&lt;String&gt; <span class="title function_">handleException</span><span class="params">(Throwable e)</span>&#123;</span><br><span class="line">        log.error(e.getMessage(), e);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">ResponseEntity</span>&lt;&gt;(e.getMessage(), HttpStatus.valueOf(<span class="number">500</span>));</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="CORS-支持"><a href="#CORS-支持" class="headerlink" title="CORS 支持"></a>CORS 支持</h1><h1 id="核心配置"><a href="#核心配置" class="headerlink" title="核心配置"></a>核心配置</h1><h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a target="_blank" rel="noopener" href="https://spring.io/guides/gs/serving-web-content/">Serving Web Content with Spring MVC</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="https://spring.io/guides/gs/rest-service/">Building a RESTful Web Service</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="https://spring.io/guides/gs/rest-service-cors/">Enabling Cross Origin Requests for a RESTful Web Service</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ck9b8aO1uQI77H5z5J9IJg">告别混乱代码: Spring 后端接口规范</a>》</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/spring-mvc/" title="Spring MVC 入门教程">https://qidawu.github.io/posts/spring-mvc/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/Spring/" rel="tag"># Spring</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/javascript-event-delegation/" rel="prev" title="Javascript 事件委托机制">
+                  <i class="fa fa-chevron-left"></i> Javascript 事件委托机制
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/javascript-requirejs/" rel="next" title="前端模块化框架 Require.js">
+                  前端模块化框架 Require.js <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

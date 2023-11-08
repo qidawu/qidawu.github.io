@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="并发控制计算机领域中，并发控制（Concurrency Control）是一种机制，它确保并发操作可以产生正确结果。 有两种常用的并发控制机制：  乐观并发控制（Optimistic Concurrency Control, OCC），又称为乐观锁（Optimistic Lock），最早是由孔祥重（H.T.Kung）教授提出的。 悲观并发控制（Pessimistic Concurrency Con">
+<meta property="og:type" content="article">
+<meta property="og:title" content="并发编程系列（一）两种并发控制机制的总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/concurrency-control/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="并发控制计算机领域中，并发控制（Concurrency Control）是一种机制，它确保并发操作可以产生正确结果。 有两种常用的并发控制机制：  乐观并发控制（Optimistic Concurrency Control, OCC），又称为乐观锁（Optimistic Lock），最早是由孔祥重（H.T.Kung）教授提出的。 悲观并发控制（Pessimistic Concurrency Con">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/mysql/concurrency_control.png">
+<meta property="og:image" content="https://qidawu.github.io/img/mysql/example_of_concurrency_control.jpg">
+<meta property="article:published_time" content="2019-02-18T04:05:04.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.910Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="并发编程">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/mysql/concurrency_control.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/concurrency-control/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/concurrency-control/","path":"posts/concurrency-control/","title":"并发编程系列（一）两种并发控制机制的总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>并发编程系列（一）两种并发控制机制的总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6"><span class="nav-number">1.</span> <span class="nav-text">并发控制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%90%E8%A7%82%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6"><span class="nav-number">1.1.</span> <span class="nav-text">乐观并发控制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CAS%EF%BC%88Compare-And-Set%EF%BC%89"><span class="nav-number">1.1.1.</span> <span class="nav-text">CAS（Compare And Set）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%82%B2%E8%A7%82%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6"><span class="nav-number">1.2.</span> <span class="nav-text">悲观并发控制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JVM-%E5%90%8C%E6%AD%A5-%E9%94%81"><span class="nav-number">1.2.1.</span> <span class="nav-text">JVM 同步&#x2F;锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E9%94%81"><span class="nav-number">1.2.2.</span> <span class="nav-text">数据库的锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">1.2.3.</span> <span class="nav-text">分布式锁</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">2.</span> <span class="nav-text">例子</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/concurrency-control/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="并发编程系列（一）两种并发控制机制的总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          并发编程系列（一）两种并发控制机制的总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-02-18 12:05:04" itemprop="dateCreated datePublished" datetime="2019-02-18T12:05:04+08:00">2019-02-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="并发控制"><a href="#并发控制" class="headerlink" title="并发控制"></a>并发控制</h1><p>计算机领域中，并发控制（Concurrency Control）是一种机制，它确保并发操作可以产生正确结果。</p>
+<p>有两种常用的并发控制机制：</p>
+<ul>
+<li>乐观并发控制（Optimistic Concurrency Control, OCC），又称为乐观锁（Optimistic Lock），最早是由孔祥重（H.T.Kung）教授提出的。</li>
+<li>悲观并发控制（Pessimistic Concurrency Control, PCC），又称为悲观锁（Pessimistic Lock）。</li>
+</ul>
+<p>这两种机制或者锁并不是 MySQL 或者数据库中独有的概念，而是并发编程的基本概念。</p>
+<h2 id="乐观并发控制"><a href="#乐观并发控制" class="headerlink" title="乐观并发控制"></a>乐观并发控制</h2><p>顾名思义，就是很乐观，每次去拿数据的时候都认为别人不会修改，所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数据，没有才能更新成功。</p>
+<p>适用场景：</p>
+<ul>
+<li>它假设多用户并发的事务在处理时不会彼此互相影响，各事务能够在不产生锁的情况下处理<strong>各自影响的那部分数据</strong>。在提交数据更新之前，每个事务会先检查在该事务读取数据后，有没有其它事务又修改了该数据。如果其它事务有更新的话，正在提交的事务会进行<strong>回滚</strong>。因此乐观并发控制多数用于数据争用不大、冲突较少的环境中。这种环境中，偶尔回滚事务的成本会低于读取数据时锁定数据的成本，因此可以获得比其它并发控制方法更高的吞吐量。</li>
+</ul>
+<p>实现方式：</p>
+<h3 id="CAS（Compare-And-Set）"><a href="#CAS（Compare-And-Set）" class="headerlink" title="CAS（Compare And Set）"></a>CAS（Compare And Set）</h3><p>CAS（Compare And Set）：实现思路是在 <code>set</code> 的时候，加上初始状态的 <code>compare</code> 条件判断，只有初始状态不变时，才 <code>set</code> 成功。</p>
+<p>为了避免 ABA 问题（例如 CAS 过程中只简单进行“值”的校验，在有些情况下，“值”相同不会引入错误的业务逻辑（例如余额），但有些情况下，“值”虽然相同，却已经不是原来的数据了），CAS 不能只比对“值”，还<strong>必须确保数据是原来的数据</strong>，才能修改成功。实现方式是采用“数据版本”机制，例如通过版本号（version）、时间戳（update_time），来做乐观锁的判断条件，一个数据一个版本，版本变化，即使值相同，也不应该修改成功。</p>
+<p>例如：</p>
+<ul>
+<li><p>Java 原子类 <a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicStampedReference.html"><code>AtomicStampedReference</code></a> 进行值与版本号的双重校验，而不是 <code>AtomicInteger</code>、<code>AtomicLong</code>、<code>AtomicBoolean</code>、<code>AtomicReference</code> 等等只基于值的校验。</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://baomidou.com/guide/interceptor-optimistic-locker.html#optimisticlockerinnerinterceptor">MySQL 乐观锁</a>：</p>
+  <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> table_name <span class="keyword">WHERE</span> <span class="keyword">condition</span><span class="operator">=</span>#<span class="keyword">condition</span>#;</span><br><span class="line"><span class="keyword">UPDATE</span> table_name <span class="keyword">SET</span> name<span class="operator">=</span>#name#, version<span class="operator">=</span>version<span class="operator">+</span><span class="number">1</span> <span class="keyword">WHERE</span> version<span class="operator">=</span>#version#；</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="悲观并发控制"><a href="#悲观并发控制" class="headerlink" title="悲观并发控制"></a>悲观并发控制</h2><p>顾名思义，就是很悲观，每次去拿数据的时候都认为别人会修改，所以每次在拿数据的时候都会上锁，直到使用完毕才会解锁，这样别人想拿这个数据就会 block 住直到它拿到锁。</p>
+<p>适用场景：</p>
+<ul>
+<li>悲观并发控制主要用于数据争用激烈的环境，以及发生并发冲突时使用锁保护数据的成本要低于回滚事务的成本的环境中。悲观锁大多数情况下依靠数据库的<strong>锁机制</strong>实现，以保证操作最大程度的独占性。但随之而来的就是数据库性能的大量开销，特别是对长事务而言，由于会阻塞其它事务导致其一直等待，<strong>降低整体吞吐量</strong>，这样的开销往往无法承受。而乐观锁机制则避免了长事务中的数据库开销。</li>
+<li>面对并发请求，在代码中使用“<strong>一锁二判三更新</strong>”这套操作，其中第一步加锁是为了确保后两步操作的原子性，实现串行化访问临界资源，即同一时刻只能有一个线程/事务独占性的访问临界资源（同步互斥访问），确保并发情况下临界资源的线程安全。</li>
+</ul>
+<p>实现方式：</p>
+<h3 id="JVM-同步-锁"><a href="#JVM-同步-锁" class="headerlink" title="JVM 同步/锁"></a>JVM 同步/锁</h3><p>仅适用于单机部署环境，不适用于集群部署环境。</p>
+<p>Java：</p>
+<ul>
+<li><code>synchronized</code></li>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/locks/Lock.html"><code>java.util.concurrent.locks.Lock</code></a></li>
+</ul>
+<h3 id="数据库的锁"><a href="#数据库的锁" class="headerlink" title="数据库的锁"></a>数据库的锁</h3><p>MySQL <code>InnoDB</code> 存储引擎中，悲观<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-locking.html">锁的类型</a>还有很多种：</p>
+<ul>
+<li>Shared and Exclusive Locks（共享锁和排它锁）</li>
+<li>Intention Locks（意向锁）</li>
+<li>Record Locks（记录锁）</li>
+<li>Gap Locks（区间锁）</li>
+<li>Next-Key Locks</li>
+<li>Insert Intention Locks（插入意向锁）</li>
+<li>AUTO-INC Locks（自增锁）</li>
+<li>Predicate Locks for Spatial Indexes（空间索引谓词锁）</li>
+</ul>
+<p>例如，通过 <a href="/posts/mysql-locking-read/">MySQL 加锁读（Locking Reads）机制</a>，在 A 事务中先对资源加<strong>排它锁（写锁）</strong>，阻塞其它事务对同一资源的读写访问，然后在事务内进行代码判断以及资源更新提交，实现串行化访问资源：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 共享锁（读锁）</span></span><br><span class="line"><span class="keyword">SELECT</span> ... LOCK <span class="keyword">IN</span> SHARE MODE;</span><br><span class="line"><span class="comment">-- 排它锁（写锁）</span></span><br><span class="line"><span class="keyword">SELECT</span> ... <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/img/mysql/concurrency_control.png" alt="并发控制总结"></p>
+<h3 id="分布式锁"><a href="#分布式锁" class="headerlink" title="分布式锁"></a>分布式锁</h3><p>Redis：使用命令 <code>SETNX</code> 创建互斥锁（mutex key）。注意点：</p>
+<ul>
+<li>防锁死（设置锁的过期时间避免锁死）</li>
+<li>锁续命（设置后台线程为锁续命）</li>
+<li>持锁人解锁（解锁时只能由集群内同机器、同线程操作）</li>
+</ul>
+<p>Zookeeper：使用命令 <code>create -e -s</code> 创建临时+序号（<code>EPHEMERAL_SEQUENTIAL</code>）节点。注意点：</p>
+<ul>
+<li>羊群效应</li>
+</ul>
+<p>使用分布式锁的好处之一是节约数据库资源。</p>
+<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><p>这里举一个抽奖活动的例子，分别展示乐观锁和悲观锁的两种实现流程：</p>
+<p><img src="/img/mysql/example_of_concurrency_control.jpg" alt="抽奖活动例子"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Concurrency_control">https://en.wikipedia.org/wiki/Concurrency_control</a></p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-locking.html">https://dev.mysql.com/doc/refman/5.7/en/innodb-locking.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000011200547">《支付宝防并发方案之”一锁二判三更新”》</a></p>
+<p>《高性能 MySQL》</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/concurrency-control/" title="并发编程系列（一）两种并发控制机制的总结">https://qidawu.github.io/posts/concurrency-control/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+              <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag"># 并发编程</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/mysql-charset/" rel="prev" title="MySQL 字符集与排序规则总结">
+                  <i class="fa fa-chevron-left"></i> MySQL 字符集与排序规则总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/mysql-locking-read/" rel="next" title="MySQL 加锁读（Locking Reads）机制总结">
+                  MySQL 加锁读（Locking Reads）机制总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

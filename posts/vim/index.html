@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="使用 Vim 也有好几年了，虽然这款“编辑器之神”的学习曲线非常陡峭，但一旦上手将会极大提高文本编辑效率，因此值得投入精力学习。  此外，Vim 哲学早已走出编辑器范畴，渗透到各种工具，例如：  本文我将会从三个方面总结 Vim 的知识。 四种常用模式Vim 效率之高的秘密，就在于它拥有多种“模式”。如果你已经习惯了 Windows 下的编辑器，这些模式在一开始会很违反你的使用直觉。因此学习 Vi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vim 使用总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/vim/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="使用 Vim 也有好几年了，虽然这款“编辑器之神”的学习曲线非常陡峭，但一旦上手将会极大提高文本编辑效率，因此值得投入精力学习。  此外，Vim 哲学早已走出编辑器范畴，渗透到各种工具，例如：  本文我将会从三个方面总结 Vim 的知识。 四种常用模式Vim 效率之高的秘密，就在于它拥有多种“模式”。如果你已经习惯了 Windows 下的编辑器，这些模式在一开始会很违反你的使用直觉。因此学习 Vi">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/vim/vim.png">
+<meta property="og:image" content="https://qidawu.github.io/img/vim/vim_tools.png">
+<meta property="og:image" content="https://qidawu.github.io/img/vim/vim_line_moves.jpg">
+<meta property="article:published_time" content="2015-09-17T13:50:05.000Z">
+<meta property="article:modified_time" content="2023-11-07T08:39:43.380Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="GNU&#x2F;Linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/vim/vim.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/vim/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/vim/","path":"posts/vim/","title":"Vim 使用总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Vim 使用总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E7%A7%8D%E5%B8%B8%E7%94%A8%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">四种常用模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%99%AE%E9%80%9A%E6%A8%A1%E5%BC%8F%EF%BC%88NORMAL-MODE%EF%BC%89"><span class="nav-number">1.1.</span> <span class="nav-text">普通模式（NORMAL MODE）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A7%BB%E5%8A%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">1.1.1.</span> <span class="nav-text">移动命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%BE%91%E5%91%BD%E4%BB%A4"><span class="nav-number">1.1.2.</span> <span class="nav-text">编辑命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E5%A4%8D%E5%91%BD%E4%BB%A4"><span class="nav-number">1.1.3.</span> <span class="nav-text">重复命令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%92%E5%85%A5%E6%A8%A1%E5%BC%8F%EF%BC%88INSERT-MODE%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">插入模式（INSERT MODE）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BD%93%E5%89%8D%E8%A1%8C%E6%8F%92%E5%85%A5"><span class="nav-number">1.2.1.</span> <span class="nav-text">当前行插入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%A6%E8%B5%B7%E4%B8%80%E8%A1%8C%E6%8F%92%E5%85%A5"><span class="nav-number">1.2.2.</span> <span class="nav-text">另起一行插入</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E8%A7%86%E6%A8%A1%E5%BC%8F%EF%BC%88VISUAL-MODE%EF%BC%89"><span class="nav-number">1.3.</span> <span class="nav-text">可视模式（VISUAL MODE）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E8%A1%8C%E6%A8%A1%E5%BC%8F%EF%BC%88COMMAND-MODE%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">命令行模式（COMMAND MODE）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Substitute-Text"><span class="nav-number">1.4.1.</span> <span class="nav-text">Substitute Text</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Deleting-text"><span class="nav-number">1.4.2.</span> <span class="nav-text">Deleting text</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Copying-and-moving-text"><span class="nav-number">1.4.3.</span> <span class="nav-text">Copying and moving text</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Formatting-text"><span class="nav-number">1.4.4.</span> <span class="nav-text">Formatting text</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sorting-text"><span class="nav-number">1.4.5.</span> <span class="nav-text">Sorting text</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#JSON-%E6%A0%BC%E5%BC%8F%E5%8C%96"><span class="nav-number">2.1.</span> <span class="nav-text">JSON 格式化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E9%94%AE%E7%9B%98%E6%98%A0%E5%B0%84"><span class="nav-number">2.2.</span> <span class="nav-text">设置键盘映射</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%84%E7%A7%8D%E7%89%88%E6%9C%AC"><span class="nav-number">3.</span> <span class="nav-text">各种版本</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#GVim"><span class="nav-number">3.1.</span> <span class="nav-text">GVim</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MacVim"><span class="nav-number">3.2.</span> <span class="nav-text">MacVim</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B6%E5%AE%83"><span class="nav-number">4.</span> <span class="nav-text">其它</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Editing-a-jar-with-vim"><span class="nav-number">4.1.</span> <span class="nav-text">Editing a .jar with vim</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/vim/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Vim 使用总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Vim 使用总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2015-09-17 21:50:05" itemprop="dateCreated datePublished" datetime="2015-09-17T21:50:05+08:00">2015-09-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-11-07 16:39:43" itemprop="dateModified" datetime="2023-11-07T16:39:43+08:00">2023-11-07</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>使用 <a target="_blank" rel="noopener" href="http://www.vim.org/">Vim</a> 也有好几年了，虽然这款“编辑器之神”的学习曲线非常陡峭，但一旦上手将会极大提高文本编辑效率，因此值得投入精力学习。</p>
+<p><img src="/img/vim/vim.png" alt="Vim"></p>
+<p>此外，Vim 哲学早已走出编辑器范畴，渗透到各种工具，例如：</p>
+<p><img src="/img/vim/vim_tools.png" alt="Vim"></p>
+<p>本文我将会从三个方面总结 Vim 的知识。</p>
+<h1 id="四种常用模式"><a href="#四种常用模式" class="headerlink" title="四种常用模式"></a>四种常用模式</h1><p>Vim 效率之高的秘密，就在于它拥有多种“模式”。如果你已经习惯了 Windows 下的编辑器，这些模式在一开始会很违反你的使用直觉。因此学习 Vim 的第一件事，就是要习惯这些模式之间的切换。</p>
+<p>Vim 共具有 6 种基本模式和 5 种派生模式，下面只介绍最常用的 4 个基本模式：</p>
+<h2 id="普通模式（NORMAL-MODE）"><a href="#普通模式（NORMAL-MODE）" class="headerlink" title="普通模式（NORMAL MODE）"></a>普通模式（NORMAL MODE）</h2><p>Vim 启动后的默认模式。这正好和许多新用户期待的操作方式相反，因为大多数编辑器的默认模式为插入模式（就是一打开编辑器就可以开始码字）。</p>
+<p>Vim 强大的编辑能力中很大部分是来自于其普通模式的命令（及组合）。在普通模式下，用户可以执行一般的编辑器命令，比如移动光标，删除文本等等。如果进一步学习各种各样的文本间移动／跳转命令和其它编辑命令，并且能够<strong>灵活组合使用</strong>的话，能够比那些没有模式的编辑器更加高效的进行文本编辑。</p>
+<p>下面介绍普通模式下几类常用的快捷键：</p>
+<h3 id="移动命令"><a href="#移动命令" class="headerlink" title="移动命令"></a>移动命令</h3><p>跨行移动：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>hjkl</code></td>
+<td>VIM allows using the cursor keys in order to move around. However, for a pure VIM experience you should stick to using ‘h’, ‘j’, ‘k’ and ‘l’. It’s considered more efficient since you don’t have to move your hand from the home row when you’re typing.</td>
+</tr>
+<tr>
+<td><code>gg</code></td>
+<td>到第一行</td>
+</tr>
+<tr>
+<td><code>G</code></td>
+<td>到最后一行</td>
+</tr>
+<tr>
+<td><code>nG</code></td>
+<td>到第 n 行</td>
+</tr>
+<tr>
+<td><code>%</code></td>
+<td>匹配括号移动，包括 () {} []（需要先把光标先移到括号上）</td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td>匹配光标当前所在的单词（<code>#</code> 反向）</td>
+</tr>
+</tbody></table>
+<p>当前行移动：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>0</code></td>
+<td>到行头（<code>$</code> 反向）</td>
+</tr>
+<tr>
+<td><code>^</code></td>
+<td>到本行第一个非 blank 字符的位置（所谓 blank 字符就是空格、tab、换行、回车等）</td>
+</tr>
+<tr>
+<td><code>w</code></td>
+<td>到下一个单词的开头（<code>b</code> 反向）</td>
+</tr>
+<tr>
+<td><code>e</code></td>
+<td>到下一个单词的结尾</td>
+</tr>
+<tr>
+<td><code>f</code></td>
+<td>Find next character（<code>F</code> 反向） <br/> <code>fi </code> 到字符 i 处<br/> <code>4fi</code> 到第四个字符 i 处</td>
+</tr>
+<tr>
+<td><code>t</code></td>
+<td>Find before character（<code>T</code> 反向）</td>
+</tr>
+</tbody></table>
+<p><img src="/img/vim/vim_line_moves.jpg" alt="Vim 当前行移动"></p>
+<h3 id="编辑命令"><a href="#编辑命令" class="headerlink" title="编辑命令"></a>编辑命令</h3><p>文本替换：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>r</code></td>
+<td>Replace current character <br/> When you need to replace only one character under your cursor, <strong>without changing to insert mode</strong>, use <code>r</code>.</td>
+</tr>
+</tbody></table>
+<p>剪切/复制/粘贴：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>x</code></td>
+<td>Cut current character</td>
+</tr>
+<tr>
+<td><code>d</code></td>
+<td><code>dd</code> Cut current line <br/> <code>dt</code> Cut till …</td>
+</tr>
+<tr>
+<td><code>y</code></td>
+<td><code>yy</code> Copy current line (yank) <br/> <code>yt</code> Copy till …</td>
+</tr>
+<tr>
+<td><code>p</code></td>
+<td>Paste</td>
+</tr>
+</tbody></table>
+<p>缩进/补全：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;&lt;</code></td>
+<td>左缩进</td>
+</tr>
+<tr>
+<td><code>&gt;&gt;</code></td>
+<td>右缩进</td>
+</tr>
+<tr>
+<td><code>=</code></td>
+<td>自动缩进</td>
+</tr>
+<tr>
+<td><code>Ctrl + p</code></td>
+<td>在 Insert 模式下，自动补全…</td>
+</tr>
+</tbody></table>
+<p>从别的编辑器里粘贴到 vim 里的代码经常由于不正常的缩进变得格式混乱，可以使用如下命令：</p>
+<ul>
+<li><p>自动缩进当前行： <code>==</code></p>
+</li>
+<li><p>全文格式化：<code>gg=G</code> ，即：</p>
+<ol>
+<li>gg - Goto the beginning of the file</li>
+<li>= - apply indentation</li>
+<li>G - till end of file</li>
+</ol>
+</li>
+</ul>
+<h3 id="重复命令"><a href="#重复命令" class="headerlink" title="重复命令"></a>重复命令</h3><table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>.</code></td>
+<td>重复执行上一个命令</td>
+</tr>
+<tr>
+<td><code>n&lt;command&gt;</code></td>
+<td>重复执行某个命令 n 次</td>
+</tr>
+<tr>
+<td><code>&lt;start position&gt;&lt;command&gt;&lt;end position&gt;</code></td>
+<td>对某段起止文本执行某个命令，例如：<code>d</code>（删除）、<code>y</code>（复制）、<code>v</code>（选择）、<code>gU</code>（变大写）、<code>gu</code>（变小写）。例如：<code>gg=G</code></td>
+</tr>
+</tbody></table>
+<h2 id="插入模式（INSERT-MODE）"><a href="#插入模式（INSERT-MODE）" class="headerlink" title="插入模式（INSERT MODE）"></a>插入模式（INSERT MODE）</h2><p>在这个模式中，大多数按键都会向文本缓冲中插入文本。大多数新用户希望文本编辑器在编辑过程中一直保持这个模式。</p>
+<p>使用以下快捷键进入插入模式：</p>
+<h3 id="当前行插入"><a href="#当前行插入" class="headerlink" title="当前行插入"></a>当前行插入</h3><table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>i</code></td>
+<td>Switch to insert mode <strong>on current character</strong></td>
+</tr>
+<tr>
+<td><code>a</code></td>
+<td>Switch to insert mode <strong>after current character</strong></td>
+</tr>
+<tr>
+<td><code>I</code></td>
+<td>Switch to insert mode <strong>on first visible character of the current line</strong></td>
+</tr>
+<tr>
+<td><code>A</code></td>
+<td>Switch to insert mode <strong>on last visible character of the current line</strong></td>
+</tr>
+</tbody></table>
+<h3 id="另起一行插入"><a href="#另起一行插入" class="headerlink" title="另起一行插入"></a>另起一行插入</h3><table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>o</code></td>
+<td>Switch to insert mode <strong>after current line</strong></td>
+</tr>
+<tr>
+<td><code>O</code></td>
+<td>Switch to insert mode <strong>before current line</strong></td>
+</tr>
+</tbody></table>
+<h2 id="可视模式（VISUAL-MODE）"><a href="#可视模式（VISUAL-MODE）" class="headerlink" title="可视模式（VISUAL MODE）"></a>可视模式（VISUAL MODE）</h2><p>这个模式与普通模式比较相似。但是移动命令会扩大高亮的文本区域。高亮区域可以是字符、行或者是一块文本。当执行一个非移动命令（例如复制、删除）时，命令会被执行到这块高亮的区域上。</p>
+<p>使用以下快捷键进入可视模式：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Ctrl + v</code></td>
+<td>Switch to visual block mode</td>
+</tr>
+<tr>
+<td><code>v</code></td>
+<td>Switch to visual character mode</td>
+</tr>
+<tr>
+<td><code>V</code></td>
+<td>Switch to visual line mode</td>
+</tr>
+</tbody></table>
+<h2 id="命令行模式（COMMAND-MODE）"><a href="#命令行模式（COMMAND-MODE）" class="headerlink" title="命令行模式（COMMAND MODE）"></a>命令行模式（COMMAND MODE）</h2><p>在命令行模式中可以输入命令。在命令执行完后，Vim 返回到命令行模式之前的模式，通常是普通模式。</p>
+<p>使用以下快捷键进入命令行模式：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>:</code></td>
+<td>执行命令： <br/> <code>:h</code> 帮助文档，例如查看 <code>s</code>文本替换命令（substitude）的帮助：<code>:h s</code></td>
+</tr>
+<tr>
+<td><code>!</code></td>
+<td>过滤命令</td>
+</tr>
+<tr>
+<td><code>/</code> 或 <code>?</code></td>
+<td>搜索字符串</td>
+</tr>
+</tbody></table>
+<p><code>[range]</code> 有以下一些表示方法，例如常用的 <code>%</code> 表示替换所有行，等价于 <code>1,$</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">不写 range   ：  默认为当前光标所在行。</span><br><span class="line">.           ：  当前光标所在行。</span><br><span class="line">$           ：  最后一行。</span><br><span class="line">1           ：  第1行。</span><br><span class="line">33          ：  第33行。</span><br><span class="line">&#x27;a          ：  标记a所在的行（之前要使用ma做过标记）。</span><br><span class="line"></span><br><span class="line">通过 +、- 设置相对偏移量：</span><br><span class="line">.+1         ：  当前光标所在行的下一行。</span><br><span class="line">$-1         ：  倒数第二行。（这里说明我们可以对某一行加减某个数值来取得相对的行）。</span><br><span class="line"></span><br><span class="line">通过 , 设置范围：</span><br><span class="line">22,33       ：  第22～33行。</span><br><span class="line">1,$         ：  第1行 到 最后一行。</span><br><span class="line">1,.         ：  第1行 到 当前行。</span><br><span class="line">.,$         ：  当前行 到 最后一行。</span><br><span class="line">&#x27;a,&#x27;b       ：  标记a所在的行 到 标记b所在的行。</span><br><span class="line"></span><br><span class="line">%           ：  所有行（与 1,$ 等价）。</span><br><span class="line"></span><br><span class="line">?chapter?   ：  从当前位置向上搜索，找到的第一个chapter所在的行。（其中chapter可以是任何字符串或者正则表达式。</span><br><span class="line">/chapter/   ：  从当前位置向下搜索，找到的第一个chapter所在的行。（其中chapter可以是任何字符串或者正则表达式。</span><br></pre></td></tr></table></figure>
+
+<p><code>[flags]</code> 有以下一些表示方法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">无      ：  只对指定范围内的第一个匹配项进行替换。</span><br><span class="line">g       ：  对指定范围内的所有匹配项进行替换。</span><br><span class="line">c       ：  在替换前请求用户确认。</span><br><span class="line">e       ：  忽略执行过程中的错误。</span><br><span class="line">i       :   Ignore case for the pattern.</span><br><span class="line">I       :   Don&#x27;t ignore case for the pattern.</span><br><span class="line"></span><br><span class="line">注意：上面的所有flags都可以组合起来使用，比如 gc 表示对指定范围内的所有匹配项进行替换，并且在每一次替换之前都会请用户确认。</span><br></pre></td></tr></table></figure>
+
+<h3 id="Substitute-Text"><a href="#Substitute-Text" class="headerlink" title="Substitute Text"></a>Substitute Text</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>:<code>[range]</code>s[ubstitute]/<code>&#123;pattern&#125;</code>/<code>&#123;string&#125;</code>/<code>[flags]</code> <code>[count]</code></td>
+<td>For each line in <code>[range]</code> replace a match of <code>&#123;pattern&#125;</code> with <code>&#123;string&#125;</code>.</td>
+</tr>
+</tbody></table>
+<p>详细命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">4.2 Substitute                                          *:substitute*</span><br><span class="line">                                                        *:s* *:su*</span><br><span class="line">:[range]s[ubstitute]/&#123;pattern&#125;/&#123;string&#125;/[flags] [count]</span><br><span class="line">                        For each line in [range] replace a match of &#123;pattern&#125; with &#123;string&#125;.</span><br><span class="line">                        For the &#123;pattern&#125; see |pattern|.</span><br><span class="line">                        &#123;string&#125; can be a literal string, or something special; see |sub-replace-special|.</span><br><span class="line">                        When [range] and [count] are omitted, replace in the current line only.</span><br><span class="line">                        When [count] is given, replace in [count] lines, starting with the last line in [range].</span><br><span class="line">                        When [range] is omitted start in the current line.</span><br><span class="line">                        Also see |cmdline-ranges|.</span><br><span class="line">                        See |:s_flags| for [flags].</span><br></pre></td></tr></table></figure>
+
+<p>例子，批量替换所有空格：</p>
+<ul>
+<li><code>:</code> 进入命令行模式</li>
+<li><code>%</code> 表示所有行（与 <code>1,$</code> 等价）</li>
+<li><code>s</code> 表示文本替换命令</li>
+<li><code>\s</code> 表示空格</li>
+<li><code>g</code> 表示对指定范围内的所有匹配项进行替换</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:%s/\s//g</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">1.  替换当前行中的内容：    :s/from/to/</span><br><span class="line">    :s/from/to/     ：  将当前行中的第一个from，替换成to。如果当前行含有多个from，则只会替换其中的第一个。</span><br><span class="line">    :s/from/to/g    ：  将当前行中的所有from都替换成to。</span><br><span class="line">    :s/from/to/gc   ：  将当前行中的所有from都替换成to，但是每一次替换之前都会询问请求用户确认此操作。</span><br><span class="line"></span><br><span class="line">    注意：这里的from和to都可以是任何字符串，其中from还可以是正则表达式。</span><br><span class="line"></span><br><span class="line">2.  替换某一行的内容：      :33s/from/to/g</span><br><span class="line">    :.s/from/to/g   ：  在当前行进行替换操作。</span><br><span class="line">    :33s/from/to/g  ：  在第33行进行替换操作。</span><br><span class="line">    :$s/from/to/g   ：  在最后一行进行替换操作。</span><br><span class="line"></span><br><span class="line">3.  替换某些行的内容：      :10,20s/from/to/g</span><br><span class="line">    :10,20s/from/to/g   ：  对第10行到第20行的内容进行替换。</span><br><span class="line">    :1,$s/from/to/g     ：  对第一行到最后一行的内容进行替换（即全部文本）。</span><br><span class="line">    :1,.s/from/to/g     ：  对第一行到当前行的内容进行替换。</span><br><span class="line">    :.,$s/from/to/g     ：  对当前行到最后一行的内容进行替换。</span><br><span class="line">    :&#x27;a,&#x27;bs/from/to/g   ：  对标记a和b之间的行（含a和b所在的行）进行替换。其中a和b是之前用m命令所做的标记。</span><br><span class="line"></span><br><span class="line">4.  替换所有行的内容：      :%s/from/to/g</span><br><span class="line">    :%s/from/to/g   ：  对所有行的内容进行替换。</span><br></pre></td></tr></table></figure>
+
+<h3 id="Deleting-text"><a href="#Deleting-text" class="headerlink" title="Deleting text"></a>Deleting text</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>:<code>[range]</code>d[elete] [x]</td>
+<td>Delete <code>[range]</code> lines (default: current line) [into register <code>x</code>].</td>
+</tr>
+<tr>
+<td>:<code>[range]</code>d[elete] [x] <code>&#123;count&#125;</code></td>
+<td>Delete <code>&#123;count&#125;</code> lines, starting with <code>[range]</code>(default: current line) [into register <code>x</code>].</td>
+</tr>
+<tr>
+<td>:<code>[range]</code>j[oin][!] <code>[flags]</code></td>
+<td>Join <code>[range]</code> lines.</td>
+</tr>
+<tr>
+<td>:<code>[range]</code>j[oin][!] <code>&#123;count&#125;</code> <code>[flags]</code></td>
+<td>Join <code>&#123;count&#125;</code> lines, starting with <code>[range]</code> (default: current line).</td>
+</tr>
+</tbody></table>
+<p>例子：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 刪除 1-10 行</span></span><br><span class="line">:1,10d</span><br></pre></td></tr></table></figure>
+
+<h3 id="Copying-and-moving-text"><a href="#Copying-and-moving-text" class="headerlink" title="Copying and moving text"></a>Copying and moving text</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>:<code>[range]</code>y[ank] [x]</td>
+<td>Yank <code>[range]</code> lines [into register <code>x</code>].</td>
+</tr>
+<tr>
+<td>:<code>[range]</code>y[ank] [x] <code>&#123;count&#125;</code></td>
+<td>Yank {count} lines, starting with last line number in [range] (default: current line), [into register <code>x</code>].</td>
+</tr>
+<tr>
+<td>:<code>[range]</code>co[py] <code>&#123;address&#125;</code></td>
+<td>Copy the lines given by <code>[range]</code> to below the line given by <code>&#123;address&#125;</code>.</td>
+</tr>
+<tr>
+<td>:<code>[range]</code>m[ove] <code>&#123;address&#125;</code></td>
+<td>Move the lines given by <code>[range]</code> to below the line given by <code>&#123;address&#125;</code>.</td>
+</tr>
+</tbody></table>
+<h3 id="Formatting-text"><a href="#Formatting-text" class="headerlink" title="Formatting text"></a>Formatting text</h3><p>Shifting lines left or right: </p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>:<code>[range]</code>&lt;</td>
+<td>Shift <code>[range]</code> lines one <code>&#39;shiftwidth&#39;</code> left.  Repeat <code>&#39;&lt;&#39;</code> for shifting multiple <code>&#39;shiftwidth&#39;</code>s.</td>
+</tr>
+<tr>
+<td>:<code>[range]</code>&lt; <code>&#123;count&#125;</code></td>
+<td>Shift <code>&#123;count&#125;</code> lines one <code>&#39;shiftwidth&#39;</code> left, starting with <code>[range]</code> (default current line). Repeat ‘&lt;’ for shifting multiple <code>&#39;shiftwidth&#39;</code>s.</td>
+</tr>
+<tr>
+<td>:<code>[range]</code>&gt; <code>[flags]</code></td>
+<td>Shift <code>&#123;count&#125;</code> <code>[range]</code> lines one <code>&#39;shiftwidth&#39;</code> right. Repeat <code>&#39;&gt;&#39;</code> for shifting multiple <code>&#39;shiftwidth&#39;</code>s.</td>
+</tr>
+<tr>
+<td>:<code>[range]</code>&gt; <code>&#123;count&#125;</code> <code>[flags]</code></td>
+<td>Shift <code>&#123;count&#125;</code> lines one <code>&#39;shiftwidth&#39;</code> right, starting with <code>[range]</code> (default current line). Repeat <code>&#39;&gt;&#39;</code> for shifting multiple <code>&#39;shiftwidth&#39;</code>s.</td>
+</tr>
+</tbody></table>
+<p>Left-align, right-align lines or center lines: </p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>:<code>[range]</code>le[ft] <code>[indent]</code></td>
+<td>Left-align lines in <code>[range]</code>.  Sets the indent in the lines to <code>[indent]</code> (default <code>0</code>).</td>
+</tr>
+<tr>
+<td>:<code>[range]</code>ri[ght] <code>[width]</code></td>
+<td>Right-align lines in <code>[range]</code> at <code>[width]</code> columns<br/>(default <code>&#39;textwidth&#39;</code> or <code>80</code> when <code>&#39;textwidth&#39;</code> is <code>0</code>).</td>
+</tr>
+<tr>
+<td>:<code>[range]</code>ce[nter] <code>[width]</code></td>
+<td>Center lines in <code>[range]</code> between <code>[width]</code> columns<br/>(default <code>&#39;textwidth&#39;</code> or <code>80</code> when <code>&#39;textwidth&#39;</code> is <code>0</code>).</td>
+</tr>
+</tbody></table>
+<h3 id="Sorting-text"><a href="#Sorting-text" class="headerlink" title="Sorting text"></a>Sorting text</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>:<code>[range]</code>sor[t][!] [b][f][i][n][o][r][u][x] [/<code>&#123;pattern&#125;</code>/]</td>
+<td>Sort lines in <code>[range]</code>.  When no range is given all lines are sorted.<br/>With <code>[!]</code> the order is reversed.<br/>With <code>[i]</code> case is ignored.<br/>…</td>
+</tr>
+</tbody></table>
+<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><p>使用 Vim 年月较久后总会定制一套个性化的 Vim 配置，例如截取一段常用的 <code>~/.vimrc</code> 配置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">set number                  &quot; 显示行号</span><br><span class="line">set cursorline              &quot; 突出显示当前行</span><br><span class="line">set ruler                   &quot; 打开状态栏标尺</span><br><span class="line">set shiftwidth=4            &quot; 设定 &lt;&lt; 和 &gt;&gt; 命令缩进时的宽度为 4</span><br><span class="line">set softtabstop=4           &quot; 使得按退格键时可以一次删掉 4 个空格</span><br><span class="line">set tabstop=4               &quot; 设定 tab 长度为 4</span><br><span class="line">set nowrapscan              &quot; 禁止在搜索到文件两端时重新搜索</span><br><span class="line">set incsearch               &quot; 输入搜索内容时就显示搜索结果</span><br><span class="line">set hlsearch                &quot; 高亮显示搜索结果</span><br><span class="line">syntax on                   &quot; 程序语法开关</span><br><span class="line">inoremap jj &lt;ESC&gt;           &quot; 重映射 ESCAPE 键</span><br><span class="line">&quot; 定义缩写：ab [缩写] [要替换的文字]</span><br><span class="line">ab asap as soon as possible</span><br></pre></td></tr></table></figure>
+
+<p>另外注意，Vim 的操作记录会写入 <code>~/.viminfo</code> 。</p>
+<h2 id="JSON-格式化"><a href="#JSON-格式化" class="headerlink" title="JSON 格式化"></a>JSON 格式化</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># JSON 格式化</span></span><br><span class="line"><span class="comment"># : 进入命令行模式</span></span><br><span class="line"><span class="comment"># % [range] 参数，指定所有行</span></span><br><span class="line"><span class="comment"># ! 执行具体的命令，这里使用 python</span></span><br><span class="line"><span class="comment"># -m json.tool 调用python里json.tool这个模块</span></span><br><span class="line">:%!python -m json.tool</span><br></pre></td></tr></table></figure>
+
+<p>可以将该常用命令放到 <code>~/.vimrc</code> 配置文件中，方便使用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot; F3 快捷键 JSON 格式化当前行</span></span><br><span class="line"><span class="string">map &lt;F3&gt; :.!python -m json.tool&lt;CR&gt;</span></span><br><span class="line"><span class="string">&quot;</span> F4 快捷键 JSON 格式化全文</span><br><span class="line">map &lt;F4&gt; :%!python -m json.tool&lt;CR&gt;</span><br><span class="line"></span><br><span class="line"><span class="string">&quot; :JsonFormat 命令格式化全文</span></span><br><span class="line"><span class="string">command! JsonFormat :execute &#x27;%!python -m json.tool&#x27;</span></span><br><span class="line"><span class="string">&quot;</span> :JsonFormat 命令格式化全文，并解决汉字以 unicode 码显示问题，参考：http://qiita.com/tomoemon/items/cc29b414a63e08cd4f89</span><br><span class="line"><span class="built_in">command</span>! JsonFormat :execute <span class="string">&#x27;%!python -m json.tool&#x27;</span></span><br><span class="line">  \ | :execute <span class="string">&#x27;%!python -c &quot;import re,sys;chr=__builtins__.__dict__.get(\&quot;unichr\&quot;, chr);sys.stdout.write(re.sub(r\&quot;\\u[0-9a-f]&#123;4&#125;\&quot;, lambda x: chr(int(\&quot;0x\&quot; + x.group(0)[2:], 16)).encode(\&quot;utf-8\&quot;), sys.stdin.read()))&quot;&#x27;</span></span><br><span class="line">  \ | :<span class="built_in">set</span> ft=javascript</span><br><span class="line">  \ | :1</span><br></pre></td></tr></table></figure>
+
+<h2 id="设置键盘映射"><a href="#设置键盘映射" class="headerlink" title="设置键盘映射"></a>设置键盘映射</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/lym152898/article/details/52171494">https://blog.csdn.net/lym152898/article/details/52171494</a></p>
+<h1 id="各种版本"><a href="#各种版本" class="headerlink" title="各种版本"></a>各种版本</h1><h2 id="GVim"><a href="#GVim" class="headerlink" title="GVim"></a>GVim</h2><p><a target="_blank" rel="noopener" href="http://www.vim.org/">GVim</a> 是 Windows 版的 Vim，因为有了标准的 Windows 风格的图形界面，所以叫 G(Graphical)Vim。</p>
+<p>GVim 的多标签切换：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>:tabnew</code></td>
+<td>新建标签页</td>
+</tr>
+<tr>
+<td><code>:tabs</code></td>
+<td>显示已打开标签页的列表</td>
+</tr>
+<tr>
+<td><code>:tabc</code></td>
+<td>关闭当前标签页</td>
+</tr>
+<tr>
+<td><code>:tabn</code></td>
+<td>移动到下一个标签页</td>
+</tr>
+<tr>
+<td><code>:tabp</code></td>
+<td>移动到上一个标签页</td>
+</tr>
+<tr>
+<td><code>:tabfirst</code></td>
+<td>移动到第一个标签页</td>
+</tr>
+<tr>
+<td><code>:tablast</code></td>
+<td>移动到最后一个标签页</td>
+</tr>
+</tbody></table>
+<p>字符集配置参考 <a target="_blank" rel="noopener" href="http://sunchuanzhen.blog.51cto.com/3076506/670193">这里</a>，其它小技巧参考 <a target="_blank" rel="noopener" href="http://www.cnblogs.com/alphaqiu/archive/2012/04/12/2444147.html">这里</a> 。</p>
+<h2 id="MacVim"><a href="#MacVim" class="headerlink" title="MacVim"></a>MacVim</h2><p><a target="_blank" rel="noopener" href="https://github.com/macvim-dev/macvim">https://github.com/macvim-dev/macvim</a></p>
+<h1 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h1><h2 id="Editing-a-jar-with-vim"><a href="#Editing-a-jar-with-vim" class="headerlink" title="Editing a .jar with vim"></a>Editing a .jar with <code>vim</code></h2><p>一般来说，jar 包可以通用 vim 直接编辑。但要注意的是，Spring Boot 插件打包的可执行的 jar 无法使用 vim 浏览并编辑内部文件。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Vim_(text_editor)">https://en.wikipedia.org/wiki/Vim_(text_editor)</a></p>
+<p><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/Vim">https://zh.wikipedia.org/wiki/Vim</a></p>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Editor_war">https://en.wikipedia.org/wiki/Editor_war</a></p>
+<p><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/zh-hk/%E7%BC%96%E8%BE%91%E5%99%A8%E4%B9%8B%E6%88%98">https://zh.wikipedia.org/zh-hk/编辑器之战</a></p>
+<p><a target="_blank" rel="noopener" href="https://missing-semester-cn.github.io/">https://missing-semester-cn.github.io/</a></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://missing-semester-cn.github.io/2020/editors/">https://missing-semester-cn.github.io/2020/editors/</a></li>
+</ul>
+<p>《<a target="_blank" rel="noopener" href="http://www.oschina.net/news/28608/vim-direction-keys">为什么 Vim 使用 HJKL 键作为方向键</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="http://coolshell.cn/articles/5426.html">简明 Vim 练级攻略</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="https://www.cnblogs.com/wind-wang/p/5768000.html">Vim文本替换命令</a>》</p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/9hJLmv_J7UpSi_mYeGrvrQ">12 个关于 vim 的编辑技巧</a></p>
+<p>《<a target="_blank" rel="noopener" href="https://www.linuxmi.com/vim-fenping.html">Vim 分屏基本操作详解</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Wf90QDh6H3EZYJjSQToChg">Vim 最全图解</a>》</p>
+<p>VIM 插件：<a target="_blank" rel="noopener" href="https://vimawesome.com/plugin/json-vim">https://vimawesome.com/plugin/json-vim</a></p>
+<p>Vim philosophy</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/vim/" title="Vim 使用总结">https://qidawu.github.io/posts/vim/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/GNU-Linux/" rel="tag"># GNU/Linux</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/git-mergetool/" rel="prev" title="Git 实战系列（九）git mergetool 工具解决冲突">
+                  <i class="fa fa-chevron-left"></i> Git 实战系列（九）git mergetool 工具解决冲突
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/cdn-gslb-dns/" rel="next" title="浅析基于 DNS 解析方式的 GSLB">
+                  浅析基于 DNS 解析方式的 GSLB <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

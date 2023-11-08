@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="雪花算法介绍雪花算法（Snowflake）是 Twitter 提出来的一个算法，其目的是生成一个 64 bit 的二进制数：  转换为十进制和十六进制分别如下图。其中十进制的最大长度为 19 位：  该二进制数分解如下：  42 bit：用来记录时间戳，表示自 1970-01-01T00:00:00Z 之后经过的毫秒数（millisecond），其中 1 bit 是符号位。由于精确到毫秒（mill">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式 ID 之雪花算法实现">
+<meta property="og:url" content="https://qidawu.github.io/posts/distributed-id-generator/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="雪花算法介绍雪花算法（Snowflake）是 Twitter 提出来的一个算法，其目的是生成一个 64 bit 的二进制数：  转换为十进制和十六进制分别如下图。其中十进制的最大长度为 19 位：  该二进制数分解如下：  42 bit：用来记录时间戳，表示自 1970-01-01T00:00:00Z 之后经过的毫秒数（millisecond），其中 1 bit 是符号位。由于精确到毫秒（mill">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/distribute/Snowflake.png">
+<meta property="og:image" content="https://qidawu.github.io/img/distribute/max_id.png">
+<meta property="og:image" content="https://qidawu.github.io/img/distribute/1023.png">
+<meta property="og:image" content="https://qidawu.github.io/img/distribute/4095.png">
+<meta property="article:published_time" content="2020-03-24T09:23:38.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.912Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/distribute/Snowflake.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/distributed-id-generator/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/distributed-id-generator/","path":"posts/distributed-id-generator/","title":"分布式 ID 之雪花算法实现"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>分布式 ID 之雪花算法实现 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9B%AA%E8%8A%B1%E7%AE%97%E6%B3%95%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">雪花算法介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9B%AA%E8%8A%B1%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">雪花算法实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="nav-number">3.</span> <span class="nav-text">延伸阅读</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%8D%E8%BF%90%E7%AE%97"><span class="nav-number">3.1.</span> <span class="nav-text">位运算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#UNIX-%E6%97%B6%E9%97%B4%E6%88%B3"><span class="nav-number">3.2.</span> <span class="nav-text">UNIX 时间戳</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/distributed-id-generator/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="分布式 ID 之雪花算法实现 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          分布式 ID 之雪花算法实现
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-03-24 17:23:38" itemprop="dateCreated datePublished" datetime="2020-03-24T17:23:38+08:00">2020-03-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="雪花算法介绍"><a href="#雪花算法介绍" class="headerlink" title="雪花算法介绍"></a>雪花算法介绍</h1><p>雪花算法（Snowflake）是 Twitter 提出来的一个算法，其目的是生成一个 64 bit 的二进制数：</p>
+<p><img src="/img/distribute/Snowflake.png" alt="Snowflake"></p>
+<p>转换为十进制和十六进制分别如下图。其中十进制的最大长度为 19 位：</p>
+<p><img src="/img/distribute/max_id.png"></p>
+<p>该二进制数分解如下：</p>
+<ul>
+<li><p>42 bit：用来记录时间戳，表示自 1970-01-01T00:00:00Z 之后经过的毫秒数（millisecond），其中 1 bit 是符号位。由于精确到毫秒（millisecond），相比有符号 32 bit 所存储的精度为秒（second）的时间戳需要<a href="/posts/java8-time/#%E5%B0%8F%E6%95%B0%E7%A7%92%E7%B2%BE%E5%BA%A6">多 10 bit 来记录毫秒数（0-999）</a>。42 bit 可以记录 69 年，如果设置好起始时间例如 2018 年，那么可以用到 2087 年。42 bit 时间戳范围如下：</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 0</span></span><br><span class="line"><span class="type">long</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">0b00_00000000_00000000_00000000_00000000_00000000L</span>;</span><br><span class="line"><span class="comment">// 999</span></span><br><span class="line"><span class="type">long</span> <span class="variable">b</span> <span class="operator">=</span> <span class="number">0b00_00000000_00000000_00000000_00000011_11100111L</span>;</span><br><span class="line"><span class="comment">// 2^41-1, 2199023255551</span></span><br><span class="line"><span class="type">long</span> <span class="variable">c</span> <span class="operator">=</span> <span class="number">0b01_11111111_11111111_11111111_11111111_11111111L</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 1970-01-01T00:00:00.000Z</span></span><br><span class="line">Instant.ofEpochMilli(a).atZone(ZoneOffset.of(<span class="string">&quot;-00:00&quot;</span>)).toLocalDateTime();</span><br><span class="line"><span class="comment">// 1970-01-01T00:00:00.999Z</span></span><br><span class="line">Instant.ofEpochMilli(b).atZone(ZoneOffset.of(<span class="string">&quot;-00:00&quot;</span>)).toLocalDateTime();</span><br><span class="line"><span class="comment">// 2039-09-07T15:47:35.551Z</span></span><br><span class="line">Instant.ofEpochMilli(c).atZone(ZoneOffset.of(<span class="string">&quot;-00:00&quot;</span>)).toLocalDateTime();</span><br></pre></td></tr></table></figure></li>
+<li><p>10 bit：用来记录机器 ID，最多可以记录 2^10-1=1023 台机器，一般用前 5 位代表数据中心，后面 5 位是某个数据中心的机器 ID</p>
+<p>  <img src="/img/distribute/1023.png"></p>
+</li>
+<li><p>12 bit：循环位，用来对同一个毫秒之内产生的 ID，12 位最多可以记录 2^12-1=4095 个，也就是在同一个机器同一毫秒最多记录 4095 个，多余的需要进行等待下个毫秒。</p>
+<p>  <img src="/img/distribute/4095.png"></p>
+</li>
+</ul>
+<p>上面只是一个将 64 bit 划分的标准，当然也不一定这么做，可以根据不同业务的具体场景来划分，比如下面给出一个业务场景：</p>
+<ul>
+<li>服务目前 QPS10 万，预计几年之内会发展到百万。</li>
+<li>当前机器三地部署，上海，北京，深圳都有。</li>
+<li>当前机器 10 台左右，预计未来会增加至百台。</li>
+</ul>
+<p>这个时候我们根据上面的场景可以再次合理的划分 64 bit，QPS几年之内会发展到百万，那么每毫秒就是千级的请求，目前10台机器那么每台机器承担百级的请求（100 W / 1000 ms / 10 台）。为了保证扩展，后面的循环位可以限制到 1024，也就是 2^10，那么循环位 10 位就足够了。</p>
+<p>机器三地部署我们可以用 3 bit 总共 8 来表示机房位置；当前机器 10 台，为了保证能够扩展到百台那么可以用 7 bit 总共 128 来表示；时间位依然是 42 bit。那么还剩下 64-10-3-7-42 = 2 bit，剩下 2 bit 可以用来进行扩展。</p>
+<h1 id="雪花算法实现"><a href="#雪花算法实现" class="headerlink" title="雪花算法实现"></a>雪花算法实现</h1><p>下面是我的对雪花算法的实现，涉及几点思考：</p>
+<ol>
+<li>为了节省空间、提升运算性能，主要使用到位运算，而不是字符串操作。</li>
+<li>为了提高可配置性，将每一部分的位数抽取成了常量，以便自定义。</li>
+<li>解决时间回拨问题：<ul>
+<li>如果回拨时长较短（可配置，代码中配了 5 ms），线程等待并重试即可；</li>
+<li>如果回拨时长较长，则利用扩展位避免生成重复 ID（扩展位可配，代码中配置了 3 位，即最多支持 3 次回拨，超出则抛异常）。</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> lombok.SneakyThrows;</span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.time.Instant;</span><br><span class="line"><span class="keyword">import</span> java.time.LocalDateTime;</span><br><span class="line"><span class="keyword">import</span> java.time.ZoneId;</span><br><span class="line"><span class="keyword">import</span> java.util.HashSet;</span><br><span class="line"><span class="keyword">import</span> java.util.Set;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.junit.Assert.assertEquals;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">IdGeneratorTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">initialCapacity</span> <span class="operator">=</span> <span class="number">1000</span>;</span><br><span class="line">        Set&lt;Long&gt; ids = <span class="keyword">new</span> <span class="title class_">HashSet</span>&lt;&gt;(initialCapacity);</span><br><span class="line">        <span class="type">IdGenerator</span> <span class="variable">idGenerator</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">IdGenerator</span>(<span class="number">3</span>, <span class="number">31</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; initialCapacity; i++) &#123;</span><br><span class="line">            <span class="type">long</span> <span class="variable">id</span> <span class="operator">=</span> idGenerator.nextId();</span><br><span class="line">            ids.add(id);</span><br><span class="line"></span><br><span class="line">            IdGenerator.log(id);</span><br><span class="line">        &#125;</span><br><span class="line">        assertEquals(ids.size(), initialCapacity);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">IdGenerator</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 时间戳</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">long</span> timestamp;</span><br><span class="line">    <span class="comment">// 数据中心</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> dataCenterNo;</span><br><span class="line">    <span class="comment">// 机器</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> workerNo;</span><br><span class="line">    <span class="comment">// 序列号</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> seqNo;</span><br><span class="line">    <span class="comment">// 扩展位</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> ext;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 数据中心 取值范围（十进制）：0~3</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">DATA_CENTER_NO_BITS</span> <span class="operator">=</span> <span class="number">2</span>;</span><br><span class="line">    <span class="comment">// 机器 取值范围（十进制）：0~31</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">WORKER_NO_BITS</span> <span class="operator">=</span> <span class="number">5</span>;</span><br><span class="line">    <span class="comment">// 序列号 取值范围（十进制）：0~4095</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">SEQ_NO_BITS</span> <span class="operator">=</span> <span class="number">12</span>;</span><br><span class="line">    <span class="comment">// 扩展位 取值范围（十进制）：0~7</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">EXT_BITS</span> <span class="operator">=</span> <span class="number">3</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 数据中心 最大值（十进制）：3</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">MAX_DATA_CENTER_NO</span> <span class="operator">=</span> (<span class="number">1</span> &lt;&lt; DATA_CENTER_NO_BITS) - <span class="number">0B1</span>;</span><br><span class="line">    <span class="comment">// 机器 最大值（十进制）：31</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">MAX_WORKER_NO</span> <span class="operator">=</span> (<span class="number">1</span> &lt;&lt; WORKER_NO_BITS) - <span class="number">0B1</span>;</span><br><span class="line">    <span class="comment">// 序列号 最大值（十进制）：4095</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">MAX_SEQ_NO</span> <span class="operator">=</span> (<span class="number">1</span> &lt;&lt; SEQ_NO_BITS) - <span class="number">0B1</span>;</span><br><span class="line">    <span class="comment">// 扩展位 最大值（十进制）：7</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">MAX_EXT</span> <span class="operator">=</span> (<span class="number">1</span> &lt;&lt; EXT_BITS) - <span class="number">0B1</span>;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 时间戳 左移 22 位</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">TIMESTAMP_SHIFT</span> <span class="operator">=</span> DATA_CENTER_NO_BITS + WORKER_NO_BITS + SEQ_NO_BITS + EXT_BITS;</span><br><span class="line">    <span class="comment">// 数据中心 左移 20 位</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">DATA_CENTER_NO_SHIFT</span> <span class="operator">=</span> WORKER_NO_BITS + SEQ_NO_BITS + EXT_BITS;</span><br><span class="line">    <span class="comment">// 机器 左移 15 位</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">WORKER_NO_SHIFT</span> <span class="operator">=</span> SEQ_NO_BITS + EXT_BITS;</span><br><span class="line">    <span class="comment">// 序列号 左移 3 位</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">SEQ_NO_SHIFT</span> <span class="operator">=</span> EXT_BITS;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 最大回拨毫秒数</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">MAX_BACKWARD_MILLIS</span> <span class="operator">=</span> <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> dataCenterNo 数据中心编号</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> workerNo 机器编号</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">IdGenerator</span><span class="params">(<span class="type">int</span> dataCenterNo, <span class="type">int</span> workerNo)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (Integer.toBinaryString(dataCenterNo).length() &gt; DATA_CENTER_NO_BITS) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(String.format(<span class="string">&quot;当前数据中心编号 %s 超限，最大支持 %s&quot;</span>, dataCenterNo, MAX_DATA_CENTER_NO));</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (Integer.toBinaryString(workerNo).length() &gt; WORKER_NO_BITS) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(String.format(<span class="string">&quot;当前机器编号 %s 超限，最大支持 %s&quot;</span>, workerNo, MAX_WORKER_NO));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">this</span>.dataCenterNo = dataCenterNo;</span><br><span class="line">        <span class="built_in">this</span>.workerNo = workerNo;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 生成分布式 ID</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 分布式 ID</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="type">long</span> <span class="title function_">nextId</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">long</span> <span class="variable">now</span> <span class="operator">=</span> System.currentTimeMillis();</span><br><span class="line">        <span class="comment">// init or reset</span></span><br><span class="line">        <span class="keyword">if</span> (timestamp == <span class="number">0</span> || timestamp &lt; now) &#123;</span><br><span class="line">            timestamp = now;</span><br><span class="line">            seqNo = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// seqNo increment</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (timestamp == now) &#123;</span><br><span class="line">            <span class="keyword">if</span> (seqNo &lt; MAX_SEQ_NO) &#123;</span><br><span class="line">                seqNo++;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                log.warn(<span class="string">&quot;序列号已耗尽，等待重新生成。seqNo = &#123;&#125;, MAX_SEQ_NO = &#123;&#125;&quot;</span>, seqNo, MAX_SEQ_NO);</span><br><span class="line">                <span class="keyword">return</span> sleepAndNextId(<span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// clock backward</span></span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> nextIdForBackward(now);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> timestamp &lt;&lt; TIMESTAMP_SHIFT</span><br><span class="line">                | dataCenterNo &lt;&lt; DATA_CENTER_NO_SHIFT</span><br><span class="line">                | workerNo &lt;&lt; WORKER_NO_SHIFT</span><br><span class="line">                | seqNo &lt;&lt; SEQ_NO_SHIFT</span><br><span class="line">                | ext;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">long</span> <span class="title function_">nextIdForBackward</span><span class="params">(<span class="type">long</span> now)</span> &#123;</span><br><span class="line">        log.warn(<span class="string">&quot;发生时间回拨，timestamp = &#123;&#125;, now = &#123;&#125;&quot;</span>, timestamp, now);</span><br><span class="line"></span><br><span class="line">        <span class="type">long</span> <span class="variable">duration</span> <span class="operator">=</span> timestamp - now;</span><br><span class="line">        <span class="comment">// 回拨不多，直接等待并重试</span></span><br><span class="line">        <span class="keyword">if</span> (duration &lt;= MAX_BACKWARD_MILLIS) &#123;</span><br><span class="line">            <span class="keyword">return</span> sleepAndNextId(duration);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 回拨过多，则使用扩展位</span></span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (ext &lt; MAX_EXT) &#123;</span><br><span class="line">                <span class="comment">// 将时间戳修正为回拨时间，为防止重复生成 ID，扩展位加一，并重试</span></span><br><span class="line">                ext++;</span><br><span class="line">                timestamp = now;</span><br><span class="line">                <span class="keyword">return</span> nextId();</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalStateException</span>(String.format(<span class="string">&quot;扩展位已耗尽。ext = %s, MAX_EXT = %s&quot;</span>, ext, MAX_EXT));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@SneakyThrows</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">long</span> <span class="title function_">sleepAndNextId</span><span class="params">(<span class="type">long</span> millis)</span> &#123;</span><br><span class="line">        Thread.sleep(millis);</span><br><span class="line">        <span class="keyword">return</span> nextId();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">log</span><span class="params">(<span class="type">long</span> id)</span> &#123;</span><br><span class="line">        <span class="type">long</span> <span class="variable">timestamp</span> <span class="operator">=</span> id &gt;&gt; TIMESTAMP_SHIFT;</span><br><span class="line">        <span class="type">long</span> <span class="variable">dataCenterNo</span> <span class="operator">=</span> id &gt;&gt; DATA_CENTER_NO_SHIFT &amp; MAX_DATA_CENTER_NO;</span><br><span class="line">        <span class="type">long</span> <span class="variable">workerNo</span> <span class="operator">=</span> id &gt;&gt; WORKER_NO_SHIFT &amp; MAX_WORKER_NO;</span><br><span class="line">        <span class="type">long</span> <span class="variable">seqNo</span> <span class="operator">=</span> id &gt;&gt; SEQ_NO_SHIFT &amp; MAX_SEQ_NO;</span><br><span class="line">        <span class="type">long</span> <span class="variable">ext</span> <span class="operator">=</span> id &amp; MAX_EXT;</span><br><span class="line"></span><br><span class="line">        log.info(<span class="string">&quot;Binary is &#123;&#125;, id is &#123;&#125;&quot;</span>, Long.toBinaryString(id), id);</span><br><span class="line">        log.info(<span class="string">&quot;Binary is &#123;&#125;, time is &#123;&#125;&quot;</span>, Long.toBinaryString(timestamp), getLocalDateTime(timestamp));</span><br><span class="line">        log.info(<span class="string">&quot;Binary is &#123;&#125;, dataCenterNo is &#123;&#125;&quot;</span>, Long.toBinaryString(dataCenterNo), dataCenterNo);</span><br><span class="line">        log.info(<span class="string">&quot;Binary is &#123;&#125;, workerNo is &#123;&#125;&quot;</span>, Long.toBinaryString(workerNo), workerNo);</span><br><span class="line">        log.info(<span class="string">&quot;Binary is &#123;&#125;, seqNo is &#123;&#125;&quot;</span>, Long.toBinaryString(seqNo), seqNo);</span><br><span class="line">        log.info(<span class="string">&quot;Binary is &#123;&#125;, ext is &#123;&#125;&quot;</span>, Long.toBinaryString(ext), ext);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> LocalDateTime <span class="title function_">getLocalDateTime</span><span class="params">(<span class="type">long</span> timestamp)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDateTime();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Binary is 110000011011010011001111001101001100000111000011000000000100000, id is 6979004485312020512</span><br><span class="line">Binary is 11000001101101001100111100110100110000011, time is 2022-09-23T17:12:12.931</span><br><span class="line">Binary is 10, dataCenterNo is 2</span><br><span class="line">Binary is 11, workerNo is 3</span><br><span class="line">Binary is 100, seqNo is 4</span><br><span class="line">Binary is 0, ext is 0</span><br></pre></td></tr></table></figure>
+
+<p>位运算过程如下：</p>
+<ul>
+<li><p><code>timestamp = id &gt;&gt; TIMESTAMP_SHIFT</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">   01100000 11011010 01100111 10011010 01100000 11100001 10000000 00100000</span><br><span class="line">&gt;&gt; 01100000 11011010 01100111 10011010 01100000 11</span><br></pre></td></tr></table></figure></li>
+<li><p><code>dataCenterNo = id &gt;&gt; DATA_CENTER_NO_SHIFT &amp; MAX_DATA_CENTER_NO</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">   01100000 11011010 01100111 10011010 01100000 11100001 10000000 00100000</span><br><span class="line">&gt;&gt; 01100000 11011010 01100111 10011010 01100000 1110</span><br><span class="line"> &amp;                                                11</span><br><span class="line"> =                                                10</span><br></pre></td></tr></table></figure></li>
+<li><p><code>workerNo = id &gt;&gt; WORKER_NO_SHIFT &amp; MAX_WORKER_NO</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">   01100000 11011010 01100111 10011010 01100000 11100001 10000000 00100000</span><br><span class="line">&gt;&gt; 01100000 11011010 01100111 10011010 01100000 11100001 1</span><br><span class="line"> &amp;                                                  1111 1</span><br><span class="line"> =                                                     1 1</span><br></pre></td></tr></table></figure></li>
+<li><p><code>seqNo = id &gt;&gt; SEQ_NO_SHIFT &amp; MAX_SEQ_NO</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">   01100000 11011010 01100111 10011010 01100000 11100001 10000000 00100000</span><br><span class="line">&gt;&gt; 01100000 11011010 01100111 10011010 01100000 11100001 10000000 00100</span><br><span class="line"> &amp;                                                        1111111 11111</span><br><span class="line"> =                                                                  100</span><br></pre></td></tr></table></figure></li>
+<li><p><code>ext = id &amp; MAX_EXT</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">  01100000 11011010 01100111 10011010 01100000 11100001 10000000 00100000</span><br><span class="line">&amp;                                                                     111</span><br><span class="line">=                                                                       0</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="延伸阅读"><a href="#延伸阅读" class="headerlink" title="延伸阅读"></a>延伸阅读</h1><h2 id="位运算"><a href="#位运算" class="headerlink" title="位运算"></a>位运算</h2><p>位运算符如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&amp;：按位与</span><br><span class="line">|：按位或</span><br><span class="line">~：按位非</span><br><span class="line">^：按位异或</span><br><span class="line">&lt;&lt;：左位移（M &lt;&lt; n = M * 2^n）</span><br><span class="line">&gt;&gt;：右位移（M &gt;&gt; n = M / 2*n）</span><br><span class="line">&gt;&gt;&gt;：无符号右移</span><br></pre></td></tr></table></figure>
+
+<p>例如，Java 中求 key 应当放到散列表的哪个位置（offset）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="title function_">getOffset</span><span class="params">(Object key, <span class="type">int</span> length)</span> </span><br><span class="line">    <span class="type">int</span> hashcode;</span><br><span class="line">    <span class="type">int</span> <span class="variable">hash</span> <span class="operator">=</span> (hashcode = key.hashCode()) ^ (hashcode &gt;&gt;&gt; <span class="number">16</span>);</span><br><span class="line">    <span class="type">int</span> <span class="variable">offset</span> <span class="operator">=</span> hash &amp; (length - <span class="number">1</span>);</span><br><span class="line">    log.info(<span class="string">&quot;key: &#123;&#125;, hashcode: &#123;&#125;, hash: &#123;&#125;, offset: &#123;&#125;&quot;</span>, key, Integer.toBinaryString(hashcode), Integer.toBinaryString(hash), offset);</span><br><span class="line">    <span class="keyword">return</span> offset;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>参考：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/SunArmy/p/9837348.html">《Java 位运算符 &amp;、|、^、~、&lt;&lt;、&gt;&gt;、&gt;&gt;&gt;》</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_39705793/article/details/81237005">《按位异或的用途》</a></li>
+<li>《按位与的用途：<a target="_blank" rel="noopener" href="https://www.cloudflare.com/zh-cn/learning/network-layer/what-is-a-subnet/">子网划分</a>（IP 地址与子网掩码做与运算求子网地址）》</li>
+</ul>
+<h2 id="UNIX-时间戳"><a href="#UNIX-时间戳" class="headerlink" title="UNIX 时间戳"></a>UNIX 时间戳</h2><p>参考：<a href="/posts/unix-timestamp/">UNIX 时间戳总结</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/distributed-id-generator/" title="分布式 ID 之雪花算法实现">https://qidawu.github.io/posts/distributed-id-generator/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/unix-timestamp/" rel="prev" title="UNIX 时间戳总结">
+                  <i class="fa fa-chevron-left"></i> UNIX 时间戳总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/relational-data-model/" rel="next" title="关系数据模型总结">
+                  关系数据模型总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

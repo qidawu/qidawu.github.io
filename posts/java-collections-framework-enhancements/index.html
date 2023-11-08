@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Java 集合框架并不是一蹴而就写成的，也是经过了好多个版本迭代的演进与发展，才走到今天。本文总结下集合框架各版本的功能增强。 Java SE 9List、Set 和 Map 接口中，新的静态工厂方法可以创建这些集合的不可变实例（immutable），如下： 123List&lt;String&gt; list &#x3D; List.of(&quot;apple&quot;, &quot;orange&amp;q">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 集合框架系列（三）各版本功能增强总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/java-collections-framework-enhancements/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="Java 集合框架并不是一蹴而就写成的，也是经过了好多个版本迭代的演进与发展，才走到今天。本文总结下集合框架各版本的功能增强。 Java SE 9List、Set 和 Map 接口中，新的静态工厂方法可以创建这些集合的不可变实例（immutable），如下： 123List&lt;String&gt; list &#x3D; List.of(&quot;apple&quot;, &quot;orange&amp;q">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-04-27T16:26:19.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.917Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="数据结构">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/java-collections-framework-enhancements/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/java-collections-framework-enhancements/","path":"posts/java-collections-framework-enhancements/","title":"Java 集合框架系列（三）各版本功能增强总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Java 集合框架系列（三）各版本功能增强总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-SE-9"><span class="nav-number">1.</span> <span class="nav-text">Java SE 9</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-SE-8"><span class="nav-number">2.</span> <span class="nav-text">Java SE 8</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-SE-7"><span class="nav-number">3.</span> <span class="nav-text">Java SE 7</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-SE-6"><span class="nav-number">4.</span> <span class="nav-text">Java SE 6</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-SE-5"><span class="nav-number">5.</span> <span class="nav-text">Java SE 5</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-SE-1-4"><span class="nav-number">6.</span> <span class="nav-text">Java SE 1.4</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/java-collections-framework-enhancements/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Java 集合框架系列（三）各版本功能增强总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java 集合框架系列（三）各版本功能增强总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-04-28 00:26:19" itemprop="dateCreated datePublished" datetime="2018-04-28T00:26:19+08:00">2018-04-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>Java 集合框架并不是一蹴而就写成的，也是经过了好多个版本迭代的演进与发展，才走到今天。本文总结下集合框架各版本的功能增强。</p>
+<h1 id="Java-SE-9"><a href="#Java-SE-9" class="headerlink" title="Java SE 9"></a>Java SE 9</h1><p><code>List</code>、<code>Set</code> 和 <code>Map</code> 接口中，新的静态工厂方法可以创建这些集合的<em>不可变实例（immutable）</em>，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; list = List.of(<span class="string">&quot;apple&quot;</span>, <span class="string">&quot;orange&quot;</span>, <span class="string">&quot;banana&quot;</span>);</span><br><span class="line">Set&lt;String&gt; set = Set.of(<span class="string">&quot;aggie&quot;</span>, <span class="string">&quot;alley&quot;</span>, <span class="string">&quot;steely&quot;</span>);</span><br><span class="line">Map&lt;String, String&gt; map = Map.of(<span class="string">&quot;A&quot;</span>, <span class="string">&quot;Apple&quot;</span>, <span class="string">&quot;B&quot;</span>, <span class="string">&quot;Boy&quot;</span>, <span class="string">&quot;C&quot;</span>, <span class="string">&quot;Cat&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>参考：<a target="_blank" rel="noopener" href="https://www.linuxidc.com/Linux/2017-10/147683.htm">https://www.linuxidc.com/Linux/2017-10/147683.htm</a></p>
+<h1 id="Java-SE-8"><a href="#Java-SE-8" class="headerlink" title="Java SE 8"></a>Java SE 8</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html">Lambda 表达式</a></li>
+<li>Stream API，参考《<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/adKZrOe6nFEmuADHijsAtA">Java 8 中处理集合的优雅姿势——Stream</a>》</li>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/tutorial/collections/streams/">聚合操作</a>，例如 <code>forEach</code></li>
+<li>作为 <a target="_blank" rel="noopener" href="http://openjdk.java.net/jeps/180">JEP 180</a> 提案的成果，<code>HashMap</code>、<code>LinkedHashMap</code>、<code>ConcurrentHashMap</code> 的性能得到提升。当出现大量散列冲突时，值将存储在红黑树而不是链表，以提升查找性能。</li>
+</ul>
+<h1 id="Java-SE-7"><a href="#Java-SE-7" class="headerlink" title="Java SE 7"></a>Java SE 7</h1><ul>
+<li>新增一个集合接口：<code>TransferQueue</code>，以及实现类 <code>LinkedTransferQueue</code>。</li>
+<li>为 <code>Map</code> 及其派生实现类引入了一个性能改进的替代版散列函数（但在 Java SE 8 已被移除并取代）。</li>
+</ul>
+<h1 id="Java-SE-6"><a href="#Java-SE-6" class="headerlink" title="Java SE 6"></a>Java SE 6</h1><p>新增几个集合接口：</p>
+<ul>
+<li><code>Deque</code></li>
+<li><code>BlockingDeque</code></li>
+<li><code>NavigableSet</code></li>
+<li><code>NavigableMap</code></li>
+<li><code>ConcurrentNavigableMap</code></li>
+</ul>
+<p>新增几个集合实现类：</p>
+<ul>
+<li><code>ArrayDeque</code></li>
+<li><code>ConcurrentSkipListSet</code></li>
+<li><code>ConcurrentSkipListMap</code></li>
+<li><code>LinkedBlockingDeque</code></li>
+<li><code>AbstractMap.SimpleEntry</code></li>
+<li><code>AbstractMap.SimpleImmutableEntry</code></li>
+</ul>
+<p>现有实现类增强：</p>
+<ul>
+<li><code>LinkedList</code> 实现 <code>Deque</code> 接口</li>
+<li><code>TreeSet</code> 实现 <code>NavigableSet</code> 接口</li>
+<li><code>TreeMap</code> 实现 <code>NavigableMap</code> 接口</li>
+</ul>
+<p><code>Collections</code> 工具类新增两个适配器方法：</p>
+<ul>
+<li><code>newSetFromMap(Map)</code> 根据 <code>Map</code> 的通用实现创建一个 <code>Set</code> 的通用实现</li>
+<li><code>asLifoQueue(Deque)</code> 以后进先出（Lifo）队列的形式返回 <code>Deque</code> 的视图。</li>
+</ul>
+<p><code>Arrays</code> 工具类新增两个方法：</p>
+<ul>
+<li><code>copyOf</code></li>
+<li><code>copyOfRange</code></li>
+</ul>
+<h1 id="Java-SE-5"><a href="#Java-SE-5" class="headerlink" title="Java SE 5"></a>Java SE 5</h1><p>三个新增的<strong>语法糖</strong>显著增强了集合框架：</p>
+<ul>
+<li><p>泛型：为集合框架添加编译时类型安全，并在读取元素时不再需要做类型转换。</p>
+</li>
+<li><p>自动装箱/拆箱：往集合插入元素时自动装箱（将原始数据类型转换为对应的包装类型），读取元素时自动拆箱。</p>
+</li>
+<li><p>增强 <code>for</code> 循环：迭代集合时不再需要显式迭代器（<code>Iterator</code>）。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 数组迭代</span></span><br><span class="line">String[] strArray = &#123;<span class="string">&quot;apple&quot;</span>, <span class="string">&quot;orange&quot;</span>, <span class="string">&quot;banana&quot;</span>&#125;;</span><br><span class="line"><span class="keyword">for</span> (String s : strArray) &#123;</span><br><span class="line">    System.out.println(s);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// List 迭代</span></span><br><span class="line">List&lt;String&gt; strList = Arrays.asList(<span class="string">&quot;apple&quot;</span>, <span class="string">&quot;orange&quot;</span>, <span class="string">&quot;banana&quot;</span>);</span><br><span class="line"><span class="keyword">for</span> (String s : strList) &#123;</span><br><span class="line">    System.out.println(s);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>通用实现与并发实现：</p>
+<ul>
+<li>新增三个集合接口：<ul>
+<li><code>Queue</code></li>
+<li><code>BlockingQueue</code></li>
+<li><code>ConcurrentMap</code></li>
+</ul>
+</li>
+<li>新增几个 <code>Queue</code> 实现类：<ul>
+<li><code>PriorityQueue</code></li>
+<li><code>ConcurrentLinkedQueue</code></li>
+<li><code>LinkedList</code> 实现 <code>Queue</code> 接口</li>
+<li><code>AbstractQueue</code> 抽象类实现</li>
+</ul>
+</li>
+<li>新增五个 <code>BlockingQueue</code> 实现类，位于 <code>java.util.concurrent</code> 包下：<ul>
+<li><code>LinkedBlockingQueue</code></li>
+<li><code>ArrayBlockingQueue</code></li>
+<li><code>PriorityBlockingQueue</code></li>
+<li><code>DelayQueue</code></li>
+<li><code>SynchronousQueue</code></li>
+</ul>
+</li>
+<li>新增一个 <code>ConcurrentMap</code> 实现类：<ul>
+<li><code>ConcurrentHashMap</code></li>
+</ul>
+</li>
+</ul>
+<p>特殊实现：</p>
+<ul>
+<li>新增两个特殊用途的 <code>List</code> 和 <code>Set</code> 实现类，用于读远大于写以及迭代无法线程同步的情况：<ul>
+<li><code>CopyOnWriteArrayList</code></li>
+<li><code>CopyOnWriteArraySet</code></li>
+</ul>
+</li>
+<li>新增两个特殊用途的 <code>Set</code> 和 <code>Map</code> 实现类，用于枚举：<ul>
+<li><code>EnumSet</code></li>
+<li><code>EnumMap</code></li>
+</ul>
+</li>
+</ul>
+<p>包装器实现：</p>
+<ul>
+<li>新增一位包装器实现家族的新成员 <code>Collections.checkedInterface</code> ，主要用于通用集合。</li>
+</ul>
+<p><code>Collections</code> 工具类新增三个通用算法和一个 <code>Comparator</code> 转换器：</p>
+<ul>
+<li><code>frequency(Collection&lt;?&gt; c, Object o)</code> 计算指定元素在指定集合中出现的次数。</li>
+<li><code>disjoint(Collection&lt;?&gt; c1, Collection&lt;?&gt; c2)</code> 求两个集合是否不相交。</li>
+<li><code>addAll(Collection&lt;? super T&gt; c, T... a)</code> 将指定数组中的所有元素添加到指定集合的便捷方法。</li>
+<li><code>Comparator&lt;T&gt; reverseOrder(Comparator&lt;T&gt; cmp)</code> 反向排序。</li>
+</ul>
+<p><code>Arrays</code> 工具类新增下列方法：</p>
+<ul>
+<li><code>hashCode</code>、<code>toString</code></li>
+<li><code>deepEquals</code>、<code>deepHashCode</code>、<code>deepToString</code> 用于多维数组</li>
+</ul>
+<h1 id="Java-SE-1-4"><a href="#Java-SE-1-4" class="headerlink" title="Java SE 1.4"></a>Java SE 1.4</h1><ul>
+<li><code>Collections</code> 工具类新增几个新方法，例如 ：<ul>
+<li><code>replaceAll(List list, Object oldVal, Object newVal)</code> 查找替换。</li>
+</ul>
+</li>
+<li>新增标记接口 <code>RandomAccess</code>。</li>
+<li>新增集合实现类 <code>LinkedHashMap</code>、<code>LinkedHashSet</code>。内部使用散列表 + 双向链表（按插入顺序排序）。</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="http://openjdk.java.net/jeps/180">http://openjdk.java.net/jeps/180</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/java-collections-framework-enhancements/" title="Java 集合框架系列（三）各版本功能增强总结">https://qidawu.github.io/posts/java-collections-framework-enhancements/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag"># 数据结构</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/java-collections-framework-features/" rel="prev" title="Java 集合框架系列（二）集合特性总结">
+                  <i class="fa fa-chevron-left"></i> Java 集合框架系列（二）集合特性总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/java-collections-iterator/" rel="next" title="Java 集合框架系列（四）Iterator API 总结">
+                  Java 集合框架系列（四）Iterator API 总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

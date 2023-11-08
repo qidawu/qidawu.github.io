@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="URI 构造要轻松地操作 URL，可以使用 Spring 的 org.springframework.web.util.UriComponentsBuilder 类。相比手动拼接字符串更易维护，还可以处理 URL 编码： 123456789101112131415&#x2F;&#x2F; &#96;java.net.URI#toURL()&#96; 可以转为 &#96;java.net.URL&#96;private URI getUri(Obje">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring RestTemplate 总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/spring-resttemplate/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="URI 构造要轻松地操作 URL，可以使用 Spring 的 org.springframework.web.util.UriComponentsBuilder 类。相比手动拼接字符串更易维护，还可以处理 URL 编码： 123456789101112131415&#x2F;&#x2F; &#96;java.net.URI#toURL()&#96; 可以转为 &#96;java.net.URL&#96;private URI getUri(Obje">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/spring/resttemplate/RestTemplate_UML.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/net/URLConnection.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/net/SocketImpl.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/net/Socket.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/net/SocketInputStream_socketRead0.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/net/SocketOutputStream_socketWrite0.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/net/SocketInputSteram_SocketOutputStream.png">
+<meta property="og:image" content="https://qidawu.github.io/img/spring/resttemplate/ResourceAccessException.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/net/wireshark_connection_refused.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/net/Socket_connect.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/net/ServerSocket_setSoTimeout.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/net/Socket_setSoTimeout.png">
+<meta property="og:image" content="https://qidawu.github.io/img/spring/resttemplate/HttpClientErrorException.png">
+<meta property="og:image" content="https://qidawu.github.io/img/spring/resttemplate/HttpServerErrorException.png">
+<meta property="article:published_time" content="2017-07-15T14:30:34.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.929Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/spring/resttemplate/RestTemplate_UML.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/spring-resttemplate/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/spring-resttemplate/","path":"posts/spring-resttemplate/","title":"Spring RestTemplate 总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Spring RestTemplate 总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#URI-%E6%9E%84%E9%80%A0"><span class="nav-number">1.</span> <span class="nav-text">URI 构造</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-%E8%AF%B7%E6%B1%82"><span class="nav-number">2.</span> <span class="nav-text">HTTP 请求</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#RestTemplate"><span class="nav-number">2.1.</span> <span class="nav-text">RestTemplate</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CURL-%E5%BD%A2%E5%BC%8F"><span class="nav-number">2.2.</span> <span class="nav-text">CURL 形式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#GET-%E8%AF%B7%E6%B1%82"><span class="nav-number">2.2.1.</span> <span class="nav-text">GET 请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POST-%E8%A1%A8%E5%8D%95"><span class="nav-number">2.2.2.</span> <span class="nav-text">POST 表单</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POST-JSON"><span class="nav-number">2.2.3.</span> <span class="nav-text">POST JSON</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E7%B1%BB%E8%A7%A3%E6%9E%90"><span class="nav-number">2.3.</span> <span class="nav-text">核心类解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#org-springframework"><span class="nav-number">2.3.1.</span> <span class="nav-text">org.springframework.*</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#java-net"><span class="nav-number">2.3.2.</span> <span class="nav-text">java.net.*</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#java-io"><span class="nav-number">2.3.3.</span> <span class="nav-text">java.io.*</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E5%BC%82%E5%B8%B8"><span class="nav-number">3.</span> <span class="nav-text">常见异常</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#IOException"><span class="nav-number">3.1.</span> <span class="nav-text">IOException</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BindException"><span class="nav-number">3.2.</span> <span class="nav-text">BindException</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ConnectException"><span class="nav-number">3.3.</span> <span class="nav-text">ConnectException</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Connection-refused"><span class="nav-number">3.3.1.</span> <span class="nav-text">Connection refused</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Connection-timed-out"><span class="nav-number">3.3.2.</span> <span class="nav-text">Connection timed out</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SocketTimeoutException"><span class="nav-number">3.4.</span> <span class="nav-text">SocketTimeoutException</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Accept-timed-out"><span class="nav-number">3.4.1.</span> <span class="nav-text">Accept timed out</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Read-timed-out"><span class="nav-number">3.4.2.</span> <span class="nav-text">Read timed out</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SocketException"><span class="nav-number">3.5.</span> <span class="nav-text">SocketException</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Connection-reset-by-peer"><span class="nav-number">3.5.1.</span> <span class="nav-text">Connection reset by peer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Bad-file-descriptor"><span class="nav-number">3.5.2.</span> <span class="nav-text">Bad file descriptor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Broken-pipe"><span class="nav-number">3.5.3.</span> <span class="nav-text">Broken pipe</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HttpClientErrorException"><span class="nav-number">3.6.</span> <span class="nav-text">HttpClientErrorException</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HttpServerErrorException"><span class="nav-number">3.7.</span> <span class="nav-text">HttpServerErrorException</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/spring-resttemplate/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Spring RestTemplate 总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Spring RestTemplate 总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2017-07-15 22:30:34" itemprop="dateCreated datePublished" datetime="2017-07-15T22:30:34+08:00">2017-07-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="URI-构造"><a href="#URI-构造" class="headerlink" title="URI 构造"></a>URI 构造</h1><p>要轻松地操作 URL，可以使用 Spring 的 <code>org.springframework.web.util.UriComponentsBuilder</code> 类。相比手动拼接字符串更易维护，还可以处理 URL 编码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// `java.net.URI#toURL()` 可以转为 `java.net.URL`</span></span><br><span class="line"><span class="keyword">private</span> URI <span class="title function_">getUri</span><span class="params">(Object body)</span> &#123;</span><br><span class="line">    <span class="type">String</span> <span class="variable">rootUrl</span> <span class="operator">=</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">    <span class="type">String</span> <span class="variable">path</span> <span class="operator">=</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> UriComponentsBuilder</span><br><span class="line">            .fromHttpUrl(rootUrl)</span><br><span class="line">            .path(path)</span><br><span class="line">            <span class="comment">// Append the given query parameter to the existing query parameters.</span></span><br><span class="line">            <span class="comment">// .queryParam(&quot;key&quot;, &quot;value1&quot;, &quot;value2&quot;, &quot;value3&quot;)</span></span><br><span class="line">            <span class="comment">// Add the given query parameters.</span></span><br><span class="line">            .queryParams(GenericUtils.toMultiValueMap(body))  <span class="comment">// 反射递归遍历对象的字段值，并转成 org.springframework.util.MultiValueMap</span></span><br><span class="line">            .build()</span><br><span class="line">            .encode()</span><br><span class="line">            .toUri();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>GenericUtils</code> 参考：<a target="_blank" rel="noopener" href="https://github.com/qidawu/java-api-test/blob/master/src/main/java/reflect/GenericUtils.java">https://github.com/qidawu/java-api-test/blob/master/src/main/java/reflect/GenericUtils.java</a></p>
+<h1 id="HTTP-请求"><a href="#HTTP-请求" class="headerlink" title="HTTP 请求"></a>HTTP 请求</h1><h2 id="RestTemplate"><a href="#RestTemplate" class="headerlink" title="RestTemplate"></a>RestTemplate</h2><p>构造出 <code>java.net.URI</code> 之后，可以使用 <code>org.springframework.web.client.RestTemplate</code> 如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.http.*;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.client.HttpClientErrorException;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.client.RestTemplate;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.util.UriComponentsBuilder;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.net.URI;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HttpApiService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RestTemplate restTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">request</span><span class="params">(HttpMethod httpMethod, Object body)</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            URI uri;</span><br><span class="line">            <span class="type">HttpHeaders</span> <span class="variable">requestHeaders</span> <span class="operator">=</span> getHttpHeaders();</span><br><span class="line">            HttpEntity&lt;Object&gt; httpEntity;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// GET 请求，请求参数作为 query parameter 放入 URL</span></span><br><span class="line">            <span class="comment">//   对方 Controller 方法入参需标注 @RequestParam，以接收 query parameter</span></span><br><span class="line">            <span class="keyword">if</span> (httpMethod == HttpMethod.GET) &#123;</span><br><span class="line">                uri = getUri(body);</span><br><span class="line">                <span class="comment">// 请求参数不能放到 HttpEntity，因为 GET 请求的话不会带上 request body（因为底层 HttpURLConnection#setDoOutput(false)）</span></span><br><span class="line">                httpEntity = <span class="keyword">new</span> <span class="title class_">HttpEntity</span>&lt;&gt;(requestHeaders);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// POST 请求，请求参数作为 request body 而不放入 URL</span></span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                uri = getUri(<span class="literal">null</span>);</span><br><span class="line">                <span class="comment">// POST 表单（Content-Type: application/x-www-form-urlencoded）</span></span><br><span class="line">                <span class="comment">//   request body 类型必须为 MultiValueMap。MultiValueMap 参数最终会转为形如：key1=value1&amp;key2=value2&amp;...</span></span><br><span class="line">                <span class="comment">//   Writing [&#123;key=[value]&#125;] with org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter</span></span><br><span class="line">                <span class="comment">// </span></span><br><span class="line">                <span class="comment">// POST JSON（Content-Type: application/json）</span></span><br><span class="line">                <span class="comment">//   request body 类型为普通 POJO</span></span><br><span class="line">                <span class="comment">//   Writing [ReqDTO(key=value)] with org.springframework.http.converter.json.MappingJackson2HttpMessageConverter</span></span><br><span class="line">                <span class="comment">//   对方 Controller 方法入参需标注 @RequestBody，以接收整个 request body</span></span><br><span class="line">                httpEntity = <span class="keyword">new</span> <span class="title class_">HttpEntity</span>&lt;&gt;(body, requestHeaders);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            ResponseEntity&lt;String&gt; response = restTemplate.exchange(uri, httpMethod, httpEntity, String.class);</span><br><span class="line">            <span class="keyword">if</span> (HttpStatus.OK.equals(response.getStatusCode())) &#123;</span><br><span class="line">                log.info(response.getBody());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ResourceAccessException e) &#123;</span><br><span class="line">            log.error(<span class="string">&quot;TCP 连接建立失败&quot;</span>, e);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (HttpClientErrorException | HttpServerErrorException e) &#123;</span><br><span class="line">            log.error(<span class="string">&quot;HTTP 请求失败，状态码：&#123;&#125;&quot;</span>, e.getRawStatusCode(), e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> HttpHeaders <span class="title function_">getHttpHeaders</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">HttpHeaders</span> <span class="variable">requestHeaders</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HttpHeaders</span>();</span><br><span class="line">        requestHeaders.add(<span class="string">&quot;Accept&quot;</span>, MediaType.APPLICATION_JSON_VALUE);</span><br><span class="line">        <span class="keyword">return</span> requestHeaders;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>GET 请求、POST 表单时，对方 Controller 方法入参需标注 <a target="_blank" rel="noopener" href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestParam.html"><code>@RequestParam</code></a>，以接收 query parameter。但要注意，官方文档提醒如下：</p>
+<blockquote>
+<p>Supported for annotated handler methods in Spring MVC and Spring WebFlux as follows:</p>
+<ul>
+<li>In Spring MVC, “request parameters” map to query parameters, form data, and parts in multipart requests. This is because the Servlet API combines query parameters and form data into a single map called “parameters”, and that includes automatic parsing of the request body.</li>
+<li>In Spring WebFlux, “request parameters” map to query parameters only. To work with all 3, query, form data, and multipart data, you can use data binding to a command object annotated with <a target="_blank" rel="noopener" href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/ModelAttribute.html"><code>ModelAttribute</code></a>.</li>
+</ul>
+</blockquote>
+<h2 id="CURL-形式"><a href="#CURL-形式" class="headerlink" title="CURL 形式"></a>CURL 形式</h2><h3 id="GET-请求"><a href="#GET-请求" class="headerlink" title="GET 请求"></a>GET 请求</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl --location --request GET <span class="string">&#x27;http://rootUrl/path?key=value&#x27;</span> \</span><br><span class="line">--header <span class="string">&#x27;Content-Type: application/x-www-form-urlencoded&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="POST-表单"><a href="#POST-表单" class="headerlink" title="POST 表单"></a>POST 表单</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl --location --request POST <span class="string">&#x27;http://rootUrl/path&#x27;</span> \</span><br><span class="line">--header <span class="string">&#x27;Content-Type: application/x-www-form-urlencoded&#x27;</span> \</span><br><span class="line">--data-urlencode <span class="string">&#x27;key=value&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="POST-JSON"><a href="#POST-JSON" class="headerlink" title="POST JSON"></a>POST JSON</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">curl --location --request POST <span class="string">&#x27;http://rootUrl/path&#x27;</span> \</span><br><span class="line">--header <span class="string">&#x27;Content-Type: application/json&#x27;</span> \</span><br><span class="line">--data-raw <span class="string">&#x27;&#123;</span></span><br><span class="line"><span class="string">    &quot;key&quot;: &quot;value&quot;</span></span><br><span class="line"><span class="string">&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="核心类解析"><a href="#核心类解析" class="headerlink" title="核心类解析"></a>核心类解析</h2><p><img src="/img/spring/resttemplate/RestTemplate_UML.png" alt="RestTemplate UML"></p>
+<p>涉及的核心类如下：</p>
+<h3 id="org-springframework"><a href="#org-springframework" class="headerlink" title="org.springframework.*"></a>org.springframework.*</h3><p><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/client/RestTemplate.html"><code>org.springframework.web.client.RestTemplate</code></a></p>
+<blockquote>
+<p>Synchronous client to perform HTTP requests, exposing a simple, template method API over underlying HTTP client libraries such as the JDK <code>HttpURLConnection</code>, Apache HttpComponents, and others.</p>
+<p>The RestTemplate offers templates for common scenarios by HTTP method, in addition to the generalized <code>exchange</code> and <code>execute</code> methods that support of less frequent cases.</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/converter/HttpMessageConverter.html"><code>org.springframework.http.converter.HttpMessageConverter</code></a></p>
+<blockquote>
+<p>Strategy interface for converting from and to HTTP requests and responses.</p>
+</blockquote>
+<p>参考：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.baeldung.com/spring-httpmessageconverter-rest">https://www.baeldung.com/spring-httpmessageconverter-rest</a></li>
+</ul>
+<h3 id="java-net"><a href="#java-net" class="headerlink" title="java.net.*"></a>java.net.*</h3><p><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/net/URL.html"><code>java.net.URL</code></a></p>
+<blockquote>
+<p>Class <code>URL</code> represents a Uniform Resource Locator, a pointer to a “resource” on the World Wide Web. A resource can be something as simple as a file or a directory, or it can be a reference to a more complicated object, such as a query to a database or to a search engine. More information on the types of URLs and their formats can be found at: <a target="_blank" rel="noopener" href="http://web.archive.org/web/20051219043731/http://archive.ncsa.uiuc.edu/SDG/Software/Mosaic/Demo/url-primer.html">Types of URL</a></p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/net/URLConnection.html"><code>java.net.URLConnection</code></a></p>
+<blockquote>
+<p>The abstract class <code>URLConnection</code> is the superclass of all classes that represent a communications link between the application and a <code>URL</code>. Instances of this class can be used both to read from and to write to the resource referenced by the <code>URL</code>.</p>
+</blockquote>
+<p><code>URLConnection</code> 的继承结构如下：</p>
+<p><img src="/img/java/net/URLConnection.png" alt="URLConnection"></p>
+<p><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/net/HttpURLConnection.html"><code>java.net.HttpURLConnection</code></a></p>
+<blockquote>
+<p>A <code>URLConnection</code> with support for HTTP-specific features. See <a target="_blank" rel="noopener" href="http://www.w3.org/pub/WWW/Protocols/">the spec</a> for details.</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/net/Socket.html"><code>java.net.Socket</code></a></p>
+<blockquote>
+<p>This class implements client sockets (also called just “sockets”). A socket is an endpoint for communication between two machines.</p>
+<p>The actual work of the socket is performed by an instance of the <code>SocketImpl</code> class. An application, by changing the socket factory that creates the socket implementation, can configure itself to create sockets appropriate to the local firewall.</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/net/SocketImpl.html"><code>java.net.SocketImpl</code></a></p>
+<blockquote>
+<p>The abstract class <code>SocketImpl</code> is a common superclass of all classes that actually implement sockets. It is used to create both client and server sockets.</p>
+</blockquote>
+<p>当通过 <code>Socket</code> 类的默认无参构造方法 <code>new Socket()</code> 创建 socket 对象时，其底层实现如下图。从下图可见，将会创建抽象类 <code>SocketImpl</code> 的默认实现类 <code>SocksSocketImpl</code>：</p>
+<p><img src="/img/java/net/SocketImpl.png" alt="Default implementation of SocketImpl"></p>
+<p>而 <code>SocksSocketImpl</code> 的继承结构如下。</p>
+<p><img src="/img/java/net/Socket.png"></p>
+<p><code>Socket</code> 类提供了 <code>getOutputStream()</code>、<code>getInputStream()</code> 方法，其底层实现获取 <code>AbstractPlainSocketImpl</code> 的两个私有成员变量，如下：</p>
+<ul>
+<li><p><code>java.net.SocketInputSteram</code>，核心方法：</p>
+<p><img src="/img/java/net/SocketInputStream_socketRead0.png" alt="SocketInputStream#socketRead0"></p>
+</li>
+<li><p><code>java.net.SocketOutputStream</code>，核心方法：</p>
+<p><img src="/img/java/net/SocketOutputStream_socketWrite0.png" alt="SocketOutputStream#socketWrite0"></p>
+<p>这两个类的继承结构如下：</p>
+</li>
+</ul>
+<p><img src="/img/java/net/SocketInputSteram_SocketOutputStream.png" alt="java.net.SocketInputSteram &amp; java.net.SocketOutputStream"></p>
+<h3 id="java-io"><a href="#java-io" class="headerlink" title="java.io.*"></a>java.io.*</h3><p><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/io/FileDescriptor.html"><code>java.io.FileDescriptor</code></a></p>
+<blockquote>
+<p>Instances of the file descriptor class serve as an opaque handle to the underlying machine-specific structure representing an open file, an open socket, or another source or sink of bytes. The main practical use for a file descriptor is to create a <code>FileInputStream</code> or <code>FileOutputStream</code> to contain it.</p>
+<p>Applications should not create their own file descriptors.</p>
+</blockquote>
+<h1 id="常见异常"><a href="#常见异常" class="headerlink" title="常见异常"></a>常见异常</h1><p>下面介绍网络编程时，常见的 Socket、HTTP 异常。详见：<a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/net/package-summary.html">https://docs.oracle.com/javase/8/docs/api/java/net/package-summary.html</a></p>
+<h2 id="IOException"><a href="#IOException" class="headerlink" title="IOException"></a>IOException</h2><blockquote>
+<p>In case the TCP handshakes are not complete, the connection remains unsuccessful. Consequently, <strong>the program throws an <code>IOException</code> indicating an error occurred while establishing a new connection</strong>.</p>
+</blockquote>
+<h2 id="BindException"><a href="#BindException" class="headerlink" title="BindException"></a>BindException</h2><p><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/net/BindException.html"><code>java.net.BindException</code></a></p>
+<blockquote>
+<p>Signals that an error occurred while attempting to bind a socket to a local address and port.</p>
+</blockquote>
+<p>问题：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">java.net.BindException: Address already in use (Bind failed)</span><br><span class="line">	at java.net.PlainSocketImpl.socketBind(Native Method)</span><br><span class="line">	at java.net.AbstractPlainSocketImpl.bind(AbstractPlainSocketImpl.java:513)</span><br><span class="line">	at java.net.ServerSocket.bind(ServerSocket.java:375)</span><br><span class="line">	at java.net.ServerSocket.&lt;init&gt;(ServerSocket.java:237)</span><br><span class="line">	at java.net.ServerSocket.&lt;init&gt;(ServerSocket.java:181)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>原因：server-side 未成功 <code>bind()</code> 到指定端口号（如端口被其它服务占用）。</p>
+<h2 id="ConnectException"><a href="#ConnectException" class="headerlink" title="ConnectException"></a>ConnectException</h2><p><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/net/ConnectException.html"><code>java.net.ConnectException</code></a></p>
+<blockquote>
+<p>Signals that an error occurred while attempting to connect a socket to a remote address and port.</p>
+</blockquote>
+<h3 id="Connection-refused"><a href="#Connection-refused" class="headerlink" title="Connection refused"></a>Connection refused</h3><p>问题：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">java.net.ConnectException: Connection refused (Connection refused)</span><br><span class="line">	at java.net.PlainSocketImpl.socketConnect(Native Method)</span><br><span class="line">	at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:476)</span><br><span class="line">	at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:218)</span><br><span class="line">	at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:200)</span><br><span class="line">	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:394)</span><br><span class="line">	at java.net.Socket.connect(Socket.java:606)</span><br><span class="line">	at java.net.Socket.connect(Socket.java:555)</span><br><span class="line">	at java.net.Socket.&lt;init&gt;(Socket.java:451)</span><br><span class="line">	at java.net.Socket.&lt;init&gt;(Socket.java:228)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p><img src="/img/spring/resttemplate/ResourceAccessException.png" alt="ResourceAccessException"></p>
+<p>原因：client-side <code>connect()</code> 建立 TCP 连接失败</p>
+<ul>
+<li>client-side <code>connect()</code> 错了服务端口号；</li>
+<li>server-side 服务未启动、未在 <code>listen()</code> 监听、或 <code>listen()</code> 的 <code>backlog</code> 队列数无法满足 client-side 并发连接请求数；</li>
+<li>无法完成 TCP 三次握手：</li>
+</ul>
+<p><img src="/img/java/net/wireshark_connection_refused.png" alt="WireShark 抓包"></p>
+<h3 id="Connection-timed-out"><a href="#Connection-timed-out" class="headerlink" title="Connection timed out"></a>Connection timed out</h3><p>问题：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">java.net.ConnectException: Connection timed out (Connection timed out)</span><br><span class="line">	at java.net.PlainSocketImpl.socketConnect(Native Method)</span><br><span class="line">	at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:350)</span><br><span class="line">	at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:206)</span><br><span class="line">	at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:188)</span><br><span class="line">	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:392)</span><br><span class="line">	at java.net.Socket.connect(Socket.java:589)</span><br><span class="line">	at java.net.Socket.connect(Socket.java:538)</span><br><span class="line">	at java.net.Socket.&lt;init&gt;(Socket.java:434)</span><br><span class="line">	at java.net.Socket.&lt;init&gt;(Socket.java:211)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>原因：client-side <code>connect()</code> 超时：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Socket</span> <span class="variable">socket</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Socket</span>(); </span><br><span class="line"><span class="type">SocketAddress</span> <span class="variable">socketAddress</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">InetSocketAddress</span>(host, port); </span><br><span class="line">socket.connect(socketAddress, <span class="number">5</span> * <span class="number">1000</span>);  <span class="comment">// timeout for connect()</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/img/java/net/Socket_connect.png" alt="Socket#connect 方法"></p>
+<p>连接超时原因：client-side 发出 <code>sync</code> 包之后，server-side 未在指定时间内回复 <code>ack</code> 导致的。没有回复 <code>ack</code> 的原因可能是网络丢包、防火墙阻止服务端返回 <code>syn</code> 的 <code>ack</code> 包等。</p>
+<ul>
+<li><p>防火墙原因</p>
+<blockquote>
+<p>Sometimes, <strong>firewalls block certain ports due to security reasons</strong>. As a result, a “connection timed out” error can occur when a client is trying to establish a connection to a server. Therefore, <strong>we should check the firewall settings</strong> to see if it’s blocking a port before binding it to a service.</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="SocketTimeoutException"><a href="#SocketTimeoutException" class="headerlink" title="SocketTimeoutException"></a>SocketTimeoutException</h2><p><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/net/SocketTimeoutException.html"><code>java.net.SocketTimeoutException</code></a></p>
+<blockquote>
+<p>Signals that a timeout has occurred on a socket <code>accept()</code> or <code>read()</code>.</p>
+</blockquote>
+<h3 id="Accept-timed-out"><a href="#Accept-timed-out" class="headerlink" title="Accept timed out"></a>Accept timed out</h3><p>问题：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">java.net.SocketTimeoutException: Accept timed out</span><br><span class="line">	at java.net.PlainSocketImpl.socketAccept(Native Method)</span><br><span class="line">	at java.net.AbstractPlainSocketImpl.accept(AbstractPlainSocketImpl.java:535)</span><br><span class="line">	at java.net.ServerSocket.implAccept(ServerSocket.java:545)</span><br><span class="line">	at java.net.ServerSocket.accept(ServerSocket.java:513)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>原因：server-side <code>accept()</code> 超时：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ServerSocket</span> <span class="variable">serverSocket</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ServerSocket</span>(port, backlog);</span><br><span class="line">serverSocket.setSoTimeout(<span class="number">5</span> * <span class="number">1000</span>);  <span class="comment">// timeout for accept()</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/img/java/net/ServerSocket_setSoTimeout.png" alt="setSoTimeout 方法"></p>
+<h3 id="Read-timed-out"><a href="#Read-timed-out" class="headerlink" title="Read timed out"></a>Read timed out</h3><p>问题：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">java.net.SocketTimeoutException: Read timed out</span><br><span class="line">	at java.net.SocketInputStream.socketRead0(Native Method)</span><br><span class="line">	at java.net.SocketInputStream.socketRead(SocketInputStream.java:116)</span><br><span class="line">	at java.net.SocketInputStream.read(SocketInputStream.java:171)</span><br><span class="line">	at java.net.SocketInputStream.read(SocketInputStream.java:141)</span><br><span class="line">	at java.net.SocketInputStream.read(SocketInputStream.java:127)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>原因：server-side / client-side <code>read()</code> 超时：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// server-side</span></span><br><span class="line"><span class="type">Socket</span> <span class="variable">socket</span> <span class="operator">=</span> serverSocket.accept();</span><br><span class="line">socket.setSoTimeout(<span class="number">5</span> * <span class="number">1000</span>);  <span class="comment">// timeout for read()</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// client-side</span></span><br><span class="line"><span class="type">Socket</span> <span class="variable">socket</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Socket</span>(host, port);</span><br><span class="line">socket.setSoTimeout(<span class="number">5</span> * <span class="number">1000</span>);  <span class="comment">// timeout for read()</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/img/java/net/Socket_setSoTimeout.png" alt="setSoTimeout 方法"></p>
+<h2 id="SocketException"><a href="#SocketException" class="headerlink" title="SocketException"></a>SocketException</h2><p><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/net/SocketException.html"><code>java.net.SocketException</code></a></p>
+<blockquote>
+<p>Thrown to indicate that there is an error creating or accessing a Socket.</p>
+</blockquote>
+<h3 id="Connection-reset-by-peer"><a href="#Connection-reset-by-peer" class="headerlink" title="Connection reset by peer"></a>Connection reset by peer</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">java.net.SocketException: Connection reset by peer (connect failed)</span><br><span class="line">	at java.net.PlainSocketImpl.socketConnect(Native Method)</span><br><span class="line">	at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:476)</span><br><span class="line">	at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:218)</span><br><span class="line">	at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:200)</span><br><span class="line">	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:394)</span><br><span class="line">	at java.net.Socket.connect(Socket.java:606)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h3 id="Bad-file-descriptor"><a href="#Bad-file-descriptor" class="headerlink" title="Bad file descriptor"></a>Bad file descriptor</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">java.net.SocketException: Bad file descriptor (Write failed)</span><br><span class="line">	at java.net.SocketOutputStream.socketWrite0(Native Method)</span><br><span class="line">	at java.net.SocketOutputStream.socketWrite(SocketOutputStream.java:111)</span><br><span class="line">	at java.net.SocketOutputStream.write(SocketOutputStream.java:155)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h3 id="Broken-pipe"><a href="#Broken-pipe" class="headerlink" title="Broken pipe"></a>Broken pipe</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">java.net.SocketException: Broken pipe (Write failed)</span><br><span class="line">	at java.net.SocketOutputStream.socketWrite0(Native Method)</span><br><span class="line">	at java.net.SocketOutputStream.socketWrite(SocketOutputStream.java:111)</span><br><span class="line">	at java.net.SocketOutputStream.write(SocketOutputStream.java:155)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h2 id="HttpClientErrorException"><a href="#HttpClientErrorException" class="headerlink" title="HttpClientErrorException"></a>HttpClientErrorException</h2><p><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/client/HttpClientErrorException.html"><code>org.springframework.web.client.HttpClientErrorException</code></a></p>
+<blockquote>
+<p>Exception thrown when an HTTP <code>4xx</code> is received.</p>
+</blockquote>
+<p><img src="/img/spring/resttemplate/HttpClientErrorException.png" alt="HttpClientErrorException"></p>
+<h2 id="HttpServerErrorException"><a href="#HttpServerErrorException" class="headerlink" title="HttpServerErrorException"></a>HttpServerErrorException</h2><p><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/client/HttpServerErrorException.html"><code>org.springframework.web.client.HttpServerErrorException</code></a></p>
+<blockquote>
+<p>Exception thrown when an HTTP <code>5xx</code> is received.</p>
+</blockquote>
+<p><img src="/img/spring/resttemplate/HttpServerErrorException.png" alt="HttpServerErrorException"></p>
+<p>…</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/guides/net/index.html">https://docs.oracle.com/javase/8/docs/technotes/guides/net/index.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.baeldung.com/a-guide-to-java-sockets">https://www.baeldung.com/a-guide-to-java-sockets</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.baeldung.com/category/java/tag/exception/">https://www.baeldung.com/category/java/tag/exception/</a></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.baeldung.com/java-socket-connection-read-timeout">Connection Timeout vs. Read Timeout for Java Sockets</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.baeldung.com/java-net-connectexception">Handling <code>java.net.ConnectException</code></a></li>
+<li><a target="_blank" rel="noopener" href="https://www.baeldung.com/java-socketexception">Handling <code>java.net.SocketException</code></a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/spring-resttemplate/" title="Spring RestTemplate 总结">https://qidawu.github.io/posts/spring-resttemplate/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/Spring/" rel="tag"># Spring</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/spring-aop/" rel="prev" title="Spring AOP 面向切面编程总结">
+                  <i class="fa fa-chevron-left"></i> Spring AOP 面向切面编程总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/spring-boot-getting-started/" rel="next" title="Spring Boot 入门总结">
+                  Spring Boot 入门总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

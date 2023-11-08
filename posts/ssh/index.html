@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="连接协议对比常见的几种连接协议：  SSH2（默认，相对于SSH1进行了加密算法的改进，使用最广泛） SSH1 Telnet Telnet&#x2F;SSL Rlogin Serial TAPI  在出现 SSH 之前，系统管理员需要登入远程服务器执行系统管理任务时，都是用 telnet 来实现的，telnet 协议底层使用 TCP 协议，端口号 23，采用明文密码传送，在传送过程中对数据也不加密，很容易被">
+<meta property="og:type" content="article">
+<meta property="og:title" content="应用层 SSH 协议及其实现总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/ssh/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="连接协议对比常见的几种连接协议：  SSH2（默认，相对于SSH1进行了加密算法的改进，使用最广泛） SSH1 Telnet Telnet&#x2F;SSL Rlogin Serial TAPI  在出现 SSH 之前，系统管理员需要登入远程服务器执行系统管理任务时，都是用 telnet 来实现的，telnet 协议底层使用 TCP 协议，端口号 23，采用明文密码传送，在传送过程中对数据也不加密，很容易被">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wizardzines.com/comics/openssl/openssl.png">
+<meta property="og:image" content="https://wizardzines.com/comics/ssh/ssh.png">
+<meta property="og:image" content="https://wizardzines.com/comics/openssl/openssl.png">
+<meta property="article:published_time" content="2016-10-06T09:42:15.000Z">
+<meta property="article:modified_time" content="2023-11-07T08:39:43.379Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="安全">
+<meta property="article:tag" content="计算机网络">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wizardzines.com/comics/openssl/openssl.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/ssh/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/ssh/","path":"posts/ssh/","title":"应用层 SSH 协议及其实现总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>应用层 SSH 协议及其实现总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5%E5%8D%8F%E8%AE%AE%E5%AF%B9%E6%AF%94"><span class="nav-number">1.</span> <span class="nav-text">连接协议对比</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%89%B4%E6%9D%83%E6%96%B9%E5%BC%8F%E5%AF%B9%E6%AF%94"><span class="nav-number">2.</span> <span class="nav-text">鉴权方式对比</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#OpenSSH"><span class="nav-number">3.</span> <span class="nav-text">OpenSSH</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">3.1.</span> <span class="nav-text">常用命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ssh"><span class="nav-number">3.1.1.</span> <span class="nav-text">ssh</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ssh-keygen"><span class="nav-number">3.1.2.</span> <span class="nav-text">ssh-keygen</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ssh-add"><span class="nav-number">3.1.3.</span> <span class="nav-text">ssh-add</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#scp"><span class="nav-number">3.1.4.</span> <span class="nav-text">scp</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6"><span class="nav-number">3.2.</span> <span class="nav-text">相关文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%9D%E5%AD%98%E4%BC%9A%E8%AF%9D%E4%B8%8D%E6%8E%89%E7%BA%BF"><span class="nav-number">3.2.1.</span> <span class="nav-text">保存会话不掉线</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ssh-banner"><span class="nav-number">3.2.2.</span> <span class="nav-text">ssh banner</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#OpenSSL"><span class="nav-number">4.</span> <span class="nav-text">OpenSSL</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Generate-Private-and-Public-Key"><span class="nav-number">4.1.</span> <span class="nav-text">Generate Private and Public Key</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#rsync"><span class="nav-number">5.</span> <span class="nav-text">rsync</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%B9%E9%87%8F-rsync"><span class="nav-number">5.1.</span> <span class="nav-text">批量 rsync</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/ssh/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="应用层 SSH 协议及其实现总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          应用层 SSH 协议及其实现总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-10-06 17:42:15" itemprop="dateCreated datePublished" datetime="2016-10-06T17:42:15+08:00">2016-10-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-11-07 16:39:43" itemprop="dateModified" datetime="2023-11-07T16:39:43+08:00">2023-11-07</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="连接协议对比"><a href="#连接协议对比" class="headerlink" title="连接协议对比"></a>连接协议对比</h1><p>常见的几种连接协议：</p>
+<ul>
+<li>SSH2（默认，相对于SSH1进行了加密算法的改进，使用最广泛）</li>
+<li>SSH1</li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Telnet">Telnet</a></li>
+<li>Telnet/SSL</li>
+<li>Rlogin</li>
+<li>Serial</li>
+<li>TAPI</li>
+</ul>
+<p>在出现 SSH 之前，系统管理员需要登入远程服务器执行系统管理任务时，都是用 <code>telnet</code> 来实现的，telnet 协议底层使用 TCP 协议，端口号 <code>23</code>，采用明文密码传送，在传送过程中对数据也不加密，很容易被不怀好意的人在网络上监听到密码。</p>
+<p>同样，在 SSH 工具出现之前 R 系列命令也很流行（由于这些命令都以字母 r 开头，故把这些命令合称为 R 系列命令，R 是 remote 的意思），比如 <code>rexec</code> 是用来执行远程服务器上的命令的，和 <code>telnet</code> 的区别是 <code>telnet</code> 需要先登录远程服务器再实行相关的命令，而 R 系列命令可以把登录和执行命令并登出系统的操作整合在一起。这样就不需要为在远程服务器上执行一个命令而特地登录服务器了。</p>
+<p>SSH 全称 Secure SHell，顾名思义就是非常安全的 shell 的意思，SSH 协议是 IETF（Internet Engineering Task Force） 的 Network Working Group 所制定的一种协议。SSH 的主要目的是用来<strong>取代传统的 telnet 和 R 系列命令</strong>（<code>rlogin</code>、<code>rsh</code>、<code>rexec</code> 等）远程登录和远程执行命令的工具，实现对远程登录和远程执行命令加密。防止由于网络监听而出现的密码泄漏，对系统构成威胁。</p>
+<p>SSH 是一种加密协议，不仅在登录过程中对密码进行加密传送，而且对登录后执行的命令的数据也进行加密，这样即使别人在网络上监听并截获了你的数据包，他也看不到其中的内容。SSH 协议底层使用 TCP 协议，端口号 <code>22</code>。</p>
+<h1 id="鉴权方式对比"><a href="#鉴权方式对比" class="headerlink" title="鉴权方式对比"></a>鉴权方式对比</h1><p>不同于 <code>telnet</code> 只支持 Password 密码鉴权，SSH 同时支持以下几种鉴权方式（Authentication）：</p>
+<ul>
+<li>Password（密码）</li>
+<li><strong>Public Key</strong>（公钥）</li>
+<li>Keyboard Interactive（键盘交互）</li>
+<li>GSSAPI </li>
+</ul>
+<p>目前 SSH 最常用的鉴权方式有 Password 和 Public key 。Public Key 非对称（asymmetric）鉴权认证使用一对相关联的 Key Pair（一个公钥 Public Key，一个私钥 Private Key）来代替传统的密码（Password）。顾名思义，Public Key 是用来公开的，可以将其放到 SSH 服务器自己的帐号中，而 Private Key 只能由自己保管，用来证明自己身份。</p>
+<p>使用 Public Key 加密过的数据只有用与之相对应的 Private Key 才能解密。这样在鉴权的过程中，Public Key 拥有者便可以通过 Public Key 加密一些东西发送给对应的 Private Key 拥有者，如果在通信的双方都拥有对方的 Public Key（自己的 Private Key 只由自己保管），那么就可以通过这对 Key Pair 来安全地交换信息，从而实现相互鉴权。</p>
+<h1 id="OpenSSH"><a href="#OpenSSH" class="headerlink" title="OpenSSH"></a>OpenSSH</h1><p><a target="_blank" rel="noopener" href="http://www.openssh.com/">OpenSSH</a> 是 SSH 协议的<strong>免费开源实现</strong>。OpenSSH 套件由以下工具集组成：</p>
+<p>远程操作工具：</p>
+<ul>
+<li><code>ssh</code>（替代 <code>telnet</code> 和 <code>rlogin</code>）</li>
+<li><code>scp</code>（替代 <code>rcp</code>）</li>
+<li><code>sftp</code>（替代 <code>ftp</code>）</li>
+</ul>
+<p>公私钥管理工具：</p>
+<ul>
+<li><code>ssh-add</code> Tool which adds private keys to the authentication agent.</li>
+<li><code>ssh-keygen</code> Key generation tool.</li>
+<li><code>ssh-keysign</code> Helper program for host-based authentication.</li>
+<li><code>ssh-keyscan</code> Utility for gathering public host keys from a number of hosts.</li>
+</ul>
+<p>客户端工具：</p>
+<ul>
+<li><code>ssh-agent</code> An authentication agent that can store private keys.</li>
+</ul>
+<p>服务端工具：</p>
+<ul>
+<li><code>sshd</code> 一个运行于服务端的独立守护进程（standalone daemon）</li>
+<li><code>sftp-server</code> SFTP 服务器</li>
+</ul>
+<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><p>当管理的服务器较多时，ssh 远程需要频繁的输入用户名、密码、服务器 IP，操作非常繁琐，下面介绍一些命令结合配置以简化操作。</p>
+<h3 id="ssh"><a href="#ssh" class="headerlink" title="ssh"></a>ssh</h3><p><code>ssh</code> 命令用法：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh [-p port] [user@]hostname [<span class="built_in">command</span>]</span><br></pre></td></tr></table></figure>
+
+<p>有时候输入 <code>ssh</code> 的参数繁琐，一旦服务器较多，要一个个记住并且敲入时非常低效。因此 <code>ssh</code> 提供了配置文件的方式简化命令行选项。<code>ssh</code> 依序从下列来源中获取配置，最先获取的值将优先使用：</p>
+<ol>
+<li>命令行选项（command-line options）</li>
+<li>用户配置文件 <code>~/.ssh/config</code></li>
+<li>系统配置文件 <code>/etc/ssh/ssh_config</code></li>
+</ol>
+<p>常用配置项如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Host    别名</span><br><span class="line">    HostName        主机名</span><br><span class="line">    Port            端口</span><br><span class="line">    User            用户名</span><br><span class="line">    IdentityFile    密钥文件的路径</span><br></pre></td></tr></table></figure>
+
+<p>通过配置，<code>ssh</code> 远程命令简化如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh 别名</span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh pc2 /sbin/ifconfig</span><br></pre></td></tr></table></figure>
+
+<p><code>pc2</code> 是从 <code>~/.ssh/config</code> 中获取的 hostname 别名。</p>
+<h3 id="ssh-keygen"><a href="#ssh-keygen" class="headerlink" title="ssh-keygen"></a>ssh-keygen</h3><p>在使用 <code>ssh</code> 进行远程登录时，由于默认使用的是 Password 鉴权方式，因此每次登录都需要输入密码，操作麻烦。下面介绍使用 Public Key  鉴权方式实现<strong>免密登录</strong>。</p>
+<p>一、创建一对公私钥：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-keygen -t rsa -C <span class="built_in">who</span>@<span class="built_in">where</span></span><br><span class="line">询问密码时，保持为空并回车</span><br></pre></td></tr></table></figure>
+
+<p>二、启动 SSH 认证代理程序：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">eval</span> `ssh-agent`</span><br><span class="line">Agent pid 1760</span><br></pre></td></tr></table></figure>
+
+<p>三、添加私钥：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-add ~/.ssh/id_rsa</span><br><span class="line">Identity added: ~/.ssh/id_rsa</span><br><span class="line">$ ssh-add -l</span><br><span class="line">2048 8a:63:12:ae:b1:4c:be:03:e7:7f:92:3e:e5:44:56:bb ~/.ssh/id_rsa (RSA)</span><br></pre></td></tr></table></figure>
+
+<p>四、将公钥上传到服务端，添加到<strong>被登录帐户</strong>的<strong>可信列表文件</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ scp ~/.ssh/id_rsa.pub <span class="built_in">who</span>@<span class="built_in">where</span>:~/.ssh/authorized_keys</span><br></pre></td></tr></table></figure>
+
+<p>五、修改服务端文件权限：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">chmod</span> 700 ~/.ssh</span><br><span class="line">$ <span class="built_in">chmod</span> 600 ~/.ssh/*</span><br></pre></td></tr></table></figure>
+
+<p>之后再使用 <code>ssh</code> 登录时，客户端的 <code>ssh-agent</code> 会发送私钥去和服务端上的公钥做匹配，如果匹配成功就可以免密登录了。</p>
+<h3 id="ssh-add"><a href="#ssh-add" class="headerlink" title="ssh-add"></a>ssh-add</h3><p><code>ssh-add</code> 命令常见用法：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">usage: ssh-add [options] [file ...]</span><br><span class="line">Options:</span><br><span class="line">  -l          List fingerprints of all identities.</span><br><span class="line">  -E <span class="built_in">hash</span>     Specify <span class="built_in">hash</span> algorithm used <span class="keyword">for</span> fingerprints.</span><br><span class="line">  -L          List public key parameters of all identities.</span><br><span class="line">  -k          Load only keys and not certificates.</span><br><span class="line">  -c          Require confirmation to sign using identities</span><br><span class="line">  -t life     Set lifetime (<span class="keyword">in</span> seconds) when adding identities.</span><br><span class="line">  -d          Delete identity.</span><br><span class="line">  -D          Delete all identities.</span><br><span class="line">  -x          Lock agent.</span><br><span class="line">  -X          Unlock agent.</span><br><span class="line">  -s pkcs11   Add keys from PKCS<span class="comment">#11 provider.</span></span><br><span class="line">  -e pkcs11   Remove keys provided by PKCS<span class="comment">#11 provider.</span></span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-add -D</span><br><span class="line">All identities removed.</span><br><span class="line"></span><br><span class="line">$ ssh-add -l</span><br><span class="line">The agent has no identities.</span><br></pre></td></tr></table></figure>
+
+<p>参考：<a target="_blank" rel="noopener" href="http://linux.101hacks.com/unix/ssh-add/">http://linux.101hacks.com/unix/ssh-add/</a></p>
+<h3 id="scp"><a href="#scp" class="headerlink" title="scp"></a>scp</h3><p><code>scp</code> 命令常用参数：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-r 递归复制（用以传输文件夹）</span><br><span class="line">-p 传输时保留文件权限及时间戳</span><br><span class="line">-C 传输时进行数据压缩</span><br></pre></td></tr></table></figure>
+
+<p>可以结合 bash 的 <code>for</code> 循环实现批量 <code>scp</code> 目录：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">HOST_IP=(<span class="string">&#x27;192.168.0.1&#x27;</span> <span class="string">&#x27;192.168.0.2&#x27;</span> <span class="string">&#x27;192.168.0.3&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> ip <span class="keyword">in</span> <span class="variable">$&#123;HOST_IP[@]&#125;</span>  </span><br><span class="line">  <span class="keyword">do</span></span><br><span class="line">    scp -rp /some/files <span class="variable">$&#123;ip&#125;</span>:/some/</span><br><span class="line">  <span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="相关文件"><a href="#相关文件" class="headerlink" title="相关文件"></a>相关文件</h2><p>SSH 相关文件和配置：</p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>~/.ssh/id_rsa.pub</td>
+<td>公钥（Public Key）</td>
+</tr>
+<tr>
+<td>~/.ssh/id_rsa</td>
+<td>私钥（Private Key）</td>
+</tr>
+<tr>
+<td>~/.ssh/known_hosts</td>
+<td>位于客户端的公钥列表文件，首次与目标主机建立 SSH 连接时，需要添加对方的公钥到这个文件以便后续通信<br/><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/SHWRgcJ3bd1s3OKr2KzIgg">《关于 Linux 中 known_hosts 文件的必知必会》</a></td>
+</tr>
+<tr>
+<td>~/.ssh/authorized_keys</td>
+<td>位于服务端的公钥列表文件，列出了所有被允许登录进来的可信公钥信息（Lists the public keys that are permitted for logging in）</td>
+</tr>
+<tr>
+<td>~/.ssh/config</td>
+<td>客户端用户配置文件，可以通过 <code>man ssh_config</code> 命令查看帮助。</td>
+</tr>
+<tr>
+<td>/etc/ssh/ssh_config</td>
+<td>客户端系统配置文件</td>
+</tr>
+<tr>
+<td>/etc/ssh/sshd_config</td>
+<td>服务端配置文件</td>
+</tr>
+</tbody></table>
+<h3 id="保存会话不掉线"><a href="#保存会话不掉线" class="headerlink" title="保存会话不掉线"></a>保存会话不掉线</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Host *</span><br><span class="line">    ServerAliveInterval 240</span><br><span class="line">    ServerAliveCountMax 2</span><br></pre></td></tr></table></figure>
+
+<p><code>ServerAliveInterval</code> 设置了客户端在发送保持连接信号之前的等待时间。</p>
+<h3 id="ssh-banner"><a href="#ssh-banner" class="headerlink" title="ssh banner"></a>ssh banner</h3><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/ASCII_art">https://en.wikipedia.org/wiki/ASCII_art</a></p>
+<h1 id="OpenSSL"><a href="#OpenSSL" class="headerlink" title="OpenSSL"></a>OpenSSL</h1><p><a target="_blank" rel="noopener" href="https://www.openssl.org/">OpenSSL</a> 加密库 ( <code>libcrypto</code>) 实现了各种 Internet 标准中使用的各种加密算法。该库提供的服务被 TLS 和 CMS 的 OpenSSL 实现使用，它们也被用于实现许多其它第三方产品和协议。</p>
+<p>该库的功能包括对称加密、公钥加密、密钥协商、证书处理、加密散列函数、加密伪随机数生成器、消息身份验证代码 (MAC)、密钥派生函数 (KDF) 和各种实用程序。</p>
+<p><img src="https://wizardzines.com/comics/openssl/openssl.png" alt="OpenSSL"></p>
+<h2 id="Generate-Private-and-Public-Key"><a href="#Generate-Private-and-Public-Key" class="headerlink" title="Generate Private and Public Key"></a>Generate Private and Public Key</h2><p><a target="_blank" rel="noopener" href="https://www.openssl.org/docs/man3.0/man1/openssl.html">https://www.openssl.org/docs/man3.0/man1/openssl.html</a></p>
+<ol>
+<li>Create Private Key</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -out rsa_private_key.pem 2048</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>Generate Public Key</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl rsa -<span class="keyword">in</span> rsa_private_key.pem -out rsa_public_key.pem -pubout</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>Encode Private Key to <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/PKCS_8">PKCS#8</a></li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl pkcs8 -topk8 -<span class="keyword">in</span> rsa_private_key.pem -out pkcs8_rsa_private_key.pem -nocrypt</span><br></pre></td></tr></table></figure>
+
+<p>For signature, please use pkcs8_rsa_private_key.pem (result of step 3).</p>
+<h1 id="rsync"><a href="#rsync" class="headerlink" title="rsync"></a>rsync</h1><p>批量 <code>scp</code> 的缺点是会全量同步，且删除行为无法同步，可以用 <code>rsync</code> 命令优化：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">拉取：</span><br><span class="line">$ rsync [option...] [user@]host:src... [dest]</span><br><span class="line"></span><br><span class="line">推送：</span><br><span class="line">$ rsync [option...] src... [user@]host:dest</span><br></pre></td></tr></table></figure>
+
+<p>如果双方都修改了同一文件的同一个地方，<code>rsync</code> 不管源和目标的修改时间谁先谁后，而是以源作为基准去覆盖目标文件。</p>
+<p>常用参数：</p>
+<ul>
+<li><code>-a</code>：归档模式，等价于 <code>-rlptgoD</code>（不包括 <code>-H</code>, <code>-A</code>, <code>-X</code>）<ul>
+<li><code>-r</code>, <code>--recursive</code>：递归遍历目录</li>
+<li><code>-l</code>, <code>--links</code>：复制软链接（symbolic link, symlinks）</li>
+<li><code>-p</code>, <code>--perms</code>：保留权限</li>
+<li><code>-t</code>, <code>--times</code>：保留修改时间</li>
+<li><code>-g</code>, <code>--group</code>：保留属组</li>
+<li><code>-o</code>, <code>--owner</code>：保留属主</li>
+<li><code>-D</code>：等价于：<ul>
+<li><code>--devices</code>：保留设备文件</li>
+<li><code>--specials</code>：保留特殊文件</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>-v</code>, <code>--verbose</code>：详细输出信息</li>
+<li><code>-H</code>, <code>--hard-links</code>：保留硬链接（hard links）</li>
+</ul>
+<h2 id="批量-rsync"><a href="#批量-rsync" class="headerlink" title="批量 rsync"></a>批量 rsync</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">HOST_IP=(<span class="string">&#x27;192.168.0.1&#x27;</span> <span class="string">&#x27;192.168.0.2&#x27;</span> <span class="string">&#x27;192.168.0.3&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> ip <span class="keyword">in</span> <span class="variable">$&#123;HOST_IP[@]&#125;</span></span><br><span class="line">  <span class="keyword">do</span></span><br><span class="line">    rsync -avH --delete /some/* <span class="variable">$&#123;ip&#125;</span>:/some/</span><br><span class="line">  <span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<p>进行如下文件操作测试：</p>
+<ul>
+<li>新增文件：web-banner-20170717.jpg</li>
+<li>删除文件：web-banner-20170716.jpg</li>
+</ul>
+<p>从输出可见，只会增量同步并删除指定的文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sending incremental file list</span><br><span class="line">resmarket/static/site/v1/img/banner/</span><br><span class="line">resmarket/static/site/v1/img/banner/web-banner-20170717.jpg</span><br><span class="line">deleting resmarket/static/site/v1/img/banner/web-banner-20170716.jpg</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Telnet">https://en.wikipedia.org/wiki/Telnet</a></p>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Secure_Shell">https://en.wikipedia.org/wiki/Secure_Shell</a></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/wfyH4wrMrwp-zM4dOUdMSw">在 Linux 上保护 SSH 服务器连接的 8 种方法 | 良许 Linux</a></p>
+<p>《<a target="_blank" rel="noopener" href="http://linux.101hacks.com/unix/ssh-add/">5 Unix / Linux ssh-add Command Examples to Add SSH Key to Agent</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/c6a7ffe01ac3">ssh keygen 中生成的 randomart image 是什么</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="https://www.droidwin.com/ssh-not-working-in-macos-ventura-fix/">SSH Not Working In MacOS Ventura: How To Fix</a>》</p>
+<p><a target="_blank" rel="noopener" href="https://wizardzines.com/comics/ssh/">https://wizardzines.com/comics/ssh/</a><br><img src="https://wizardzines.com/comics/ssh/ssh.png" alt="SSH"></p>
+<p><a target="_blank" rel="noopener" href="http://roclinux.cn/?p=2643">《rsync同步的艺术》–linux命令五分钟系列之四十二</a></p>
+<p><a target="_blank" rel="noopener" href="https://wizardzines.com/comics/openssl/">https://wizardzines.com/comics/openssl/</a><br><img src="https://wizardzines.com/comics/openssl/openssl.png" alt="OpenSSL"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/ssh/" title="应用层 SSH 协议及其实现总结">https://qidawu.github.io/posts/ssh/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E5%AE%89%E5%85%A8/" rel="tag"># 安全</a>
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag"># 计算机网络</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/javascript-requirejs/" rel="prev" title="前端模块化框架 Require.js">
+                  <i class="fa fa-chevron-left"></i> 前端模块化框架 Require.js
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/javascript-gulpjs/" rel="next" title="自动化构建工具 Gulp.js">
+                  自动化构建工具 Gulp.js <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

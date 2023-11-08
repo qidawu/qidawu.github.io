@@ -1,0 +1,1931 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/bitwise-operation/</loc>
+    
+    <lastmod>2023-11-08</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/data-structure-graph/</loc>
+    
+    <lastmod>2023-11-08</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/vim/</loc>
+    
+    <lastmod>2023-11-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/spring-mvc/</loc>
+    
+    <lastmod>2023-11-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/spring-transaction/</loc>
+    
+    <lastmod>2023-11-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/ssh/</loc>
+    
+    <lastmod>2023-11-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/unix-timestamp/</loc>
+    
+    <lastmod>2023-11-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java8-time/</loc>
+    
+    <lastmod>2023-11-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/jvm-gc/</loc>
+    
+    <lastmod>2023-11-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/mybatis-using/</loc>
+    
+    <lastmod>2023-11-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/spring-bean-wiring/</loc>
+    
+    <lastmod>2023-11-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-jdbc-mapping-sql-and-java-types/</loc>
+    
+    <lastmod>2023-11-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-learning/</loc>
+    
+    <lastmod>2023-11-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-logging/</loc>
+    
+    <lastmod>2023-11-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java8-time-zone/</loc>
+    
+    <lastmod>2023-11-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/apache-commons-lang/</loc>
+    
+    <lastmod>2023-11-07</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/spring-boot-getting-started/</loc>
+    
+    <lastmod>2023-03-27</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/nginx-proxy/</loc>
+    
+    <lastmod>2023-03-09</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/relational-data-model/</loc>
+    
+    <lastmod>2023-03-09</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/spring-bean-lifecycle/</loc>
+    
+    <lastmod>2023-03-09</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/jvm-impl/</loc>
+    
+    <lastmod>2023-03-09</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java8-lambda/</loc>
+    
+    <lastmod>2023-03-09</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java8-stream-api/</loc>
+    
+    <lastmod>2023-03-09</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-concurrency-threadpool/</loc>
+    
+    <lastmod>2023-03-09</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-jdbc-driver/</loc>
+    
+    <lastmod>2023-03-09</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/git-startup/</loc>
+    
+    <lastmod>2023-03-09</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/gnu-text-utilities/</loc>
+    
+    <lastmod>2023-03-09</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/index.html</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/webapp-development/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/what-is-shell/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/spring-jdbc/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/spring-factory-bean/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/spring-resttemplate/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/spring-bean/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/spring-boot-externalized-configuration/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/spring-factories/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/spring-conditional-bean/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/secret-of-great-management/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/self-coaching/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/spring-aop/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/security/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/spring-application-context/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/mysql-transaction-model/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/nginx-ssl/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/nginx-upstream/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/npm/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/oauth2/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/optimizing-hexo-speed-with-coding-pages/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/optimizing-hexo-speed/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/packing/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/redis-cmd/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/mysql-explain/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/mysql-index/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/mysql-innodb-features/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/mysql-join/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/mysql-locking-and-index/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/mysql-locking-read/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/mysql-order-by/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/mysql-primary-key-and-foreign-key/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/mysql-select-syntax/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/mysql-transaction-autocommit/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/mysql-transaction-characteristics/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/mybatis/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/mycli/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/mysql-charset/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/mysql-cli/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/mysql-consistent-nonlocking-reads-with-mvcc/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/mysql-data-types/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/mysql-date-and-time-functions/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/mysql-deadlock/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/mysql-deferred-join/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/law-and-regulations/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/maven-archetype/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/maven-bom/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/maven-build-lifecycle/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/maven-dependencies/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/maven-inheritance/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/maven-pom-basics/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/maven-plugins/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/more-joel-on-software/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/javascript-event-delegation/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/javascript-intro/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/javascript-object/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/javascript-primitive-types/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/javascript-gulpjs/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/javascript-requirejs/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/javascript-style-guideline/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/jvm-runtime-data-areas/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/jvm-tools/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/javascript-array/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/javascript-best-practice/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/javascript-data-types-determine/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/javascript-dynamic-scripts/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/javascript-event-binding/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-reflection-annotation/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-reflection-api/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-reflection-generic-type/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-spi/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-string/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-wrapper-types/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java8-optional/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-jdk-proxy/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-jsp/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-jstl/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-reactive-programming/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-reactor-operator/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-reactor-scheduler/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-reactor-startup/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-concurrency-scheduling/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-el/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-enum/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-idea/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-jackson/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-jdbc-api/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-collections-comparator/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-collections-framework-concurrent-impl/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-collections-framework-enhancements/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-collections-framework-features/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-collections-framework/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-collections-hashmap/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-collections-iterator/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-collections-list/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-collections-queue/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-collections-map/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-concurrency-package/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/godaddy-cname-without-www/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/h5-storage/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/hexo-with-img/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/hexo-with-travis-ci/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/high-output-management/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/how-to-run-a-meeting/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/jakarta-annotations/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/jakarta-bean-validation/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/jakarta-web/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/jakarta-xml-binding/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-classpath/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/java-classloader/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/git-transfer-project/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/gnu-bash-prompting/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/gnu-bash-shell-builtin-commands/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/gnu-bash-shell-commands/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/gnu-bash-shell-expansions/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/gnu-bash-shell-invocation/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/gnu-bash-shell-quoting-and-params/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/gnu-bash-shortcut-keys/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/gnu-coreutils/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/gnu-findutils/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/git-checkout/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/git-cherry-pick/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/git-diff/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/git-merge/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/git-permissions/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/git-rebase/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/git-reset/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/git-resolving-conflicts/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/dubbo-config/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/dubbo-protocol/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/eclipse-customize-key-assist/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/eclipse-default-key-assist/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/fhs/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/fiddler/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/financial-funds/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/financial-asset-management/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/financial-market/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/frontend-roadmap/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/cryptography/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/data-structure-list/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/data-structure-tree/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/data-structure/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/distributed-id-generator/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/dns/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/docker-installation-problem/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/dnspod/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/cpp-function/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/cpp-io-library/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/cpp-ide/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/cpp-oop-class/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/cpp-oop-inheritance-and-polymorphism/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/cpp-pointer-and-reference/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/cpp-struct/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/cpp-type-aliases/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/authentication/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/broswer-kernel/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/cdn-gslb-dns/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/concurrency-control/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/cpp-array/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/cpp-basics/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/cpp-character-sequences/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/cpp-dynamic-memory/</loc>
+    
+    <lastmod>2023-02-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/same-origin-policy/</loc>
+    
+    <lastmod>2021-07-27</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/git-branch-in-action/</loc>
+    
+    <lastmod>2017-04-20</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/git-branch/</loc>
+    
+    <lastmod>2016-04-03</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/git-log/</loc>
+    
+    <lastmod>2015-09-15</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/git-setup/</loc>
+    
+    <lastmod>2015-09-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/posts/git-mergetool/</loc>
+    
+    <lastmod>2015-09-11</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+
+  <url>
+    <loc>https://qidawu.github.io/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/Java/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/GNU-Linux/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/%E5%89%8D%E7%AB%AF/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/MySQL/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/%E5%AE%89%E5%85%A8/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/C-C/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/Docker/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/%E5%BB%BA%E7%AB%99/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/%E9%87%91%E8%9E%8D/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/Git/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/%E7%AE%A1%E7%90%86/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/JDBC/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/JVM/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/Maven/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/Nginx/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/Redis/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://qidawu.github.io/tags/Spring/</loc>
+    <lastmod>2023-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+
+  
+</urlset>

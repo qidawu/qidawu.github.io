@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Spring 组件引入的两种推荐方式：  非 Spring Boot 项目，显示引入  Java Config：@Enable* + @Import Spring Boot 项目，隐式引入  Java Config：@EnableAutoConfiguration + META-INF&#x2F;spring.factories  Spring bean 的声明及装配的几种配置方式：  基于 XML Co">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Bean 几种配置方式总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/spring-bean/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="Spring 组件引入的两种推荐方式：  非 Spring Boot 项目，显示引入  Java Config：@Enable* + @Import Spring Boot 项目，隐式引入  Java Config：@EnableAutoConfiguration + META-INF&#x2F;spring.factories  Spring bean 的声明及装配的几种配置方式：  基于 XML Co">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/spring/spring-bean.png">
+<meta property="article:published_time" content="2017-06-04T14:26:34.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.928Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/spring/spring-bean.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/spring-bean/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/spring-bean/","path":"posts/spring-bean/","title":"Spring Bean 几种配置方式总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Spring Bean 几种配置方式总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E5%8C%96%E9%85%8D%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">自动化配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E4%BB%B6%E5%A3%B0%E6%98%8E"><span class="nav-number">1.1.</span> <span class="nav-text">组件声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E4%BB%B6%E6%89%AB%E6%8F%8F"><span class="nav-number">1.2.</span> <span class="nav-text">组件扫描</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D"><span class="nav-number">1.3.</span> <span class="nav-text">自动装配</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E-Java-Config-%E7%9A%84%E6%98%BE%E5%BC%8F%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">基于 Java Config 的显式配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Bean"><span class="nav-number">2.1.</span> <span class="nav-text">@Bean</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Import"><span class="nav-number">2.2.</span> <span class="nav-text">@Import</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Enable"><span class="nav-number">2.3.</span> <span class="nav-text">@Enable*</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Conditional"><span class="nav-number">2.4.</span> <span class="nav-text">@Conditional</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E-XML-%E7%9A%84%E6%98%BE%E5%BC%8F%E9%85%8D%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">基于 XML 的显式配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B7%B7%E5%90%88%E9%85%8D%E7%BD%AE"><span class="nav-number">4.</span> <span class="nav-text">混合配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/spring-bean/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Spring Bean 几种配置方式总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Spring Bean 几种配置方式总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2017-06-04 22:26:34" itemprop="dateCreated datePublished" datetime="2017-06-04T22:26:34+08:00">2017-06-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><img src="/img/spring/spring-bean.png" alt="spring-bean"></p>
+<p>Spring 组件引入的两种推荐方式：</p>
+<ul>
+<li>非 Spring Boot 项目，显示引入  Java Config：<code>@Enable*</code> + <code>@Import</code></li>
+<li>Spring Boot 项目，隐式引入  Java Config：<code>@EnableAutoConfiguration</code> + <code>META-INF/spring.factories</code></li>
+</ul>
+<p>Spring bean 的声明及装配的几种配置方式：</p>
+<ul>
+<li><del>基于 XML Config 的显式配置，不推荐</del></li>
+<li>基于 Java Config 的显式配置，推荐用于声明第三方编写的组件</li>
+<li>自动化配置，即组件扫描（隐式的 bean 发现机制） + 自动装配，推荐用于自己编写的组件</li>
+</ul>
+<p>用户可以选择其中一种方式使用，也可以混搭使用。使用时的最佳实践如下：</p>
+<ul>
+<li>建议尽可能地使用自动化配置的机制。显式配置越少越好，以避免显式配置所带来的维护成本。</li>
+<li>当你必须要显式配置 bean 的时候（比如，有些源码不是由你来维护的，而当你需要为这些代码配置 bean 的时候），推荐使用类型安全并且比 XML Config 更加强大的 Java Config。</li>
+<li>最后，只有当你想要使用便利的 XML 命名空间，并且在 JavaConfig 中没有同样的实现时，才应该使用 XML Config。</li>
+</ul>
+<h1 id="自动化配置"><a href="#自动化配置" class="headerlink" title="自动化配置"></a>自动化配置</h1><p>Spring 从两个角度来实现 bean 的自动化配置：</p>
+<ul>
+<li>组件扫描（component scanning）：Spring 会自动发现应用上下文中要创建的 bean。</li>
+<li>自动装配（autowiring）：Spring 自动满足 bean 之间的依赖。</li>
+</ul>
+<p>组件扫描（隐式的 bean 发现机制）和自动装配组合在一起能够发挥出强大的威力，它们能够将你的显式配置降低到最少。</p>
+<h2 id="组件声明"><a href="#组件声明" class="headerlink" title="组件声明"></a>组件声明</h2><p>注解：</p>
+<ul>
+<li><p><code>@Named</code></p>
+</li>
+<li><p><code>@Component</code></p>
+<blockquote>
+<p>Indicates that an annotated class is a “component”. Such classes are considered as candidates for auto-detection when using annotation-based configuration and classpath scanning.<br>Other class-level annotations may be considered as identifying a component as well, typically a special kind of component: e.g. the <code>@Repository</code> annotation or AspectJ’s <code>@Aspect</code> annotation.</p>
+</blockquote>
+</li>
+<li><p><code>@Controller</code>、<code>@RestController</code>、<code>@Service</code>、<code>@Repository</code></p>
+</li>
+</ul>
+<p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 接口</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">CompactDisc</span> &#123; <span class="keyword">void</span> <span class="title function_">play</span><span class="params">()</span>; &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// @Component 注解表明该类会作为组件类，并告知 Spring 要为这个类创建 bean。因此没有必要在 XML 或 Java Config 中显式配置该 bean。</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SgtPeppers</span> <span class="keyword">implements</span> <span class="title class_">CompactDisc</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">play</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Hello world!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="组件扫描"><a href="#组件扫描" class="headerlink" title="组件扫描"></a>组件扫描</h2><p>注解：</p>
+<ul>
+<li><p><code>@Configuration</code></p>
+</li>
+<li><p><code>@ComponentScan</code></p>
+<blockquote>
+<p>Configures component scanning directives for use with <code>@Configuration</code> classes. Provides support parallel with Spring XML’s <code>&lt;context:component-scan&gt;</code> element.<br>Either <code>basePackageClasses()</code> or <code>basePackages()</code> (or its alias <code>value()</code>) may be specified to define specific packages to scan. If specific packages are not defined, scanning will occur from the package of the class that declares this annotation.<br>Note that the <code>&lt;context:component-scan&gt;</code> element has an annotation-config attribute; however, this annotation does not. This is because in almost all cases when using <code>@ComponentScan</code>, default annotation config processing (e.g. processing <code>@Autowired</code> and friends) is assumed. Furthermore, when using <code>AnnotationConfigApplicationContext</code>, annotation config processors are always registered, meaning that any attempt to disable them at the <code>@ComponentScan</code> level would be ignored.<br>See <code>@Configuration</code>‘s Javadoc for usage examples.</p>
+</blockquote>
+</li>
+</ul>
+<p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 显式声明 Java Config 配置类</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="comment">// 组件扫描默认是不启用的。我们还需要显式配置一下 Spring，从而命令它去寻找带有 @Component 注解的类，并为其创建 bean。</span></span><br><span class="line"><span class="comment">// @ComponentScan 默认会扫描与配置类相同的包及其子包。有一个原因会促使我们明确地设置基础包，那就是我们想要将配置类放在单独的包中，使其与其他的应用代码区分开来。</span></span><br><span class="line"><span class="meta">@ComponentScan</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CDPlayerConfig</span> &#123;</span><br><span class="line">    <span class="comment">// 没有显式地声明任何 bean，但由于开启了组件扫描，会在 Spring 容器中自动创建一个 SgtPeppers 类的 bean。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="自动装配"><a href="#自动装配" class="headerlink" title="自动装配"></a>自动装配</h2><p>注解：</p>
+<ul>
+<li><code>@Autowired</code></li>
+<li><code>@Resource</code></li>
+<li><code>@Inject</code></li>
+</ul>
+<p>例子：为了测试组件扫描的功能，我们创建一个简单的 JUnit 单元测试。它会创建 Spring 上下文，并判断 bean 是否真的创建：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RunWith(SpringJUnit4ClassRunner.class)</span> <span class="comment">// 用于自动创建 Spring 的应用上下文</span></span><br><span class="line"><span class="meta">@ContextConfiguration(classes=CDPlayerConfig.class)</span> <span class="comment">// 指定要加载的配置</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CDPlayerTest</span> &#123;</span><br><span class="line">      </span><br><span class="line">    <span class="comment">// @Autowired 是 Spring 特有的注解，也可以使用 Java 依赖注入规范的 @Inject</span></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> CompactDisc cd;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">cdShouldNotBeNull</span><span class="params">()</span> &#123;</span><br><span class="line">        assertNotNull(cd); <span class="comment">// 测试通过</span></span><br><span class="line">        cd.play(); <span class="comment">// 输出 Hello world!</span></span><br><span class="line">    &#125;</span><br><span class="line">      </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如何处理自动装配的歧义性问题？有两种方案：</p>
+<ul>
+<li>使用 <code>@Primary</code> 注解将可选 bean 中的某一个设为首选的 bean。<code>@Primary</code> 能够与 <code>@Component</code> 组合用在组件扫描的 bean 上，也可以与 <code>@Bean</code> 组合用在 Java 配置的 bean 声明中。 </li>
+<li>使用限定符注解 <code>@Qualifier</code> 来帮助 Spring 将可选的 bean 的范围缩小到只有一个 bean。</li>
+</ul>
+<p>更多详见：《<a href="/2017/06/29/spring-bean-wiring/">Spring Bean 自动装配总结</a>》</p>
+<h1 id="基于-Java-Config-的显式配置"><a href="#基于-Java-Config-的显式配置" class="headerlink" title="基于 Java Config 的显式配置"></a>基于 Java Config 的显式配置</h1><p>尽管在很多场景下通过组件扫描和自动装配实现 Spring 的自动化配置是更为推荐的方式，但有时候自动化配置的方案行不通，因此需要显式配置 Spring。比如说，你想要将第三方库中的组件装配到你的应用中，在这种情况下，是没有办法在它的类上添加 <code>@Component</code> 和 <code>@Autowired</code> 注解的，因此就不能使用自动化装配的方案了。</p>
+<p>在这种情况下，就必须要采用显式装配的方式。在进行显式配置的时候，有两种可选方案：Java 和 XML。Java Config 的优缺点如下：</p>
+<ul>
+<li>优点：类型安全，对重构友好且不易出错。因为它就是 Java 代码，就像应用程序中的其它 Java 代码一样。</li>
+<li>缺点：如果修改了 Java Config 类中的配置，就必须重新编译应用程序。</li>
+</ul>
+<p>同时，Java Config 与其它的 Java 代码又有所区别，在概念上，它与应用程序中的业务逻辑和领域代码是不同的。尽管它与其它的组件一样都使用相同的语言进行表述，但 Java Config 是配置代码。这意味着它不应该包含任何业务逻辑，Java Config 也不应该侵入到业务逻辑代码之中。尽管不是必须的，但通常会将 Java Config <strong>放到单独的包中</strong>，使它与其他的应用程序逻辑分离开来，这样对于它的意图就不会产生困惑了。</p>
+<h2 id="Bean"><a href="#Bean" class="headerlink" title="@Bean"></a>@Bean</h2><p>下面是一个 Java Config 的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 显式声明 Java Config 配置类</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CDPlayerConfig</span> &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 显式地声明 bean。@Bean 注解会告诉 Spring 这个方法将会返回一个对象，该对象要注册为 Spring 应用上下文中的 bean。方法体中包含了最终产生 bean 实例的逻辑。</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> CompactDisc <span class="title function_">getCompactDisc</span><span class="params">()</span> &#123; <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">SgtPeppers</span>(); &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 装配方式一：Spring 将会拦截所有对 getCompactDisc() 的调用，并确保直接返回该方法所创建的 bean，而不是每次都对其进行实际的调用。且默认情况下，Spring 中的 bean 都是单例的，因此多次调用只会返回同一个实例。</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> CDPlayer <span class="title function_">getCDPlayer1</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">CDPlayer</span>(getCompactDisc())；</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 装配方式二：上述通过调用方法来引用 bean 的方式有点令人困惑。而下面这种方式的好处是：</span></span><br><span class="line">    <span class="comment">// 1.不要求将 CompactDisc 声明到同一个配置类之中。</span></span><br><span class="line">    <span class="comment">// 2.不关注 Bean 的配置方式，你可以将配置分散到多个配置类、XML 文件以及自动扫描和装配 bean 之中，只要功能完整健全即可。</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> CDPlayer <span class="title function_">getCDPlayer2</span><span class="params">(CompactDisc cd)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">CDPlayer</span>(cd)；</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意，这个 Java Config 需要放在 <code>@ComponentScan</code> 能够扫描到的路径之下，否则配置中所声明的 bean 将无法被 Spring 容器所注册。</p>
+<h2 id="Import"><a href="#Import" class="headerlink" title="@Import"></a>@Import</h2><p>有时候我们需要引入一些外部的 Java Config 配置，这些配置往往是在其它 package 下。此时可以通过 <code>@Import</code> 注解导入这些外部 Java Config。</p>
+<h2 id="Enable"><a href="#Enable" class="headerlink" title="@Enable*"></a>@Enable*</h2><p><code>@Import</code> 注解导入 Java Config 的方式有时不够直观，主流的做法是为其包装一层 <code>@Enable*</code> 注解，其字面意思是“开启某个功能”，非常直观。Spring 框架中提供了大量这类注解：</p>
+<p>Spring Framework：</p>
+<ul>
+<li>spring-context<ul>
+<li><code>@EnableAsync</code> 开启对 <code>@Async</code> 注解的支持</li>
+<li><code>@EnableScheduling</code> 开启对 <code>@Scheduled</code> 注解的支持</li>
+<li><code>@EnableCaching</code> 开启对 <code>@Cacheable</code> 注解的支持</li>
+<li><code>@EnableAspectJAutoProxy</code> 开启对 <code>@Aspect</code> 注解的支持</li>
+<li><code>@EnableLoadTimeWeaving</code></li>
+<li><code>@EnableMBeanExport</code></li>
+</ul>
+</li>
+<li>spring-tx<ul>
+<li><code>@EnableTransactionManagement</code> 开启对 <code>@Transactional</code> 注解的支持</li>
+</ul>
+</li>
+<li>spring-webmvc<ul>
+<li><code>@EnableWebMvc</code> 开启对 <code>@Controller</code> 注解的支持</li>
+</ul>
+</li>
+<li>spring-webflux<ul>
+<li><code>@EnableWebFlux</code></li>
+</ul>
+</li>
+<li>spring-websocket<ul>
+<li><code>@EnableWebSocket</code></li>
+<li><code>@EnableWebSocketMessageBroker</code></li>
+</ul>
+</li>
+<li>spring-jms<ul>
+<li><code>@EnableJms</code></li>
+</ul>
+</li>
+</ul>
+<p>其它组件：</p>
+<ul>
+<li>spring-security<ul>
+<li><code>@EnableWebSecurity</code></li>
+</ul>
+</li>
+<li>spring-data-jpa<ul>
+<li><code>@EnableJpaRepositories</code></li>
+</ul>
+</li>
+<li>spring-boot-autoconfigure<ul>
+<li><code>@EnableAutoConfiguration</code></li>
+</ul>
+</li>
+</ul>
+<p>通过简单的 <code>@Enable*</code> 即可开启一项功能的支持，从而避免大量配置，大大降低使用难度。通过观察这些 <code>@Enable*</code> 注解的源码，可以发现所有的注解都有一个 <code>@Import</code> 注解，<code>@Import</code> 是用来导入配置类的，这也就意味着这些自动开启的实现其实就是导入了一些自动配置的 Bean。这些导入的配置主要分为以下三类：</p>
+<ol>
+<li>直接导入配置类</li>
+<li>依据条件选择配置类</li>
+<li>动态注册 Bean</li>
+</ol>
+<h2 id="Conditional"><a href="#Conditional" class="headerlink" title="@Conditional"></a>@Conditional</h2><p>假设你希望实现<strong>条件化的 bean</strong>，例如：</p>
+<ul>
+<li><p>某个 bean 只有在应用的类路径下包含特定的库时才创建；</p>
+</li>
+<li><p>某个 bean 只有当另外某个特定的 bean 也声明了之后才会创建；</p>
+</li>
+<li><p>某个特定的环境变量设置之后，才会创建某个 bean。</p>
+</li>
+</ul>
+<p>在 Spring 4 之前，很难实现这种级别的条件化配置，但是 Spring 4 引入了一个新的 <code>@Conditional</code> 注解，它可以用到带有 <code>@Bean</code>注解的方法上。如果给定的条件计算结果为 <code>true</code>，就会创建这个 bean，否则的话，这个 bean 会被忽略。</p>
+<p>详情参考另一篇博文：《<a href="/2017/09/05/spring-conditional-bean/">Spring Bean 条件化配置总结</a>》</p>
+<h1 id="基于-XML-的显式配置"><a href="#基于-XML-的显式配置" class="headerlink" title="基于 XML 的显式配置"></a>基于 XML 的显式配置</h1><p>XML 配置的缺点是比较复杂，且无法从编译期的类型检查中受益。除非是老项目维护，否则在新项目中已不再建议使用，此处不作过多介绍。</p>
+<h1 id="混合配置"><a href="#混合配置" class="headerlink" title="混合配置"></a>混合配置</h1><p>在典型的 Spring 应用中，我们可能会同时使用自动化和显式配置。这些配置方案不是互斥的，可以将 Java Config 的组件扫描和自动装配和/或 XML 配置混合在一起：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建一个全局的根配置，并组合各种配置</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="comment">// 通常会在根配置中启用组件扫描</span></span><br><span class="line"><span class="meta">@ComponentScan</span></span><br><span class="line"><span class="comment">// 导入 Java Config</span></span><br><span class="line"><span class="meta">@Import(&#123;FirstConfig.class, SecondConfig.class&#125;)</span></span><br><span class="line"><span class="comment">// 导入 XML 配置</span></span><br><span class="line"><span class="meta">@ImportResource(&quot;classpath:applicationContext.xml&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GlobalConfig</span>() &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a target="_blank" rel="noopener" href="https://www.manning.com/books/spring-in-action-fourth-edition">Spring in Action, 4th</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="https://www.ibm.com/developerworks/cn/webservices/ws-springjava/">使用 Java 配置进行 Spring bean 管理</a>》</p>
+<p><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/package-summary.html">Package org.springframework.context.annotation</a></p>
+<blockquote>
+<p>Annotation support for the Application Context, including JSR-250 “common” annotations, component-scanning, and Java-based metadata for creating Spring-managed objects.</p>
+</blockquote>
+<p>《<a target="_blank" rel="noopener" href="http://blog.longjiazuo.com/archives/1366">Spring4.x高级话题(六):@Enable*注解的工作原理</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="http://blog.fawnanddoug.com/2012/08/how-those-spring-enable-annotations-work.html">How those Spring @Enable* Annotations work</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42140261/article/details/104864333">详细讲解Spring中的@Bean注解</a>》</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/spring-bean/" title="Spring Bean 几种配置方式总结">https://qidawu.github.io/posts/spring-bean/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/Spring/" rel="tag"># Spring</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/spring-application-context/" rel="prev" title="Spring 应用上下文总结">
+                  <i class="fa fa-chevron-left"></i> Spring 应用上下文总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/spring-factory-bean/" rel="next" title="Spring Factory Bean 总结">
+                  Spring Factory Bean 总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

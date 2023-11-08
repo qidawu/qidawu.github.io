@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="《软件随想录》是一本有趣的技术书籍，阮一峰翻译的，值得一读。它总结了作者多年的从业经验，读完之后，感觉是从另一个更高的维度去提升了程序员的思维境界。 下面摘录整理了一些读书笔记： 人员管理 不懂编程的人管理软件公司，就好像不懂冲浪的人硬要去冲浪。 如同所有行业中最好的人才一样，那些优秀的程序员是不会出现在招聘市场上的。通常优秀的程序员在整个职业生涯中，可能会有 4 次求职。 找到优秀的程序员的 3">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《软件随想录》读书笔记">
+<meta property="og:url" content="https://qidawu.github.io/posts/more-joel-on-software/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="《软件随想录》是一本有趣的技术书籍，阮一峰翻译的，值得一读。它总结了作者多年的从业经验，读完之后，感觉是从另一个更高的维度去提升了程序员的思维境界。 下面摘录整理了一些读书笔记： 人员管理 不懂编程的人管理软件公司，就好像不懂冲浪的人硬要去冲浪。 如同所有行业中最好的人才一样，那些优秀的程序员是不会出现在招聘市场上的。通常优秀的程序员在整个职业生涯中，可能会有 4 次求职。 找到优秀的程序员的 3">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-01-01T15:34:40.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.923Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="读书笔记">
+<meta property="article:tag" content="管理">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/more-joel-on-software/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/more-joel-on-software/","path":"posts/more-joel-on-software/","title":"《软件随想录》读书笔记"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《软件随想录》读书笔记 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%BA%E5%91%98%E7%AE%A1%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">人员管理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%99%E7%BB%99%E6%9C%AA%E6%9D%A5%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E5%BB%BA%E8%AE%AE"><span class="nav-number">2.</span> <span class="nav-text">写给未来程序员的建议</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%A1%E7%90%86%E5%A4%A7%E5%9E%8B%E9%A1%B9%E7%9B%AE"><span class="nav-number">3.</span> <span class="nav-text">管理大型项目</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%96%E7%A8%8B%E5%BB%BA%E8%AE%AE"><span class="nav-number">4.</span> <span class="nav-text">编程建议</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%80%E5%8A%9E%E8%BD%AF%E4%BB%B6%E5%85%AC%E5%8F%B8"><span class="nav-number">5.</span> <span class="nav-text">开办软件公司</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%8F%E8%90%A5%E8%BD%AF%E4%BB%B6%E5%85%AC%E5%8F%B8"><span class="nav-number">6.</span> <span class="nav-text">经营软件公司</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%91%E9%80%89%E5%8F%91%E5%B8%83%E6%97%A5%E6%9C%9F"><span class="nav-number">7.</span> <span class="nav-text">挑选发布日期</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BF%AE%E8%AE%A2%E8%BD%AF%E4%BB%B6"><span class="nav-number">8.</span> <span class="nav-text">修订软件</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/more-joel-on-software/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《软件随想录》读书笔记 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《软件随想录》读书笔记
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2015-01-01 23:34:40" itemprop="dateCreated datePublished" datetime="2015-01-01T23:34:40+08:00">2015-01-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>《<a target="_blank" rel="noopener" href="https://item.jd.com/10063970.html?dist=jd">软件随想录</a>》是一本有趣的技术书籍，阮一峰翻译的，值得一读。它总结了作者多年的从业经验，读完之后，感觉是从另一个更高的维度去提升了程序员的思维境界。</p>
+<p>下面摘录整理了一些读书笔记：</p>
+<h1 id="人员管理"><a href="#人员管理" class="headerlink" title="人员管理"></a>人员管理</h1><ol>
+<li>不懂编程的人管理软件公司，就好像不懂冲浪的人硬要去冲浪。</li>
+<li>如同所有行业中最好的人才一样，那些优秀的程序员是不会出现在招聘市场上的。通常优秀的程序员在整个职业生涯中，可能会有 4 次求职。</li>
+<li>找到优秀的程序员的 3 个基本方法：<ol>
+<li>走出去，不要只会上招聘网站</li>
+<li>实习生</li>
+<li>建立自己的社区（community）</li>
+</ol>
+</li>
+<li>员工推荐：小心陷阱。谨记仍然要要求应聘者通过剩下的所有面试，坚持高标准不变。</li>
+<li>Aeron 牌电脑椅，靠背和坐垫都被设计成网状形，空气可以自由流通，所以坐着不会捂汗。带有腰部支撑和后部平衡装置的顶级系列新型号，再加上尺寸如果正确，并且调节到最合适的位置，那么大多数人坐一整天都不会感到不舒服。</li>
+<li>当一个程序员抱怨“人际关系复杂”时，他们的意思明白无误，就是指任何<strong>个人因素超过技术因素的环境</strong>。</li>
+<li>互联网公司的三种管理方法：<ol>
+<li><strong>军事化管理法</strong><ol>
+<li>在软件开发团队中，每个人干的活都不一样，所以如果想进行微观管理，就会变成抽风式 （hit-and-run） 的管理（大多数时候管理层对程序员不闻不问，偶尔却心血来潮介入，追问一些及其微小的细节，或坚持一定要百分之百按照他们的方式或需求做出来）。</li>
+</ol>
+</li>
+<li><strong>经济利益驱动法</strong><ol>
+<li>如果你使用经济利益驱动法，你就是在鼓励程序员与制度博弈。经济利益驱动法的问题是，它将内部激励变成了外部激励。认同法的作用恰恰相反，是为了设法创造出内部激励。</li>
+</ol>
+</li>
+<li><strong>认同法</strong><ol>
+<li>认同法要求你创造一个有凝聚力的、像胶水一样粘在一起的团队，就好像家庭一样。这样一来，人们就会对他们的同事产生忠诚感和义务感。</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<h1 id="写给未来程序员的建议"><a href="#写给未来程序员的建议" class="headerlink" title="写给未来程序员的建议"></a>写给未来程序员的建议</h1><ol>
+<li>对于某些最激动人心的编程任务来说，指针仍然是非常重要的。比如说，如果不用指针，你根本没办法开发Linux的内核。如果你不是真正地理解了指针，你连一行Linux的代码也看不懂，说实话，任何操作系统的代码你都看不懂。</li>
+<li>如果你不懂<strong>函数式编程</strong>，你就无法创造出 MapReduce，正是这种算法使得 Google 的可扩展性达到如此巨大的规模。术语“Map”（映射）和“Reduce”（化简）分别来自Lisp语言和函数式编程。</li>
+<li>消灭软件代码中的缺陷是一件<strong>边际报酬递减</strong>（随着软件中的缺陷越来越少，修复每一个缺陷所带来的收益也在变小）的事情。</li>
+<li>有一种恐怖的东西叫做“<strong>内部软件”（inhouse software）</strong>，做一个内部程序员（ in-house programmer ）糟透了：<ol>
+<li>你永远无法用正确的方法、而是被迫用最保险的方法做事。</li>
+<li>内部软件只要“能用了”就会停止开发，因此你永远做不出优秀的产品。但如果你开发的是一个商用软件，你就可以不断对它加工、打磨、优化和改良。</li>
+<li>如果你在专业的软件公司中编程，你的工作与公司的主营业务直接相关，是能够为公司直接带来收入的。这至少意味着一件事情，就是管理层会想到你。也就是说，你能得到最好的福利、最舒适的办公环境和最佳的晋升机会。</li>
+</ol>
+</li>
+<li>那些决定游戏规则的人都是<strong>善于写作的人</strong>。能不能清晰地写出技术内容的文章决定了你是一个口齿不清的程序员还是一个领袖。</li>
+<li>读《微观经济学》，因为从经营一家公司的角度来看，比起那些不懂的程序员，一个理解基本商业规则的程序员将会更有价值，就是这么简单。</li>
+</ol>
+<h1 id="管理大型项目"><a href="#管理大型项目" class="headerlink" title="管理大型项目"></a>管理大型项目</h1><ol>
+<li>网页设计师现在的处境，其实犹太人早在几十年前就体会到了，那就是所有人都同意遵守同一部法典并不能保证所有人的行为都符合同样的规范。因为法条太复杂、太深奥、太难懂了，想要完全正确地理解法条几乎是不可能的。</li>
+<li>标准（如W3C）当然很重要的，但是你不能迷信标准，你必须理解由于人为犯错，所以标准有时候会引发误解、困惑、甚至是争议。</li>
+<li>这是一个很好的例子，说明了“实用主义者”与“理想主义者”两大阵营之间存在的巨大鸿沟：用户升级新版IE后，无法“正常”浏览网站。他们不会为理想主义者那愚蠢的信仰叫好，不会理解为什么你们一定要网络浏览器符合某些神秘的、柏拉图式理想化的、实际上根本还没有实现的“标准”。他们不想听你们讲那些丑陋的Hack，他们只想要网络浏览器能够正常浏览现实中的网站。</li>
+<li>理想主义者在大原则上是百分之百正确的。同样，实用主义者在现实中也是正确的。这场争论将精确地把世界分成两半，两大阵营之间的口水战将持续下去。</li>
+<li>优秀的设计似乎是最容易复制的东西，但是做起来却又不是那么容易，因为做出优秀的设计本身就是一件“麻烦事”，实际上能够提供牢固得令人震惊的竞争优势。</li>
+</ol>
+<h1 id="编程建议"><a href="#编程建议" class="headerlink" title="编程建议"></a>编程建议</h1><ol>
+<li>循证式日程规划(Evidence-Based Scheduling)<ol>
+<li>循证式日程规划先收集历史数据，主要来源是过去的time sheet，然后统计分析，得到了一条概率分布曲线，显示在任一个给定日期你完成工作的可能性有多大。</li>
+<li>蒙特卡洛方法(Monte Carlo method)模拟未来各种可能的结果。</li>
+<li>将每个任务所需的时间控制在16小时之内，这就会迫使你好好地去规划你要造成的那个任务。</li>
+<li>几条经验：<ol>
+<li>只有第一线的程序员才能提出完成日期的估计值。任何管理层制定然后交给程序员去执行的日程规划，都注定会失败。只有真正负责开发的程序员才能估计出完成任务需要哪些步骤。</li>
+<li>一发现错误就立即修正，将用时算入原始任务的用时之中。</li>
+<li>防止管理层向程序员施加压力，被要求加快开发速度。如果程序员的进度落后于日程，就会感到惶惶不可终日，非常沮丧，这时再大的激励也是没用的。如果程序员的进度快于日程，则会感到欢欣鼓舞，工作效率非常高，这时根本不需要激励。日程规划并不是一个玩心理游戏的地方。</li>
+<li>一份日程规划的好处之一，就是你会在工作开始之前，就被迫删去一些次要的或无用的功能，从而全力开发有用的或重要的功能。正是这种迫使你砍掉某些功能的压力，使得你最终做出一个更强大、更优秀的产品，它包括了很好的功能组合，而且能够在较早的日期完成。</li>
+</ol>
+</li>
+<li>有效的日程规划是创造优秀软件的钥匙。它强迫你首先完成最重要的功能，让你做出正确的选择，思考要开发一个怎样的软件。这会使你的产品变得更出色，使你的老板感到更开心，使你的客户感到更满意，以及更重要的一点，那就是使你下午6点能够准时下班。</li>
+</ol>
+</li>
+<li>战略问题<ol>
+<li>从长远的观点来看，那些不关心效率、不关心程序是否臃肿、一个劲往软件中加入高级功能的程序员最终将拥有更好的产品。</li>
+<li>过去的积累可能会变成＂历史包袱＂。</li>
+</ol>
+</li>
+<li>编程<ol>
+<li>将“循环操作”这个单独的步骤抽象出来，用任何你想用的方法完成这个步骤，其中就包括用额外的硬件将运算过程轻松地扩展（Scale）到多台服务器上。谷歌的许多应用程序都使用了这种MapReduce技术，所以一旦有人对底层的并行计算程序进行优化或消除bug，那么所有这些应用程序都会受益。</li>
+<li>寻找一种代码的书写规范，让错误的代码变得容易被看出。让代码中的相关信息在显示屏上集中在一起，使你能够当场发现和改正某些种类的错误。</li>
+<li>“应用型匈牙利命名法”（Apps Hungarian）是有价值的，它加强了代码之间的联结，使得代码更容易阅读、书写、除错和维护。最重要的是，它让错误的代码容易现形。</li>
+</ol>
+</li>
+</ol>
+<h1 id="开办软件公司"><a href="#开办软件公司" class="headerlink" title="开办软件公司"></a>开办软件公司</h1><ol>
+<li>三点意见<ol>
+<li>如果你说不清楚你的软件解决了什么棘手的问题，就不要去开软件公司。</li>
+<li>不要独自一人创办公司。一个人创业十分孤独和压抑没有任何人与你交流思想，为你出谋划策。要是有两个人一起创业，你就会感到对你的合伙人负有义务，就会努力撑下去，渡过难关。</li>
+<li>一开始不要抱有太高期望。</li>
+</ol>
+</li>
+<li>为什么低成本的软件供应商就不能在软件业中生存下来呢？我们只雇用最便宜的程序员为什么就是不行？根本原因是软件的销售复制成本为 0。这意味着，程序员的劳动力成本分摊在你销售出去的所有软件中，对软件来说，如果销售量很大，质量的改进成本并不会造成单位软件成本的上升。相反，软件质量的改进还会创造出新价值，而且价值创造的速度要快于成本提升的速度。</li>
+<li><strong>布鲁克斯法则（Brooks’ Law）</strong> ——向一个已经延误的软件项目增加人手，只会使它更加延误。一个优秀的程序员独自完成一项任务，就不需要额外的沟通和协调。如果同样的任务让 5 个程序员一起完成，他们之间就必须沟通和协调，这会花掉大量时间。开发团队越小，就越能获得额外的收益。人力与工时的互换只是一个神话。</li>
+<li>用许多平庸的程序员取代少数优秀的程序员，这种做法的真正问题在于，不管平庸的程序员工作多长时间，他们做出来的东西都无法像优秀程序员做得那样好。</li>
+<li>令人难过的是，内部软件很少重要到需要雇用巨星/优秀程序员来开发。这就是为什么最令人满意的职业生涯往往是在真正的软件公司里，而不是在银行担任 IT 技术人员。</li>
+</ol>
+<h1 id="经营软件公司"><a href="#经营软件公司" class="headerlink" title="经营软件公司"></a>经营软件公司</h1><ol>
+<li>软件开发中，对你最重要、最关键的部分，一定要使用更原始的工具。至少也要使用<strong>开源/自由软件</strong>，这样至少出错的时候，你多多少少有机会解决问题，不会被解雇。</li>
+<li>建立优质客服<ol>
+<li>技术支持团队必须能够<strong>与开发团队直接沟通</strong>，这很关键，这意味着你不能把技术支持人员外包出去，他们必须与开发人员在同一个地址办公，必须有途径让问题得到直接和彻底的解决。</li>
+<li>当软件每次发生问题都被彻底解决之后，所有常见和容易的问题都被消灭了，技术支持工作实际上就变成了处理疑难杂症，对程序来说这意味着要进行调试和除错。因此对技术支持人员的要求更高、培训力度要更大。</li>
+<li>很多时候，为了避免冒犯客户，我们要求客户去检查某样东西，都可以这样表达：不是直接要求他们去检查某个设置，而是告诉他们先改变这个设置，然后再改回去，目的是“<strong>确保这个设置被成功保存</strong>”。</li>
+<li>客户投诉的时候，人很容易就变得感情用事。解决方法是记住一些重要句子，不断练习把它们说出口。等到你需要用到它们的场合，你就会把冲动自动抛在脑后，转而让客户开心。</li>
+<li>同客户争吵，你永远不会是赢家。</li>
+</ol>
+</li>
+</ol>
+<h1 id="挑选发布日期"><a href="#挑选发布日期" class="headerlink" title="挑选发布日期"></a>挑选发布日期</h1><ol>
+<li>软件功能必须<strong>按照优先顺序</strong>排序，否则一切将会变糟。只要你一不注意，你手下的程序员就会按照趣味性的顺序开发各项功能，你就将因此无法按时发布软件，或者无法取消部署某项功能，因此你就会陷入很被动的局面。</li>
+<li>市场分割，即根据你的客户愿意支付的价格将他们分成不同的组，从每个客户身上赚取最大的消费者剩余，是一种有效的定价手段。但是长远来看，这种价格歧视会对你的产品形象产生显著的负面影响。</li>
+<li>当消费者对商品所知有限时，消费者通常就会认为比较贵的商品就是质量比较高。</li>
+<li>当你在制定价格时，你就是在发出信号。</li>
+</ol>
+<h1 id="修订软件"><a href="#修订软件" class="headerlink" title="修订软件"></a>修订软件</h1><ol>
+<li>如果通过测量某些无意义的静态指标来改进工作，那是无用的。我们真正需要的是一个能够不断改进工作质量的流程：先询问五个为什么，找到根本性的原因，告诉客户为了防止类似故障再次发生我们所采取的举措。书写一份标准、详细的操作流程和确认清单，所有操作步骤都严格按照流程一一操作。目标的：我们遇到的所有引起服务中断的故障都是真正由于极其罕见的、无法预料的＂黑天鹅因素＂而引起的。</li>
+<li>不要开发那些销售人员无意间答应某个客户的功能，也不要因为＂反正迟早要做＂而先去开发那些不重要尽管有趣味性的功能。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/more-joel-on-software/" title="《软件随想录》读书笔记">https://qidawu.github.io/posts/more-joel-on-software/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag"># 读书笔记</a>
+              <a href="/tags/%E7%AE%A1%E7%90%86/" rel="tag"># 管理</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/secret-of-great-management/" rel="prev" title="《门后的秘密：卓越管理的故事》读书笔记">
+                  <i class="fa fa-chevron-left"></i> 《门后的秘密：卓越管理的故事》读书笔记
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/what-is-shell/" rel="next" title="GNU/Bash 系列（一）什么是 Shell？">
+                  GNU/Bash 系列（一）什么是 Shell？ <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

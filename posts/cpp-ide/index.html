@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="环境准备打开 VScode，进入 Extensions，二选一搜索并安装以下扩展： 方式一：官方插件 C&#x2F;C++Using Clang in Visual Studio Code 教程指引如何使用官方插件 C&#x2F;C++ 进行构建与调试。 按教程配置 .vscode 文件夹的三个文件：  tasks.json （编译器构建设置） launch.json （调试器设置） c_cpp_properties">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C&#x2F;C++ 语言系列（一）IDE 准备">
+<meta property="og:url" content="https://qidawu.github.io/posts/cpp-ide/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="环境准备打开 VScode，进入 Extensions，二选一搜索并安装以下扩展： 方式一：官方插件 C&#x2F;C++Using Clang in Visual Studio Code 教程指引如何使用官方插件 C&#x2F;C++ 进行构建与调试。 按教程配置 .vscode 文件夹的三个文件：  tasks.json （编译器构建设置） launch.json （调试器设置） c_cpp_properties">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/cpp/auto_guess_encoding.png">
+<meta property="og:image" content="https://qidawu.github.io/img/cpp/cannot_edit_in_read-only_editor.png">
+<meta property="article:published_time" content="2021-02-01T14:07:11.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.911Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="C&#x2F;C++">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/cpp/auto_guess_encoding.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/cpp-ide/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/cpp-ide/","path":"posts/cpp-ide/","title":"C/C++ 语言系列（一）IDE 准备"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>C/C++ 语言系列（一）IDE 准备 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="nav-number">1.</span> <span class="nav-text">环境准备</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E5%BC%8F%E4%B8%80%EF%BC%9A%E5%AE%98%E6%96%B9%E6%8F%92%E4%BB%B6-C-C"><span class="nav-number">1.1.</span> <span class="nav-text">方式一：官方插件 C&#x2F;C++</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E5%BC%8F%E4%BA%8C%EF%BC%9A%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6-Code-Runner"><span class="nav-number">1.2.</span> <span class="nav-text">方式二：三方插件 Code Runner</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">常见问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#DIFFERENCE-BETWEEN-g-amp-gcc"><span class="nav-number">2.1.</span> <span class="nav-text">DIFFERENCE BETWEEN g++ &amp; gcc</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DIFFERENCE-BETWEEN-gcc-amp-make"><span class="nav-number">2.2.</span> <span class="nav-text">DIFFERENCE BETWEEN gcc &amp; make</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cannot-edit-in-read-only-editor"><span class="nav-number">2.3.</span> <span class="nav-text">cannot edit in read-only editor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GBK-to-UTF-8-%E4%B9%B1%E7%A0%81%E9%97%AE%E9%A2%98"><span class="nav-number">2.4.</span> <span class="nav-text">GBK to UTF-8 乱码问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/cpp-ide/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="C/C++ 语言系列（一）IDE 准备 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C/C++ 语言系列（一）IDE 准备
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-02-01 22:07:11" itemprop="dateCreated datePublished" datetime="2021-02-01T22:07:11+08:00">2021-02-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h1><p>打开 VScode，进入 <code>Extensions</code>，二选一搜索并安装以下扩展：</p>
+<h2 id="方式一：官方插件-C-C"><a href="#方式一：官方插件-C-C" class="headerlink" title="方式一：官方插件 C/C++"></a>方式一：官方插件 C/C++</h2><p><a target="_blank" rel="noopener" href="https://code.visualstudio.com/docs/cpp/config-clang-mac">Using Clang in Visual Studio Code</a> 教程指引如何使用官方插件 <a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools">C/C++</a> 进行构建与调试。</p>
+<p>按教程配置 <code>.vscode</code> 文件夹的三个文件：</p>
+<ul>
+<li><code>tasks.json</code> （编译器构建设置）</li>
+<li><code>launch.json</code> （调试器设置）</li>
+<li><code>c_cpp_properties.json</code> （编译器路径和 IntelliSense 设置）</li>
+</ul>
+<p><code>⇧⌘B</code> 编译源文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/bin/clang++ -std=c++17 -stdlib=libc++ -g /Users/wuqd/Documents/workspace/cpp/HelloWorld.cpp -o /Users/wuqd/Documents/workspace/cpp/HelloWorld.out</span><br></pre></td></tr></table></figure>
+
+<p>编译成功后：</p>
+<ul>
+<li><p>可以在「终端」输入 <code>./HelloWorld.out</code> 以直接运行编译文件；</p>
+</li>
+<li><p>还可以按 <code>F5</code> 调试。</p>
+</li>
+</ul>
+<h2 id="方式二：三方插件-Code-Runner"><a href="#方式二：三方插件-Code-Runner" class="headerlink" title="方式二：三方插件 Code Runner"></a>方式二：三方插件 Code Runner</h2><p>安装第三方插件：<a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=formulahendry.code-runner">Code Runner</a></p>
+<p><code>settings.json</code> 新增配置如下，将编译文件的后缀名改为 <code>.out</code>，以便 .gitignore：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">&quot;code-runner.executorMap&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;cpp&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cd $dir &amp;&amp; g++ $fileName -o $fileNameWithoutExt.out &amp;&amp; $dir$fileNameWithoutExt.out&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>⌃⌥N</code> 编译并运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> <span class="string">&quot;/Users/wuqd/Documents/workspace/cpp/&quot;</span> &amp;&amp; g++ HelloWorld.cpp -o HelloWorld.out &amp;&amp; <span class="string">&quot;/Users/wuqd/Documents/workspace/cpp/&quot;</span>HelloWorld.out</span><br></pre></td></tr></table></figure>
+
+<h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><h2 id="DIFFERENCE-BETWEEN-g-amp-gcc"><a href="#DIFFERENCE-BETWEEN-g-amp-gcc" class="headerlink" title="DIFFERENCE BETWEEN g++ &amp; gcc"></a>DIFFERENCE BETWEEN g++ &amp; gcc</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.geeksforgeeks.org/builtin-functions-gcc-compiler/">GCC</a> 代表 <a target="_blank" rel="noopener" href="https://www.geeksforgeeks.org/gcc-command-in-linux-with-examples/">GNU Compiler Collections</a>，主要用于编译 C 和 C++ 语言。它还可以用于编译 Objective C 和 Objective C++。编译源代码文件时需要的最重要的选项是源程序的名称，其余每个参数都是可选的，如警告、调试、链接库、目标文件等。</p>
+<p><a target="_blank" rel="noopener" href="https://www.geeksforgeeks.org/compiling-with-g-plus-plus/">g++ 命令</a>是 GNU C++ 编译器调用的命令，用于源代码的预处理、编译、汇编和链接以生成可执行文件。</p>
+<table>
+<thead>
+<tr>
+<th align="left">g++</th>
+<th align="left">gcc</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">g++ is used to compile C++ program.</td>
+<td align="left">gcc is used to compile C program.</td>
+</tr>
+<tr>
+<td align="left">g++ can compile any <code>.c</code> or <code>.cpp</code> files but they will be treated as C++ files only.</td>
+<td align="left">gcc can compile any <code>.c</code> or <code>.cpp</code> files but they will be treated as C and C++ respectively.</td>
+</tr>
+<tr>
+<td align="left">Command to compile C++ program through g++ is <code>g++ fileName.cpp -o binary</code></td>
+<td align="left">command to compile C program through gcc is <code>gcc fileName.c -o binary</code></td>
+</tr>
+<tr>
+<td align="left">Using g++ to link the object files, files automatically links in the std C++ libraries.</td>
+<td align="left">gcc does not do this.</td>
+</tr>
+<tr>
+<td align="left">g++ compiles with more predefined macros.</td>
+<td align="left">gcc compiles C++ files with more number of predefined macros. Some of them are #define <strong>GXX_WEAK</strong> 1, #define __cplusplus 1, #define __DEPRECATED 1, etc</td>
+</tr>
+</tbody></table>
+</blockquote>
+<h2 id="DIFFERENCE-BETWEEN-gcc-amp-make"><a href="#DIFFERENCE-BETWEEN-gcc-amp-make" class="headerlink" title="DIFFERENCE BETWEEN gcc &amp; make"></a>DIFFERENCE BETWEEN gcc &amp; make</h2><blockquote>
+<p>gcc是编译器 而make不是 make是依赖于Makefile来编译多个源文件的工具 在Makefile里同样是用gcc(或者别的编译器)来编译程序.</p>
+<p>gcc是编译一个文件，make是编译多个源文件的工程文件的工具。</p>
+<p>make是一个命令工具，是一个解释makefile中指令的命令工具。</p>
+<p>make就是一个gcc/g++的调度器，通过读入一个文件（默认文件名为Makefile或者makefile），执行一组以gcc/g++为主的shell命令序列。输入文件主要用来记录文件之间的依赖关系和命令执行顺序。</p>
+<p>gcc是编译工具；</p>
+<p>make是定义了一系列的规则来指定，哪些文件需要先编译，哪些文件需要后编译；</p>
+<p>也就是说make是调用gcc的。</p>
+</blockquote>
+<h2 id="cannot-edit-in-read-only-editor"><a href="#cannot-edit-in-read-only-editor" class="headerlink" title="cannot edit in read-only editor"></a>cannot edit in read-only editor</h2><p><img src="/img/cpp/auto_guess_encoding.png"></p>
+<h2 id="GBK-to-UTF-8-乱码问题"><a href="#GBK-to-UTF-8-乱码问题" class="headerlink" title="GBK to UTF-8 乱码问题"></a>GBK to UTF-8 乱码问题</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/kingsonfu/p/11010086.html">https://www.cnblogs.com/kingsonfu/p/11010086.html</a></p>
+<p><img src="/img/cpp/cannot_edit_in_read-only_editor.png"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://code.visualstudio.com/docs/cpp/config-clang-mac">Using Clang in Visual Studio Code</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.cplusplus.com/doc/tutorial/introduction/">http://www.cplusplus.com/doc/tutorial/introduction/</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.dooccn.com/cpp/">C++ 在线编译器</a></p>
+<p><a target="_blank" rel="noopener" href="https://cppinsights.io/">C++ Insights</a></p>
+<p><a target="_blank" rel="noopener" href="https://gcc.godbolt.org/">C++ Compiler Explorer</a></p>
+<p>VSCode 其它插件推荐：</p>
+<ul>
+<li>C/C++ Clang Command Adapter</li>
+<li>C++ Intellisense</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/cpp-ide/" title="C&#x2F;C++ 语言系列（一）IDE 准备">https://qidawu.github.io/posts/cpp-ide/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/C-C/" rel="tag"># C/C++</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/java-logging/" rel="prev" title="Java 日志框架总结">
+                  <i class="fa fa-chevron-left"></i> Java 日志框架总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/cpp-basics/" rel="next" title="C/C++ 语言系列（二）基础语法入门">
+                  C/C++ 语言系列（二）基础语法入门 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="要想 Git 用得爽，首先要安装与配置好。 如何选择版本？Git 1.x旧版本，不再维护。 Git 2.x新版本，推荐使用。不向下兼容 1.x。 如何安装？Windows需要安装 Git for Windows 的客户端 msysgit。推荐使用 绿色便携版 ，优势如下：  无需安装，无需写注册表，无需管理员权限； 可以从任意目录运行，甚至 U 盘；  与安装版的区别：  不提供右键上下文菜单（如">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git 实战系列（一）Git 安装与配置">
+<meta property="og:url" content="https://qidawu.github.io/posts/git-setup/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="要想 Git 用得爽，首先要安装与配置好。 如何选择版本？Git 1.x旧版本，不再维护。 Git 2.x新版本，推荐使用。不向下兼容 1.x。 如何安装？Windows需要安装 Git for Windows 的客户端 msysgit。推荐使用 绿色便携版 ，优势如下：  无需安装，无需写注册表，无需管理员权限； 可以从任意目录运行，甚至 U 盘；  与安装版的区别：  不提供右键上下文菜单（如">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-08-03T03:59:01.000Z">
+<meta property="article:modified_time" content="2015-09-12T15:59:01.000Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Git">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/git-setup/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/git-setup/","path":"posts/git-setup/","title":"Git 实战系列（一）Git 安装与配置"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Git 实战系列（一）Git 安装与配置 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E7%89%88%E6%9C%AC%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">如何选择版本？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Git-1-x"><span class="nav-number">1.1.</span> <span class="nav-text">Git 1.x</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Git-2-x"><span class="nav-number">1.2.</span> <span class="nav-text">Git 2.x</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%AE%89%E8%A3%85%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">如何安装？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Windows"><span class="nav-number">2.1.</span> <span class="nav-text">Windows</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux-Unix"><span class="nav-number">2.2.</span> <span class="nav-text">Linux &#x2F; Unix</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OS-X"><span class="nav-number">2.3.</span> <span class="nav-text">OS X</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AE%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">如何配置？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E6%8F%90%E4%BA%A4%E4%BD%9C%E8%80%85"><span class="nav-number">3.1.</span> <span class="nav-text">配置提交作者</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E9%85%8D%E7%BD%AE"><span class="nav-number">3.1.1.</span> <span class="nav-text">全局配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E9%85%8D%E7%BD%AE"><span class="nav-number">3.1.2.</span> <span class="nav-text">项目配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E6%A0%BC%E5%BC%8F%E5%8C%96%E4%B8%8E%E7%A9%BA%E7%99%BD"><span class="nav-number">3.2.</span> <span class="nav-text">配置格式化与空白</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#core-autocrlf"><span class="nav-number">3.2.1.</span> <span class="nav-text">core.autocrlf</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#core-whitespace"><span class="nav-number">3.2.2.</span> <span class="nav-text">core.whitespace</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="nav-number">4.</span> <span class="nav-text">常见问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98"><span class="nav-number">4.1.</span> <span class="nav-text">中文乱码显示问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E5%B7%A5%E4%BD%9C%E7%9B%AE%E5%BD%95"><span class="nav-number">4.2.</span> <span class="nav-text">配置工作目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-SSH-%E4%BB%A3%E7%90%86%E5%92%8C%E5%AF%86%E9%92%A5"><span class="nav-number">4.3.</span> <span class="nav-text">配置 SSH 代理和密钥</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/git-setup/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Git 实战系列（一）Git 安装与配置 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Git 实战系列（一）Git 安装与配置
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2015-08-03 11:59:01" itemprop="dateCreated datePublished" datetime="2015-08-03T11:59:01+08:00">2015-08-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2015-09-12 23:59:01" itemprop="dateModified" datetime="2015-09-12T23:59:01+08:00">2015-09-12</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>要想 Git 用得爽，首先要安装与配置好。</p>
+<h1 id="如何选择版本？"><a href="#如何选择版本？" class="headerlink" title="如何选择版本？"></a>如何选择版本？</h1><h2 id="Git-1-x"><a href="#Git-1-x" class="headerlink" title="Git 1.x"></a>Git 1.x</h2><p>旧版本，不再维护。</p>
+<h2 id="Git-2-x"><a href="#Git-2-x" class="headerlink" title="Git 2.x"></a>Git 2.x</h2><p>新版本，推荐使用。不向下兼容 1.x。</p>
+<h1 id="如何安装？"><a href="#如何安装？" class="headerlink" title="如何安装？"></a>如何安装？</h1><h2 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h2><p>需要安装 Git for Windows 的客户端 <a target="_blank" rel="noopener" href="https://github.com/msysgit/msysgit">msysgit</a>。推荐使用 <a target="_blank" rel="noopener" href="http://git-scm.com/download/wint">绿色便携版</a> ，优势如下：</p>
+<ul>
+<li>无需安装，无需写注册表，无需管理员权限；</li>
+<li>可以从任意目录运行，甚至 U 盘；</li>
+</ul>
+<p>与安装版的区别：</p>
+<ul>
+<li>不提供右键上下文菜单（如 <code>Git GUI Here</code>、<code>Git Bash Here</code>），因为该功能需要写入注册表；</li>
+<li>不修改环境变量 <code>%path%</code> ，因此无法在命令行工具 <code>cmd</code> 中直接运行 <code>git.exe</code> 和 <code>gitk.exe</code>，解决办法：<ul>
+<li>推荐使用自带的 <code>Git Bash</code> （类 Unix Shell）或 <code>Git Cmd</code> 进行替代；</li>
+<li>或将 <code>%GIT_HOME%\cmd</code> 目录永久加入环境变量 <code>%path%</code> （如果只想在当前会话中临时使用，只需在 <code>cmd</code> 中运行 <code>set path=%GIT_HOME%\cmd;%path%</code> 即可），然后运行 <code>git --help</code> 测试配置效果；</li>
+</ul>
+</li>
+</ul>
+<h2 id="Linux-Unix"><a href="#Linux-Unix" class="headerlink" title="Linux / Unix"></a>Linux / Unix</h2><p>使用包管理 apt-get 或 yum 即可。</p>
+<h2 id="OS-X"><a href="#OS-X" class="headerlink" title="OS X"></a>OS X</h2><p>Homebrew 是最快最便捷的安装方式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo brew install git</span><br></pre></td></tr></table></figure>
+
+<h1 id="如何配置？"><a href="#如何配置？" class="headerlink" title="如何配置？"></a>如何配置？</h1><p>Git 相关的配置文件有三个：</p>
+<ol>
+<li><code>/etc/gitconfig</code> 包含了适用于系统所有用户和所有项目的值。</li>
+<li><code>~/.gitconfig</code> 只适用于当前登录用户的配置。</li>
+<li>Git 项目中的 <code>.git/config</code> 适用于特定 Git 项目的配置。</li>
+</ol>
+<p>对于同一配置项，三个配置文件的优先级是 3 &gt; 2 &gt;1。</p>
+<h2 id="配置提交作者"><a href="#配置提交作者" class="headerlink" title="配置提交作者"></a>配置提交作者</h2><p>开始使用 Git 之前，第一件重要的事情就是配置提交作者，配置后就可以愉快的开始使用 Git 了。更多配置请参考 <a target="_blank" rel="noopener" href="http://git-scm.com/docs/git-config">这里</a> 。</p>
+<p>首先做如下检查：</p>
+<h3 id="全局配置"><a href="#全局配置" class="headerlink" title="全局配置"></a>全局配置</h3><p>使用 <code>--global</code> 查看或修改全局配置文件 <code>~/.gitconfig</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git config -l | grep user</span><br></pre></td></tr></table></figure>
+
+<p>如果返回为空表示未配置，需要配置如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global user.name <span class="string">&quot;你的姓名&quot;</span></span><br><span class="line">$ git config --global user.email <span class="string">&quot;你的邮箱&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="项目配置"><a href="#项目配置" class="headerlink" title="项目配置"></a>项目配置</h3><p>如果需要单独修改项目配置文件 <code>.git/config</code>，去掉 <code>--global</code> 参数即可，或者直接打开该文件添加：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[user]</span><br><span class="line">name = who</span><br><span class="line">email = who@where.com</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置格式化与空白"><a href="#配置格式化与空白" class="headerlink" title="配置格式化与空白"></a>配置格式化与空白</h2><blockquote>
+<p>格式化与空白是许多开发人员在协作时，特别是在跨平台情况下，遇到的令人头疼的细小问题。由于编辑器的不同或者Windows程序员在跨平台项目中的文件行尾加入了回车换行符，一些细微的空格变化会不经意地进入大家合作的工作或提交的补丁中。不用怕，Git 的一些配置选项会帮助你解决这些问题。</p>
+</blockquote>
+<h3 id="core-autocrlf"><a href="#core-autocrlf" class="headerlink" title="core.autocrlf"></a>core.autocrlf</h3><p>Git 在你提交时<strong>自动地</strong>把行结束符 CRLF 转换成 LF，而在签出代码时把 LF 转换成 CRLF。假如团队成员只在 Windows 上写程序，可以关闭此功能，避免 Git 自动格式化代码后干扰代码对比：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global core.autocrlf <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="core-whitespace"><a href="#core-whitespace" class="headerlink" title="core.whitespace"></a>core.whitespace</h3><p>Git 预先设置了一些选项来探测和修正空白问题，配置方法待补充。</p>
+<h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><p>Git 长期使用上的一点不便，解决方案仅供参考。</p>
+<h2 id="中文乱码显示问题"><a href="#中文乱码显示问题" class="headerlink" title="中文乱码显示问题"></a>中文乱码显示问题</h2><ol>
+<li><p>打开 GitBash（git-bash.exe）后，对窗口右键-&gt;Options-&gt;Text-&gt;Locale 改为 <code>zh_CN</code>，Character set 改为 <code>GBK</code> ;</p>
+</li>
+<li><p>键入exit退出关闭再打开即可。</p>
+</li>
+</ol>
+<h2 id="配置工作目录"><a href="#配置工作目录" class="headerlink" title="配置工作目录"></a>配置工作目录</h2><p>Git 默认使用程序运行目录作为工作目录，这会带来使用上的不便。解决办法是新建 <code>.bashrc</code> 文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim ~/.bashrc</span><br></pre></td></tr></table></figure>
+
+<p>添加一行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 请将 /d/Repos/ 替换成你的仓库目录</span></span><br><span class="line"><span class="built_in">cd</span> /d/Repos/</span><br></pre></td></tr></table></figure>
+
+<p>即可自动切换到本地仓库所在目录。</p>
+<h2 id="配置-SSH-代理和密钥"><a href="#配置-SSH-代理和密钥" class="headerlink" title="配置 SSH 代理和密钥"></a>配置 SSH 代理和密钥</h2><p>另一个潜在的问题是运行 <code>Git Bash</code> 并拉取远程仓库提示错误：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Could not open a connection to your authentication agent.</span><br></pre></td></tr></table></figure>
+
+<p>这是因为 <code>ssh-agent</code> 未随 <code>bash</code> 一起启动。你可以每次都手工启动，或推荐编写脚本自启动。</p>
+<p>新建 <code>.bashrc</code> 文件，并添加如下代码：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="keyword">if</span> [ -f ~/.agent.env ]; <span class="keyword">then</span></span><br><span class="line">  . ~/.agent.env &gt;/dev/null</span><br><span class="line">  <span class="built_in">kill</span> -15 <span class="variable">$SSH_AGENT_PID</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Starting ssh-agent...&quot;</span></span><br><span class="line"><span class="built_in">eval</span> `ssh-agent |<span class="built_in">tee</span> ~/.agent.env`</span><br><span class="line">ssh-add ~/.ssh/github_rsa</span><br></pre></td></tr></table></figure>
+
+<p>这将会自启动 <code>ssh-agent</code> 并添加指定私钥。 <code>ssh-agent</code> 是一个密钥管理器，运行 <code>ssh-agent</code> 以后，使用 <code>ssh-add</code> 将指定私钥交给 <code>ssh-agent</code> 保管，其它程序（例如 git）在需要身份认证的时候，可以将认证申请交给 <code>ssh-agent</code> 来代为完成整个认证过程。</p>
+<p>那么以后每次运行 <code>Git Bash</code> 的时候，就会看到输出效果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Starting ssh-agent...</span><br><span class="line">Agent pid 8828</span><br><span class="line">Identity added: ~/.ssh/github_rsa</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《<a target="_blank" rel="noopener" href="http://best-windows.vlaurie.com/environment-variables.html">How To Use Environment Variables in Windows</a>》</li>
+<li>《<a target="_blank" rel="noopener" href="http://linux.101hacks.com/unix/ssh-add/">Unix / Linux ssh-add Command Examples to Add SSH Key to Agent</a>》</li>
+<li>《<a target="_blank" rel="noopener" href="http://git-scm.com/book/zh/v1/%E8%87%AA%E5%AE%9A%E4%B9%89-Git-%E9%85%8D%E7%BD%AE-Git">自定义 Git - 配置 Git</a>》</li>
+<li>《<a target="_blank" rel="noopener" href="https://github.com/msysgit/msysgit/tags">Git for Windows 1.x 归档版本下载地址</a>》</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/git-setup/" title="Git 实战系列（一）Git 安装与配置">https://qidawu.github.io/posts/git-setup/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Git/" rel="tag"># Git</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/optimizing-hexo-speed/" rel="prev" title="优化 Hexo 博客的访问速度">
+                  <i class="fa fa-chevron-left"></i> 优化 Hexo 博客的访问速度
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/git-log/" rel="next" title="Git 实战系列（二）git log 查看提交历史">
+                  Git 实战系列（二）git log 查看提交历史 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

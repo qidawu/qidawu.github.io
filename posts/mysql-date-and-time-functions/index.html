@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="日期函数获得当前日期&#x2F;时间   Name Synonym Description    CURRENT_DATE, CURRENT_DATE() CURDATE() Return the current date as &#39;YYYY-MM-DD&#39; &#x2F; YYYYMMDD   CURRENT_TIME, CURRENT_TIME([fsp]) CURTIME([fsp]) Return">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL 常用日期与时间函数">
+<meta property="og:url" content="https://qidawu.github.io/posts/mysql-date-and-time-functions/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="日期函数获得当前日期&#x2F;时间   Name Synonym Description    CURRENT_DATE, CURRENT_DATE() CURDATE() Return the current date as &#39;YYYY-MM-DD&#39; &#x2F; YYYYMMDD   CURRENT_TIME, CURRENT_TIME([fsp]) CURTIME([fsp]) Return">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-01-26T13:43:12.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.924Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/mysql-date-and-time-functions/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/mysql-date-and-time-functions/","path":"posts/mysql-date-and-time-functions/","title":"MySQL 常用日期与时间函数"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>MySQL 常用日期与时间函数 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%97%A5%E6%9C%9F%E5%87%BD%E6%95%B0"><span class="nav-number">1.</span> <span class="nav-text">日期函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8E%B7%E5%BE%97%E5%BD%93%E5%89%8D%E6%97%A5%E6%9C%9F-%E6%97%B6%E9%97%B4"><span class="nav-number">1.1.</span> <span class="nav-text">获得当前日期&#x2F;时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%B6%E5%8C%BA%E6%9F%A5%E7%9C%8B-%E4%BF%AE%E6%94%B9"><span class="nav-number">1.2.</span> <span class="nav-text">时区查看&#x2F;修改</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E5%BD%93%E5%89%8D%E6%97%B6%E5%8C%BA"><span class="nav-number">1.2.1.</span> <span class="nav-text">查看当前时区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E6%97%B6%E5%8C%BA"><span class="nav-number">1.2.2.</span> <span class="nav-text">修改时区</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%B6%E5%8C%BA%E8%BD%AC%E6%8D%A2-%E5%87%BD%E6%95%B0"><span class="nav-number">1.3.</span> <span class="nav-text">时区转换 函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A5%E6%9C%9F-%E6%97%B6%E9%97%B4%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2-%E5%87%BD%E6%95%B0"><span class="nav-number">1.4.</span> <span class="nav-text">日期&#x2F;时间类型转换 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TIMESTAMP-%E2%86%92-xxx"><span class="nav-number">1.4.1.</span> <span class="nav-text">TIMESTAMP → xxx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#xxx-%E2%86%92-TIMESTAMP"><span class="nav-number">1.4.2.</span> <span class="nav-text">xxx → TIMESTAMP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DATETIME-%E2%86%92-String"><span class="nav-number">1.4.3.</span> <span class="nav-text">DATETIME → String</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#String-%E2%86%92-DATETIME"><span class="nav-number">1.4.4.</span> <span class="nav-text">String → DATETIME</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#format-%E5%8F%82%E6%95%B0"><span class="nav-number">1.4.5.</span> <span class="nav-text">format 参数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A5%E6%9C%9F-%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97-%E5%87%BD%E6%95%B0"><span class="nav-number">1.5.</span> <span class="nav-text">日期&#x2F;时间计算 函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A5%E6%9C%9F-%E6%97%B6%E9%97%B4%E6%88%AA%E5%8F%96-%E5%87%BD%E6%95%B0"><span class="nav-number">1.6.</span> <span class="nav-text">日期&#x2F;时间截取 函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">2.</span> <span class="nav-text">例子</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%89%E5%A4%A9%E7%BB%9F%E8%AE%A1%E8%AE%A2%E5%8D%95%E9%87%8F"><span class="nav-number">2.1.</span> <span class="nav-text">按天统计订单量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%89-N-%E5%88%86%E9%92%9F%E7%BB%9F%E8%AE%A1%E8%AE%A2%E5%8D%95%E9%87%8F"><span class="nav-number">2.2.</span> <span class="nav-text">按 N 分钟统计订单量</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/mysql-date-and-time-functions/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="MySQL 常用日期与时间函数 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL 常用日期与时间函数
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-01-26 21:43:12" itemprop="dateCreated datePublished" datetime="2018-01-26T21:43:12+08:00">2018-01-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="日期函数"><a href="#日期函数" class="headerlink" title="日期函数"></a>日期函数</h1><h2 id="获得当前日期-时间"><a href="#获得当前日期-时间" class="headerlink" title="获得当前日期/时间"></a>获得当前日期/时间</h2><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Synonym</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_current-date"><code>CURRENT_DATE</code>, <code>CURRENT_DATE()</code></a></td>
+<td><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_curdate"><code>CURDATE()</code></a></td>
+<td>Return the current date as <br/><em><code>&#39;YYYY-MM-DD&#39;</code></em> / <em><code>YYYYMMDD</code></em></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_current-time"><code>CURRENT_TIME</code>, <code>CURRENT_TIME([fsp])</code></a></td>
+<td><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_curtime"><code>CURTIME([fsp])</code></a></td>
+<td>Return the current time as <br/><em><code>&#39;hh:mm:ss&#39;</code></em> / <em><code>hhmmss</code></em><br/>The value is expressed in the session time zone.</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_current-timestamp"><code>CURRENT_TIMESTAMP</code>, <code>CURRENT_TIMESTAMP([fsp])</code></a><br/><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_localtime"><code>LOCALTIME</code>, <code>LOCALTIME([fsp])</code></a><br/><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_localtimestamp"><code>LOCALTIMESTAMP</code>, <code>LOCALTIMESTAMP([fsp])</code></a></td>
+<td><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_now"><code>NOW([fsp])</code></a></td>
+<td>Return the current date and time as <br/><em><code>&#39;YYYY-MM-DD hh:mm:ss&#39;</code></em> / <em><code>YYYYMMDDhhmmss</code></em><br/>The value is expressed in the session time zone.</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_utc-date"><code>UTC_DATE</code>, <code>UTC_DATE()</code></a></td>
+<td></td>
+<td>Return the current UTC date as <br/><em><code>&#39;YYYY-MM-DD&#39;</code></em> / <em><code>YYYYMMDD</code></em></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_utc-time"><code>UTC_TIME</code>, <code>UTC_TIME([fsp])</code></a></td>
+<td></td>
+<td>Return the current UTC time as <br/><em><code>&#39;hh:mm:ss&#39;</code></em> / <em><code>hhmmss</code></em></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_utc-timestamp"><code>UTC_TIMESTAMP</code>, <code>UTC_TIMESTAMP([fsp])</code></a></td>
+<td></td>
+<td>Return the current UTC date and time as <br/><em><code>&#39;YYYY-MM-DD hh:mm:ss&#39;</code></em> / <em><code>YYYYMMDDhhmmss</code></em></td>
+</tr>
+</tbody></table>
+<p>注意，MySQL 时间支持的最高存储精度为微秒：</p>
+<blockquote>
+<p>1 秒(s) =<br>1,000 毫秒(ms) =<br>1,000,000 微秒(μs) =<br>1,000,000,000 纳秒(ns) =<br>1,000,000,000,000 皮秒(ps) =<br>1,000,000,000,000,000 飞秒(fs) =<br>1,000,000,000,000,000,000 仄秒(zs) =<br>1,000,000,000,000,000,000,000 幺秒(ys) =<br>1,000,000,000,000,000,000,000,000 渺秒(as)</p>
+</blockquote>
+<blockquote>
+<p>1 微秒(μs) = 10^-6 秒（0.000,001，百万分之一秒）<br>1 毫秒(ms) = 10^-3 秒（0.001，千分之一秒）</p>
+</blockquote>
+<p>因此 <code>fsp</code> 参数范围只能为 0 ~ 6：</p>
+<blockquote>
+<p>If the <em><code>fsp</code></em> argument is given to specify a fractional seconds precision from 0 to 6, the return value includes a fractional seconds part of that many digits.</p>
+</blockquote>
+<p>例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">SELECT CURDATE();                       -- 2018-08-08，获取当前年月日</span><br><span class="line">SELECT CURTIME();                       -- 22:41:30，获取当前时分秒</span><br><span class="line">SELECT NOW();                           -- 2018-08-08 22:20:46，获取当前年月日时分秒</span><br><span class="line">SELECT NOW(3);                          -- 2018-08-08 22:20:46.166，获取当前年月日时分秒毫秒</span><br><span class="line">SELECT NOW(6);                          -- 2018-08-08 22:20:46.166123，获取当前年月日时分秒毫秒微秒</span><br><span class="line">SELECT CURRENT_TIMESTAMP;               -- 2018-08-08 22:20:46，获取当前年月日时分秒</span><br></pre></td></tr></table></figure>
+
+<h2 id="时区查看-修改"><a href="#时区查看-修改" class="headerlink" title="时区查看/修改"></a>时区查看/修改</h2><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/time-zone-support.html">5.1.13 MySQL Server Time Zone Support</a></p>
+<h3 id="查看当前时区"><a href="#查看当前时区" class="headerlink" title="查看当前时区"></a>查看当前时区</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 结果主要看 system_time_zone</span></span><br><span class="line"><span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;%time_zone%&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查询系统时区、会话时区、下一事务时区</span></span><br><span class="line"><span class="keyword">SELECT</span> @<span class="variable">@GLOBAL</span>.time_zone, </span><br><span class="line">       @<span class="variable">@SESSION</span>.time_zone, </span><br><span class="line">       @<span class="variable">@time</span>_zone;;</span><br></pre></td></tr></table></figure>
+
+<p>参考：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/Uest/p/8259821.html">MySQL 中几个关于时间/时区的变量</a></p>
+<h3 id="修改时区"><a href="#修改时区" class="headerlink" title="修改时区"></a>修改时区</h3><p>通过 SQL <code>SET</code> 语法临时修改：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 设置 Global 全局时区，重启后失效</span></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> time_zone <span class="operator">=</span> <span class="string">&#x27;+8:00&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 设置 Session 会话时区，会话关闭后失效</span></span><br><span class="line"><span class="keyword">set</span> time_zone <span class="operator">=</span> <span class="string">&#x27;+8:00&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 设置 下一事务 时区，事务结束后失效</span></span><br><span class="line"><span class="keyword">set</span> @<span class="variable">@time</span>_zone <span class="operator">=</span> <span class="string">&#x27;+8:00&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>通过修改配置文件，重启后永久生效：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ vim <span class="operator">/</span>etc<span class="operator">/</span>mysql<span class="operator">/</span>my.cnf</span><br><span class="line"><span class="keyword">default</span><span class="operator">-</span>time_zone <span class="operator">=</span> <span class="string">&#x27;+8:00&#x27;</span></span><br><span class="line"></span><br><span class="line">$ service mysql restart</span><br></pre></td></tr></table></figure>
+
+<h2 id="时区转换-函数"><a href="#时区转换-函数" class="headerlink" title="时区转换 函数"></a>时区转换 函数</h2><p><code>CONVERT_TZ(dt, from_tz, to_tz)</code> 函数用于将 <code>DATETIME</code> 类型转为指定时区，例如：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- TIMESTAMP 类型（UTC±00:00） &gt; DATETIME 类型（UTC±00:00） &gt; DATETIME 类型（UTC+08:00）</span></span><br><span class="line"><span class="keyword">SELECT</span> CONVERT_TZ( FROM_UNIXTIME( UNIX_TIMESTAMP() ), <span class="string">&#x27;+00:00&#x27;</span>, <span class="string">&#x27;+08:00&#x27;</span> ) <span class="keyword">AS</span> NOW;</span><br></pre></td></tr></table></figure>
+
+<p><code>TIMESTAMP</code> 类型的时区显示，参考：<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/datetime.html">https://dev.mysql.com/doc/refman/5.7/en/datetime.html</a></p>
+<blockquote>
+<p>MySQL converts <code>TIMESTAMP</code> values from the current time zone to UTC for storage, and back from UTC to the current time zone for retrieval. (This does not occur for other types such as <code>DATETIME</code>.) By default, the current time zone for each connection is the server’s time. The time zone can be set on a per-connection basis. As long as the time zone setting remains constant, you get back the same value you store. If you store a <code>TIMESTAMP</code> value, and then change the time zone and retrieve the value, the retrieved value is different from the value you stored. This occurs because the same time zone was not used for conversion in both directions. The current time zone is available as the value of the <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_time_zone"><code>time_zone</code></a> system variable. For more information, see <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/time-zone-support.html">Section 5.1.13, “MySQL Server Time Zone Support”</a>.</p>
+</blockquote>
+<h2 id="日期-时间类型转换-函数"><a href="#日期-时间类型转换-函数" class="headerlink" title="日期/时间类型转换 函数"></a>日期/时间类型转换 函数</h2><h3 id="TIMESTAMP-→-xxx"><a href="#TIMESTAMP-→-xxx" class="headerlink" title="TIMESTAMP → xxx"></a>TIMESTAMP → xxx</h3><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_from-unixtime"><code>FROM_UNIXTIME(unix_timestamp[,format])</code></a></p>
+<blockquote>
+<p>Returns a representation of <em><code>unix_timestamp</code></em> as a <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/datetime.html"><code>DATETIME</code></a> or <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/char.html"><code>VARCHAR</code></a> value. The value returned is expressed using the session time zone. (Clients can set the session time zone as described in <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/time-zone-support.html">Section 5.1.13, “MySQL Server Time Zone Support”</a>.) <em><code>unix_timestamp</code></em> is an internal timestamp value representing seconds since <code>&#39;1970-01-01 00:00:00&#39;</code> UTC, such as produced by the <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_unix-timestamp"><code>UNIX_TIMESTAMP()</code></a> function.</p>
+<p><em><code>unix_timestamp</code></em></p>
+<ul>
+<li>When <em><code>unix_timestamp</code></em> is an integer, the fractional seconds precision of the <code>DATETIME</code> is <code>0</code>.</li>
+<li>When <em><code>unix_timestamp</code></em> is a decimal value, the fractional seconds precision of the <code>DATETIME</code> is the same as the precision of the decimal value, up to a maximum of <code>6</code>.</li>
+<li>When <em><code>unix_timestamp</code></em> is a floating point number, the fractional seconds precision of the datetime is <code>6</code>.</li>
+</ul>
+<p><em><code>format</code></em></p>
+<ul>
+<li>If <em><code>format</code></em> is omitted, the value returned is a <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/datetime.html"><code>DATETIME</code></a>.</li>
+<li>If <em><code>format</code></em> is supplied, the value returned is a <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/char.html"><code>VARCHAR</code></a>.</li>
+</ul>
+</blockquote>
+<p>例子：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 不指定 format 格式，返回 DATETIME 类型</span></span><br><span class="line"><span class="keyword">SELECT</span> FROM_UNIXTIME(<span class="number">1447430881</span>);</span><br><span class="line"> <span class="operator">-</span><span class="operator">&gt;</span> <span class="string">&#x27;2015-11-13 10:08:01&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 只支持单位为秒的时间戳，不支持毫秒、微秒，需要先除以其精度转为浮点数</span></span><br><span class="line"><span class="keyword">SELECT</span> FROM_UNIXTIME(<span class="number">1447430881123</span> <span class="operator">/</span> <span class="number">1000</span>);</span><br><span class="line"> <span class="operator">-</span><span class="operator">&gt;</span> <span class="string">&#x27;2015-11-13 16:08:01.1230&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 运算后，转为整数类型</span></span><br><span class="line"><span class="keyword">SELECT</span> FROM_UNIXTIME(<span class="number">1447430881</span>) <span class="operator">+</span> <span class="number">0</span>;</span><br><span class="line"> <span class="operator">-</span><span class="operator">&gt;</span> <span class="number">20151113100801</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 指定 format 格式，返回 VARCHAR 类型</span></span><br><span class="line"><span class="keyword">SELECT</span> FROM_UNIXTIME(<span class="number">1447430881</span>, <span class="string">&#x27;%Y %D %M %h:%i:%s %x&#x27;</span>);</span><br><span class="line"> <span class="operator">-</span><span class="operator">&gt;</span> <span class="string">&#x27;2015 13th November 10:08:01 2015&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>fomart</code> 参数参考<a href="/posts/mysql-date-and-time-functions/#format-%E5%8F%82%E6%95%B0">这里</a>。</p>
+<h3 id="xxx-→-TIMESTAMP"><a href="#xxx-→-TIMESTAMP" class="headerlink" title="xxx → TIMESTAMP"></a>xxx → TIMESTAMP</h3><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_unix-timestamp"><code>UNIX_TIMESTAMP([date])</code></a></p>
+<blockquote>
+<p>Return a Unix timestamp.</p>
+<p>If no <em><code>date</code></em> argument, it returns a Unix timestamp representing seconds since <code>&#39;1970-01-01 00:00:00&#39;</code> UTC.</p>
+<p>If with a <em><code>date</code></em> argument, it returns the value of the argument as seconds since <code>&#39;1970-01-01 00:00:00&#39;</code> UTC.</p>
+<p>The server interprets <em><code>date</code></em> as a value in the session time zone and converts it to an internal Unix timestamp value in UTC. (Clients can set the session time zone as described in <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/time-zone-support.html">Section 5.1.13, “MySQL Server Time Zone Support”</a>.)</p>
+<p>The <em><code>date</code></em> argument may be </p>
+<ul>
+<li>a <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/datetime.html"><code>DATE</code></a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/datetime.html"><code>DATETIME</code></a>, or <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/datetime.html"><code>TIMESTAMP</code></a> <strong>string</strong>, </li>
+<li>or a <strong>number</strong> in <em><code>YYMMDD</code></em>, <em><code>YYMMDDhhmmss</code></em>, <em><code>YYYYMMDD</code></em>, or <em><code>YYYYMMDDhhmmss</code></em> format. </li>
+</ul>
+<p>If the argument includes a time part, it may optionally include a fractional seconds part.</p>
+<p>The return value is </p>
+<ul>
+<li>an <strong>integer</strong> if no argument is given or the argument does not include a fractional seconds part, </li>
+<li>or <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/fixed-point-types.html"><code>DECIMAL</code></a> if an argument is given that includes a fractional seconds part.</li>
+</ul>
+<p>When the <em><code>date</code></em> argument is a <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/datetime.html"><code>TIMESTAMP</code></a> column, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_unix-timestamp"><code>UNIX_TIMESTAMP()</code></a> returns the internal timestamp value directly, with no implicit “string-to-Unix-timestamp” conversion.</p>
+<p>The valid range of argument values is the same as for the <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/datetime.html"><code>TIMESTAMP</code></a> data type: <code>&#39;1970-01-01 00:00:01.000000&#39;</code> UTC to <code>&#39;2038-01-19 03:14:07.999999&#39;</code> UTC. If you pass an out-of-range date to <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_unix-timestamp"><code>UNIX_TIMESTAMP()</code></a>, it returns <code>0</code>.</p>
+</blockquote>
+<p>例子：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> UNIX_TIMESTAMP();                <span class="comment">-- 1218124800，获取当前时间戳</span></span><br><span class="line"><span class="keyword">SELECT</span> UNIX_TIMESTAMP(now());           <span class="comment">-- 1218124800，将当前时间转换为时间戳，等价于上例</span></span><br><span class="line"><span class="keyword">SELECT</span> UNIX_TIMESTAMP(<span class="string">&#x27;2008-08-08&#x27;</span>);    <span class="comment">-- 1219125100，将指定参数转换为时间戳</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="DATETIME-→-String"><a href="#DATETIME-→-String" class="headerlink" title="DATETIME → String"></a>DATETIME → String</h3><p>Date/Time to Str（日期/时间转换为字符串）函数：</p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_date-format"><code>DATE_FORMAT(date, format)</code></a>、<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_time-format"><code>TIME_FORMAT(time, format)</code></a></p>
+<p>例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">select date_format(now(), &#x27;%Y-%m-%d&#x27;);                          -- 2018-08-08</span><br><span class="line">select date_format(&#x27;2018-08-08 22:23:00&#x27;, &#x27;%W %M %Y&#x27;);          -- Friday August 2018</span><br><span class="line">select date_format(&#x27;2018-08-08 22:23:01&#x27;, &#x27;%Y%m%d%H%i%s&#x27;);      -- 20180808222301</span><br><span class="line">select time_format(&#x27;22:23:01&#x27;, &#x27;%H.%i.%s&#x27;);                     -- 22.23.01</span><br></pre></td></tr></table></figure>
+
+<h3 id="String-→-DATETIME"><a href="#String-→-DATETIME" class="headerlink" title="String → DATETIME"></a>String → DATETIME</h3><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_str-to-date"><code>STR_TO_DATE(str, format)</code></a></p>
+<blockquote>
+<p>This is the inverse of the <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_date-format"><code>DATE_FORMAT()</code></a> function. It takes a string <em><code>str</code></em> and a format string <em><code>format</code></em>. <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_str-to-date"><code>STR_TO_DATE()</code></a> returns a <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/datetime.html"><code>DATETIME</code></a> value if the format string contains both date and time parts, or a <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/datetime.html"><code>DATE</code></a> or <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/time.html"><code>TIME</code></a> value if the string contains only date or time parts. If the date, time, or datetime value extracted from <em><code>str</code></em> is illegal, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_str-to-date"><code>STR_TO_DATE()</code></a> returns <code>NULL</code> and produces a warning.</p>
+</blockquote>
+<p>例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">select str_to_date(&#x27;08/09/2008&#x27;, &#x27;%m/%d/%Y&#x27;);                   -- 2008-08-09</span><br><span class="line">select str_to_date(&#x27;08/09/08&#x27;  , &#x27;%m/%d/%y&#x27;);                   -- 2008-08-09</span><br><span class="line">select str_to_date(&#x27;08.09.2008&#x27;, &#x27;%m.%d.%Y&#x27;);                   -- 2008-08-09</span><br><span class="line">select str_to_date(&#x27;08:09:30&#x27;, &#x27;%h:%i:%s&#x27;);                     -- 08:09:30</span><br><span class="line">select str_to_date(&#x27;08.09.2008 08:09:30&#x27;, &#x27;%m.%d.%Y %h:%i:%s&#x27;); -- 2008-08-09 08:09:30</span><br></pre></td></tr></table></figure>
+
+<h3 id="format-参数"><a href="#format-参数" class="headerlink" title="format 参数"></a>format 参数</h3><p><code>format</code> 参数如下，这里只列出常用的。更多 <code>format</code> 参数参考：</p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_date-format">https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_date-format</a></p>
+<table>
+<thead>
+<tr>
+<th><code>format</code></th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>%Y</code></td>
+<td>Year, numeric, four digits</td>
+</tr>
+<tr>
+<td><code>%y</code></td>
+<td>Year, numeric (two digits)</td>
+</tr>
+<tr>
+<td><code>%M</code></td>
+<td>Month name (<code>January</code>..<code>December</code>)</td>
+</tr>
+<tr>
+<td><code>%m</code></td>
+<td>Month, numeric (<code>00</code>..<code>12</code>)</td>
+</tr>
+<tr>
+<td><code>%D</code></td>
+<td>Day of the month with English suffix (<code>0th</code>, <code>1st</code>, <code>2nd</code>, <code>3rd</code>, …)</td>
+</tr>
+<tr>
+<td><code>%d</code></td>
+<td>Day of the month, numeric (<code>00</code>..<code>31</code>)</td>
+</tr>
+<tr>
+<td><code>%H</code></td>
+<td>Hour (<code>00</code>..<code>23</code>)</td>
+</tr>
+<tr>
+<td><code>%h</code></td>
+<td>Hour (<code>01</code>..<code>12</code>)</td>
+</tr>
+<tr>
+<td><code>%i</code></td>
+<td>Minutes, numeric (<code>00</code>..<code>59</code>)</td>
+</tr>
+<tr>
+<td><code>%s</code></td>
+<td>Seconds (<code>00</code>..<code>59</code>)</td>
+</tr>
+<tr>
+<td><code>%f</code></td>
+<td>Microseconds (<code>000000</code>..<code>999999</code>)</td>
+</tr>
+<tr>
+<td><code>%T</code></td>
+<td>Time, 24-hour (<em><code>hh:mm:ss</code></em>)</td>
+</tr>
+<tr>
+<td><code>%r</code></td>
+<td>Time, 12-hour (<em><code>hh:mm:ss</code></em> followed by <code>AM</code> or <code>PM</code>)</td>
+</tr>
+</tbody></table>
+<h2 id="日期-时间计算-函数"><a href="#日期-时间计算-函数" class="headerlink" title="日期/时间计算 函数"></a>日期/时间计算 函数</h2><p>为日期增加一个时间间隔：<code>date_add()</code></p>
+<p>为日期减去一个时间间隔：<code>date_sub()</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">set @dt = now();</span><br><span class="line"></span><br><span class="line">select date_add(@dt, interval 1 day);        -- add 1 day</span><br><span class="line">select date_add(@dt, interval 1 hour);       -- add 1 hour</span><br><span class="line">select date_add(@dt, interval 1 minute);     -- ...</span><br><span class="line">select date_add(@dt, interval 1 second);</span><br><span class="line">select date_add(@dt, interval 1 microsecond);</span><br><span class="line">select date_add(@dt, interval 1 week);</span><br><span class="line">select date_add(@dt, interval 1 month);</span><br><span class="line">select date_add(@dt, interval 1 quarter);</span><br><span class="line">select date_add(@dt, interval 1 year);</span><br><span class="line"></span><br><span class="line">select date_add(@dt, interval -1 day);       -- sub 1 day</span><br><span class="line"></span><br><span class="line">SELECT DATE_SUB(@dt, INTERVAL 7 DAY);        -- 七天前</span><br></pre></td></tr></table></figure>
+
+<h2 id="日期-时间截取-函数"><a href="#日期-时间截取-函数" class="headerlink" title="日期/时间截取 函数"></a>日期/时间截取 函数</h2><p>选取日期时间的各个部分：日期、时间、年、季度、月、日、小时、分钟、秒、微秒</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">set @dt = now();</span><br><span class="line"></span><br><span class="line">select date(@dt);        -- 2008-09-10</span><br><span class="line">select time(@dt);        -- 07:15:30.123456</span><br><span class="line">select year(@dt);        -- 2008</span><br><span class="line">select quarter(@dt);     -- 3</span><br><span class="line">select month(@dt);       -- 9</span><br><span class="line">select week(@dt);        -- 36</span><br><span class="line">select day(@dt);         -- 10</span><br><span class="line">select hour(@dt);        -- 7</span><br><span class="line">select minute(@dt);      -- 15</span><br><span class="line">select second(@dt);      -- 30</span><br><span class="line">select microsecond(@dt); -- 123456</span><br></pre></td></tr></table></figure>
+
+<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><h2 id="按天统计订单量"><a href="#按天统计订单量" class="headerlink" title="按天统计订单量"></a>按天统计订单量</h2><p>按天统计订单量（同理，按小时统计：<code>DATE_FORMAT(create_time,&#39;%Y-%m-%d %H:00:00&#39;)</code>）：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="built_in">count</span>(<span class="operator">*</span>), DATE_FORMAT(create_time,<span class="string">&#x27;%Y-%m-%d&#x27;</span>) days </span><br><span class="line"><span class="keyword">from</span> t_order </span><br><span class="line"><span class="keyword">where</span> create_time <span class="keyword">BETWEEN</span> <span class="string">&#x27;2008-9-29&#x27;</span> <span class="keyword">AND</span> <span class="string">&#x27;2008-9-30&#x27;</span> </span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> days;</span><br><span class="line"></span><br><span class="line"><span class="operator">+</span><span class="comment">----------+------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="built_in">count</span>(<span class="operator">*</span>) <span class="operator">|</span> hours      <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----------+------------+</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">150628</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-01</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">172419</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-02</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">177021</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-03</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">178917</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-04</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">180960</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-05</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">177626</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-06</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">177504</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-07</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">166118</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-08</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">193006</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-09</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">204156</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-10</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">196598</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-11</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">200184</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-12</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">159169</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-13</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">179798</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-14</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">203586</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-15</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">217863</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-16</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">231207</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-17</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">245960</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-18</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">226578</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-19</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">211986</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-20</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">201396</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-21</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">183012</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-22</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">221780</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-23</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">228094</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-24</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">220251</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-25</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">240866</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-26</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">235670</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-27</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   <span class="number">244964</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-28</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>    <span class="number">98805</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-29</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----------+------------+</span></span><br><span class="line"><span class="number">29</span> <span class="keyword">rows</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">5.83</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h2 id="按-N-分钟统计订单量"><a href="#按-N-分钟统计订单量" class="headerlink" title="按 N 分钟统计订单量"></a>按 N 分钟统计订单量</h2><p>做法在于将每行的分钟数 <code>MINUTE(create_time)</code> 除以 10 得到的小数使用 <code>FLOOR</code> 函数向下取整，再乘以 10 得到的就是所属区间。例如：</p>
+<ul>
+<li>1 分钟 -&gt; 0</li>
+<li>25 分钟 -&gt; 20</li>
+<li>59 分钟 -&gt; 50</li>
+</ul>
+<p>下例按 10 分钟统计订单量：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="built_in">COUNT</span>(<span class="operator">*</span>), DATE_FORMAT(</span><br><span class="line">  CONCAT(</span><br><span class="line">    <span class="type">DATE</span>(create_time), </span><br><span class="line">    <span class="string">&#x27; &#x27;</span>, </span><br><span class="line">    <span class="keyword">HOUR</span>(create_time), </span><br><span class="line">    <span class="string">&#x27;:&#x27;</span>, </span><br><span class="line">    <span class="built_in">FLOOR</span>(<span class="keyword">MINUTE</span>(create_time) <span class="operator">/</span> <span class="number">10</span>) <span class="operator">*</span> <span class="number">10</span></span><br><span class="line">  ), <span class="string">&#x27;%Y-%m-%d %H:%i&#x27;</span></span><br><span class="line">) <span class="keyword">AS</span> hours</span><br><span class="line"><span class="keyword">FROM</span> t_order</span><br><span class="line"><span class="keyword">WHERE</span> create_time <span class="keyword">BETWEEN</span> <span class="string">&#x27;2008-9-29&#x27;</span> <span class="keyword">AND</span> <span class="string">&#x27;2008-9-30&#x27;</span></span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> hours;</span><br><span class="line"></span><br><span class="line"><span class="operator">+</span><span class="comment">----------+------------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="operator">|</span> hours            <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----------+------------------+</span></span><br><span class="line"><span class="operator">|</span>       <span class="number">51</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-29</span> <span class="number">00</span>:<span class="number">00</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>       <span class="number">53</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-29</span> <span class="number">00</span>:<span class="number">10</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>       <span class="number">43</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-29</span> <span class="number">00</span>:<span class="number">20</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>       <span class="number">59</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-29</span> <span class="number">00</span>:<span class="number">30</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>       <span class="number">40</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-29</span> <span class="number">00</span>:<span class="number">40</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>       <span class="number">27</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-29</span> <span class="number">00</span>:<span class="number">50</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>       <span class="number">22</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-29</span> <span class="number">01</span>:<span class="number">00</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>       <span class="number">24</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-29</span> <span class="number">01</span>:<span class="number">10</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>       <span class="number">15</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-29</span> <span class="number">01</span>:<span class="number">20</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>       <span class="number">15</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-29</span> <span class="number">01</span>:<span class="number">30</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>       <span class="number">26</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-29</span> <span class="number">01</span>:<span class="number">40</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>       <span class="number">18</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-29</span> <span class="number">01</span>:<span class="number">50</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>     <span class="number">1949</span> <span class="operator">|</span> <span class="number">2008</span><span class="number">-09</span><span class="number">-29</span> <span class="number">02</span>:<span class="number">00</span> <span class="operator">|</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/functions.html">https://dev.mysql.com/doc/refman/5.7/en/functions.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html">https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/timestamp-initialization.html">https://dev.mysql.com/doc/refman/5.7/en/timestamp-initialization.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/time-zone-support.html">https://dev.mysql.com/doc/refman/5.7/en/time-zone-support.html</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/mysql-date-and-time-functions/" title="MySQL 常用日期与时间函数">https://qidawu.github.io/posts/mysql-date-and-time-functions/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/mysql-data-types/" rel="prev" title="MySQL 常用数据类型">
+                  <i class="fa fa-chevron-left"></i> MySQL 常用数据类型
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/mysql-select-syntax/" rel="next" title="MySQL SELECT 语法总结">
+                  MySQL SELECT 语法总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

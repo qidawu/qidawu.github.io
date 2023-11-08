@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Bean Validation 规范Bean Validation 为 JavaBean 和方法验证定义了一组元数据模型和 API 规范，常用于后端数据的声明式校验。 RoadMapBean Validation 规范最早在 Oracle Java EE 下维护。 2017 年 11 月，Oracle 将 Java EE 移交给 Eclipse 基金会。 2018 年 3 月 5 日，Eclips">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Jakarta EE 系列（三）Bean Validation 规范与实践总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/jakarta-bean-validation/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="Bean Validation 规范Bean Validation 为 JavaBean 和方法验证定义了一组元数据模型和 API 规范，常用于后端数据的声明式校验。 RoadMapBean Validation 规范最早在 Oracle Java EE 下维护。 2017 年 11 月，Oracle 将 Java EE 移交给 Eclipse 基金会。 2018 年 3 月 5 日，Eclips">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/java/hibernate/hibernate_projects.png">
+<meta property="article:published_time" content="2020-10-05T15:32:08.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.916Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/java/hibernate/hibernate_projects.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/jakarta-bean-validation/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/jakarta-bean-validation/","path":"posts/jakarta-bean-validation/","title":"Jakarta EE 系列（三）Bean Validation 规范与实践总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Jakarta EE 系列（三）Bean Validation 规范与实践总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Bean-Validation-%E8%A7%84%E8%8C%83"><span class="nav-number">1.</span> <span class="nav-text">Bean Validation 规范</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#RoadMap"><span class="nav-number">1.1.</span> <span class="nav-text">RoadMap</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Bean-Validation-1-0-JSR-303"><span class="nav-number">1.1.1.</span> <span class="nav-text">Bean Validation 1.0 (JSR 303)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Bean-Validation-1-1-JSR-349"><span class="nav-number">1.1.2.</span> <span class="nav-text">Bean Validation 1.1 (JSR 349)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Bean-Validation-2-0-JSR-380"><span class="nav-number">1.1.3.</span> <span class="nav-text">Bean Validation 2.0 (JSR 380)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Jakarta-Bean-Validation-2-0"><span class="nav-number">1.1.4.</span> <span class="nav-text">Jakarta Bean Validation 2.0</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Jakarta-Bean-Validation-3-0"><span class="nav-number">1.1.5.</span> <span class="nav-text">Jakarta Bean Validation 3.0</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Constraints"><span class="nav-number">1.2.</span> <span class="nav-text">Constraints</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E7%BD%AE-Constraints"><span class="nav-number">1.2.1.</span> <span class="nav-text">内置 Constraints</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%96%B9-Constraints"><span class="nav-number">1.2.2.</span> <span class="nav-text">第三方 Constraints</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83-API"><span class="nav-number">1.3.</span> <span class="nav-text">核心 API</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Bean-Validation-%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">Bean Validation 实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hibernate-Validator"><span class="nav-number">2.1.</span> <span class="nav-text">Hibernate Validator</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">使用方式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E7%BB%84%E7%BA%A6%E6%9D%9F"><span class="nav-number">3.1.</span> <span class="nav-text">分组约束</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E5%90%88%E7%BA%A6%E6%9D%9F"><span class="nav-number">3.2.</span> <span class="nav-text">组合约束</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#compose-constraints-via-a-logical-OR-or-NOT"><span class="nav-number">3.2.1.</span> <span class="nav-text">compose constraints via a logical OR or NOT</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E7%BA%A6%E6%9D%9F"><span class="nav-number">3.3.</span> <span class="nav-text">自定义约束</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dubbo-%E5%8F%82%E6%95%B0%E9%AA%8C%E8%AF%81"><span class="nav-number">3.4.</span> <span class="nav-text">Dubbo 参数验证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring-MVC-%E5%8F%82%E6%95%B0%E9%AA%8C%E8%AF%81"><span class="nav-number">3.5.</span> <span class="nav-text">Spring MVC 参数验证</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="nav-number">4.</span> <span class="nav-text">常见问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%BA%E5%B0%91-Expression-Language-%E4%BE%9D%E8%B5%96"><span class="nav-number">4.1.</span> <span class="nav-text">缺少 Expression Language 依赖</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/jakarta-bean-validation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Jakarta EE 系列（三）Bean Validation 规范与实践总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Jakarta EE 系列（三）Bean Validation 规范与实践总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-10-05 23:32:08" itemprop="dateCreated datePublished" datetime="2020-10-05T23:32:08+08:00">2020-10-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="Bean-Validation-规范"><a href="#Bean-Validation-规范" class="headerlink" title="Bean Validation 规范"></a>Bean Validation 规范</h1><p>Bean Validation 为 JavaBean 和方法验证定义了一组元数据模型和 API 规范，常用于后端数据的声明式校验。</p>
+<h2 id="RoadMap"><a href="#RoadMap" class="headerlink" title="RoadMap"></a>RoadMap</h2><p>Bean Validation 规范最早在 Oracle Java EE 下维护。</p>
+<p>2017 年 11 月，Oracle 将 Java EE 移交给 Eclipse 基金会。 2018 年 3 月 5 日，Eclipse 基金会宣布 Java EE (Enterprise Edition) 被更名为 Jakarta EE。因此 Bean Validation 规范经历了从 JavaEE Bean Validation 到 Jakarta Bean Validation 的两个阶段：</p>
+<h3 id="Bean-Validation-1-0-JSR-303"><a href="#Bean-Validation-1-0-JSR-303" class="headerlink" title="Bean Validation 1.0 (JSR 303)"></a>Bean Validation 1.0 (JSR 303)</h3><blockquote>
+<p>Bean Validation 1.0 (<a target="_blank" rel="noopener" href="https://www.jcp.org/en/jsr/detail?id=303">JSR 303</a>) was the first version of Java’s standard for object validation.</p>
+<p>It was released in 2009 and is part of <a target="_blank" rel="noopener" href="https://docs.oracle.com/javaee/6/index.html">Java EE 6</a>.</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/javax.validation/validation-api --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>javax.validation<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>validation-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0.0.GA<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Bean-Validation-1-1-JSR-349"><a href="#Bean-Validation-1-1-JSR-349" class="headerlink" title="Bean Validation 1.1 (JSR 349)"></a>Bean Validation 1.1 (JSR 349)</h3><blockquote>
+<p>Bean Validation 1.1 (<a target="_blank" rel="noopener" href="https://www.jcp.org/en/jsr/detail?id=349">JSR 349</a>) was finished in 2013. <a target="_blank" rel="noopener" href="https://beanvalidation.org/1.1/">Changes between Bean Validation 1.0 and 1.1</a></p>
+<p>It is part of <a target="_blank" rel="noopener" href="https://docs.oracle.com/javaee/7/index.html">Java EE 7</a>.</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/javax.validation/validation-api --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>javax.validation<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>validation-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.1.0.Final<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Bean-Validation-2-0-JSR-380"><a href="#Bean-Validation-2-0-JSR-380" class="headerlink" title="Bean Validation 2.0 (JSR 380)"></a>Bean Validation 2.0 (JSR 380)</h3><blockquote>
+<p>Bean Validation 2.0 (<a target="_blank" rel="noopener" href="https://www.jcp.org/en/jsr/detail?id=380">JSR 380</a>) was finished in August 2017. <a target="_blank" rel="noopener" href="https://beanvalidation.org/2.0-jsr380/">Changes between Bean Validation 2.0 and 1.1</a></p>
+<p>It’s part of <a target="_blank" rel="noopener" href="https://www.oracle.com/java/technologies/java-ee-8.html">Java EE 8</a> (but can of course be used with plain Java SE as the previous releases).</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/javax.validation/validation-api --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>javax.validation<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>validation-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.0.1.Final<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Jakarta-Bean-Validation-2-0"><a href="#Jakarta-Bean-Validation-2-0" class="headerlink" title="Jakarta Bean Validation 2.0"></a>Jakarta Bean Validation 2.0</h3><blockquote>
+<p><a target="_blank" rel="noopener" href="https://jakarta.ee/specifications/bean-validation/2.0/">Jakarta Bean Validation 2.0</a> was published in August 2019. There are no changes between Jakarta Bean Validation 2.0 and Bean Validation 2.0 except for the GAV: it is now <code>jakarta.validation:jakarta.validation-api</code>.</p>
+<p>It’s part of <a target="_blank" rel="noopener" href="https://projects.eclipse.org/releases/jakarta-ee-8">Jakarta EE 8</a> (but can of course be used with plain Java SE as the previous releases).</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>jakarta.validation<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jakarta.validation-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.0.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Jakarta-Bean-Validation-3-0"><a href="#Jakarta-Bean-Validation-3-0" class="headerlink" title="Jakarta Bean Validation 3.0"></a>Jakarta Bean Validation 3.0</h3><blockquote>
+<p><a target="_blank" rel="noopener" href="https://jakarta.ee/specifications/bean-validation/3.0/">Jakarta Bean Validation 3.0</a> was released in Wednesday, October 7, 2020.</p>
+<p>This release is part of <a target="_blank" rel="noopener" href="https://projects.eclipse.org/releases/jakarta-ee-9">Jakarta EE 9</a>.</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>jakarta.validation<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jakarta.validation-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.0.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Constraints"><a href="#Constraints" class="headerlink" title="Constraints"></a>Constraints</h2><p>Constraints 约束是 Bean Validation 规范的核心。约束是通过<strong>约束注解</strong>和一系列<strong>约束验证实现</strong>的组合来定义的。约束注解可应用于类型、字段、方法、构造函数、参数、容器元素或其它约束注解。</p>
+<blockquote>
+<p>一个 constraint 通常由 annotation 和相应的 constraint validator 组成，它们是一对多的关系。也就是说可以有多个 constraint validator 对应一个 annotation。在运行时，Bean Validation 框架本身会根据被注释元素的类型来选择合适的 constraint validator 对数据进行验证。</p>
+<p>有些时候，在用户的应用中需要一些更复杂的 constraint。Bean Validation 提供扩展 constraint 的机制。可以通过两种方法去实现，一种是组合现有的 constraint 来生成一个更复杂的 constraint，另外一种是开发一个全新的 constraint。</p>
+</blockquote>
+<p>下表列出了常用 Constraints：</p>
+<h3 id="内置-Constraints"><a href="#内置-Constraints" class="headerlink" title="内置 Constraints"></a>内置 Constraints</h3><p>表 1. Bean Validation 1.x 内置的 Constraints，如下：</p>
+<table>
+<thead>
+<tr>
+<th align="left"><strong>Constraint</strong></th>
+<th align="left"><strong>详细信息</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>@Null</code></td>
+<td align="left">被注释的元素必须为 <code>null</code></td>
+</tr>
+<tr>
+<td align="left"><code>@NotNull</code></td>
+<td align="left">被注释的元素必须不为 <code>null</code></td>
+</tr>
+<tr>
+<td align="left"><code>@AssertTrue</code></td>
+<td align="left">被注释的元素必须为 <code>true</code></td>
+</tr>
+<tr>
+<td align="left"><code>@AssertFalse</code></td>
+<td align="left">被注释的元素必须为 <code>false</code></td>
+</tr>
+<tr>
+<td align="left"><code>@Min(value)</code></td>
+<td align="left">被注释的元素必须是一个数字，其值必须大于等于指定的最小值</td>
+</tr>
+<tr>
+<td align="left"><code>@Max(value)</code></td>
+<td align="left">被注释的元素必须是一个数字，其值必须小于等于指定的最大值</td>
+</tr>
+<tr>
+<td align="left"><code>@DecimalMin(value)</code></td>
+<td align="left">被注释的元素必须是一个数字，其值必须大于等于指定的最小值</td>
+</tr>
+<tr>
+<td align="left"><code>@DecimalMax(value)</code></td>
+<td align="left">被注释的元素必须是一个数字，其值必须小于等于指定的最大值</td>
+</tr>
+<tr>
+<td align="left"><code>@Size(max, min)</code></td>
+<td align="left">被注释的元素的大小必须在指定的范围内</td>
+</tr>
+<tr>
+<td align="left"><code>@Digits (integer, fraction)</code></td>
+<td align="left">被注释的元素必须是一个数字，其值必须在可接受的范围内</td>
+</tr>
+<tr>
+<td align="left"><code>@Past</code></td>
+<td align="left">被注释的元素必须是一个过去的日期</td>
+</tr>
+<tr>
+<td align="left"><code>@Future</code></td>
+<td align="left">被注释的元素必须是一个将来的日期</td>
+</tr>
+<tr>
+<td align="left"><code>@Pattern(value)</code></td>
+<td align="left">被注释的元素必须符合指定的正则表达式</td>
+</tr>
+</tbody></table>
+<p>Bean Validation 2.0 内置的 Constraints，参考：<a target="_blank" rel="noopener" href="https://beanvalidation.org/2.0/spec/#builtinconstraints">https://beanvalidation.org/2.0/spec/#builtinconstraints</a></p>
+<p>Bean Validation 3.0 内置的 Constraints，参考官方新版规范：<a target="_blank" rel="noopener" href="https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html">Jakarta Bean Validation specification</a></p>
+<h3 id="第三方-Constraints"><a href="#第三方-Constraints" class="headerlink" title="第三方 Constraints"></a>第三方 Constraints</h3><p>表 2. Hibernate Validator 附加的 Constraints，更多 Constraints 详见：<a target="_blank" rel="noopener" href="https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#validator-defineconstraints-hv-constraints">Additional constraints</a></p>
+<table>
+<thead>
+<tr>
+<th align="left"><strong>Constraint</strong></th>
+<th align="left"><strong>详细信息</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>@Email</code></td>
+<td align="left">被注释的元素必须是电子邮箱地址</td>
+</tr>
+<tr>
+<td align="left"><code>@Length</code></td>
+<td align="left">被注释的字符串的大小必须在指定的范围内</td>
+</tr>
+<tr>
+<td align="left"><code>@NotEmpty</code></td>
+<td align="left">被注释的字符串的必须非空</td>
+</tr>
+<tr>
+<td align="left"><code>@Range</code></td>
+<td align="left">被注释的元素必须在合适的范围内</td>
+</tr>
+</tbody></table>
+<p>其它第三方 Constraints：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/nomemory/java-bean-validation-extension">Java Bean Validation Extension</a> offers a set of useful constraints (<code>@Alphanumeric</code>, <code>@IPv6</code>, <code>@StartsWith</code>…).</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jirutka/validator-collection">Collection Validators</a> allows to define constraints on elements of collections.</li>
+<li>……</li>
+</ul>
+<h2 id="核心-API"><a href="#核心-API" class="headerlink" title="核心 API"></a>核心 API</h2><p>核心类 <code>Validation</code> 作为 Bean Validation 的入口点，提供了三种引导方式。下面代码演示了以最简单的方式创建默认的 <code>ValidatorFactory</code>，并获取 <code>Validator</code> 用以验证 Java Bean。涉及的 API 如下：</p>
+<ul>
+<li><p>核心类 <a target="_blank" rel="noopener" href="https://docs.oracle.com/javaee/7/api/javax/validation/Validation.html"><code>javax.validation.Validation</code></a>：</p>
+<blockquote>
+<p>Note:</p>
+<ul>
+<li>The <code>ValidatorFactory</code> object built by the bootstrap process should be cached and shared amongst <code>Validator</code> consumers.</li>
+<li>This class is <strong>thread-safe</strong>.</li>
+</ul>
+</blockquote>
+</li>
+<li><p>接口 <a target="_blank" rel="noopener" href="https://docs.oracle.com/javaee/7/api/javax/validation/ValidatorFactory.html"><code>javax.validation.ValidatorFactory</code></a>：</p>
+<blockquote>
+<p>Factory returning initialized <code>Validator</code> instances.</p>
+<p>Implementations are <strong>thread-safe</strong> and instances are typically cached and reused.</p>
+</blockquote>
+</li>
+<li><p>接口 <a target="_blank" rel="noopener" href="https://docs.oracle.com/javaee/7/api/javax/validation/Validator.html"><code>javax.validation.Validator</code></a>：</p>
+<blockquote>
+<p>Validates bean instances. Implementations of this interface must be <strong>thread-safe</strong>.</p>
+</blockquote>
+</li>
+</ul>
+<p>代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> lombok.experimental.UtilityClass;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.ConstraintViolation;</span><br><span class="line"><span class="keyword">import</span> javax.validation.Validation;</span><br><span class="line"><span class="keyword">import</span> javax.validation.ValidatorFactory;</span><br><span class="line"><span class="keyword">import</span> javax.validation.Validator;</span><br><span class="line"><span class="keyword">import</span> java.util.Set;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * JavaBean 校验器</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@UtilityClass</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ValidatorUtil</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Validator</span> <span class="variable">VALIDATOR</span> <span class="operator">=</span> Validation.buildDefaultValidatorFactory().getValidator();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 校验参数</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> obj 参数</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 校验结果</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> &lt;T&gt; Set&lt;ConstraintViolation&lt;T&gt;&gt; <span class="title function_">validate</span><span class="params">(T obj)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> VALIDATOR.validate(obj);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Bean-Validation-实现"><a href="#Bean-Validation-实现" class="headerlink" title="Bean Validation 实现"></a>Bean Validation 实现</h1><h2 id="Hibernate-Validator"><a href="#Hibernate-Validator" class="headerlink" title="Hibernate Validator"></a>Hibernate Validator</h2><p>Hibernate 框架提供了各种子项目，如下：</p>
+<p><img src="/img/java/hibernate/hibernate_projects.png" alt="Hibernate Projects"></p>
+<p>其中，子项目 Hibernate Validator 是 Bean Validation 规范的<strong>官方认证实现</strong>。</p>
+<p>要在 Maven 项目中使用 Hibernate Validator，需要添加如下依赖项：</p>
+<ul>
+<li><p>新版实现。<a target="_blank" rel="noopener" href="https://search.maven.org/artifact/org.hibernate.validator/hibernate-validator">6.x 及以上版本</a>已完全从 Hibernate 持久化框架中剥离并被移至新 group：</p>
+<blockquote>
+<p>hibernate-validator is entirely separate from the persistence aspects of Hibernate. So, by adding it as a dependency, we’re not adding these persistence aspects into the project.</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.hibernate.validator<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hibernate-validator<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">version</span>&gt;</span>7.0.0.Final<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li><p>遗留实现，可以下载到 5.x 及之前的老版本，例如：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-validator --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.hibernate<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hibernate-validator<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>5.4.3.Final<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>下表汇总了 Hibernate Validator 各版本的传递依赖：</p>
+<table>
+<thead>
+<tr>
+<th>Hibernate Validator</th>
+<th>Java</th>
+<th>Bean Validation 规范</th>
+<th>Expression Language (EL) 规范</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a target="_blank" rel="noopener" href="http://hibernate.org/validator/releases/7.0/">7.0 series</a></td>
+<td>8, 11 or 17</td>
+<td><a target="_blank" rel="noopener" href="https://jakarta.ee/specifications/bean-validation/3.0/">Jakarta EE 9 - Bean Validation 3.0</a></td>
+<td><a target="_blank" rel="noopener" href="https://jakarta.ee/specifications/expression-language/4.0/">Jakarta EE 9 - Expression Language 4.0</a></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://hibernate.org/validator/releases/6.2/">6.2 series</a></td>
+<td>8, 11 or 17</td>
+<td><a target="_blank" rel="noopener" href="https://jakarta.ee/specifications/bean-validation/2.0/">Jakarta EE 8 - Bean Validation 2.0</a></td>
+<td><a target="_blank" rel="noopener" href="https://jakarta.ee/specifications/expression-language/3.0/">Jakarta EE 8 - Expression Language 3.0</a></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://hibernate.org/validator/releases/6.1/">6.1 series</a></td>
+<td>8, 11 or 17</td>
+<td><a target="_blank" rel="noopener" href="https://jakarta.ee/specifications/bean-validation/2.0/">Jakarta EE 8 - Bean Validation 2.0</a></td>
+<td><a target="_blank" rel="noopener" href="https://jakarta.ee/specifications/expression-language/3.0/">Jakarta EE 8 - Expression Language 3.0</a></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="http://hibernate.org/validator/releases/6.0/">6.0 series</a></td>
+<td>8, 11 or 17</td>
+<td><a target="_blank" rel="noopener" href="https://beanvalidation.org/2.0/">JavaEE 8 - Bean Validation 2.0 (JSR 380)</a></td>
+<td>Java EE 7 - Expression Language 3.0 (JSR 341)</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="http://hibernate.org/validator/releases/5.0/">5.0 series</a></td>
+<td>6 or 7</td>
+<td><a target="_blank" rel="noopener" href="https://beanvalidation.org/1.1/">JavaEE 7 - Bean Validation 1.1 (JSR 349)</a></td>
+<td>Java EE 7 - Expression Language 3.0 (JSR 341)</td>
+</tr>
+</tbody></table>
+<p>引入 Hibernate Validator 后，将传递依赖 Bean Validation API 规范相应的版本，无需重复引入：</p>
+<blockquote>
+<p>Hibernate’s Jakarta Bean Validation reference implementation. This transitively pulls in the dependency to the Bean Validation API.</p>
+</blockquote>
+<p>详见如下</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://search.maven.org/artifact/org.hibernate.validator/hibernate-validator">https://search.maven.org/artifact/org.hibernate.validator/hibernate-validator</a></li>
+<li><a target="_blank" rel="noopener" href="https://repo1.maven.org/maven2/org/hibernate/">/org/hibernate</a> 该子项目 parent pom.xml 的版本号定义</li>
+</ul>
+<h1 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h1><h2 id="分组约束"><a href="#分组约束" class="headerlink" title="分组约束"></a>分组约束</h2><p>如果我们想在新增的情况验证 id 和 name，而修改的情况验证 name 和 password，可以使用分组约束功能。</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/win7system/article/details/51241837">https://blog.csdn.net/win7system/article/details/51241837</a></p>
+<h2 id="组合约束"><a href="#组合约束" class="headerlink" title="组合约束"></a>组合约束</h2><p>参考 Bean Validation 文档：<a target="_blank" rel="noopener" href="https://beanvalidation.org/2.0/spec/#constraintsdefinitionimplementation-constraintcomposition">Constraint composition</a></p>
+<blockquote>
+<p>Constraint composition is useful in several ways:</p>
+<ul>
+<li>Avoid duplication and facilitate reuse of more primitive constraints.</li>
+<li>Expose primitive constraints as part of a composed constraint in the metadata API and enhance tool awareness.</li>
+</ul>
+<p>Composition is done by annotating a constraint annotation with the composing constraint annotations.</p>
+</blockquote>
+<h3 id="compose-constraints-via-a-logical-OR-or-NOT"><a href="#compose-constraints-via-a-logical-OR-or-NOT" class="headerlink" title="compose constraints via a logical OR or NOT"></a>compose constraints via a logical <em>OR</em> or <em>NOT</em></h3><p>参考 Hibernate 文档：<a target="_blank" rel="noopener" href="https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#section-boolean-constraint-composition">Boolean composition of constraints</a></p>
+<blockquote>
+<p>Jakarta Bean Validation specifies that the constraints of a composed constraint are all combined via a logical <em>AND</em>. This means all of the composing constraints need to return true to obtain an overall successful validation.</p>
+<p>Hibernate Validator offers an extension to this and allows you to compose constraints via a logical <em>OR</em> or <em>NOT</em>. To do so, you have to use the <code>@ConstraintComposition</code> annotation and the enum <code>CompositionType</code> with its values <code>AND</code>, <code>OR</code> and <code>ALL_FALSE</code>.</p>
+</blockquote>
+<h2 id="自定义约束"><a href="#自定义约束" class="headerlink" title="自定义约束"></a>自定义约束</h2><p>参考 Bean Validation 文档：<a target="_blank" rel="noopener" href="https://beanvalidation.org/2.0/spec/#constraintsdefinitionimplementation-validationimplementation">Constraint validation implementation</a></p>
+<h2 id="Dubbo-参数验证"><a href="#Dubbo-参数验证" class="headerlink" title="Dubbo 参数验证"></a>Dubbo 参数验证</h2><p><a target="_blank" rel="noopener" href="https://dubbo.apache.org/zh/docs/v2.7/user/examples/parameter-validation/">https://dubbo.apache.org/zh/docs/v2.7/user/examples/parameter-validation/</a></p>
+<h2 id="Spring-MVC-参数验证"><a href="#Spring-MVC-参数验证" class="headerlink" title="Spring MVC 参数验证"></a>Spring MVC 参数验证</h2><p>参考：</p>
+<p><a href="/posts/spring-mvc/#%E6%96%B9%E6%B3%95%E5%8F%82%E6%95%B0%E9%AA%8C%E8%AF%81">Spring MVC 方法参数验证</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.mydlq.club/article/49/">SpringBoot 中使用 <code>@Valid</code> 注解 + 全局异常处理器 优雅处理参数验证</a></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/vErmG-x8zSYJoNCWLovndg">@Validated 和 @Valid 的区别</a></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javaee/7/api/javax/validation/Valid.html"><code>@Valid</code></a> 由 Bean Validation 提供，由 Hibernate Validator 实现。</li>
+<li><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/validation/annotation/Validated.html"><code>@Validated</code></a> 由 Spring Validator 提供，是 <code>@Valid</code> 的变种，在使用上并没有区别，但在分组、注解位置、嵌套验证等功能上有所不同。</li>
+</ul>
+<h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><h2 id="缺少-Expression-Language-依赖"><a href="#缺少-Expression-Language-依赖" class="headerlink" title="缺少 Expression Language 依赖"></a>缺少 Expression Language 依赖</h2><p>以 Hibernate Validator 6.0 series 为例，查看其 pom.xml，会发现 Expression Language 依赖被声明为 <code>provided</code>：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.glassfish<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>javax.el<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>provided<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这表示该依赖在运行时由 Java EE container 容器提供，因此无须重复引入。但对于 Spring Boot 应用来说，则需要添加此依赖。如果缺少该依赖，则报错如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HV000183: Unable to load &#x27;javax.el.ExpressionFactory&#x27;. Check that you have the EL dependencies on the classpath, or use ParameterMessageInterpolator instead</span><br></pre></td></tr></table></figure>
+
+<p>问题原因：缺少 <code>Unified Expression Language (EL)</code> 规范的实现依赖，即 Glassfish。</p>
+<p>解决方案：</p>
+<blockquote>
+<p>Hibernate Validator also requires an implementation of the Unified Expression Language (<a target="_blank" rel="noopener" href="http://jcp.org/en/jsr/detail?id=341">JSR 341</a>) for evaluating dynamic expressions in constraint violation messages.</p>
+<p>When your application runs in a Java EE container such as <a target="_blank" rel="noopener" href="http://wildfly.org/">WildFly</a>, an EL implementation is already provided by the container.</p>
+<p>In a Java SE environment, however, you have to add an implementation as dependency to your POM file. For instance, you can add the following dependency to use the JSR 341 reference implementation:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.glassfish<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>javax.el<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.0.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>注意，要使用与 Hibernate Validator 匹配的 <code>Unified Expression Language (EL)</code> 的依赖版本。</p>
+<p>参考：<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/24386771/javax-validation-validationexception-hv000183-unable-to-load-javax-el-express">https://stackoverflow.com/questions/24386771/javax-validation-validationexception-hv000183-unable-to-load-javax-el-express</a></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://docs.oracle.com/javaee/7/index.html">https://docs.oracle.com/javaee/7/index.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://docs.oracle.com/javaee/7/api/index.html">https://docs.oracle.com/javaee/7/api/index.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://jakarta.ee/">https://jakarta.ee/</a></p>
+<p><a target="_blank" rel="noopener" href="https://jakarta.ee/specifications/bean-validation/">https://jakarta.ee/specifications/bean-validation/</a></p>
+<p><a target="_blank" rel="noopener" href="https://beanvalidation.org/">https://beanvalidation.org/</a></p>
+<p><a target="_blank" rel="noopener" href="https://beanvalidation.org/2.0/spec/">https://beanvalidation.org/2.0/spec/</a></p>
+<p><a target="_blank" rel="noopener" href="http://hibernate.org/validator/">http://hibernate.org/validator/</a></p>
+<p>baeldung</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.baeldung.com/javax-validation">https://www.baeldung.com/javax-validation</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.baeldung.com/javax-bigdecimal-validation">https://www.baeldung.com/javax-bigdecimal-validation</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.baeldung.com/javax-validation-method-constraints">https://www.baeldung.com/javax-validation-method-constraints</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.baeldung.com/spring-mvc-custom-validator">https://www.baeldung.com/spring-mvc-custom-validator</a></li>
+</ul>
+<p>《<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq2413273056/article/details/84378194">后台表单校验（JSR303）</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/x6_mNdtb6i2XmTiyz4kXrg">Spring Boot参数校验以及分组校验的使用</a>》</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/jakarta-bean-validation/" title="Jakarta EE 系列（三）Bean Validation 规范与实践总结">https://qidawu.github.io/posts/jakarta-bean-validation/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/jakarta-annotations/" rel="prev" title="Jakarta EE 系列（二）Annotations 通用注解规范总结">
+                  <i class="fa fa-chevron-left"></i> Jakarta EE 系列（二）Annotations 通用注解规范总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/jakarta-xml-binding/" rel="next" title="Jakarta EE 系列（四）XML Binding (JAXB) 规范与实践总结">
+                  Jakarta EE 系列（四）XML Binding (JAXB) 规范与实践总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="MySQL 支持两种读机制：  一致性非加锁读（Consistent Non-locking Reads），是 InnoDB 在 RR 隔离级别下处理 SELECT 查询语句的默认模式，用于实现多版本并发控制（MVCC）以解决不可重复读问题。由于无锁，并发性能高。 加锁读（Locking Reads），是 InnoDB 在 SERIALIZABLE  隔离级别下处理 SELECT 查询语句的默认模">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL 加锁读（Locking Reads）机制总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/mysql-locking-read/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="MySQL 支持两种读机制：  一致性非加锁读（Consistent Non-locking Reads），是 InnoDB 在 RR 隔离级别下处理 SELECT 查询语句的默认模式，用于实现多版本并发控制（MVCC）以解决不可重复读问题。由于无锁，并发性能高。 加锁读（Locking Reads），是 InnoDB 在 SERIALIZABLE  隔离级别下处理 SELECT 查询语句的默认模">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-02-20T14:05:04.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.925Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/mysql-locking-read/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/mysql-locking-read/","path":"posts/mysql-locking-read/","title":"MySQL 加锁读（Locking Reads）机制总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>MySQL 加锁读（Locking Reads）机制总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8A%A0%E9%94%81%E8%AF%BB%E6%9C%BA%E5%88%B6"><span class="nav-number">1.</span> <span class="nav-text">加锁读机制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B1%E4%BA%AB%E9%94%81%EF%BC%88%E8%AF%BB%E9%94%81%EF%BC%89"><span class="nav-number">1.1.</span> <span class="nav-text">共享锁（读锁）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%92%E5%AE%83%E9%94%81%EF%BC%88%E5%86%99%E9%94%81%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">排它锁（写锁）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%94%81%E5%AE%9A%E6%96%B9%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">锁定方式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9A%90%E5%BC%8F%E9%94%81%E5%AE%9A"><span class="nav-number">2.1.</span> <span class="nav-text">隐式锁定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%98%BE%E5%BC%8F%E9%94%81%E5%AE%9A"><span class="nav-number">2.2.</span> <span class="nav-text">显式锁定</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">3.</span> <span class="nav-text">例子</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#LOCK-IN-SHARE-MODE"><span class="nav-number">3.1.</span> <span class="nav-text">LOCK IN SHARE MODE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FOR-UPDATE"><span class="nav-number">3.2.</span> <span class="nav-text">FOR UPDATE</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/mysql-locking-read/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="MySQL 加锁读（Locking Reads）机制总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL 加锁读（Locking Reads）机制总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-02-20 22:05:04" itemprop="dateCreated datePublished" datetime="2019-02-20T22:05:04+08:00">2019-02-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>MySQL 支持两种读机制：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-consistent-read.html">一致性非加锁读（Consistent Non-locking Reads）</a>，是 InnoDB 在 <code>RR</code> 隔离级别下处理 SELECT 查询语句的默认模式，用于实现多版本并发控制（MVCC）以解决不可重复读问题。由于无锁，并发性能高。</li>
+<li><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-locking-reads.html">加锁读（Locking Reads）</a>，是 InnoDB 在 <code>SERIALIZABLE</code>  隔离级别下处理 SELECT 查询语句的默认模式，查询默认加共享锁读（S-Locking reads）。由于有锁，并发性能低（因为获取写锁需阻塞等待读锁释放）。</li>
+</ul>
+<h1 id="加锁读机制"><a href="#加锁读机制" class="headerlink" title="加锁读机制"></a>加锁读机制</h1><p><code>InnoDB</code> 支持两种类型的 <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_locking_read">加锁读（Locking Reads）</a>，为事务操作提供额外的<strong>安全性</strong>：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_shared_lock">共享锁（Shared Lock, S-Lock）</a>，也叫读锁（Read Lock）<ul>
+<li>语法：<code>SELECT ... LOCK IN SHARE MODE </code> or <code>SELECT ... FOR SHARE</code> in MySQL 8.0.1，在检索行上设置共享锁（s-lock）</li>
+<li>其它事务允许读取检索行，但不允许更新或删除，更新或删除会一直阻塞等待，直到该事务结束。</li>
+</ul>
+</li>
+<li><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_exclusive_lock">排它锁（Exclusive Lock, X-Lock）</a>，也叫写锁（Write Lock）<ul>
+<li>语法：<code>SELECT ... FOR UPDATE</code> 在检索行上设置排它锁（x-lock）</li>
+<li>其它事务不允许更新或删除</li>
+<li>不允许加共享锁读取 <code>SELECT ... LOCK IN SHARE MODE</code></li>
+<li>如果事务隔离级别为 <code>SERIALIZABLE</code>，不允许读取（因为该级别的读取默认需要获得共享读锁）</li>
+<li>上述操作将一直阻塞等待，直到该事务结束。</li>
+</ul>
+</li>
+</ul>
+<p>共享锁和排它锁之间存在冲突的四种情况总结如下：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>T1 持有共享锁（S-Lock）</th>
+<th>T1 持有排它锁（X-Lock）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>T2 获取共享锁（S-Lock）</strong></td>
+<td>兼容</td>
+<td>冲突</td>
+</tr>
+<tr>
+<td><strong>T2 获取排它锁（X-Lock）</strong></td>
+<td>冲突</td>
+<td>冲突</td>
+</tr>
+</tbody></table>
+<p>下面进一步分析共享锁和排它锁：</p>
+<h2 id="共享锁（读锁）"><a href="#共享锁（读锁）" class="headerlink" title="共享锁（读锁）"></a>共享锁（读锁）</h2><p>共享锁是共享性的，或者说是相互不阻塞的。持有该锁的多个事务允许同时读取同一个资源，而互不干扰。</p>
+<p>举个例子，如果事务 <code>T1</code> 持有对行 <code>r</code> 的共享锁，那么来自另一个事务 <code>T2</code> 的锁请求，将按如下两种方式处理：</p>
+<ul>
+<li><code>T2</code> 的共享锁请求能够立即授予。其结果是，<code>T1</code> 和 <code>T2</code> 都持有对行 <code>r</code> 的共享锁。</li>
+<li><code>T2</code> 的排它锁请求不被授予。</li>
+</ul>
+<h2 id="排它锁（写锁）"><a href="#排它锁（写锁）" class="headerlink" title="排它锁（写锁）"></a>排它锁（写锁）</h2><p>排它锁是排它性的，也就是说一个排它锁会阻塞其它的共享锁和排它锁，这是出于安全策略的考虑，只有这样，才能确保在给定的时间里，有且只有一个持有该锁的事务执行更新或删除操作，并防止其它事务读取正在操作的同一资源。</p>
+<p>举个例子，如果事务 <code>T1</code> 持有对行 <code>r</code> 的排它锁，那么来自另一个事务 <code>T2</code> 的<strong>任一锁请求都不被授予</strong>。相反，事务 <code>T2</code> 必须等待事务 <code>T1</code> 直到其释放对行 <code>r</code> 的锁定。</p>
+<h1 id="锁定方式"><a href="#锁定方式" class="headerlink" title="锁定方式"></a>锁定方式</h1><p>大多数时候，MySQL 锁的内部管理都是透明的，其表现如下：</p>
+<ul>
+<li><code>SELECT</code> 在 <code>InnoDB</code> 的读已提交（READ COMMITTED）、可重复读（REPEATABLE READ）这两种事务隔离级别下，默认采用<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-consistent-read.html">一致性非加锁读取</a>，因此<strong>无需加锁即可读取所需数据</strong>。</li>
+<li>如果需要使用<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-locking-reads.html">加锁读</a>提升数据安全性，实现悲观并发控制，可采用共享锁（<code>LOCK IN SHARE MODE</code>）或排它锁（<code>FOR UDPATE</code>）进行显式锁定。</li>
+<li><code>UPDATE</code>、<code>DELETE</code> 默认采用排它锁，隐式锁定。</li>
+</ul>
+<p>总结如下：</p>
+<table>
+<thead>
+<tr>
+<th>语句</th>
+<th>锁的类型</th>
+<th>锁定方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>SELECT ... FROM</code></td>
+<td>如果事务隔离为 SERIALIZABLE，使用共享锁。否则无锁。</td>
+<td>隐式锁定</td>
+</tr>
+<tr>
+<td><code>SELECT ... LOCK IN SHARE MODE</code></td>
+<td>共享锁（shared next-key lock）</td>
+<td>显式锁定</td>
+</tr>
+<tr>
+<td><code>SELECT ... FOR UDPATE</code></td>
+<td>排它锁（exclusive next-key lock）</td>
+<td>显式锁定</td>
+</tr>
+<tr>
+<td><code>UPDATE ... WHERE ...</code></td>
+<td>排它锁（exclusive next-key lock）</td>
+<td>隐式锁定</td>
+</tr>
+<tr>
+<td><code>DELETE FROM ... WHERE ...</code></td>
+<td>排它锁（exclusive next-key lock）</td>
+<td>隐式锁定</td>
+</tr>
+<tr>
+<td><code>INSERT</code></td>
+<td>排它锁（exclusive index-record lock）</td>
+<td>隐式锁定</td>
+</tr>
+</tbody></table>
+<h2 id="隐式锁定"><a href="#隐式锁定" class="headerlink" title="隐式锁定"></a>隐式锁定</h2><p><code>InnoDB</code> 采用的是两阶段锁定协议（Two-phase locking protocol）。在事务执行过程中，随时都可以执行锁定，锁只有在执行 <code>COMMIT</code> 或者 <code>ROLLBACK</code> 的时候才会释放，并且所有的锁是在同一时刻被释放。<code>InnoDB</code> 会根据隔离级别在需要的时候自动加锁，例如下列操作：</p>
+<ul>
+<li><code>UPDATE</code>、<code>DELETE</code> </li>
+</ul>
+<h2 id="显式锁定"><a href="#显式锁定" class="headerlink" title="显式锁定"></a>显式锁定</h2><p><code>InnoDB</code> 也支持通过特定语句进行显式锁定，这些语句不属于 SQL 规范：</p>
+<ul>
+<li><code>SELECT ... LOCK IN SHARE MODE</code>（共享锁）</li>
+<li><code>SELECT ... FOR UDPATE</code>（排它锁）</li>
+</ul>
+<p>MySQL 也支持 <code>LOCK TABLES</code> 和 <code>UNLOCK TABLE</code> 语句，这是在服务器层实现的，和存储引擎无关。它们有自己的用途，但并不能替代事务。如果应用需要用到事务，还是应该选择事务型存储引擎。</p>
+<p>经常可以发现，应用已经将表从 <code>MyISAM</code> 转换到 <code>InnoDB</code>，但还是显示地使用 <code>LOCK TABLE</code> 语句。这不但没有必要，还会严重影响性能，实际上 <code>InnoDB</code> 的行级锁工作得更好。</p>
+<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><p>这里举个例子，有一张 parent 和 child 表：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- parnet 表</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `parent` (</span><br><span class="line">  `id` <span class="type">bigint</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `name` <span class="type">varchar</span>(<span class="number">255</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`)</span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- child 表，其中 parent_id 字段外键关联 parent 表的 id 主键</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `child` (</span><br><span class="line">  `id` <span class="type">bigint</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `parent_id` <span class="type">bigint</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `name` <span class="type">varchar</span>(<span class="number">255</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`),</span><br><span class="line">  KEY `fk_parent_id` (`parent_id`),</span><br><span class="line">  <span class="keyword">CONSTRAINT</span> `fk_parent_id` <span class="keyword">FOREIGN</span> KEY (`parent_id`) <span class="keyword">REFERENCES</span> `parent` (`id`)</span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB;</span><br></pre></td></tr></table></figure>
+
+<p>如果在同一事务中先查询、后插入或更新相关数据，常规的 <code>SELECT</code> 语句无法得到足够保护。因为在此期间其它事务可能对同一资源进行更新或删除。例如：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--开启事务 T1</span></span><br><span class="line"><span class="keyword">START</span> TRANSACTION;</span><br><span class="line"><span class="comment">--为变量@id赋值</span></span><br><span class="line"><span class="keyword">set</span> <span class="variable">@id</span><span class="operator">=</span><span class="number">0</span>;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="variable">@id</span>:<span class="operator">=</span>id <span class="keyword">FROM</span> parent <span class="keyword">WHERE</span> name <span class="operator">=</span> <span class="string">&#x27;Heikki&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">--在此期间，某个事务 T2 成功删除了同一资源</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> parent <span class="keyword">WHERE</span> name <span class="operator">=</span> <span class="string">&#x27;Heikki&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">--事务 T1 插入失败：外键关联错误</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> child(parend_id, name) <span class="keyword">VALUES</span>(<span class="variable">@id</span>, <span class="string">&#x27;Baby&#x27;</span>);</span><br><span class="line"><span class="number">1452</span> <span class="operator">-</span> Cannot <span class="keyword">add</span> <span class="keyword">or</span> <span class="keyword">update</span> a child <span class="type">row</span>: a <span class="keyword">foreign</span> key <span class="keyword">constraint</span> fails (`test`.`child`, <span class="keyword">CONSTRAINT</span> `fk_parent_id` <span class="keyword">FOREIGN</span> KEY (`parent_id`) <span class="keyword">REFERENCES</span> `parent` (`id`))</span><br></pre></td></tr></table></figure>
+
+<p>下面分别看下如何用共享锁和排它锁解决这个问题：</p>
+<h2 id="LOCK-IN-SHARE-MODE"><a href="#LOCK-IN-SHARE-MODE" class="headerlink" title="LOCK IN SHARE MODE"></a>LOCK IN SHARE MODE</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--开启事务 T1</span></span><br><span class="line"><span class="keyword">START</span> TRANSACTION;</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> child <span class="keyword">where</span> parent_id <span class="operator">=</span> <span class="number">2</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">----+-----------+-------+</span></span><br><span class="line"><span class="operator">|</span> id <span class="operator">|</span> parent_id <span class="operator">|</span> name  <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+-----------+-------+</span></span><br><span class="line"><span class="operator">|</span>  <span class="number">1</span> <span class="operator">|</span>         <span class="number">2</span> <span class="operator">|</span> Baby  <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>  <span class="number">2</span> <span class="operator">|</span>         <span class="number">2</span> <span class="operator">|</span> Baby5 <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+-----------+-------+</span></span><br><span class="line"><span class="number">2</span> <span class="keyword">rows</span> <span class="keyword">in</span> <span class="keyword">set</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--在此期间，某个事务 T2 能够成功删除同一资源</span></span><br><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> child <span class="keyword">where</span> id <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line">Query OK, <span class="number">1</span> <span class="type">row</span> affected</span><br><span class="line"></span><br><span class="line"><span class="comment">--事务 T1 如果继续使用一致性非加锁读，将会得到第一次读取时的快照，因为 InnoDB 当前隔离级别为 RR</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> child <span class="keyword">where</span> parent_id <span class="operator">=</span> <span class="number">2</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">----+-----------+-------+</span></span><br><span class="line"><span class="operator">|</span> id <span class="operator">|</span> parent_id <span class="operator">|</span> name  <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+-----------+-------+</span></span><br><span class="line"><span class="operator">|</span>  <span class="number">1</span> <span class="operator">|</span>         <span class="number">2</span> <span class="operator">|</span> Baby  <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>  <span class="number">2</span> <span class="operator">|</span>         <span class="number">2</span> <span class="operator">|</span> Baby5 <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+-----------+-------+</span></span><br><span class="line"><span class="number">2</span> <span class="keyword">rows</span> <span class="keyword">in</span> <span class="keyword">set</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--事务 T1 如果使用加锁读，将会得到最新快照。同时事务 T1 获取该行的共享锁，其它任何事务都只能读、不能写该行，直到事务 T1 结束，释放共享锁</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> child <span class="keyword">where</span> parent_id <span class="operator">=</span> <span class="number">2</span> lock <span class="keyword">in</span> share mode;</span><br><span class="line"><span class="operator">+</span><span class="comment">----+-----------+-------+</span></span><br><span class="line"><span class="operator">|</span> id <span class="operator">|</span> parent_id <span class="operator">|</span> name  <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+-----------+-------+</span></span><br><span class="line"><span class="operator">|</span>  <span class="number">2</span> <span class="operator">|</span>         <span class="number">2</span> <span class="operator">|</span> Baby5 <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+-----------+-------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--在此期间，事务 T3 可以删除未被锁定的行</span></span><br><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> child <span class="keyword">where</span> id <span class="operator">=</span> <span class="number">3</span>;</span><br><span class="line">Query OK, <span class="number">1</span> <span class="type">row</span> affected</span><br><span class="line"></span><br><span class="line"><span class="comment">--在此期间，事务 T3 无法删除带锁的行。因为它无法获取该行的排它锁，因此会阻塞直到事务 T1 解锁该行。如果等待超时，则事务回滚</span></span><br><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> child <span class="keyword">where</span> id <span class="operator">=</span> <span class="number">2</span></span><br><span class="line"><span class="number">1205</span> <span class="operator">-</span> Lock wait timeout exceeded; try restarting transaction</span><br><span class="line"></span><br><span class="line"><span class="comment">--事务 T1 提交，释放共享锁</span></span><br><span class="line"><span class="keyword">commit</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">--事务 T3 如果没有超时，则操作成功</span></span><br><span class="line">Query OK, <span class="number">1</span> <span class="type">row</span> affected</span><br></pre></td></tr></table></figure>
+
+<h2 id="FOR-UPDATE"><a href="#FOR-UPDATE" class="headerlink" title="FOR UPDATE"></a>FOR UPDATE</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--开启事务 T1</span></span><br><span class="line"><span class="keyword">START</span> TRANSACTION;</span><br><span class="line"><span class="comment">--事务 T1 获取该行的排它锁</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> child <span class="keyword">where</span> parent_id <span class="operator">=</span> <span class="number">2</span> <span class="keyword">for</span> <span class="keyword">update</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">--在此期间，事务 T2 可以非加锁读，因为无需先获取该行的锁</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> child <span class="keyword">where</span> parent_id <span class="operator">=</span> <span class="number">2</span>;</span><br><span class="line"><span class="comment">--也可以加共享锁读非锁定行</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> child <span class="keyword">where</span> parent_id <span class="operator">=</span> <span class="number">3</span> lock <span class="keyword">in</span> share mode;</span><br><span class="line"><span class="comment">--但无法加共享锁读锁定行</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> child <span class="keyword">where</span> parent_id <span class="operator">=</span> <span class="number">2</span> lock <span class="keyword">in</span> share mode;</span><br><span class="line"><span class="comment">--也无法获取排它锁进行修改</span></span><br><span class="line"><span class="keyword">update</span> child <span class="keyword">set</span> name <span class="operator">=</span> <span class="string">&#x27;Hello&#x27;</span> <span class="keyword">where</span> parent_id <span class="operator">=</span> <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+
+<p>————分割线————</p>
+<p>可见，通过共享锁和排它锁都能解决这个问题。下例演示通过 <code>SELECT ... LOCK IN SHARE MODE </code> 设置共享锁解决开头那个问题：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--开启事务 T1</span></span><br><span class="line"><span class="keyword">START</span> TRANSACTION;</span><br><span class="line"><span class="comment">--为变量@id赋值</span></span><br><span class="line"><span class="keyword">set</span> <span class="variable">@id</span><span class="operator">=</span><span class="number">0</span>;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="variable">@id</span>:<span class="operator">=</span>id <span class="keyword">FROM</span> parent <span class="keyword">WHERE</span> NAME <span class="operator">=</span> <span class="string">&#x27;Heikki&#x27;</span> LOCK <span class="keyword">IN</span> SHARE MODE;</span><br><span class="line"></span><br><span class="line"><span class="comment">--在此期间，某个事务 T2 无法删除同一资源。因为 T2 会一直等待，直到 T1 事务完成，所有数据都处于一致状态，并释放共享锁之后，T2 才能获取排它锁，并对数据进行修改</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> parent <span class="keyword">WHERE</span> name <span class="operator">=</span> <span class="string">&#x27;Heikki&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">--事务 T1 插入成功</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> child(parend_id, name) <span class="keyword">VALUES</span>(<span class="variable">@id</span>, <span class="string">&#x27;Baby&#x27;</span>);</span><br><span class="line"><span class="comment">--提交事务 T1，写库</span></span><br><span class="line"><span class="keyword">COMMIT</span>;</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>T1</code> 成功提交事务并释放共享锁之后，<code>T2 </code> 获得排它锁。但由于 <code>T1</code> 在 <code>child</code> 表中写入了一条对 <code>parent</code> 表的外键关联记录，所以 <code>T2</code> 删除失败：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1451</span> <span class="operator">-</span> Cannot <span class="keyword">delete</span> <span class="keyword">or</span> <span class="keyword">update</span> a parent <span class="type">row</span>: a <span class="keyword">foreign</span> key <span class="keyword">constraint</span> fails (`test`.`child`, <span class="keyword">CONSTRAINT</span> `fk_parent_id` <span class="keyword">FOREIGN</span> KEY (`parent_id`) <span class="keyword">REFERENCES</span> `parent` (`id`))</span><br></pre></td></tr></table></figure>
+
+<p>最后，提几个注意点：</p>
+<ul>
+<li>只有在通过以下方式之一禁用<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-autocommit-commit-rollback.html">自动提交（autocommit）</a>时，才能加锁读：<ul>
+<li>通过 <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/commit.html"><code>START TRANSACTION</code></a> 语句，显式开启事务；</li>
+<li>通过设置 <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_autocommit"><code>autocommit</code></a>为 <code>0</code>，显式关闭自动提交。</li>
+</ul>
+</li>
+<li>加锁读有可能产生<strong>死锁</strong>，具体取决于事务的隔离级别。</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《高性能 MySQL》</p>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Two-phase_locking">https://en.wikipedia.org/wiki/Two-phase_locking</a></p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-consistent-read.html">https://dev.mysql.com/doc/refman/5.7/en/innodb-consistent-read.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-locking-reads.html">https://dev.mysql.com/doc/refman/5.7/en/innodb-locking-reads.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/claram/article/details/54023216">https://blog.csdn.net/claram/article/details/54023216</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/mysql-locking-read/" title="MySQL 加锁读（Locking Reads）机制总结">https://qidawu.github.io/posts/mysql-locking-read/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/concurrency-control/" rel="prev" title="并发编程系列（一）两种并发控制机制的总结">
+                  <i class="fa fa-chevron-left"></i> 并发编程系列（一）两种并发控制机制的总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/mysql-locking-and-index/" rel="next" title="MySQL 锁粒度与索引总结">
+                  MySQL 锁粒度与索引总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

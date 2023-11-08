@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Shell 命令简单命令（Simple Commands）即单个命令。 管道（Pipelines）  pipeline（管道）是一个或多个命令的序列，用字符 | 分隔。管道的命令格式如下： 1command [ | command2 ... ]  管道的特点如下：  管道是一个由“标准输入输出”链接起来的进程集合； 管道中的每个命令都作为单独的进程来执行（即在一个子 shell 中启动）； 每一个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GUN&#x2F;Bash 系列（四）Shell 管道、重定向、序列、复合命令总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/gnu-bash-shell-commands/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="Shell 命令简单命令（Simple Commands）即单个命令。 管道（Pipelines）  pipeline（管道）是一个或多个命令的序列，用字符 | 分隔。管道的命令格式如下： 1command [ | command2 ... ]  管道的特点如下：  管道是一个由“标准输入输出”链接起来的进程集合； 管道中的每个命令都作为单独的进程来执行（即在一个子 shell 中启动）； 每一个">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wizardzines.com/comics/bash-pipes/bash-pipes.png">
+<meta property="og:image" content="https://wizardzines.com/comics/pipes/pipes.png">
+<meta property="og:image" content="https://qidawu.github.io/img/gnu-text-utilities/pipe.png">
+<meta property="og:image" content="https://wizardzines.com/comics/file-descriptors/file-descriptors.png">
+<meta property="og:image" content="https://wizardzines.com/comics/redirects/redirects.png">
+<meta property="og:image" content="https://wizardzines.com/comics/bash-if-statements/bash-if-statements.png">
+<meta property="og:image" content="https://wizardzines.com/comics/bash-for-loops/bash-for-loops.png">
+<meta property="article:published_time" content="2015-03-12T13:41:04.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.915Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="GNU&#x2F;Linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wizardzines.com/comics/bash-pipes/bash-pipes.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/gnu-bash-shell-commands/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/gnu-bash-shell-commands/","path":"posts/gnu-bash-shell-commands/","title":"GUN/Bash 系列（四）Shell 管道、重定向、序列、复合命令总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>GUN/Bash 系列（四）Shell 管道、重定向、序列、复合命令总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Shell-%E5%91%BD%E4%BB%A4"><span class="nav-number">1.</span> <span class="nav-text">Shell 命令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E5%91%BD%E4%BB%A4%EF%BC%88Simple-Commands%EF%BC%89"><span class="nav-number">1.1.</span> <span class="nav-text">简单命令（Simple Commands）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%A1%E9%81%93%EF%BC%88Pipelines%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">管道（Pipelines）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E5%AE%9A%E5%90%91%EF%BC%88Redirection%EF%BC%89"><span class="nav-number">1.3.</span> <span class="nav-text">重定向（Redirection）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%8F%E8%BF%B0%E7%AC%A6%EF%BC%88Descriptor-Number%EF%BC%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">描述符（Descriptor Number）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%E7%AC%A6%EF%BC%88Operator%EF%BC%89"><span class="nav-number">1.3.2.</span> <span class="nav-text">操作符（Operator）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%8F%E5%88%97%EF%BC%88Lists-of-Commands%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">序列（Lists of Commands）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%80%E5%87%BA%E7%8A%B6%E6%80%81%EF%BC%88Exit-Status%EF%BC%89"><span class="nav-number">1.4.1.</span> <span class="nav-text">退出状态（Exit Status）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.4.2.</span> <span class="nav-text">使用场景</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%8D%E5%90%88%E5%91%BD%E4%BB%A4%EF%BC%88Compound-Commands%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">复合命令（Compound Commands）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1"><span class="nav-number">1.5.1.</span> <span class="nav-text">1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#if-statements"><span class="nav-number">1.5.2.</span> <span class="nav-text">if statements</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#for-loops"><span class="nav-number">1.5.3.</span> <span class="nav-text">for loops</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">2.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/gnu-bash-shell-commands/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="GUN/Bash 系列（四）Shell 管道、重定向、序列、复合命令总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          GUN/Bash 系列（四）Shell 管道、重定向、序列、复合命令总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2015-03-12 21:41:04" itemprop="dateCreated datePublished" datetime="2015-03-12T21:41:04+08:00">2015-03-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="Shell-命令"><a href="#Shell-命令" class="headerlink" title="Shell 命令"></a>Shell 命令</h1><h2 id="简单命令（Simple-Commands）"><a href="#简单命令（Simple-Commands）" class="headerlink" title="简单命令（Simple Commands）"></a>简单命令（Simple Commands）</h2><p>即单个命令。</p>
+<h2 id="管道（Pipelines）"><a href="#管道（Pipelines）" class="headerlink" title="管道（Pipelines）"></a>管道（Pipelines）</h2><p><img src="https://wizardzines.com/comics/bash-pipes/bash-pipes.png" alt="bash pipes"></p>
+<p><img src="https://wizardzines.com/comics/pipes/pipes.png" alt="pipes"></p>
+<p>pipeline（管道）是一个或多个命令的序列，用字符 | 分隔。管道的命令格式如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">command</span> [ | command2 ... ]</span><br></pre></td></tr></table></figure>
+
+<p>管道的特点如下：</p>
+<ul>
+<li>管道是一个由“标准输入输出”链接起来的进程集合；</li>
+<li>管道中的每个命令都作为单独的进程来执行（即在一个子 shell 中启动）；</li>
+<li>每一个进程的输出（stdout）被直接作为下一个进程的输入（stdin）；</li>
+<li>管道命令不处理 standard error output（stderr）；</li>
+<li>管道的符号为：<code>|</code></li>
+</ul>
+<p>管道的处理流程如下图：</p>
+<p><img src="/img/gnu-text-utilities/pipe.png" alt="pipe"></p>
+<h2 id="重定向（Redirection）"><a href="#重定向（Redirection）" class="headerlink" title="重定向（Redirection）"></a>重定向（Redirection）</h2><h3 id="描述符（Descriptor-Number）"><a href="#描述符（Descriptor-Number）" class="headerlink" title="描述符（Descriptor Number）"></a>描述符（Descriptor Number）</h3><table>
+<thead>
+<tr>
+<th>描述符</th>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>0</code></td>
+<td><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Standard_streams#Standard_input_(stdin)"><code>stdin</code></a></td>
+<td>标准输入（Standard input）</td>
+</tr>
+<tr>
+<td><code>1</code></td>
+<td><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Standard_streams#Standard_output_(stdout)"><code>stdout</code></a></td>
+<td>标准输出（Standard output）</td>
+</tr>
+<tr>
+<td><code>2</code></td>
+<td><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Standard_streams#Standard_error_(stderr)"><code>stderr</code></a></td>
+<td>标准错误输出（Standard error）</td>
+</tr>
+</tbody></table>
+<p><img src="https://wizardzines.com/comics/file-descriptors/file-descriptors.png" alt="file descriptors"></p>
+<h3 id="操作符（Operator）"><a href="#操作符（Operator）" class="headerlink" title="操作符（Operator）"></a>操作符（Operator）</h3><table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;</code></td>
+<td>重定向输入（Redirecting Input）</td>
+</tr>
+<tr>
+<td><code>&gt;</code></td>
+<td>重定向输出（Redirecting Output），与 <code>1&gt;</code> 等价</td>
+</tr>
+<tr>
+<td><code>&gt;&gt;</code></td>
+<td>追加到重定向输出（Appending Redirected Output）</td>
+</tr>
+<tr>
+<td><code>2&gt;</code></td>
+<td>重定向错误输出（Redirecting Error）</td>
+</tr>
+<tr>
+<td><code>2&gt;&gt;</code></td>
+<td>追加到重定向错误输出（Appending Redirected Error）</td>
+</tr>
+<tr>
+<td><code>&amp;&gt;</code></td>
+<td>重定向标准输出和标准错误输出（Redirecting Standard Output and Standard Error）。 <strong>推荐使用</strong>，它与 <code>&gt;word 2&gt;&amp;1</code> 在语义上等价</td>
+</tr>
+<tr>
+<td><code>&gt;&amp;</code></td>
+<td>同上，但不推荐使用</td>
+</tr>
+<tr>
+<td><code>2&gt;&amp;1</code></td>
+<td>将标准错误输出重定向到标准输出</td>
+</tr>
+</tbody></table>
+<p><img src="https://wizardzines.com/comics/redirects/redirects.png" alt="redirects"></p>
+<p>在命令执行前，它的输入和输出可能被 redirected (重定向)，该功能可以用于如下场景：</p>
+<ul>
+<li>屏幕输出的信息很重要，而且需要将它存下来时；</li>
+<li>一些运行命令的可能已知错误信息，想以 <code>2&gt; /dev/null</code> 将它丢掉；</li>
+<li>一些系统的例行命令（例如写在 <code>/etc/crontab</code>）的运行结果，需要存下来时；</li>
+<li>错误信息与正确信息需要分别输出时。</li>
+</ul>
+<p>例子：</p>
+<p>快速创建带内容的文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">echo</span> <span class="string">&quot;hello world&quot;</span> &gt; /tmp/file</span><br></pre></td></tr></table></figure>
+
+<p>将 <code>stdout</code> 和 <code>stderr</code> 都重定向到本地日志文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar app.jar &gt;/tmp/stdout.log 2&gt;&amp;1</span><br></pre></td></tr></table></figure>
+
+<p>将 <code>stdout</code> 和 <code>stderr</code> 都丢弃（等价操作）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">java -jar app.jar &gt;/dev/null 2&gt;&amp;1</span><br><span class="line">java -jar app.jar &amp;&gt;/dev/null</span><br></pre></td></tr></table></figure>
+
+<h2 id="序列（Lists-of-Commands）"><a href="#序列（Lists-of-Commands）" class="headerlink" title="序列（Lists of Commands）"></a>序列（Lists of Commands）</h2><p>list（序列）是一个或多个管道，用操作符 <code>;</code>、<code>&amp;</code>、<code>&amp;&amp;</code>、<code>||</code> 分隔的序列, 并且可以选择用 <code>;</code>、<code>&amp;</code>、<code>&lt;newline&gt;</code> 新行符结束。</p>
+<table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>例子</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&amp;&amp;</code></td>
+<td>command1 &amp;&amp; command2</td>
+<td>一个 AND 序列。command2 只有在 command1 返回 0 时才被执行</td>
+</tr>
+<tr>
+<td><code>&#124;&#124;</code></td>
+<td>command1 &#124;&#124; command2</td>
+<td>一个 OR 序列。command2 只有在 command1 返回非 0 状态时才被执行</td>
+</tr>
+<tr>
+<td><code>;</code></td>
+<td>command1; command2</td>
+<td>结束一个序列。不考虑命令的退出状态，连续执行命令</td>
+</tr>
+<tr>
+<td><code>&lt;newline&gt;</code></td>
+<td>command&lt;newline&gt;</td>
+<td>结束一个序列</td>
+</tr>
+<tr>
+<td><code>&amp;</code></td>
+<td>command1 &amp;</td>
+<td>如果一个命令是由 &amp; 结束的, shell 将在后台的子 shell 中执行这个命令</td>
+</tr>
+</tbody></table>
+<ul>
+<li>AND 和 OR 序列的返回状态是序列中最后执行的命令的返回状态。</li>
+<li>这些序列操作符中， <code>&amp;&amp;</code> 和 <code>||</code> 优先级相同， <code>;</code> 和 <code>&amp;</code> 优先级相同。</li>
+</ul>
+<h3 id="退出状态（Exit-Status）"><a href="#退出状态（Exit-Status）" class="headerlink" title="退出状态（Exit Status）"></a>退出状态（Exit Status）</h3><ul>
+<li>从 shell 的角度看，一个命令退出状态是 0 意味着成功退出。 非零状态值表明失败。</li>
+<li>如果没有找到命令，为执行它而创建的子进程返回 127。</li>
+<li>如果找到了命令但是文件不可执行，返回状态是 126。</li>
+<li>如果命令由于扩展或重定向错误而失败，退出状态大于零。</li>
+</ul>
+<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><p>在某些情况下，很多命令我想要一次输入去运行，有两种方法：</p>
+<ol>
+<li>Shell Script</li>
+<li>使用序列</li>
+</ol>
+<p>例如，一串无人值守源代码形式安装的命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ./configure &amp;&amp; make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+
+<h2 id="复合命令（Compound-Commands）"><a href="#复合命令（Compound-Commands）" class="headerlink" title="复合命令（Compound Commands）"></a>复合命令（Compound Commands）</h2><p>compound command（复合命令）是如下情况之一：</p>
+<h3 id="1"><a href="#1" class="headerlink" title="1"></a>1</h3><ul>
+<li><code>(list)</code></li>
+<li><code>&#123; list; &#125;</code></li>
+<li><code>((expression))</code></li>
+<li><code>[[ expression ]]</code></li>
+</ul>
+<h3 id="if-statements"><a href="#if-statements" class="headerlink" title="if statements"></a>if statements</h3><ul>
+<li><code>if list; then list; [ elif list; then list; ] ... [ else list; ] fi</code></li>
+</ul>
+<p><img src="https://wizardzines.com/comics/bash-if-statements/bash-if-statements.png" alt="bash if statements"></p>
+<ul>
+<li><code>select name [ in word ] ; do list ; done</code></li>
+<li><code>case word in [ [(] pattern [ | pattern ] </code></li>
+</ul>
+<blockquote>
+<p>select in 通常和 case in 一起使用，在用户输入不同的编号时可以做出不同的反应，见：<a target="_blank" rel="noopener" href="https://blog.csdn.net/yrx420909/article/details/104308041">https://blog.csdn.net/yrx420909/article/details/104308041</a></p>
+</blockquote>
+<h3 id="for-loops"><a href="#for-loops" class="headerlink" title="for loops"></a>for loops</h3><ul>
+<li><p><code>while list; do list; done</code></p>
+</li>
+<li><p><code>until list; do list; done</code></p>
+</li>
+<li><p><code>for name [ in word ] ; do list ; done</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 声明一个数组变量</span></span><br><span class="line">order_array=(</span><br><span class="line">  10000</span><br><span class="line">  10001</span><br><span class="line">  10002</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 循环打印与保存到文件</span></span><br><span class="line"><span class="keyword">for</span> <span class="built_in">id</span> <span class="keyword">in</span> <span class="variable">$&#123;order_array[@]&#125;</span></span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="string">&quot;order is <span class="variable">$id</span>&quot;</span> | <span class="built_in">tee</span> -a result.txt</span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure></li>
+<li><p><code>for (( expr1 ; expr2 ; expr3 )) ; do list ; done</code></p>
+</li>
+</ul>
+<p><img src="https://wizardzines.com/comics/bash-for-loops/bash-for-loops.png" alt="bash for loops"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Arrays">https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Arrays</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Shell-Commands">https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Shell-Commands</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/gnu-bash-shell-commands/" title="GUN&#x2F;Bash 系列（四）Shell 管道、重定向、序列、复合命令总结">https://qidawu.github.io/posts/gnu-bash-shell-commands/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/GNU-Linux/" rel="tag"># GNU/Linux</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/gnu-bash-shell-quoting-and-params/" rel="prev" title="GUN/Bash 系列（三）Shell 引用与参数总结">
+                  <i class="fa fa-chevron-left"></i> GUN/Bash 系列（三）Shell 引用与参数总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/gnu-bash-shell-builtin-commands/" rel="next" title="GUN/Bash 系列（五）Shell 内建命令总结">
+                  GUN/Bash 系列（五）Shell 内建命令总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

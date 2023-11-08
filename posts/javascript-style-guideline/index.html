@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言在团队开发中，所有的代码看起来风格一致是极其重要的，原因有以下几点：  任何开发者都不会在乎某个文件的作者是谁，因为所有代码排版格式看起来应当是非常一致，不该花费额外精力去理解代码逻辑并重新排版。 风格一致能够让人很容易识别出问题代码并发现错误。如果所有代码看起来很像，当你看到一段与众不同的代码时，很可能错误就产生在这段代码中。  当项目变得庞大时，统一的编程风格能够节省的大量时间成本。 基本">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Javascript 编程风格规范">
+<meta property="og:url" content="https://qidawu.github.io/posts/javascript-style-guideline/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="前言在团队开发中，所有的代码看起来风格一致是极其重要的，原因有以下几点：  任何开发者都不会在乎某个文件的作者是谁，因为所有代码排版格式看起来应当是非常一致，不该花费额外精力去理解代码逻辑并重新排版。 风格一致能够让人很容易识别出问题代码并发现错误。如果所有代码看起来很像，当你看到一段与众不同的代码时，很可能错误就产生在这段代码中。  当项目变得庞大时，统一的编程风格能够节省的大量时间成本。 基本">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-03-09T14:03:01.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.922Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="前端">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/javascript-style-guideline/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/javascript-style-guideline/","path":"posts/javascript-style-guideline/","title":"Javascript 编程风格规范"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Javascript 编程风格规范 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E7%BC%96%E7%A8%8B%E9%A3%8E%E6%A0%BC"><span class="nav-number">2.</span> <span class="nav-text">基本编程风格</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%A9%E8%BF%9B%E5%B1%82%E7%BA%A7"><span class="nav-number">2.1.</span> <span class="nav-text">缩进层级</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%8C%E7%9A%84%E9%95%BF%E5%BA%A6"><span class="nav-number">2.2.</span> <span class="nav-text">行的长度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%AD%E5%8F%A5%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.3.</span> <span class="nav-text">语句格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%E7%AC%A6%E9%97%B4%E9%9A%94"><span class="nav-number">2.4.</span> <span class="nav-text">操作符间隔</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E9%87%8A%E5%A3%B0%E6%98%8E"><span class="nav-number">2.5.</span> <span class="nav-text">注释声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%98%E9%87%8F%E5%91%BD%E5%90%8D"><span class="nav-number">2.6.</span> <span class="nav-text">变量命名</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E9%87%8F"><span class="nav-number">2.6.1.</span> <span class="nav-text">常量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-number">2.6.2.</span> <span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E5%8F%98%E9%87%8F"><span class="nav-number">2.6.3.</span> <span class="nav-text">函数变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DOM-%E5%8F%98%E9%87%8F"><span class="nav-number">2.6.4.</span> <span class="nav-text">DOM 变量</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A6%81%E6%AD%A2%E4%BD%BF%E7%94%A8%E7%9A%84"><span class="nav-number">2.7.</span> <span class="nav-text">禁止使用的</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8C%85%E8%A3%85%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.7.1.</span> <span class="nav-text">包装类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%89%E5%8F%B7%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="nav-number">2.7.2.</span> <span class="nav-text">等号操作符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C"><span class="nav-number">2.7.3.</span> <span class="nav-text">代码执行</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A9%BA%E9%93%BE%E6%8E%A5%E8%B7%B3%E8%BD%AC"><span class="nav-number">2.8.</span> <span class="nav-text">空链接跳转</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%9B%E9%98%B6%E7%BC%96%E7%A8%8B%E9%A3%8E%E6%A0%BC"><span class="nav-number">3.</span> <span class="nav-text">进阶编程风格</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%98%E9%87%8F%E5%A3%B0%E6%98%8E"><span class="nav-number">3.1.</span> <span class="nav-text">变量声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E5%A3%B0%E6%98%8E"><span class="nav-number">3.2.</span> <span class="nav-text">函数声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-number">3.3.</span> <span class="nav-text">函数表达式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AB%8B%E5%8D%B3%E6%89%A7%E8%A1%8C%E7%9A%84%E5%87%BD%E6%95%B0"><span class="nav-number">3.4.</span> <span class="nav-text">立即执行的函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E7%A7%81%E6%9C%89%E4%BD%9C%E7%94%A8%E5%9F%9F"><span class="nav-number">3.4.1.</span> <span class="nav-text">创建私有作用域</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/javascript-style-guideline/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Javascript 编程风格规范 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Javascript 编程风格规范
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-03-09 22:03:01" itemprop="dateCreated datePublished" datetime="2016-03-09T22:03:01+08:00">2016-03-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在团队开发中，所有的代码看起来风格一致是极其重要的，原因有以下几点：</p>
+<ul>
+<li>任何开发者都不会在乎某个文件的作者是谁，因为所有代码排版格式看起来应当是非常一致，不该花费额外精力去理解代码逻辑并重新排版。</li>
+<li>风格一致能够让人很容易识别出问题代码并发现错误。如果所有代码看起来很像，当你看到一段与众不同的代码时，很可能错误就产生在这段代码中。</li>
+</ul>
+<p>当项目变得庞大时，统一的编程风格能够节省的大量时间成本。</p>
+<h1 id="基本编程风格"><a href="#基本编程风格" class="headerlink" title="基本编程风格"></a>基本编程风格</h1><p>本节编程风格（Style Guideline）是用于规范单文件中的代码，使团队编程风格保持一致。</p>
+<h2 id="缩进层级"><a href="#缩进层级" class="headerlink" title="缩进层级"></a>缩进层级</h2><p>每一行的层级由 <strong>四个空格</strong> 组成，避免使用制表符（Tab）进行缩进，以便在所有的系统和编辑器中，文件的展现格式不会有任何差异。建议在文本编辑器中配置敲击 <code>Tab</code> 键时插入四个空格。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 好的写法</span><br><span class="line"><span class="keyword">if</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    doSomething();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="行的长度"><a href="#行的长度" class="headerlink" title="行的长度"></a>行的长度</h2><p>每行长度不应该超过 80 个字符。如果一行多于 80 个字符，应当在一个<strong>运算符（逗号、加号等）后换行</strong>。下一行应当<strong>增加两级缩进（8 个字符）</strong>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// 好的写法</span><br><span class="line">doSomething(arg1, arg2, arg3, arg4,</span><br><span class="line">        arg5);</span><br><span class="line"></span><br><span class="line">// 不好的写法：第二行只有 4 个空格的缩进</span><br><span class="line">doSomething(arg1, arg2, arg3, arg4,</span><br><span class="line">    arg5);</span><br><span class="line"></span><br><span class="line">// 不好的写法：在运算符之前换行</span><br><span class="line">doSomething(arg1, arg2, arg3, arg4</span><br><span class="line">        , arg5);</span><br></pre></td></tr></table></figure>
+
+<h2 id="语句格式"><a href="#语句格式" class="headerlink" title="语句格式"></a>语句格式</h2><ul>
+<li>始终使用分号 <code>;</code> 结束一个语句。禁止省略分号，因为：<ul>
+<li>后续使用构建工具时，可以通过自动删除多余的空格和换行来压缩代码行（代码行结尾处没有分号会导致压缩错误）。</li>
+<li>在某些情况下增进代码的性能，因为这样解析器就不必再花时间推测应该在哪里插入分号了。</li>
+<li>避免解析器错误的插入分号，导致程序报错。</li>
+</ul>
+</li>
+<li>始终使用花括号 <code>&#123;&#125;</code> 包住块语句，可以让编程意图更清晰，降低修改代码时出错的几率。</li>
+</ul>
+<p>这里展示了一些例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 不好的写法，缺少花括号</span></span><br><span class="line"><span class="keyword">if</span> (condition)</span><br><span class="line">    <span class="title function_">doSomething</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 不好的写法，左花括号应当放在块语句中第一句代码的末尾</span></span><br><span class="line"><span class="keyword">if</span> (condition)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="title function_">doSomething</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 不好的写法，缺少空格间隔</span></span><br><span class="line"><span class="keyword">if</span>(condition)&#123;</span><br><span class="line">    <span class="title function_">doSomething</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 不好的写法，缺少适当的换行</span></span><br><span class="line"><span class="keyword">if</span> (condition) &#123; <span class="title function_">doSomething</span>(); &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 不好的写法，缺少分号结尾</span></span><br><span class="line"><span class="keyword">if</span> (condition) &#123;</span><br><span class="line">    <span class="title function_">doSomething</span>()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 好的写法</span></span><br><span class="line"><span class="keyword">if</span> (condition) &#123;</span><br><span class="line">    <span class="title function_">doSomething</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="操作符间隔"><a href="#操作符间隔" class="headerlink" title="操作符间隔"></a>操作符间隔</h2><p>二元操作符（如赋值、逻辑运算）前后必须使用一个空格来保持表达式的整洁。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 好的写法</span></span><br><span class="line"><span class="keyword">var</span> found = (value[i] === item);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 不好的写法：丢失了空格</span></span><br><span class="line"><span class="keyword">var</span> found=(value[i]===item);</span><br></pre></td></tr></table></figure>
+
+<h2 id="注释声明"><a href="#注释声明" class="headerlink" title="注释声明"></a>注释声明</h2><p>注释有时候可以用于给一段代码声明额外的信息。这些声明的格式如下：</p>
+<table>
+<thead>
+<tr>
+<th>注释声明</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>TODO</code></td>
+<td>说明代码还未完成。此时应当描述下一步要做的事情。</td>
+</tr>
+<tr>
+<td><code>HACK</code></td>
+<td>说明代码实现走了一个捷径。此时应当描述为何使用 hack 的原因。这也可能表明该问题可能会有更好的解决方法。</td>
+</tr>
+<tr>
+<td><code>FIXME</code></td>
+<td>说明代码是有问题的需要尽快修复。此时应当描述问题出在哪里，或者提供解决方案。</td>
+</tr>
+<tr>
+<td><code>REVIEW</code></td>
+<td>说明代码任何可能的改动都需要评审。</td>
+</tr>
+</tbody></table>
+<p>注释声明可以用于单行或多行注释，例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// <span class="doctag">TODO:</span> 我希望找到一种效率更快的实现方式</span></span><br><span class="line"><span class="title function_">doSomething</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * <span class="doctag">HACK:</span> 不得不针对 IE 做的特殊处理。我计划后续有时间时</span></span><br><span class="line"><span class="comment"> * 重写这部分。这些代码可能需要在 v1.2 版本之后替换掉。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">if</span> (<span class="variable language_">document</span>.<span class="property">all</span>) &#123;</span><br><span class="line">    <span class="title function_">doSomething</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="变量命名"><a href="#变量命名" class="headerlink" title="变量命名"></a>变量命名</h2><ul>
+<li>变量命名使用小驼峰式（Camel Case）命名法，即以小写字母开头，后续每个单词首字母都大写。</li>
+<li>常量命名使用大写字母和下划线。</li>
+<li>私有属性、方法使用下划线前缀：<code>_</code>。</li>
+</ul>
+<h3 id="常量"><a href="#常量" class="headerlink" title="常量"></a>常量</h3><p>所有字母大写，不同单词之间用单个下划线 <code>_</code> 分隔。</p>
+<h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><p>构造函数使用大驼峰式（Pascal Case）命名法，即以大写字母开头，后续每个单词首字母都大写。</p>
+<h3 id="函数变量"><a href="#函数变量" class="headerlink" title="函数变量"></a>函数变量</h3><p>函数变量使用前缀：<code>fn</code>。</p>
+<h3 id="DOM-变量"><a href="#DOM-变量" class="headerlink" title="DOM 变量"></a>DOM 变量</h3><ul>
+<li>class：使用全小写字母 + 中划线的形式命名。如果该类是用于在 JS 中引用的，还需要添加前缀 <code>js-</code>。注意用于 JS 的类严禁用于样式文件中引用。</li>
+<li>id：使用小驼峰命名，并添加前缀如下：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>前缀</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ipt</code></td>
+<td>input 输入框</td>
+</tr>
+<tr>
+<td><code>btn</code></td>
+<td>按钮</td>
+</tr>
+<tr>
+<td><code>lbl</code></td>
+<td>Label</td>
+</tr>
+<tr>
+<td><code>chk</code></td>
+<td>CheckBox</td>
+</tr>
+<tr>
+<td><code>lnk</code></td>
+<td>A链接</td>
+</tr>
+<tr>
+<td><code>img</code></td>
+<td>图片</td>
+</tr>
+</tbody></table>
+<h2 id="禁止使用的"><a href="#禁止使用的" class="headerlink" title="禁止使用的"></a>禁止使用的</h2><h3 id="包装类型"><a href="#包装类型" class="headerlink" title="包装类型"></a>包装类型</h3><p>JavaScript 中有三种<a href="/2016/02/11/javascript-primitive-types/#%E5%9F%BA%E6%9C%AC%E5%8C%85%E8%A3%85%E7%B1%BB%E5%9E%8B">基本包装类型</a>：<code>Boolean</code>、<code>Number</code>、<code>String</code>，每种类型都代表全局作用域中的一个构造函数，并分别表示各自对应的原始值的对象。基本包装类型的主要作用是让原始值具有对象般的行为。</p>
+<p>禁止使用这些基本包装类型声明变量，应该直接使用对应的字面量：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>描述</th>
+<th>注意项</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>布尔值</td>
+<td>统一使用字面量 <code>true</code>、<code>false</code> 而不是构造函数 <code>new Boolean()</code></td>
+<td></td>
+</tr>
+<tr>
+<td>数字值</td>
+<td>统一使用<a href="/2016/02/11/javascript-primitive-types/#%E5%AD%97%E9%9D%A2%E9%87%8F">字面量</a>，而不是构造函数 <code>new Number()</code></td>
+<td>避免使用八进制字面量</td>
+</tr>
+<tr>
+<td>字符串</td>
+<td>统一使用单引号 <code>&#39;&#39;</code>，而不是构造函数 <code>new String()</code></td>
+<td>避免在字符串中使用斜杠 <code>\</code> 另起一行</td>
+</tr>
+<tr>
+<td><a href="/2016/02/17/javascript-object/">对象</a></td>
+<td>统一使用字面量 <code>&#123;&#125;</code> 而不是构造函数 <code>new Object()</code></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="/2016/02/18/javascript-array/">数组</a></td>
+<td>统一使用字面量 <code>[]</code> 而不是构造函数 <code>new Array()</code></td>
+<td></td>
+</tr>
+</tbody></table>
+<h3 id="等号操作符"><a href="#等号操作符" class="headerlink" title="等号操作符"></a>等号操作符</h3><p>由于相等（<code>==</code>）和不相等（<code>!=</code>）操作符存在 <strong>自动类型转换</strong> 的问题，因此禁止使用。为了保持代码中数据类型的完整性，要求使用全等（<code>===</code>）和不全等（<code>!==</code>）操作符。</p>
+<h3 id="代码执行"><a href="#代码执行" class="headerlink" title="代码执行"></a>代码执行</h3><p><code>setTimeout()</code>、<code>setInterval()</code> 函数中的回调代码禁止使用字符串格式。</p>
+<p><code>eval()</code> 函数禁止使用。</p>
+<h2 id="空链接跳转"><a href="#空链接跳转" class="headerlink" title="空链接跳转"></a>空链接跳转</h2><p>常用的三种空链接跳转：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#</span><br><span class="line"><span class="attr">javascript</span>:<span class="title function_">void</span>(<span class="number">0</span>);</span><br><span class="line"><span class="attr">javascript</span>:;    <span class="comment">// 推荐这种</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="进阶编程风格"><a href="#进阶编程风格" class="headerlink" title="进阶编程风格"></a>进阶编程风格</h1><h2 id="变量声明"><a href="#变量声明" class="headerlink" title="变量声明"></a>变量声明</h2><p>在具有块级作用域的语言中，在狭小的作用域内让变量声明和使用变量的代码尽可能彼此靠近，通常是个好的编程习惯。因此在编写 JavaScript 时常常会出现类似的惯性思维：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;for 语句内，i=&#x27;</span> + i);</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;for 语句外，i=&#x27;</span> + i);    <span class="comment">// 注意这里，JavaScript 没有块级作用域，因此 for 语句外仍然可以读取变量 i</span></span><br></pre></td></tr></table></figure>
+
+<p>输出如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> 语句内，i=<span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> 语句内，i=<span class="number">1</span></span><br><span class="line"><span class="keyword">for</span> 语句内，i=<span class="number">2</span></span><br><span class="line"><span class="keyword">for</span> 语句外，i=<span class="number">3</span>    <span class="comment">// 注意这里</span></span><br></pre></td></tr></table></figure>
+
+<p>但由于 JavaScript 中并没有块级作用域（block scope），只有函数作用域（function scope），因此函数内声明的所有变量在函数体内始终是可见的。这个特性被非正式地称为 <strong>声明提前（hoisting）</strong>，即 JavaScript 函数内声明的所有变量（但不涉及赋值）都被“提前”至函数顶部。这步操作是在代码开始运行之前、<a target="_blank" rel="noopener" href="http://www.slideshare.net/lijing00333/javascript-engine">JavaScript 引擎</a>的“预编译”阶段进行的。上述代码编译如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> i;    <span class="comment">// 变量声明提前</span></span><br><span class="line"><span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;for 语句内，i=&#x27;</span> + i);</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;for 语句外，i=&#x27;</span> + i);</span><br></pre></td></tr></table></figure>
+
+<p>变量声明提前意味着：在函数内部任意地方声明变量和在函数顶部声明变量是完全一样的。为了让源代码能够非常清晰地反映出真实的变量作用域，避免潜藏错误，规范要求始终在函数顶部使用单 <code>var</code> 语句统一声明所有变量，例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 每个变量声明都独占一行，同时注意每行的缩进</span></span><br><span class="line"><span class="keyword">var</span> iptUsername = $(<span class="string">&#x27;input[name=&quot;username&quot;]&#x27;</span>),</span><br><span class="line">    iptPwd = $(<span class="string">&#x27;input[name=&quot;pwd&quot;]&#x27;</span>),</span><br><span class="line">    btnLogin = $(<span class="string">&#x27;#js-btn-login&#x27;</span>),</span><br><span class="line">    fnLogin = <span class="keyword">function</span>(<span class="params"></span>) &#123;&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="函数声明"><a href="#函数声明" class="headerlink" title="函数声明"></a>函数声明</h2><p>和上述变量声明提前一样，函数声明也会被 JavaScript 引擎提前（function declaration hoisting）。因此，在代码中函数的调用可以出现在函数声明之前：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 不好的写法</span></span><br><span class="line"><span class="title function_">doSomeThing</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">doSomeThing</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Hello world!&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这段代码是可以正常运行的，因为 JavaScript 引擎将这段代码解析为：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 函数声明提前</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">doSomeThing</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Hello world!&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">doSomeThing</span>();</span><br></pre></td></tr></table></figure>
+
+<p>由于 JavaScript 的这种行为会放宽函数必须 <strong>先声明后使用</strong> 的要求，因此会导致代码混乱。</p>
+<p>规范要求函数始终 <strong>先声明后使用</strong>。</p>
+<h2 id="函数表达式"><a href="#函数表达式" class="headerlink" title="函数表达式"></a>函数表达式</h2><p>更好的办法是使用 <strong>函数表达式</strong> 代替函数声明：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 好的写法</span></span><br><span class="line"><span class="keyword">var</span> doSomeThing = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Hello world!&#x27;</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="title function_">doSomeThing</span>();</span><br></pre></td></tr></table></figure>
+
+<p>这种形式看起来像是常规的变量赋值语句，即创建一个函数并将它赋值给变量 <code>doSomeThing</code>。这种情况下创建的函数叫做 <strong>匿名函数（anonymous function）</strong>（也称为 <strong>拉姆达函数</strong>），因为 <code>function</code> 关键字后面没有标识符，其 <code>name</code> 属性为空。</p>
+<p>与使用函数声明的区别在于，如果执行顺序颠倒，函数调用 <code>doSomeThing()</code> 将会报错。因为函数表达式必须等到解析器执行到它所在的代码行，才会真正被解释执行：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typeof</span> doSomeThing === <span class="string">&#x27;undefined&#x27;</span>;    <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> doSomeThing = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Hello world!&#x27;</span>);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>除此之外，函数声明与函数表达式的语法其实是等价的。尽管如此，规范仍然要求优先使用函数表达式，原因有二：</p>
+<ul>
+<li>强制开发者 <strong>先声明后使用</strong> 函数，避免函数声明提升带来的混乱；</li>
+<li>函数表达式更能明确表示一个包含函数的变量。要学好这门语言，理解 <strong>函数就是对象</strong> 是很重要的。因为函数是对象，所以它们可以像任何其它的值一样被使用。例如：<ul>
+<li>函数可以保存在变量、对象和数组中；</li>
+<li>函数可以被当做 <strong>参数</strong> 传递给其它函数，也可以被作为函数的 <strong>返回值</strong>；</li>
+<li>函数可以拥有方法。</li>
+</ul>
+</li>
+</ul>
+<h2 id="立即执行的函数"><a href="#立即执行的函数" class="headerlink" title="立即执行的函数"></a>立即执行的函数</h2><p>使用函数表达式可以声明匿名函数，并将匿名函数赋值给变量或者属性：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> doSomeThing = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;doSomeThing&#x27;</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typeof</span> doSomeThing === <span class="string">&#x27;function&#x27;</span>;    <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+
+<p>这种匿名函数可以通过在最后加上一对圆括号 <code>()</code> 来 <strong>立即执行并返回</strong> 一个值给变量：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 不好的写法</span></span><br><span class="line"><span class="keyword">var</span> doSomeThing = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;doSomeThing&#x27;</span>;</span><br><span class="line">&#125;();</span><br><span class="line"></span><br><span class="line"><span class="keyword">typeof</span> doSomeThing === <span class="string">&#x27;string&#x27;</span>;    <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+
+<p>这种写法的问题在于，会让人误以为将一个匿名函数赋值给了这个变量。除非读完整段代码并看到最后一行的那对圆括号 <code>()</code>，否则你不会知道是将函数赋值给变量还是将函数的执行结果赋值给变量。这种困惑会影响代码的可读性。</p>
+<p>为了让立即执行的函数能够被一眼看出来，可以用一对圆括号 <code>()</code> 将函数包起来。这样做并不会影响代码的执行结果，却能让人一眼就看出这是个立即执行的函数：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 好的写法</span></span><br><span class="line"><span class="keyword">var</span> doSomeThing = (<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;doSomeThing&#x27;</span>;</span><br><span class="line">&#125;)();</span><br><span class="line"></span><br><span class="line"><span class="keyword">typeof</span> doSomeThing === <span class="string">&#x27;string&#x27;</span>;    <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="创建私有作用域"><a href="#创建私有作用域" class="headerlink" title="创建私有作用域"></a>创建私有作用域</h3><p>此外，还可以使用<a target="_blank" rel="noopener" href="http://www.zuojj.com/archives/631.html">立即执行的匿名函数（immediately executed anonymous function）</a>来创建私有作用域，从而解决全局变量污染的问题。这种函数一般是没有返回值的：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> hidden_variable = <span class="string">&#x27;Hello world!&#x27;</span>;    <span class="comment">// hidden_variable 只是一个局部变量</span></span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+
+<p>要注意的是在这种场景下，函数表达式外的那对圆括号 <code>()</code> 绝不能省略，因为官方的语法假定以单词 <code>function</code> 开头的语句是一个函数声明语句，而函数声明语句是无法匿名的，否则会报错。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>《编写可维护的 JavaScript》</li>
+<li>《JavaScript 高级程序设计》</li>
+<li>《JavaScript 权威指南》</li>
+<li>《JavaScript 语言精粹》</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/javascript-style-guideline/" title="Javascript 编程风格规范">https://qidawu.github.io/posts/javascript-style-guideline/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag"># 前端</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/javascript-data-types-determine/" rel="prev" title="Javascript 类型判断">
+                  <i class="fa fa-chevron-left"></i> Javascript 类型判断
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/javascript-best-practice/" rel="next" title="Javascript 编程最佳实践">
+                  Javascript 编程最佳实践 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

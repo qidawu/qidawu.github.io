@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="规范 The Jakarta XML Binding provides an API and tools that automate the mapping between XML documents and Java objects.  规范文档：https:&#x2F;&#x2F;jakarta.ee&#x2F;specifications&#x2F;xml-binding&#x2F; 实现官方认证实现：https:&#x2F;&#x2F;eclipse-ee4">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Jakarta EE 系列（四）XML Binding (JAXB) 规范与实践总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/jakarta-xml-binding/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="规范 The Jakarta XML Binding provides an API and tools that automate the mapping between XML documents and Java objects.  规范文档：https:&#x2F;&#x2F;jakarta.ee&#x2F;specifications&#x2F;xml-binding&#x2F; 实现官方认证实现：https:&#x2F;&#x2F;eclipse-ee4">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-10-10T14:09:48.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.916Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/jakarta-xml-binding/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/jakarta-xml-binding/","path":"posts/jakarta-xml-binding/","title":"Jakarta EE 系列（四）XML Binding (JAXB) 规范与实践总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Jakarta EE 系列（四）XML Binding (JAXB) 规范与实践总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%84%E8%8C%83"><span class="nav-number">1.</span> <span class="nav-text">规范</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B"><span class="nav-number">3.</span> <span class="nav-text">示例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#XML-%E5%B7%A5%E5%85%B7%E7%B1%BB"><span class="nav-number">3.1.</span> <span class="nav-text">XML 工具类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E6%88%90-XML"><span class="nav-number">3.2.</span> <span class="nav-text">生成 XML</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E6%9E%90-XML"><span class="nav-number">3.3.</span> <span class="nav-text">解析 XML</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/jakarta-xml-binding/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Jakarta EE 系列（四）XML Binding (JAXB) 规范与实践总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Jakarta EE 系列（四）XML Binding (JAXB) 规范与实践总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-10-10 22:09:48" itemprop="dateCreated datePublished" datetime="2020-10-10T22:09:48+08:00">2020-10-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="规范"><a href="#规范" class="headerlink" title="规范"></a>规范</h1><blockquote>
+<p>The Jakarta XML Binding provides an API and tools that automate the mapping between XML documents and Java objects.</p>
+</blockquote>
+<p>规范文档：<a target="_blank" rel="noopener" href="https://jakarta.ee/specifications/xml-binding/">https://jakarta.ee/specifications/xml-binding/</a></p>
+<h1 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h1><p>官方认证实现：<a target="_blank" rel="noopener" href="https://eclipse-ee4j.github.io/jaxb-ri/">https://eclipse-ee4j.github.io/jaxb-ri/</a></p>
+<p>依赖下载：<a target="_blank" rel="noopener" href="https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-ri%EF%BC%8C%E5%B0%86%E4%BC%A0%E9%80%92%E4%BE%9D%E8%B5%96%EF%BC%9A">https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-ri，将传递依赖：</a></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>jakarta.xml.bind<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jakarta.xml.bind-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><p>本文演示如何生成和解析 XML，主要涉及以下常用注解，更多注解可以自行尝试：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@XmlRootElement</span></span><br><span class="line"><span class="meta">@XmlElement</span></span><br><span class="line"><span class="meta">@XmlAttribute</span></span><br><span class="line"><span class="meta">@XmlValue</span></span><br></pre></td></tr></table></figure>
+
+<p>实体类如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// @Setter 会报错 com.sun.xml.internal.bind.v2.runtime.IllegalAnnotationsException: 4 counts of IllegalAnnotationExceptions</span></span><br><span class="line"><span class="meta">@Getter</span></span><br><span class="line"><span class="meta">@ToString</span></span><br><span class="line"><span class="meta">@Builder</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@XmlRootElement(name = &quot;head&quot;)</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Head</span> &#123;</span><br><span class="line">    <span class="meta">@XmlElement(name = &quot;trade_code&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String tradeCode;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@XmlElement(name = &quot;trade_date&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String tradeDate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@XmlElement(name = &quot;trade_time&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String tradeTime;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@XmlElement(name = &quot;serial_no&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String serialNo;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@XmlElement(name = &quot;parent&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Parent parent;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Getter</span></span><br><span class="line"><span class="meta">@ToString</span></span><br><span class="line"><span class="meta">@Builder</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@XmlRootElement</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Parent</span> &#123;</span><br><span class="line">    <span class="meta">@XmlElement</span></span><br><span class="line">    <span class="keyword">private</span> List&lt;Child&gt; child;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Getter</span></span><br><span class="line"><span class="meta">@ToString</span></span><br><span class="line"><span class="meta">@Builder</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Child</span> &#123;</span><br><span class="line">    <span class="meta">@XmlAttribute</span></span><br><span class="line">    <span class="keyword">private</span> String key;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@XmlValue</span></span><br><span class="line">    <span class="keyword">private</span> String value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="XML-工具类"><a href="#XML-工具类" class="headerlink" title="XML 工具类"></a>XML 工具类</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">XmlUtils</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Map&lt;String, JAXBContext&gt; JAXB_CONTEXT_MAP = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 传入一个对象，生成对应的 XML</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; String <span class="title function_">toXml</span><span class="params">(T t)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (t == <span class="literal">null</span>) &#123;</span><br><span class="line">            log.warn(<span class="string">&quot;[XmlUtils toXml] params is null&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">JAXBContext</span> <span class="variable">jaxbContext</span> <span class="operator">=</span> getJAXBContext(t.getClass());</span><br><span class="line">        Marshaller jaxbMarshaller;</span><br><span class="line">        <span class="keyword">try</span> (<span class="type">StringWriter</span> <span class="variable">stringWriter</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringWriter</span>()) &#123;</span><br><span class="line">            jaxbMarshaller = jaxbContext.createMarshaller();</span><br><span class="line">            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);</span><br><span class="line">            jaxbMarshaller.setProperty(Marshaller.JAXB_ENCODING, <span class="string">&quot;UTF-8&quot;</span>);</span><br><span class="line">            jaxbMarshaller.marshal(t, stringWriter);</span><br><span class="line">            <span class="keyword">return</span> stringWriter.toString();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (JAXBException | IOException e) &#123;</span><br><span class="line">            log.error(<span class="string">&quot;[XmlUtils toXml] exception&quot;</span>, e);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 将 XML 解析成指定对象</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; T <span class="title function_">unXml</span><span class="params">(String xml, Class&lt;T&gt; clazz)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (xml == <span class="literal">null</span> || xml.isEmpty()) &#123;</span><br><span class="line">            log.warn(<span class="string">&quot;[XmlUtils unXml] xml is null&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">JAXBContext</span> <span class="variable">jaxbContext</span> <span class="operator">=</span> getJAXBContext(clazz);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">Unmarshaller</span> <span class="variable">unmarshaller</span> <span class="operator">=</span> jaxbContext.createUnmarshaller();</span><br><span class="line">            <span class="type">StringReader</span> <span class="variable">reader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringReader</span>(xml);</span><br><span class="line">            <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">            <span class="type">T</span> <span class="variable">unmarshal</span> <span class="operator">=</span> (T) unmarshaller.unmarshal(reader);</span><br><span class="line">            <span class="keyword">return</span> unmarshal;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (JAXBException e) &#123;</span><br><span class="line">            log.error(<span class="string">&quot;[XmlUtils unXml] exception&quot;</span>, e);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据类名称获取 JAXBContext</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> JAXBContext <span class="title function_">getJAXBContext</span><span class="params">(Class clazz)</span> &#123;</span><br><span class="line">        <span class="type">JAXBContext</span> <span class="variable">jaxbContext</span> <span class="operator">=</span> JAXB_CONTEXT_MAP.get(clazz.getName());</span><br><span class="line">        <span class="keyword">if</span> (jaxbContext == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                jaxbContext = JAXBContext.newInstance(clazz);</span><br><span class="line">                JAXB_CONTEXT_MAP.put(clazz.getName(), jaxbContext);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (JAXBException e) &#123;</span><br><span class="line">                log.error(e.getMessage(), e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> jaxbContext;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="生成-XML"><a href="#生成-XML" class="headerlink" title="生成 XML"></a>生成 XML</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testToXml</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">LocalDateTime</span> <span class="variable">now</span> <span class="operator">=</span> LocalDateTime.now();</span><br><span class="line">    <span class="type">Child</span> <span class="variable">child</span> <span class="operator">=</span> Child.builder()</span><br><span class="line">        .key(<span class="string">&quot;key&quot;</span>)</span><br><span class="line">        .value(<span class="string">&quot;value&quot;</span>)</span><br><span class="line">        .build();</span><br><span class="line"></span><br><span class="line">    <span class="type">Parent</span> <span class="variable">parent</span> <span class="operator">=</span> Parent.builder()</span><br><span class="line">        .child(Arrays.asList(child, child))</span><br><span class="line">        .build();</span><br><span class="line"></span><br><span class="line">    <span class="type">Head</span> <span class="variable">head</span> <span class="operator">=</span> Head.builder()</span><br><span class="line">        .tradeCode(<span class="string">&quot;XT-001&quot;</span>)</span><br><span class="line">        .tradeDate(now.format(DateTimeFormatter.ofPattern(<span class="string">&quot;yyyy-MM-dd&quot;</span>)))</span><br><span class="line">        .tradeTime(now.format(DateTimeFormatter.ofPattern(<span class="string">&quot;HH:mm:ss&quot;</span>)))</span><br><span class="line">        .serialNo(UUID.randomUUID().toString())</span><br><span class="line">        .parent(parent)</span><br><span class="line">        .build();</span><br><span class="line">    <span class="type">String</span> <span class="variable">xml</span> <span class="operator">=</span> XmlUtils.toXml(head);</span><br><span class="line">    log.info(xml);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span> standalone=<span class="string">&quot;yes&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">trade_code</span>&gt;</span>XT-001<span class="tag">&lt;/<span class="name">trade_code</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">trade_date</span>&gt;</span>2020-03-19<span class="tag">&lt;/<span class="name">trade_date</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">trade_time</span>&gt;</span>18:39:28<span class="tag">&lt;/<span class="name">trade_time</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">serial_no</span>&gt;</span>114d2c0c-30a8-4275-982c-f8eba86cbadb<span class="tag">&lt;/<span class="name">serial_no</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">child</span> <span class="attr">key</span>=<span class="string">&quot;key&quot;</span>&gt;</span>value<span class="tag">&lt;/<span class="name">child</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">child</span> <span class="attr">key</span>=<span class="string">&quot;key&quot;</span>&gt;</span>value<span class="tag">&lt;/<span class="name">child</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="解析-XML"><a href="#解析-XML" class="headerlink" title="解析 XML"></a>解析 XML</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testUnXml</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">String</span> <span class="variable">xml</span> <span class="operator">=</span> <span class="string">&quot;&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot; standalone=\&quot;yes\&quot;?&gt;\n&quot;</span> +</span><br><span class="line">        <span class="string">&quot;&lt;head&gt;\n&quot;</span> +</span><br><span class="line">        <span class="string">&quot;    &lt;trade_code&gt;XT-001&lt;/trade_code&gt;\n&quot;</span> +</span><br><span class="line">        <span class="string">&quot;    &lt;trade_date&gt;2020-03-19&lt;/trade_date&gt;\n&quot;</span> +</span><br><span class="line">        <span class="string">&quot;    &lt;trade_time&gt;18:39:28&lt;/trade_time&gt;\n&quot;</span> +</span><br><span class="line">        <span class="string">&quot;    &lt;serial_no&gt;114d2c0c-30a8-4275-982c-f8eba86cbadb&lt;/serial_no&gt;\n&quot;</span> +</span><br><span class="line">        <span class="string">&quot;    &lt;parent&gt;\n&quot;</span> +</span><br><span class="line">        <span class="string">&quot;        &lt;child key=\&quot;key\&quot;&gt;value&lt;/child&gt;\n&quot;</span> +</span><br><span class="line">        <span class="string">&quot;        &lt;child key=\&quot;key\&quot;&gt;value&lt;/child&gt;\n&quot;</span> +</span><br><span class="line">        <span class="string">&quot;    &lt;/parent&gt;\n&quot;</span> +</span><br><span class="line">        <span class="string">&quot;&lt;/head&gt;&quot;</span>;</span><br><span class="line">    <span class="type">Head</span> <span class="variable">head</span> <span class="operator">=</span> XmlUtils.unXml(xml, Head.class);</span><br><span class="line">    log.info(head.toString());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Head(tradeCode=XT-001, tradeDate=2020-03-19, tradeTime=18:39:28, serialNo=114d2c0c-30a8-4275-982c-f8eba86cbadb, parent=Parent(child=[Child(key=key, value=value), Child(key=key, value=value)]))</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://jakarta.ee/specifications/xml-binding/">https://jakarta.ee/specifications/xml-binding/</a></p>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Jakarta_XML_Binding">https://en.wikipedia.org/wiki/Jakarta_XML_Binding</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/jakarta-xml-binding/" title="Jakarta EE 系列（四）XML Binding (JAXB) 规范与实践总结">https://qidawu.github.io/posts/jakarta-xml-binding/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/jakarta-bean-validation/" rel="prev" title="Jakarta EE 系列（三）Bean Validation 规范与实践总结">
+                  <i class="fa fa-chevron-left"></i> Jakarta EE 系列（三）Bean Validation 规范与实践总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/java-jackson/" rel="next" title="JSON 框架系列之 Jackson 总结">
+                  JSON 框架系列之 Jackson 总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

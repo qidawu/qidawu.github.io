@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="集群Nginx 标准 HTTP 模块 ngx_http_upstream_module 内置了集群和负载均衡功能，使用其中的 upstream 配合 proxy_pass 指令即可快速实现一个集群： 12345678910111213141516http &amp;#123;    upstream backend &amp;#123;        server backend1.example.com">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nginx 负载均衡">
+<meta property="og:url" content="https://qidawu.github.io/posts/nginx-upstream/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="集群Nginx 标准 HTTP 模块 ngx_http_upstream_module 内置了集群和负载均衡功能，使用其中的 upstream 配合 proxy_pass 指令即可快速实现一个集群： 12345678910111213141516http &amp;#123;    upstream backend &amp;#123;        server backend1.example.com">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-05-07T07:17:37.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.926Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Nginx">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/nginx-upstream/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/nginx-upstream/","path":"posts/nginx-upstream/","title":"Nginx 负载均衡"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Nginx 负载均衡 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9B%86%E7%BE%A4"><span class="nav-number">1.</span> <span class="nav-text">集群</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="nav-number">2.</span> <span class="nav-text">负载均衡</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ip-hash"><span class="nav-number">2.1.</span> <span class="nav-text">ip hash</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7-hash"><span class="nav-number">2.2.</span> <span class="nav-text">一致性 hash</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BC%9A%E8%AF%9D%E4%BF%9D%E6%8C%81"><span class="nav-number">3.</span> <span class="nav-text">会话保持</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5"><span class="nav-number">4.</span> <span class="nav-text">健康检查</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E5%8A%A8%E5%BC%8F%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5"><span class="nav-number">4.1.</span> <span class="nav-text">主动式健康检查</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E5%8F%98%E9%87%8F"><span class="nav-number">5.</span> <span class="nav-text">常用变量</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#upstream-addr"><span class="nav-number">5.1.</span> <span class="nav-text">$upstream_addr</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/nginx-upstream/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Nginx 负载均衡 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Nginx 负载均衡
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2017-05-07 15:17:37" itemprop="dateCreated datePublished" datetime="2017-05-07T15:17:37+08:00">2017-05-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="集群"><a href="#集群" class="headerlink" title="集群"></a>集群</h1><p>Nginx 标准 HTTP 模块 <a target="_blank" rel="noopener" href="http://nginx.org/en/docs/http/ngx_http_upstream_module.html">ngx_http_upstream_module</a> 内置了集群和负载均衡功能，使用其中的 <code>upstream</code> 配合 <code>proxy_pass</code> 指令即可快速实现一个集群：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">    upstream backend &#123;</span><br><span class="line">        server backend1.example.com       weight=5;</span><br><span class="line">        server 127.0.0.1:8080             max_fails=3 fail_timeout=30s;</span><br><span class="line">        server unix:/tmp/backend3;</span><br><span class="line"></span><br><span class="line">        server backup1.example.com:8080   backup;</span><br><span class="line">        server backup2.example.com:8080   down;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    server &#123;</span><br><span class="line">        location / &#123;</span><br><span class="line">            proxy_pass http://backend;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>server</code> 指令的常用参数描述如下：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>weight=number</code></td>
+<td>设置服务器的轮询权重，默认为 1。用于后端服务器性能不均的情况。</td>
+</tr>
+<tr>
+<td><code>max_conns=number</code></td>
+<td>设置被代理服务器的最大可用并发连接数限制，默认为 0，表示没有限制。</td>
+</tr>
+<tr>
+<td><code>max_fails=number</code></td>
+<td>设置最大失败重试次数，默认为 1。设置为 0 表示禁用重试。</td>
+</tr>
+<tr>
+<td><code>fail_timeout=time</code></td>
+<td>设置失败时间，默认 10 秒。</td>
+</tr>
+<tr>
+<td><code>backup</code></td>
+<td>将服务器标记为备份服务器。当主服务器不可用时，它将被传递请求。</td>
+</tr>
+<tr>
+<td><code>down</code></td>
+<td>将服务器标记为永久不可用。</td>
+</tr>
+</tbody></table>
+<h1 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h1><p>负载均衡（Load Balance），其意思就是将运算或存储负载按一定的算法分摊到多个运算或存储单元上，下面介绍 Nginx 几种常见的负载均衡方法：</p>
+<ul>
+<li>默认策略：加权轮询策略（weighted round-robin）。</li>
+<li><code>random</code>，加权随机策略。</li>
+<li><code>ip_hash</code>，基于客户端 IP 计算出哈希值，再根据服务器数量取模选取服务器（ip_hash % server_size = server_no）。</li>
+<li><code>hash key [consistent]</code>，基于指定 key 计算出哈希值，再根据服务器数量取模选取服务器。可选一致性哈希算法缓解重映射问题。</li>
+<li><code>least_conn</code>，基于最小活跃连接数（加权）。如果有多个服务器符合条件，则使用加权轮询策略依次响应。</li>
+<li><code>least_time</code>，基于最小平均响应时间和最小活跃连接数（加权）。如果有多个服务器符合条件，则使用加权轮询策略依次响应。</li>
+</ul>
+<h2 id="ip-hash"><a href="#ip-hash" class="headerlink" title="ip hash"></a>ip hash</h2><p>使用 Nginx <code>ip_hash</code> 指令，配置如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">upstream backend &#123;</span><br><span class="line">    ip_hash;</span><br><span class="line"></span><br><span class="line">    server backend1.example.com;</span><br><span class="line">    server backend2.example.com;</span><br><span class="line">    server backend3.example.com down;</span><br><span class="line">    server backend4.example.com;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>ip_hash</code> 指令指定集群使用基于<strong>客户端 IP 地址</strong>的负载均衡方法。 客户端 IPv4 地址的前三个八位字节或整个 IPv6 地址用作哈希键。 该方法确保来自同一客户端的请求将始终传递到同一台服务器，除非此服务器不可用，客户端请求则将被<strong>转发</strong>到另一台服务器（多数情况下，始终是同一台服务器）。<br>如果其中一台服务器需要临时删除，则应使用 <code>down</code> 参数标记，以便保留当前客户端 IP 地址的哈希值。</p>
+<h2 id="一致性-hash"><a href="#一致性-hash" class="headerlink" title="一致性 hash"></a>一致性 hash</h2><p>使用 Nginx <code>hash</code> 指令，常用的例如基于来源 IP 进行哈希，配置如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">upstream backend &#123;</span><br><span class="line">    hash $remote_addr consistent;</span><br><span class="line"></span><br><span class="line">    server backend1.example.com;</span><br><span class="line">    server backend2.example.com;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>hash</code> 指令指定集群使用基于<strong>指定 hash 散列键</strong>的负载均衡方法。散列键可以包含文本，变量及其组合。请注意，从集群中添加或删除服务器可能会导致大量键被重新映射到不同的服务器。</p>
+<p>解决办法是使用 <code>consistent</code> 参数启用  <a target="_blank" rel="noopener" href="http://www.last.fm/user/RJ/journal/2007/04/10/392555/">ketama</a> 一致性 hash 算法。 该算法将每个 server 虚拟成 n 个节点，均匀分布到 hash 环上。每次请求，根据配置的参数计算出一个 hash 值，在 hash 环上查找离这个 hash 最近的虚拟节点，对应的 server 作为该次请求的后端服务器。该算法确保在添加或删除服务器时，只会有少量键被重新映射到不同的服务器。这有助于为缓存服务器实现更高的缓存命中率。</p>
+<h1 id="会话保持"><a href="#会话保持" class="headerlink" title="会话保持"></a>会话保持</h1><p>为了确保与某个客户端相关的所有请求都能够由同一台服务器进行处理，我们需要在负载均衡上启用会话保持功能，以确保负载均衡的部署不会影响到正常的业务处理，避免会话丢失。</p>
+<p>Nginx 会话保持一般有两种方案：</p>
+<ul>
+<li>基于源 IP 地址的 ip_hash</li>
+<li>sticky cookie 粘滞会话（也称会话保持\会话绑定）</li>
+</ul>
+<p>ip_hash 实现会话保持的问题在于，当多个客户是通过正向代理（如翻墙）或 NAT 地址转换的方式来访问服务器时，由于都分配到同一台服务器上，会导致服务器之间的负载失衡。</p>
+<p>sticky cookie 实现会话保持，在一定条件下可以保证同一个客户端访问的都是同一个后端服务器。通过 Nginx <code>sticky</code> 指令，配置如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">upstream backend &#123;</span><br><span class="line">    server backend1.example.com;</span><br><span class="line">    server backend2.example.com;</span><br><span class="line"></span><br><span class="line">    sticky cookie srv_id expires=1h domain=.example.com path=/;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面这份配置在同一域名下有两个 location，分别对应了两组集群服务。为了分别实现会话保持，将 cookie 写入了对应的 path 下，避免 cookie 互相干扰，也减少了数据传输量：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">    upstream backend1 &#123;</span><br><span class="line">        server backup1.example.com:8080;</span><br><span class="line">        server backup1.example.com:8081;</span><br><span class="line">    	sticky cookie srv_backend1 path=/backend1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    upstream backend2 &#123;</span><br><span class="line">        server backup2.example.com:8080;</span><br><span class="line">        server backup2.example.com:8081;</span><br><span class="line">    	sticky cookie srv_backend2 path=/backend2;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    server &#123;</span><br><span class="line">        server_name example.com;</span><br><span class="line">        listen 80;</span><br><span class="line">    </span><br><span class="line">        location /backend1/ &#123;</span><br><span class="line">            proxy_pass http://backend1;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        location /backend2/ &#123;</span><br><span class="line">            proxy_pass http://backend2;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="健康检查"><a href="#健康检查" class="headerlink" title="健康检查"></a>健康检查</h1><p>健康检查（Health Check）是保障集群可用性的重要手段，有三种常见的健康检查方法：</p>
+<ul>
+<li>使用社区版 Nginx 的 <code>max_fails</code> 和 <code>fail_timeout</code> 指令进行被动式检查，不推荐使用，详见：《<a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000002446630">nginx中健康检查(health_check)机制深入分析</a>》；</li>
+<li>使用<a target="_blank" rel="noopener" href="http://nginx.com/products/">商业版 Nginx Plus</a> 进行主动式检查，缺点是要收费；</li>
+<li>使用 Nginx 第三方模块编译，例如：<a target="_blank" rel="noopener" href="https://github.com/yaoweibin/nginx_upstream_check_module">nginx_upstream_check_module</a> ；</li>
+<li>使用 <a target="_blank" rel="noopener" href="http://tengine.taobao.org/">Tengine</a> 内置的<a target="_blank" rel="noopener" href="http://tengine.taobao.org/document_cn/http_upstream_check_cn.html">主动式健康检查</a>功能（该内置模块等同于第 3 点）。</li>
+</ul>
+<h2 id="主动式健康检查"><a href="#主动式健康检查" class="headerlink" title="主动式健康检查"></a>主动式健康检查</h2><p>以 <code>nginx_upstream_check_module</code> 第三方模块为例，演示配置如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">upstream backend1 &#123;</span><br><span class="line">    check interval=3000 rise=2 fall=5 timeout=1000 type=http;</span><br><span class="line">    check_keepalive_requests 100;</span><br><span class="line">    check_http_send &quot;HEAD /m/monitor.html HTTP/1.1\r\nConnection: keep-alive\r\nHost: check.com\r\n\r\n&quot;;</span><br><span class="line">    check_http_expect_alive http_2xx http_3xx;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这段配置表示：</p>
+<ol>
+<li><code>check</code> 指令配置：每隔 <code>interval</code> 毫秒主动发送一个 <code>http</code> 健康检查包给后端服务器。请求超时时间为 <code>timeout</code> 毫秒。如果连续失败次数达到 <code>fall_count</code>，服务器就被认为是 down；如果连续成功次数达到 <code>rise_count</code>，服务器就被认为是 up。</li>
+<li><code>check_keepalive_requests</code> 指令配置：一个连接发送的请求数。</li>
+<li><code>check_http_send</code> 指令配置：请求包的内容（注意，这里必须<a target="_blank" rel="noopener" href="https://my.oschina.net/liuleidefeng/blog/786739">配置 <code>Host</code> 请求头否则可能报错</a>）。</li>
+<li><code>check_http_expect_alive</code> 指令配置：响应状态码为 <code>2XX</code> 和 <code>3XX</code> 表示请求成功、服务健康。</li>
+</ol>
+<p>查看 Tomcat access.log 如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1 - - [06/Jun/2017:21:03:30 +0800] &quot;HEAD /m/monitor.html HTTP/1.1&quot; 200 -</span><br><span class="line">127.0.0.1 - - [06/Jun/2017:21:03:33 +0800] &quot;HEAD /m/monitor.html HTTP/1.1&quot; 200 -</span><br><span class="line">127.0.0.1 - - [06/Jun/2017:21:03:36 +0800] &quot;HEAD /m/monitor.html HTTP/1.1&quot; 200 -</span><br><span class="line">127.0.0.1 - - [06/Jun/2017:21:03:39 +0800] &quot;HEAD /m/monitor.html HTTP/1.1&quot; 200 -</span><br><span class="line">127.0.0.1 - - [06/Jun/2017:21:03:42 +0800] &quot;HEAD /m/monitor.html HTTP/1.1&quot; 200 -</span><br><span class="line">127.0.0.1 - - [06/Jun/2017:21:03:45 +0800] &quot;HEAD /m/monitor.html HTTP/1.1&quot; 200 -</span><br></pre></td></tr></table></figure>
+
+<p>此时关闭某台后端服务器，一段时间后再访问，请求会被路由到其它服务器；重启后，该服务器自动加入集群。通过健康状态页面 <code>/status</code> 可见：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Nginx http upstream check status</span><br><span class="line"></span><br><span class="line">Check upstream server number: 2, generation: 2</span><br><span class="line"></span><br><span class="line">Index	Upstream	Name	Status	Rise counts	Fall counts	Check type	Check port</span><br><span class="line">0	backend1	127.0.0.1:8080	up	4741	0	http	0</span><br><span class="line">1	backend1	127.0.0.1:8081	down	0	2340	http	0</span><br></pre></td></tr></table></figure>
+
+<h1 id="常用变量"><a href="#常用变量" class="headerlink" title="常用变量"></a>常用变量</h1><h2 id="upstream-addr"><a href="#upstream-addr" class="headerlink" title="$upstream_addr"></a>$upstream_addr</h2><p>该模块中很常用的一个变量，用于标识集群中服务器的 IP 和端口。一般会加入到 Nginx 日志、同时脱敏后加入到响应头中，用于排查问题来源：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    log_format  main  &#x27;&quot;$http_x_forwarded_for&quot; - &quot;$upstream_addr&quot; - $remote_user [$time_local] &quot;$request&quot; &#x27;</span><br><span class="line">                  &#x27;$status $body_bytes_sent &quot;$http_referer&quot; &#x27;</span><br><span class="line">                  &#x27;&quot;$http_user_agent&quot; $remote_addr $request_time_msec&#x27;</span><br><span class="line">    access_log  logs/access.log  main;</span><br><span class="line"></span><br><span class="line">    map $upstream_addr $short_address &#123;</span><br><span class="line">        ~^\d+\.\d+\.\d+\.(.*) &#x27;&#x27;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    server &#123;</span><br><span class="line">        server_name example.com;</span><br><span class="line">        listen 80;</span><br><span class="line">        </span><br><span class="line">        upstream backend &#123;</span><br><span class="line">            server 127.0.0.1:81;</span><br><span class="line">            server 127.0.0.1:82;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        location / &#123;</span><br><span class="line">            add_header X-From $short_address$1;</span><br><span class="line">            proxy_pass http://backend/;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/nginx-upstream/" title="Nginx 负载均衡">https://qidawu.github.io/posts/nginx-upstream/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Nginx/" rel="tag"># Nginx</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/nginx-proxy/" rel="prev" title="Nginx 反向代理">
+                  <i class="fa fa-chevron-left"></i> Nginx 反向代理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/nginx-ssl/" rel="next" title="Nginx 加密通信（HTTPS）">
+                  Nginx 加密通信（HTTPS） <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

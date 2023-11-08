@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="注册域名、管理资源记录（RR）都是站长&#x2F;运维最常见的操作。本文总结了相关知识。 DNS 是什么？DNS 是互联网的一项基础服务，它将人类易记的域名解析为不易记的 IP 地址，使人更方便的访问互联网。 DNS 的结构？域名系统（DNS）是一个多层级、分布式的系统，就如同一个树状结构： 12345678910111213141516171819                    +---+">
+<meta property="og:type" content="article">
+<meta property="og:title" content="应用层 DNS 协议、相关命令总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/dns/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="注册域名、管理资源记录（RR）都是站长&#x2F;运维最常见的操作。本文总结了相关知识。 DNS 是什么？DNS 是互联网的一项基础服务，它将人类易记的域名解析为不易记的 IP 地址，使人更方便的访问互联网。 DNS 的结构？域名系统（DNS）是一个多层级、分布式的系统，就如同一个树状结构： 12345678910111213141516171819                    +---+">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/network/application-layer/dns/DNS_record_types.png">
+<meta property="og:image" content="https://qidawu.github.io/img/network/application-layer/dns/DNS_record_types_2.png">
+<meta property="og:image" content="https://qidawu.github.io/img/network/application-layer/dns/Example_of_an_iterative_DNS_resolver.svg">
+<meta property="og:image" content="https://qidawu.github.io/img/network/application-layer/dns/DNS_resolution.png">
+<meta property="og:image" content="https://qidawu.github.io/img/network/application-layer/dns/dig.png">
+<meta property="og:image" content="https://qidawu.github.io/img/network/application-layer/dns/DNS_record_types.png">
+<meta property="og:image" content="https://qidawu.github.io/img/network/application-layer/dns/DNS_protocol.png">
+<meta property="article:published_time" content="2022-01-15T15:32:08.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.912Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="计算机网络">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/network/application-layer/dns/DNS_record_types.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/dns/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/dns/","path":"posts/dns/","title":"应用层 DNS 协议、相关命令总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>应用层 DNS 协议、相关命令总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#DNS-%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">DNS 是什么？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DNS-%E7%9A%84%E7%BB%93%E6%9E%84%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">DNS 的结构？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B9%E5%9F%9F%E5%90%8D%EF%BC%88Root-Domain%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">根域名（Root Domain）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%B9%E5%9F%9F%E5%90%8D%E6%9C%8D%E5%8A%A1%E5%99%A8%EF%BC%88Root-Name-Server%EF%BC%89"><span class="nav-number">2.1.1.</span> <span class="nav-text">根域名服务器（Root Name Server）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%B9%E6%8F%90%E7%A4%BA%E6%96%87%E4%BB%B6%EF%BC%88Root-Hints-File%EF%BC%89"><span class="nav-number">2.1.2.</span> <span class="nav-text">根提示文件（Root Hints File）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%B9%E5%8C%BA%E6%96%87%E4%BB%B6%EF%BC%88Root-Zone-File%EF%BC%89"><span class="nav-number">2.1.3.</span> <span class="nav-text">根区文件（Root Zone File）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%B9%E5%8C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%EF%BC%88Root-Zone-Database%EF%BC%89"><span class="nav-number">2.1.4.</span> <span class="nav-text">根区数据库（Root Zone Database）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%B6%E7%BA%A7%E5%9F%9F%E5%90%8D%EF%BC%88Top-Level-Domain%EF%BC%89"><span class="nav-number">2.2.</span> <span class="nav-text">顶级域名（Top-Level Domain）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%B6%E7%BA%A7%E5%9F%9F%E5%90%8D%E6%9C%8D%E5%8A%A1%E5%99%A8%EF%BC%88TLD-name-server%EF%BC%89"><span class="nav-number">2.2.1.</span> <span class="nav-text">顶级域名服务器（TLD name server）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E7%BA%A7%E5%9F%9F%E5%90%8D%EF%BC%88Second-Level-Domain%EF%BC%89"><span class="nav-number">2.3.</span> <span class="nav-text">二级域名（Second-Level Domain）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9D%83%E5%A8%81%E5%9F%9F%E5%90%8D%E6%9C%8D%E5%8A%A1%E5%99%A8%EF%BC%88Authoritative-name-server%EF%BC%89"><span class="nav-number">2.3.1.</span> <span class="nav-text">权威域名服务器（Authoritative name server）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B5%84%E6%BA%90%E8%AE%B0%E5%BD%95%EF%BC%88Resource-Record%EF%BC%89"><span class="nav-number">2.4.</span> <span class="nav-text">资源记录（Resource Record）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90%E6%96%B9%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">域名解析方式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%AD%E4%BB%A3%E6%96%B9%E5%BC%8F%EF%BC%88Iterative-Approach%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">迭代方式（Iterative Approach）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%92%E5%BD%92%E6%96%B9%E5%BC%8F%EF%BC%88Recursive-Approach%EF%BC%89"><span class="nav-number">3.2.</span> <span class="nav-text">递归方式（Recursive Approach）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AC%E5%85%B1%E5%9F%9F%E5%90%8D%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">4.</span> <span class="nav-text">公共域名服务器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DNS-%E7%9B%B8%E5%85%B3%E5%91%BD%E4%BB%A4"><span class="nav-number">5.</span> <span class="nav-text">DNS 相关命令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#dig"><span class="nav-number">5.1.</span> <span class="nav-text">dig</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">5.1.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8"><span class="nav-number">5.1.2.</span> <span class="nav-text">使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">5.1.3.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nslookup"><span class="nav-number">5.2.</span> <span class="nav-text">nslookup</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/dns/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="应用层 DNS 协议、相关命令总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          应用层 DNS 协议、相关命令总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-01-15 23:32:08" itemprop="dateCreated datePublished" datetime="2022-01-15T23:32:08+08:00">2022-01-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>注册域名、管理资源记录（RR）都是站长/运维最常见的操作。本文总结了相关知识。</p>
+<h1 id="DNS-是什么？"><a href="#DNS-是什么？" class="headerlink" title="DNS 是什么？"></a>DNS 是什么？</h1><p>DNS 是互联网的一项基础服务，它将人类易记的<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Domain_name">域名</a>解析为不易记的 IP 地址，使人更方便的访问互联网。</p>
+<h1 id="DNS-的结构？"><a href="#DNS-的结构？" class="headerlink" title="DNS 的结构？"></a>DNS 的结构？</h1><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Domain_Name_System">域名系统（DNS）</a>是一个多层级、分布式的系统，就如同一个树状结构：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">                    +---+                                 </span><br><span class="line">                    | . |   Root domain               </span><br><span class="line">                    +-+-+                                 </span><br><span class="line">                      |                                   </span><br><span class="line">  +-------+-------+---+---+-------+-------+               </span><br><span class="line">  |       |       |       |       |       |               </span><br><span class="line">+-+-+   +-+-+   +-+-+   +-+-+   +-+-+   +-+-+    </span><br><span class="line">|com|   |net|   |org|   |gov|   |cn |   |...|   Top-level domain (TLD)</span><br><span class="line">+---+   +---+   +-+-+   +---+   +---+   +---+             </span><br><span class="line">                  |                                       </span><br><span class="line">             +----+----+                     </span><br><span class="line">             |wikipedia|   Second-level domain (SLD)</span><br><span class="line">             +----+----+                                  </span><br><span class="line">                  |                                       </span><br><span class="line">          +---------------+                               </span><br><span class="line">          |       |       |                               </span><br><span class="line">        +-+-+   +-+-+   +-+--+                            </span><br><span class="line">        |www|   |ftp|   |mail|   Resource record (RR)       </span><br><span class="line">        +---+   +---+   +----+                           </span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>Domain types</th>
+<th>DNS zone</th>
+<th>Name server</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Root_domain">Root domain</a><br>根域名</td>
+<td><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/DNS_root_zone">DNS root zone</a><br>DNS 根区</td>
+<td><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Root_name_server">Root name server</a><br>根域名服务器</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Top-level_domain">Top-level domain (TLD)</a><br>顶级域名</td>
+<td><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/DNS_zone">DNS zone</a></td>
+<td>TLD name server<br>顶级域名服务器</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Second-level_domain">Second-level domain (SLD)</a><br>二级域名</td>
+<td><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/DNS_zone">DNS zone</a></td>
+<td><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Name_server#Authoritative_name_server">Authoritative name server</a><br>权威域名服务器</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Subdomain">Sub domain</a><br>子域名</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Domain_Name_System#DNS_resource_records">Resource recerd, RR</a><br>资源记录</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>域名系统（DNS）的每一级只知道直接下级的位置，而无法获得跨级的位置，因此在域名解析的时候，需要自上而下、逐级查询。这种机制虽然看似低效，却能够提供分布式、高容错的服务，避免让域名系统（DNS）成为一个集中式的单点系统。</p>
+<h2 id="根域名（Root-Domain）"><a href="#根域名（Root-Domain）" class="headerlink" title="根域名（Root Domain）"></a>根域名（Root Domain）</h2><p>早期的域名必须以英文句号“<code>.</code>”结尾，当用户访问 <code>www.wikipedia.org</code> 的 HTTP 服务时必须在地址栏中输入：<code>http://www.wikipedia.org.</code>，这样 DNS 才能够进行域名解析。如今 DNS 服务器已经可以自动补上结尾的句号。这个点 <code>.</code> 就是根域名。</p>
+<p><code>.</code> 代表的<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Root_name_server">根域名服务器（Root name server）</a>，是 DNS 中最高级别的<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Name_server">域名服务器（name server）</a>，负责返回顶级域名的<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Authoritative_name_server">权威域名服务器（Authoritative name server）</a>的地址。</p>
+<blockquote>
+<p>由于 ICANN 管理着所有的顶级域名，所以它是最高一级的域名节点。</p>
+</blockquote>
+<h3 id="根域名服务器（Root-Name-Server）"><a href="#根域名服务器（Root-Name-Server）" class="headerlink" title="根域名服务器（Root Name Server）"></a>根域名服务器（Root Name Server）</h3><p><a target="_blank" rel="noopener" href="https://www.iana.org/domains/root/servers">https://www.iana.org/domains/root/servers</a></p>
+<blockquote>
+<p>由于早期的 DNS 查询结果是一个 512 字节的 UDP 数据包。这个包最多可以容纳 13 个服务器的地址，因此就规定全世界有 13 个根域名服务器，编号从 <code>a.root-servers.net</code> 一直到 <code>m.root-servers.net</code>：</p>
+<table>
+<thead>
+<tr>
+<th>HOSTNAME</th>
+<th>IP ADDRESSES</th>
+<th>OPERATOR</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>a.root-servers.net</td>
+<td>198.41.0.4, 2001:503:ba3e::2:30</td>
+<td>Verisign, Inc.</td>
+</tr>
+<tr>
+<td>b.root-servers.net</td>
+<td>199.9.14.201, 2001:500:200::b</td>
+<td>University of Southern California, Information Sciences Institute</td>
+</tr>
+<tr>
+<td>c.root-servers.net</td>
+<td>192.33.4.12, 2001:500:2::c</td>
+<td>Cogent Communications</td>
+</tr>
+<tr>
+<td>d.root-servers.net</td>
+<td>199.7.91.13, 2001:500:2d::d</td>
+<td>University of Maryland</td>
+</tr>
+<tr>
+<td>e.root-servers.net</td>
+<td>192.203.230.10, 2001:500:a8::e</td>
+<td>NASA (Ames Research Center)</td>
+</tr>
+<tr>
+<td>f.root-servers.net</td>
+<td>192.5.5.241, 2001:500:2f::f</td>
+<td>Internet Systems Consortium, Inc.</td>
+</tr>
+<tr>
+<td>g.root-servers.net</td>
+<td>192.112.36.4, 2001:500:12::d0d</td>
+<td>US Department of Defense (NIC)</td>
+</tr>
+<tr>
+<td>h.root-servers.net</td>
+<td>198.97.190.53, 2001:500:1::53</td>
+<td>US Army (Research Lab)</td>
+</tr>
+<tr>
+<td>i.root-servers.net</td>
+<td>192.36.148.17, 2001:7fe::53</td>
+<td>Netnod</td>
+</tr>
+<tr>
+<td>j.root-servers.net</td>
+<td>192.58.128.30, 2001:503:c27::2:30</td>
+<td>Verisign, Inc.</td>
+</tr>
+<tr>
+<td>k.root-servers.net</td>
+<td>193.0.14.129, 2001:7fd::1</td>
+<td>RIPE NCC</td>
+</tr>
+<tr>
+<td>l.root-servers.net</td>
+<td>199.7.83.42, 2001:500:9f::42</td>
+<td>ICANN</td>
+</tr>
+<tr>
+<td>m.root-servers.net</td>
+<td>202.12.27.33, 2001:dc3::35</td>
+<td>WIDE Project</td>
+</tr>
+</tbody></table>
+<p>这 13 台根域名服务器由 12 个组织独立运营。其中，Verisign 公司管理两台根域名服务器：A 和 J。每家公司为了保证根域名服务器的可用性，会部署多个节点，比如单单 Verisign 一家公司就部署了 104 台根域名服务器（2016 年 1 月数据）。</p>
+<p>所以，根域名服务器其实<a target="_blank" rel="noopener" href="https://www.icann.org/news/blog/there-are-not-13-root-servers">不止 13 台</a>。据统计，截止 2016 年 1 月，全世界共有 517 台根域名服务器。你可以在 <a target="_blank" rel="noopener" href="https://root-servers.org/">https://root-servers.org/</a> 这个网站查到所有根域名服务器的信息。</p>
+<p>编号相同的根域名服务器使用同一个 IP，数百台根域名服务器总共只使用 13 个 IP（如上表所示），因此可以抵抗针对其所进行的分布式拒绝服务攻击（DDoS）。</p>
+<p>这些根域名服务器的运行软件皆为 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/BIND">BIND</a>、<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/NSD">NSD</a>。</p>
+</blockquote>
+<h3 id="根提示文件（Root-Hints-File）"><a href="#根提示文件（Root-Hints-File）" class="headerlink" title="根提示文件（Root Hints File）"></a>根提示文件（Root Hints File）</h3><p><a target="_blank" rel="noopener" href="https://www.internic.net/domain/named.root">https://www.internic.net/domain/named.root</a></p>
+<blockquote>
+<p>根域名服务器虽然有 13 个域名，但是最少必须知道一台的 IP 地址，否则就会陷入循环查询。一般来说，本机都保存一份根域名服务器的 IP 地址的缓存，叫做 <a target="_blank" rel="noopener" href="https://www.internic.net/domain/named.root">named.root</a> 文件。这个文件同时记录了 13 台根域名服务器的 IP 地址。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">.                        3600000      NS    A.ROOT-SERVERS.NET.</span><br><span class="line">A.ROOT-SERVERS.NET.      3600000      A     198.41.0.4</span><br><span class="line">A.ROOT-SERVERS.NET.      3600000      AAAA  2001:503:ba3e::2:30</span><br><span class="line"></span><br><span class="line">.                        3600000      NS    B.ROOT-SERVERS.NET.</span><br><span class="line">B.ROOT-SERVERS.NET.      3600000      A     199.9.14.201</span><br><span class="line">B.ROOT-SERVERS.NET.      3600000      AAAA  2001:500:200::b</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+</blockquote>
+<p>参考：<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Domain_Name_System#Address_resolution_mechanism">4.1 Address resolution mechanism</a></p>
+<blockquote>
+<p>For proper operation of its domain name resolver, a network host is configured with an initial cache (<em>hints</em>) of the known addresses of the root name servers. The hints are updated periodically by an administrator by retrieving a dataset from a reliable source.</p>
+</blockquote>
+<p>域名解析的<strong>循环依赖</strong>问题及其解决方案：<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Domain_Name_System#Circular_dependencies_and_glue_records">4.3 Circular dependencies and glue records</a></p>
+<blockquote>
+<p>Name servers in delegations are identified by name, rather than by IP address. This means that a resolving name server must issue another DNS request to find out the IP address of the server to which it has been referred. If the name given in the delegation is a subdomain of the domain for which the delegation is being provided, there is a <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Circular_dependency">circular dependency</a>.</p>
+<p>In this case, the name server providing the delegation must also provide one or more IP addresses for the authoritative name server mentioned in the delegation. This information is called <u><em>glue</em></u>. The delegating name server provides this glue in the form of records in the <u><em>additional section</em></u> of the DNS response, and provides the delegation in the <u><em>authority section</em></u> of the response. A glue record is a combination of the name server and IP address.</p>
+<p>For example, if the <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Authoritative_name_server">authoritative name server</a> for <code>example.org</code> is <code>ns1.example.org</code>, a computer trying to resolve <code>www.example.org</code> first resolves <code>ns1.example.org</code>. As <code>ns1</code> is contained in <code>example.org</code>, this requires resolving <code>example.org</code> first, which presents a circular dependency. To break the dependency, the name server for the <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Top_level_domain">top level domain</a> org includes glue along with the delegation for <code>example.org</code>. The glue records are address records that provide IP addresses for <code>ns1.example.org</code>. The resolver uses one or more of these IP addresses to query one of the domain’s authoritative servers, which allows it to complete the DNS query.</p>
+</blockquote>
+<h3 id="根区文件（Root-Zone-File）"><a href="#根区文件（Root-Zone-File）" class="headerlink" title="根区文件（Root Zone File）"></a>根区文件（Root Zone File）</h3><p><a target="_blank" rel="noopener" href="https://www.internic.net/domain/root.zone">https://www.internic.net/domain/root.zone</a></p>
+<blockquote>
+<p>DNS 根域名服务器（Root name server）负责维护 DNS 根区文件（Root zone file）。该文件保存了所有顶级域名（TLD）的托管信息，所以非常大，超过 2MB。</p>
+<p>举例来说，顶级域名 <code>.com</code> 可以查到 13 个域名服务器：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">com.            172800  IN  NS  a.gtld-servers.net.</span><br><span class="line">com.            172800  IN  NS  b.gtld-servers.net.</span><br><span class="line">com.            172800  IN  NS  c.gtld-servers.net.</span><br><span class="line">com.            172800  IN  NS  d.gtld-servers.net.</span><br><span class="line">com.            172800  IN  NS  e.gtld-servers.net.</span><br><span class="line">com.            172800  IN  NS  f.gtld-servers.net.</span><br><span class="line">com.            172800  IN  NS  g.gtld-servers.net.</span><br><span class="line">com.            172800  IN  NS  h.gtld-servers.net.</span><br><span class="line">com.            172800  IN  NS  i.gtld-servers.net.</span><br><span class="line">com.            172800  IN  NS  j.gtld-servers.net.</span><br><span class="line">com.            172800  IN  NS  k.gtld-servers.net.</span><br><span class="line">com.            172800  IN  NS  l.gtld-servers.net.</span><br><span class="line">com.            172800  IN  NS  m.gtld-servers.net.</span><br></pre></td></tr></table></figure>
+
+<p>也就是说，<code>.com</code> 域名的解析结果，可以到这个 13 个服务器的任一台查询。细心的读者可能发现，这些服务器本身也是使用域名（比如 <code>a.gtld-servers.net.</code>）标识，那么还得去查询它们指向的服务器，这样很容易造成循环查询。</p>
+<p>因此，DNS 根区文件还会同时提供这些服务器的 IP 地址（IPv4 和 IPv6）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">a.gtld-servers.net. 172800  IN  A     192.5.6.30</span><br><span class="line">a.gtld-servers.net. 172800  IN  AAAA  2001:503:a83e:0:0:0:2:30</span><br><span class="line">b.gtld-servers.net. 172800  IN  A     192.33.14.30</span><br><span class="line">b.gtld-servers.net. 172800  IN  AAAA  2001:503:231d:0:0:0:2:30</span><br><span class="line">c.gtld-servers.net. 172800  IN  A     192.26.92.30</span><br><span class="line">c.gtld-servers.net. 172800  IN  AAAA  2001:503:83eb:0:0:0:0:30</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>理论上，所有域名查询都必须先查询根域名，因为只有根域名才能告诉你，某个顶级域名由哪个运营商、哪台服务器管理。事实上也确实如此，ICANN 维护着<a target="_blank" rel="noopener" href="https://www.internic.net/domain/root.zone">根区文件（Root zone file）</a>，里面记载着顶级域名和对应的记录。</p>
+<p>但由于该文件很少变化，大多数 DNS 服务商都会提供它的缓存，所以根域名的查询事实上不是那么频繁。</p>
+</blockquote>
+<h3 id="根区数据库（Root-Zone-Database）"><a href="#根区数据库（Root-Zone-Database）" class="headerlink" title="根区数据库（Root Zone Database）"></a>根区数据库（Root Zone Database）</h3><p><a target="_blank" rel="noopener" href="https://www.iana.org/domains/root/db">https://www.iana.org/domains/root/db</a></p>
+<blockquote>
+<p>提供顶级域名的授权信息。</p>
+<p>Much of this data is also available via the WHOIS protocol at <a target="_blank" rel="noopener" href="http://whois.iana.org/">whois.iana.org</a>.</p>
+</blockquote>
+<h2 id="顶级域名（Top-Level-Domain）"><a href="#顶级域名（Top-Level-Domain）" class="headerlink" title="顶级域名（Top-Level Domain）"></a>顶级域名（Top-Level Domain）</h2><p>所有顶级域名保存在 <a target="_blank" rel="noopener" href="https://data.iana.org/TLD/tlds-alpha-by-domain.txt">Top-Level Domain List</a>，可查询<a target="_blank" rel="noopener" href="https://www.iana.org/domains/root/db">根区数据库（Root Zone Database）</a>以获得更多信息（如顶级域名运营商信息、Name Servers）。</p>
+<p>顶级域名（TLD）分为如下六种类型：</p>
+<blockquote>
+<p>As of 2015, IANA distinguishes the following groups of <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Top-level_domain">top-level domains</a>:<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Top-level_domain#cite_note-13">[13]</a></p>
+<ol>
+<li><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Top-level_domain#Infrastructure_domain">Infrastructure top-level domain</a> (ARPA): This group consists of one domain, the <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/.arpa">Address and Routing Parameter Area</a>. It is managed by IANA on behalf of the <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Internet_Engineering_Task_Force">Internet Engineering Task Force</a> for various purposes specified in the <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Request_for_Comments">Request for Comments</a> publications.</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Generic_top-level_domain">Generic top-level domains</a> (gTLD): Top-level domains with three or more characters</p>
+</li>
+<li><p>restricted generic top-level domains (grTLD): These domains are managed under official ICANN accredited registrars.</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Sponsored_top-level_domain">Sponsored top-level domains</a> (sTLD): These domains are proposed and sponsored by private agencies or organizations that establish and enforce rules restricting the eligibility to use the TLD. Use is based on community theme concepts; these domains are managed under official ICANN accredited registrars.</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Country_code_top-level_domain">country-code top-level domains</a> (ccTLD): Two-letter domains established for <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Country">countries</a> or <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/List_of_dependent_territories">territories</a>. With some historical exceptions, the code for any territory is the same as its two-letter <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/ISO_3166">ISO 3166</a> code.</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Internationalized_country_code_top-level_domain">Internationalized country code top-level domains</a> (IDN ccTLD): ccTLDs in non-Latin character sets (e.g., Arabic, Cyrillic, Hebrew, or Chinese).</li>
+</ul>
+</li>
+</ol>
+<ol start="6">
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/.test">Test top-level domains</a> (tTLD): These domains were installed under <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/.test">.test</a> for testing purposes in the IDN development process; these domains are not present in the root zone.</li>
+</ol>
+</blockquote>
+<p>其中下面两类是最常用的：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://zh.wikipedia.org/wiki/GTLD">通用顶级域名（Generic top-level domain, gTLD）</a>，如常见的：<code>.com</code>、<code>.net</code>、<code>.org</code>、<code>.gov</code>、…</li>
+<li><a target="_blank" rel="noopener" href="http://zh.wikipedia.org/wiki/CcTLD">国家和地区顶级域名（Country code top-level domain, ccTLD）</a>，一般用两个字母的国家或地区名缩写代称，如：<code>.cn</code>、<code>.jp</code>、…</li>
+</ul>
+<p>顶级域名的数量仍在不断增长中，除了英文字母的域名，还不断新增各种语系的域名，如中文域名。</p>
+<h3 id="顶级域名服务器（TLD-name-server）"><a href="#顶级域名服务器（TLD-name-server）" class="headerlink" title="顶级域名服务器（TLD name server）"></a>顶级域名服务器（TLD name server）</h3><h2 id="二级域名（Second-Level-Domain）"><a href="#二级域名（Second-Level-Domain）" class="headerlink" title="二级域名（Second-Level Domain）"></a>二级域名（Second-Level Domain）</h2><p>组织或个人通过域名代理服务商（如 GoDaddy、万网）进行注册的域名。根据需要还可以自行在二级域名下新增三级、四级等<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Subdomain">子域名</a>。</p>
+<h3 id="权威域名服务器（Authoritative-name-server）"><a href="#权威域名服务器（Authoritative-name-server）" class="headerlink" title="权威域名服务器（Authoritative name server）"></a>权威域名服务器（Authoritative name server）</h3><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Name_server#Authoritative_name_server">https://en.wikipedia.org/wiki/Name_server#Authoritative_name_server</a></p>
+<blockquote>
+<p>任何一个拥有域名的主机，其域名与 IP 地址的映射关系等信息都存储在权威域名服务器上。</p>
+</blockquote>
+<h2 id="资源记录（Resource-Record）"><a href="#资源记录（Resource-Record）" class="headerlink" title="资源记录（Resource Record）"></a>资源记录（Resource Record）</h2><p>域名系统中，一般一个<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/DNS_zone">域（DNS zone）</a>通过一个 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Zone_file">zone 文件</a>保存该域的相关配置信息。zone 文件包含了域名和 IP 地址等资源之间的映射，以<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Domain_Name_System#DNS_resource_records">资源记录（Resource recerd, RR）</a>的文本形式进行组织。</p>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/List_of_DNS_record_types">这里</a>列举了所有的资源记录类型：</p>
+<p><img src="/img/network/application-layer/dns/DNS_record_types.png" alt="DNS record types"></p>
+<p><img src="/img/network/application-layer/dns/DNS_record_types_2.png" alt="DNS record types"></p>
+<p>以域名 <code>example.com</code> 为例，其 zone 文件简化如下：</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>ttl</th>
+<th>record class</th>
+<th>record type</th>
+<th>record data</th>
+<th>comment</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>example.com.</td>
+<td>1h</td>
+<td>IN</td>
+<td><code>NS</code></td>
+<td>ns</td>
+<td>ns.example.com is a nameserver for example.com</td>
+</tr>
+<tr>
+<td>ns</td>
+<td>1h</td>
+<td>IN</td>
+<td><code>A</code></td>
+<td>192.0.2.2</td>
+<td>IPv4 address for ns.example.com</td>
+</tr>
+<tr>
+<td>example.com.</td>
+<td>1h</td>
+<td>IN</td>
+<td><code>A</code></td>
+<td>192.0.2.1</td>
+<td>IPv4 address for example.com</td>
+</tr>
+<tr>
+<td>www</td>
+<td>1h</td>
+<td>IN</td>
+<td><code>CNAME</code></td>
+<td>example.com.</td>
+<td><a target="_blank" rel="noopener" href="http://www.example.com/">www.example.com</a> is an alias for example.com</td>
+</tr>
+</tbody></table>
+<p> CDN 服务常用到 <code>CNAME</code> 记录。</p>
+<h1 id="域名解析方式"><a href="#域名解析方式" class="headerlink" title="域名解析方式"></a>域名解析方式</h1><p>参考 <a target="_blank" rel="noopener" href="https://www.ietf.org/rfc/rfc1034.txt">RFC 1034: Domain Names - Concepts and Facilities - IETF</a> 规范的 2. INTRODUCTION - 2.3. Assumptions about usage 对于两种域名解析方式的描述：</p>
+<blockquote>
+<p>In any system that has a distributed database, a particular name server may be presented with a query that can only be answered by some other server.  The two general approaches to dealing with this problem are </p>
+<ul>
+<li>“recursive”, in which the first server pursues the query for the client at another server, </li>
+<li>“iterative”, in which the server refers the client to another server and lets the client pursue the query.  </li>
+</ul>
+<p>Both approaches have advantages and disadvantages, but the iterative approach is preferred for the datagram style of access.  The domain system requires implementation of the iterative approach, but allows the recursive approach as an option.</p>
+</blockquote>
+<h2 id="迭代方式（Iterative-Approach）"><a href="#迭代方式（Iterative-Approach）" class="headerlink" title="迭代方式（Iterative Approach）"></a>迭代方式（Iterative Approach）</h2><p><img src="/img/network/application-layer/dns/Example_of_an_iterative_DNS_resolver.svg" alt="Iterative Approach"></p>
+<blockquote>
+<p>A DNS resolver that implements the iterative approach mandated by RFC 1034; in this case, the resolver consults three name servers to resolve the <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Fully_qualified_domain_name">fully qualified domain name</a> “<a target="_blank" rel="noopener" href="http://www.wikipedia.org&quot;/">www.wikipedia.org&quot;</a>.</p>
+</blockquote>
+<h2 id="递归方式（Recursive-Approach）"><a href="#递归方式（Recursive-Approach）" class="headerlink" title="递归方式（Recursive Approach）"></a>递归方式（Recursive Approach）</h2><p><img src="/img/network/application-layer/dns/DNS_resolution.png" alt="DNS resolution"></p>
+<h1 id="公共域名服务器"><a href="#公共域名服务器" class="headerlink" title="公共域名服务器"></a>公共域名服务器</h1><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Public_recursive_name_server">https://en.wikipedia.org/wiki/Public_recursive_name_server</a></p>
+<p><a target="_blank" rel="noopener" href="https://public-dns.info/">https://public-dns.info/</a></p>
+<h1 id="DNS-相关命令"><a href="#DNS-相关命令" class="headerlink" title="DNS 相关命令"></a>DNS 相关命令</h1><h2 id="dig"><a href="#dig" class="headerlink" title="dig"></a>dig</h2><p><img src="/img/network/application-layer/dns/dig.png" alt="dig"></p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p><code>dig</code> 命令安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ apt-get install dnsutils</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p><code>dig</code> 命令使用：<a target="_blank" rel="noopener" href="https://downloads.isc.org/isc/bind9/cur/9.17/doc/arm/html/manpages.html#dig-dns-lookup-utility">https://downloads.isc.org/isc/bind9/cur/9.17/doc/arm/html/manpages.html#dig-dns-lookup-utility</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ dig @name_server name record_type</span><br></pre></td></tr></table></figure>
+
+<p>其中，<code>record_type</code> 参数如下：<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/List_of_DNS_record_types">https://en.wikipedia.org/wiki/List_of_DNS_record_types</a></p>
+<p><img src="/img/network/application-layer/dns/DNS_record_types.png" alt="DNS record types"></p>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><p><code>dig</code> 命令使用例子：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># To use a specific DNS server for the query, use the @ option.</span></span><br><span class="line">$ dig @8.8.8.8 example.com</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># By default, dig displays the A record for a domain. To look up a different DNS record, add it to the end of the command. </span></span><br><span class="line"><span class="comment"># For example, to look up the MX (mail exchanger) record for the example.com domain, type the following command:</span></span><br><span class="line">$ dig example.com MX</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># query for any type of record information</span></span><br><span class="line">$ dig +noall +answer www.google.com any</span><br><span class="line"></span><br><span class="line">www.google.com.		107	IN	A	142.250.66.132</span><br><span class="line">www.google.com.		94	IN	AAAA	2404:6800:4005:802::2004</span><br></pre></td></tr></table></figure>
+
+<p><code>+[no]trace</code></p>
+<blockquote>
+<p>This option toggles tracing of the delegation path from the root name servers for the name being looked up. Tracing is disabled by default. When tracing is enabled, <code>dig</code> makes <strong>iterative queries</strong> to resolve the name being looked up. It follows referrals from the root servers, showing the answer from each server that was used to resolve the lookup.</p>
+</blockquote>
+<p>下例中，使用公共域名服务器，而不是依次使用 <a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man5/resolv.conf.5.html">/etc/resolv.conf</a> 里配置的本地域名服务器进行 DNS 迭代查询，结果如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">$ dig @8.8.8.8 +trace www.google.com</span><br><span class="line"></span><br><span class="line">; &lt;&lt;&gt;&gt; DiG 9.10.6 &lt;&lt;&gt;&gt; @8.8.8.8 +trace www.google.com</span><br><span class="line">; (1 server found)</span><br><span class="line">;; global options: +cmd</span><br><span class="line">.			24814	IN	NS	m.root-servers.net.</span><br><span class="line">.			24814	IN	NS	b.root-servers.net.</span><br><span class="line">.			24814	IN	NS	c.root-servers.net.</span><br><span class="line">.			24814	IN	NS	d.root-servers.net.</span><br><span class="line">.			24814	IN	NS	e.root-servers.net.</span><br><span class="line">.			24814	IN	NS	f.root-servers.net.</span><br><span class="line">.			24814	IN	NS	g.root-servers.net.</span><br><span class="line">.			24814	IN	NS	h.root-servers.net.</span><br><span class="line">.			24814	IN	NS	a.root-servers.net.</span><br><span class="line">.			24814	IN	NS	i.root-servers.net.</span><br><span class="line">.			24814	IN	NS	j.root-servers.net.</span><br><span class="line">.			24814	IN	NS	k.root-servers.net.</span><br><span class="line">.			24814	IN	NS	l.root-servers.net.</span><br><span class="line">;; Received 525 bytes from 8.8.8.8#53(8.8.8.8) in 157 ms</span><br><span class="line"></span><br><span class="line">com.			172800	IN	NS	b.gtld-servers.net.</span><br><span class="line">com.			172800	IN	NS	e.gtld-servers.net.</span><br><span class="line">com.			172800	IN	NS	i.gtld-servers.net.</span><br><span class="line">com.			172800	IN	NS	j.gtld-servers.net.</span><br><span class="line">com.			172800	IN	NS	a.gtld-servers.net.</span><br><span class="line">com.			172800	IN	NS	c.gtld-servers.net.</span><br><span class="line">com.			172800	IN	NS	d.gtld-servers.net.</span><br><span class="line">com.			172800	IN	NS	k.gtld-servers.net.</span><br><span class="line">com.			172800	IN	NS	m.gtld-servers.net.</span><br><span class="line">com.			172800	IN	NS	h.gtld-servers.net.</span><br><span class="line">com.			172800	IN	NS	f.gtld-servers.net.</span><br><span class="line">com.			172800	IN	NS	l.gtld-servers.net.</span><br><span class="line">com.			172800	IN	NS	g.gtld-servers.net.</span><br><span class="line">;; Received 1174 bytes from 202.12.27.33#53(m.root-servers.net) in 48 ms</span><br><span class="line"></span><br><span class="line">google.com.		172800	IN	NS	ns2.google.com.</span><br><span class="line">google.com.		172800	IN	NS	ns1.google.com.</span><br><span class="line">google.com.		172800	IN	NS	ns3.google.com.</span><br><span class="line">google.com.		172800	IN	NS	ns4.google.com.</span><br><span class="line">;; Received 840 bytes from 192.48.79.30#53(j.gtld-servers.net) in 196 ms</span><br><span class="line"></span><br><span class="line">www.google.com.		300	IN	A	142.250.66.100</span><br><span class="line">;; Received 59 bytes from 216.239.38.10#53(ns4.google.com) in 84 ms</span><br></pre></td></tr></table></figure>
+
+<p>Wireshark 网卡抓包截图如下：DNS 协议 基于 UDP 协议，使用 53 端口。</p>
+<p><img src="/img/network/application-layer/dns/DNS_protocol.png" alt="DNS 协议"></p>
+<h2 id="nslookup"><a href="#nslookup" class="headerlink" title="nslookup"></a>nslookup</h2><p>nslookup 命令：<a target="_blank" rel="noopener" href="https://downloads.isc.org/isc/bind9/cur/9.17/doc/arm/html/manpages.html#nslookup-query-internet-name-servers-interactively">https://downloads.isc.org/isc/bind9/cur/9.17/doc/arm/html/manpages.html#nslookup-query-internet-name-servers-interactively</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ nslookup www.google.com</span><br><span class="line"></span><br><span class="line">Server:		10.0.20.101</span><br><span class="line">Address:	10.0.20.101<span class="comment">#53</span></span><br><span class="line"></span><br><span class="line">Non-authoritative answer:</span><br><span class="line">Name:	www.google.com</span><br><span class="line">Address: 142.250.66.132</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://www.ietf.org/rfc/rfc1034.txt">RFC 1034: Domain Names - Concepts and Facilities - IETF</a></p>
+<p><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc1035">RFC 1035 - Domain names - implementation and specification</a></p>
+<p><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc1912">RFC 1912 - 常见的 DNS 操作和配置错误</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.iana.org/domains/root">https://www.iana.org/domains/root</a></p>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Domain_Name_System">https://en.wikipedia.org/wiki/Domain_Name_System</a></p>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Domain_name">https://en.wikipedia.org/wiki/Domain_name</a></p>
+<p>《<a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2018/05/root-domain.html">根域名的知识 - 阮一峰</a>》</p>
+<p><a target="_blank" rel="noopener" href="https://wizardzines.com/comics/dig/">https://wizardzines.com/comics/dig/</a></p>
+<p><a target="_blank" rel="noopener" href="https://wizardzines.com/comics/dns-record-types/">https://wizardzines.com/comics/dns-record-types/</a></p>
+<p>《<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/VCzEFqPR9JXAJPUDQv0gVA">如果美国封了 DNS，俄罗斯将从网络消失？</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/if4SfF7gEPH_U6ue_xQHdw">美国能让中国从网络上消失？- 良许 Linux</a>》</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/dns/" title="应用层 DNS 协议、相关命令总结">https://qidawu.github.io/posts/dns/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag"># 计算机网络</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/data-structure-graph/" rel="prev" title="数据结构系列（四）图、网结构总结">
+                  <i class="fa fa-chevron-left"></i> 数据结构系列（四）图、网结构总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/bitwise-operation/" rel="next" title="位运算及使用场景总结">
+                  位运算及使用场景总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

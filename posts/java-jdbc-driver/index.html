@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="总览 什么是 JDBC？JDBC 表示 Java Database Connectivity，是 Java SE（Java 标准版）的一部分。JDBC API 用于在 Java 应用程序中执行以下活动：  连接到数据库 执行查询并将语句更新到数据库 检索从数据库收到的结果   为什么要使用 JDBC？在 JDBC 之前，ODBC API 是用于连接和执行命令的数据库 API 标准。但是，ODBC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 数据持久化系列（一）JDBC Driver 驱动程序总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/java-jdbc-driver/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="总览 什么是 JDBC？JDBC 表示 Java Database Connectivity，是 Java SE（Java 标准版）的一部分。JDBC API 用于在 Java 应用程序中执行以下活动：  连接到数据库 执行查询并将语句更新到数据库 检索从数据库收到的结果   为什么要使用 JDBC？在 JDBC 之前，ODBC API 是用于连接和执行命令的数据库 API 标准。但是，ODBC">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/java/jdbc/jdbc-driver.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/jdbc/usage-of-jdbc.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/jdbc/jdbc-url.png">
+<meta property="article:published_time" content="2018-02-03T13:56:21.000Z">
+<meta property="article:modified_time" content="2023-03-09T09:23:08.489Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="JDBC">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/java/jdbc/jdbc-driver.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/java-jdbc-driver/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/java-jdbc-driver/","path":"posts/java-jdbc-driver/","title":"Java 数据持久化系列（一）JDBC Driver 驱动程序总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Java 数据持久化系列（一）JDBC Driver 驱动程序总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E8%A7%88"><span class="nav-number">1.</span> <span class="nav-text">总览</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-JDBC%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">什么是 JDBC？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8-JDBC%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">为什么要使用 JDBC？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-JDBC-%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">什么是 JDBC 驱动程序？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F%E5%9B%9B%E7%A7%8D%E7%B1%BB%E5%9E%8B"><span class="nav-number">4.1.</span> <span class="nav-text">驱动程序四种类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F%E5%8E%82%E5%95%86%E5%AE%9E%E7%8E%B0"><span class="nav-number">4.2.</span> <span class="nav-text">驱动程序厂商实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL-Connector-J"><span class="nav-number">4.2.1.</span> <span class="nav-text">MySQL Connector&#x2F;J</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8-JDBC%EF%BC%9F"><span class="nav-number">5.</span> <span class="nav-text">如何使用 JDBC？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-JDBC-URL"><span class="nav-number">5.1.</span> <span class="nav-text">配置 JDBC URL</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E5%8D%8F%E8%AE%AE"><span class="nav-number">5.1.1.</span> <span class="nav-text">常用协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E5%B1%9E%E6%80%A7"><span class="nav-number">5.1.2.</span> <span class="nav-text">配置属性</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#useSSL"><span class="nav-number">5.1.2.1.</span> <span class="nav-text">useSSL</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#connectionTimeZone"><span class="nav-number">5.1.2.2.</span> <span class="nav-text">connectionTimeZone</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#useServerPrepStmts"><span class="nav-number">5.1.2.3.</span> <span class="nav-text">useServerPrepStmts</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#allowMultiQueries"><span class="nav-number">5.1.2.4.</span> <span class="nav-text">allowMultiQueries</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#rewriteBatchedStatements"><span class="nav-number">5.1.2.5.</span> <span class="nav-text">rewriteBatchedStatements</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#maxAllowedPacket"><span class="nav-number">5.1.2.6.</span> <span class="nav-text">maxAllowedPacket</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E5%86%8C%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F"><span class="nav-number">5.2.</span> <span class="nav-text">注册驱动程序</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%8B%E5%B7%A5%E6%B3%A8%E5%86%8C"><span class="nav-number">5.2.1.</span> <span class="nav-text">手工注册</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E6%B3%A8%E5%86%8C"><span class="nav-number">5.2.2.</span> <span class="nav-text">自动注册</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="nav-number">5.2.3.</span> <span class="nav-text">常见问题</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/java-jdbc-driver/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Java 数据持久化系列（一）JDBC Driver 驱动程序总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java 数据持久化系列（一）JDBC Driver 驱动程序总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-02-03 21:56:21" itemprop="dateCreated datePublished" datetime="2018-02-03T21:56:21+08:00">2018-02-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-09 17:23:08" itemprop="dateModified" datetime="2023-03-09T17:23:08+08:00">2023-03-09</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="总览"><a href="#总览" class="headerlink" title="总览"></a>总览</h1><p><img src="/img/java/jdbc/jdbc-driver.png" alt="JDBC Driver"></p>
+<h1 id="什么是-JDBC？"><a href="#什么是-JDBC？" class="headerlink" title="什么是 JDBC？"></a>什么是 JDBC？</h1><p>JDBC 表示 Java Database Connectivity，是 Java SE（Java 标准版）的一部分。JDBC API 用于在 Java 应用程序中执行以下活动：</p>
+<ol>
+<li>连接到数据库</li>
+<li>执行查询并将语句更新到数据库</li>
+<li>检索从数据库收到的结果</li>
+</ol>
+<p><img src="/img/java/jdbc/usage-of-jdbc.png" alt="JDBC API"></p>
+<h1 id="为什么要使用-JDBC？"><a href="#为什么要使用-JDBC？" class="headerlink" title="为什么要使用 JDBC？"></a>为什么要使用 JDBC？</h1><p>在 JDBC 之前，ODBC API 是用于连接和执行命令的数据库 API 标准。但是，ODBC API 是使用 C 语言编写的驱动程序，依赖于平台。这就是为什么 Java 定义了自己的 JDBC API，它使用的 JDBC 驱动程序，是用 Java 语言编写的，具有与平台无关的特性，支持跨平台部署，性能也较好。</p>
+<h1 id="什么是-JDBC-驱动程序？"><a href="#什么是-JDBC-驱动程序？" class="headerlink" title="什么是 JDBC 驱动程序？"></a>什么是 JDBC 驱动程序？</h1><p>由于 JDBC API 只是一套接口规范，因此要使用 JDBC API 操作数据库，首先需要选择合适的驱动程序：</p>
+<h2 id="驱动程序四种类型"><a href="#驱动程序四种类型" class="headerlink" title="驱动程序四种类型"></a>驱动程序四种类型</h2><p>有四种类型的 JDBC 驱动程序：</p>
+<ol>
+<li>JDBC-ODBC bridge driver (<del>In Java 8, the JDBC-ODBC Bridge has been removed.</del>)</li>
+<li>Native-API driver (partially java driver)</li>
+<li>Network-Protocol driver (Middleware driver, fully java driver)</li>
+<li>**Database-Protocol driver (Thin driver, fully java driver)**，目前最常用的驱动类型，日常开发中使用的驱动 jar 包基本都属于这种类型，通常由数据库厂商直接提供，例如 <code>mysql-connector-java</code>。驱动程序把 JDBC 调用直接转换为数据库特定的网络协议，因此性能更好。驱动程序纯 Java 实现，支持跨平台部署。</li>
+</ol>
+<blockquote>
+<p>我们知道，ODBC几乎能在所有平台上连接几乎所有的数据库。为什么 Java 不使用 ODBC？</p>
+<p>答案是：Java 可以使用 ODBC，但最好是以JDBC-ODBC桥的形式使用（Java连接总体分为Java直连和JDBC-ODBC桥两种形式）。</p>
+<p>那为什么还需要 JDBC？</p>
+<p>因为ODBC 不适合直接在 Java 中使用，因为它使用 C 语言接口。从Java 调用本地 C代码在安全性、实现、坚固性和程序的自动移植性方面都有许多缺点。从 ODBC C API 到 Java API 的字面翻译是不可取的。例如，Java 没有指针，而 ODBC 却对指针用得很广泛（包括很容易出错的指针”void *”）。</p>
+<p>另外，ODBC 比较复杂，而JDBC 尽量保证简单功能的简便性，同时在必要时允许使用高级功能。如果使用ODBC，就必须手动地将 ODBC 驱动程序管理器和驱动程序安装在每台客户机上。如果完全用 Java 编写 JDBC 驱动程序则 JDBC代码在所有 Java 平台上（从网络计算机到大型机）都可以自 动安装、移植并保证安全性。</p>
+<p>总之，JDBC 在很大程度上是借鉴了ODBC的，从他的基础上发展而来。JDBC 保留了 ODBC 的基本设计特征，因此，熟悉 ODBC 的程序员将发现 JDBC 很容易使用。它们之间最大的区别在于：JDBC 以 Java 风格与优点为基础并进行优化，因此更加易于使用。</p>
+</blockquote>
+<p>各类型的优缺点详见：</p>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/JDBC_driver">https://en.wikipedia.org/wiki/JDBC_driver</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.javatpoint.com/jdbc-driver">https://www.javatpoint.com/jdbc-driver</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/autfish/article/details/52170053">https://blog.csdn.net/autfish/article/details/52170053</a></p>
+<h2 id="驱动程序厂商实现"><a href="#驱动程序厂商实现" class="headerlink" title="驱动程序厂商实现"></a>驱动程序厂商实现</h2><p>如果选定使用推荐的第四种驱动程序类型，接下来需要下载对应厂商的驱动程序，目前提供这些<a target="_blank" rel="noopener" href="https://www.oracle.com/technetwork/java/index-136695.html">支持列表</a>。</p>
+<h3 id="MySQL-Connector-J"><a href="#MySQL-Connector-J" class="headerlink" title="MySQL Connector/J"></a>MySQL Connector/J</h3><p>例如最常用的 MySQL 数据库，提供了 <a target="_blank" rel="noopener" href="https://dev.mysql.com/downloads/connector/j/">MySQL Connector/J</a>（即 <code>mysql-connector-java</code>）。Maven 依赖配置如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>mysql<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mysql-connector-java<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>x.x.x<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>关于 MySQL 驱动程序的更多信息，详见：<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-overview.html">https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-overview.html</a></p>
+<ul>
+<li>驱动程序/数据源类名</li>
+<li>连接 URL 语法</li>
+<li>配置属性</li>
+<li>JDBC API 实现说明</li>
+<li>Java，JDBC 和 MySQL 类型</li>
+<li>使用字符集和 Unicode</li>
+<li>各种连接方式（如 SSL 安全连接）</li>
+<li>MySQL 错误码与 JDBC SQLState 代码的映射关系</li>
+<li>……</li>
+</ul>
+<h1 id="如何使用-JDBC？"><a href="#如何使用-JDBC？" class="headerlink" title="如何使用 JDBC？"></a>如何使用 JDBC？</h1><h2 id="配置-JDBC-URL"><a href="#配置-JDBC-URL" class="headerlink" title="配置 JDBC URL"></a>配置 JDBC URL</h2><p>JDBC URL 提供了一种标识数据源的方法，以便相应的驱动程序识别它并与之建立连接。</p>
+<p>因此，首先需要先配置好 JDBC URL，以便驱动程序注册完毕之后通过 JDBC URL 与数据源建立连接。</p>
+<p>JDBC URL 的标准语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">protocol//[hosts][/database][?properties]</span><br></pre></td></tr></table></figure>
+
+<p>详见：<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-reference-jdbc-url-format.html">https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-reference-jdbc-url-format.html</a></p>
+<p>例如：<code>jdbc:mysql://localhost:3306/test?useUnicode=true;characterEncoding=utf-8</code></p>
+<h3 id="常用协议"><a href="#常用协议" class="headerlink" title="常用协议"></a>常用协议</h3><p>常见的 JDBC URL 协议及对应 Driver Class 如下：</p>
+<p><img src="/img/java/jdbc/jdbc-url.png"></p>
+<h3 id="配置属性"><a href="#配置属性" class="headerlink" title="配置属性"></a>配置属性</h3><p>MySQL Connector/J：</p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-reference-configuration-properties.html">https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-reference-configuration-properties.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-reference-configuration-properties.html">https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-reference-configuration-properties.html</a></p>
+<h4 id="useSSL"><a href="#useSSL" class="headerlink" title="useSSL"></a>useSSL</h4><p>javax.net.ssl.SSLHandshakeException: No appropriate protocol (protocol is disabled or cipher suites are inappropriate)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">Caught while disconnecting...</span><br><span class="line"></span><br><span class="line">** BEGIN NESTED EXCEPTION ** </span><br><span class="line"></span><br><span class="line">javax.net.ssl.SSLException</span><br><span class="line">MESSAGE: closing inbound before receiving peer&#x27;s close_notify</span><br><span class="line"></span><br><span class="line">STACKTRACE:</span><br><span class="line"></span><br><span class="line">javax.net.ssl.SSLException: closing inbound before receiving peer&#x27;s close_notify</span><br><span class="line">	at sun.security.ssl.Alert.createSSLException(Alert.java:133)</span><br><span class="line">	at sun.security.ssl.Alert.createSSLException(Alert.java:117)</span><br><span class="line">	at sun.security.ssl.TransportContext.fatal(TransportContext.java:340)</span><br><span class="line">	at sun.security.ssl.TransportContext.fatal(TransportContext.java:296)</span><br><span class="line">	at sun.security.ssl.TransportContext.fatal(TransportContext.java:287)</span><br><span class="line">	at sun.security.ssl.SSLSocketImpl.shutdownInput(SSLSocketImpl.java:737)</span><br><span class="line">	at sun.security.ssl.SSLSocketImpl.shutdownInput(SSLSocketImpl.java:716)</span><br><span class="line">	at com.mysql.cj.protocol.a.NativeProtocol.quit(NativeProtocol.java:1319)</span><br><span class="line">	at com.mysql.cj.NativeSession.quit(NativeSession.java:182)</span><br><span class="line">	at com.mysql.cj.jdbc.ConnectionImpl.realClose(ConnectionImpl.java:1750)</span><br><span class="line">	at com.mysql.cj.jdbc.ConnectionImpl.close(ConnectionImpl.java:720)</span><br><span class="line">	at com.zaxxer.hikari.pool.PoolBase.quietlyCloseConnection(PoolBase.java:135)</span><br><span class="line">	at com.zaxxer.hikari.pool.HikariPool.lambda$closeConnection$1(HikariPool.java:441)</span><br><span class="line">	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)</span><br><span class="line">	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)</span><br><span class="line">	at java.lang.Thread.run(Thread.java:748)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">** END NESTED EXCEPTION **</span><br></pre></td></tr></table></figure>
+
+<p>解决方法一：<code>useSSL=false</code></p>
+<p>解决方法二：注释掉 <code>java.security</code> 文件中的 <code>jdk.tls.disabledAlgorithms</code> 配置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ vim ~/.sdkman/candidates/java/8.0.362-zulu/zulu-8.jdk/Contents/Home/jre/lib/security/java.security</span><br><span class="line"></span><br><span class="line"># jdk.tls.disabledAlgorithms=SSLv3, TLSv1, TLSv1.1, RC4, DES, MD5withRSA, \</span><br><span class="line">#     DH keySize &lt; 1024, EC keySize &lt; 224, 3DES_EDE_CBC, anon, NULL, \</span><br><span class="line">#     include jdk.disabled.namedCurves</span><br></pre></td></tr></table></figure>
+
+<h4 id="connectionTimeZone"><a href="#connectionTimeZone" class="headerlink" title="connectionTimeZone"></a>connectionTimeZone</h4><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-connp-props-datetime-types-processing.html#cj-conn-prop_connectionTimeZone">https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-connp-props-datetime-types-processing.html#cj-conn-prop_connectionTimeZone</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.baeldung.com/mysql-jdbc-timezone-spring-boot">Setting the MySQL JDBC Timezone Using Spring Boot Configuration</a></p>
+<h4 id="useServerPrepStmts"><a href="#useServerPrepStmts" class="headerlink" title="useServerPrepStmts"></a>useServerPrepStmts</h4><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-connp-props-prepared-statements.html#cj-conn-prop_useServerPrepStmts">https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-connp-props-prepared-statements.html#cj-conn-prop_useServerPrepStmts</a></p>
+<blockquote>
+<p>Use server-side prepared statements if the server supports them?</p>
+</blockquote>
+<p>MySQL 是否默认开启预编译，与 MySQL Server 的版本无关，而与 MySQL Connector/J（驱动程序）的版本有关，Connector/J 5.0.5 之前的版本默认开启预编译。Connector/J 5.0.5 及以后的版本默认不开启预编译，想启用 MySQL 预编译，就必须设置 <code>useServerPrepStmts=true</code>。</p>
+<p>参考：《<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/5JwMQJ-X2jBLfeTURLO68w">JDBC 的 PreparedStatement 预编译详解</a>》</p>
+<h4 id="allowMultiQueries"><a href="#allowMultiQueries" class="headerlink" title="allowMultiQueries"></a>allowMultiQueries</h4><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-connp-props-security.html#cj-conn-prop_allowMultiQueries">https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-connp-props-security.html#cj-conn-prop_allowMultiQueries</a></p>
+<blockquote>
+<p>Allow the use of <code>;</code> to delimit multiple queries during one statement (true/false). Default is <code>false</code>, and it does not affect the <code>addBatch()</code> and <code>executeBatch()</code> methods, which rely on <code>rewriteBatchedStatements</code> instead.</p>
+</blockquote>
+<p>基于安全考虑，默认情况下，MySQL Connector/J 禁用 <code>;</code> 拼接 SQL。</p>
+<p>如果想通过 MyBatis <code>foreach</code> 使用 <code>;</code> 拼接  <code>UPDATE</code>/<code>DELETE</code> 语句进行批量提交（但强烈不建议），需要设置 <code>useServerPrepStmts=true</code>。</p>
+<h4 id="rewriteBatchedStatements"><a href="#rewriteBatchedStatements" class="headerlink" title="rewriteBatchedStatements"></a>rewriteBatchedStatements</h4><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-connp-props-performance-extensions.html#cj-conn-prop_rewriteBatchedStatements">https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-connp-props-performance-extensions.html#cj-conn-prop_rewriteBatchedStatements</a></p>
+<blockquote>
+<p>Should the driver use multi-queries (regardless of the setting of <code>allowMultiQueries</code>) as well as rewriting of prepared statements for <code>INSERT</code> into <strong>multi-value inserts</strong> when <code>executeBatch()</code> is called? </p>
+<p>Notice that this has the potential for <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/SQL_injection">SQL injection</a> if using plain <code>java.sql.Statement</code> and your code doesn’t sanitize input correctly.</p>
+<p>Notice that for prepared statements, server-side prepared statements can not currently take advantage of this rewrite option, and that if you don’t specify stream lengths when using <code>PreparedStatement.set*Stream()</code>, the driver won’t be able to determine the optimum number of parameters per batch and you might receive an error from the driver that the resultant packet is too large. </p>
+<p><code>Statement.getGeneratedKeys()</code> for these rewritten statements only works when the entire batch includes <code>INSERT</code> statements. </p>
+<p>Please be aware using <code>rewriteBatchedStatements=true</code> with <code>INSERT .. ON DUPLICATE KEY UPDATE</code> that for rewritten statement server returns only one value as sum of all affected (or found) rows in batch and it isn’t possible to map it correctly to initial statements; in this case driver returns 0 as a result of each batch statement if total count was 0, and the <code>Statement.SUCCESS_NO_INFO</code> as a result of each batch statement if total count was &gt; 0.</p>
+</blockquote>
+<p>要减少 JDBC 的网络调用次数改善性能，你可以设置 <code>rewriteBatchedStatements=true</code>，并使用 <code>PreparedStatement</code> 的 <code>addBatch()</code> 方法并执行 <code>executeBatch()</code> 批量发送多个操作给数据库。</p>
+<p>根据执行的 DML 语句类型，使用不同的处理方法：</p>
+<ul>
+<li>如果是 <code>INSERT</code> 语句，会整合成形如：<code>insert into t values (xx),(yy),(zz),...</code></li>
+<li>如果是 <code>UPDATE</code>/<code>DELETE</code> 语句，会整合成形如：<code>update t set … where id = 1; update t set … where id = 2; update t set … where id = 3; ...</code></li>
+</ul>
+<p>然后按 <code>maxAllowedPacket</code> 分批拼接 SQL 语句，然后按批次提交 MySQL。</p>
+<p>参考：《<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/04d3d235cb9f">MySQL 批量操作</a>》</p>
+<h4 id="maxAllowedPacket"><a href="#maxAllowedPacket" class="headerlink" title="maxAllowedPacket"></a>maxAllowedPacket</h4><blockquote>
+<p>Maximum allowed packet size to send to server. If not set, the value of system variable <code>max_allowed_packet</code> will be used to initialize this upon connecting. This value will not take effect if set larger than the value of <code>max_allowed_packet</code>. Also, due to an internal dependency with the property “<code>blobSendChunkSize</code>“, this setting has a minimum value of “8203” if “<code>useServerPrepStmts</code>“ is set to “<code>true</code>“.</p>
+</blockquote>
+<h2 id="注册驱动程序"><a href="#注册驱动程序" class="headerlink" title="注册驱动程序"></a>注册驱动程序</h2><p>有几种方式可以注册驱动程序，如下：</p>
+<h3 id="手工注册"><a href="#手工注册" class="headerlink" title="手工注册"></a>手工注册</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Class.forName(<span class="string">&quot;com.mysql.jdbc.Driver&quot;</span>);  <span class="comment">// 方式一，底层实现其实就是方式二</span></span><br><span class="line">DriverManager.registerDriver(<span class="keyword">new</span> <span class="title class_">com</span>.mysql.jdbc.Driver());  <span class="comment">// 方式二</span></span><br><span class="line">System.setProperty(<span class="string">&quot;jdbc.drivers&quot;</span>, <span class="string">&quot;com.mysql.jdbc.Driver&quot;</span>);  <span class="comment">// 方式三</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="自动注册"><a href="#自动注册" class="headerlink" title="自动注册"></a>自动注册</h3><p>从 JDBC API 4.0 开始，<code>java.sql.DriverManager</code> 类得到了增强，利用 <strong>Java SPI 机制</strong>从厂商驱动程序的 <code>META-INF/services/java.sql.Driver</code> 文件中自动加载 <code>java.sql.Driver</code> 实现类。 因此应用程序无需再显式调用 <code>Class.forName</code> 或 <code>DriverManager.registerDriver</code> 方法来注册或加载驱动程序。<code>java.sql.DriverManager</code> 源码分析如下，</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DriverManager</span> &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Load the initial JDBC drivers by checking the System property</span></span><br><span class="line"><span class="comment">     * jdbc.properties and then use the &#123;<span class="doctag">@code</span> ServiceLoader&#125; mechanism</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        loadInitialDrivers();</span><br><span class="line">        println(<span class="string">&quot;JDBC DriverManager initialized&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">loadInitialDrivers</span><span class="params">()</span> &#123;</span><br><span class="line">        String drivers;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            drivers = AccessController.doPrivileged(<span class="keyword">new</span> <span class="title class_">PrivilegedAction</span>&lt;String&gt;() &#123;</span><br><span class="line">                <span class="keyword">public</span> String <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">                    <span class="keyword">return</span> System.getProperty(<span class="string">&quot;jdbc.drivers&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">            drivers = <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// If the driver is packaged as a Service Provider, load it.</span></span><br><span class="line">        <span class="comment">// Get all the drivers through the classloader</span></span><br><span class="line">        <span class="comment">// exposed as a java.sql.Driver.class service.</span></span><br><span class="line">        <span class="comment">// ServiceLoader.load() replaces the sun.misc.Providers()</span></span><br><span class="line"></span><br><span class="line">        AccessController.doPrivileged(<span class="keyword">new</span> <span class="title class_">PrivilegedAction</span>&lt;Void&gt;() &#123;</span><br><span class="line">            <span class="keyword">public</span> Void <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line"></span><br><span class="line">                ServiceLoader&lt;Driver&gt; loadedDrivers = ServiceLoader.load(Driver.class);</span><br><span class="line">                Iterator&lt;Driver&gt; driversIterator = loadedDrivers.iterator();</span><br><span class="line"></span><br><span class="line">                <span class="comment">/* Load these drivers, so that they can be instantiated.</span></span><br><span class="line"><span class="comment">                 * It may be the case that the driver class may not be there</span></span><br><span class="line"><span class="comment">                 * i.e. there may be a packaged driver with the service class</span></span><br><span class="line"><span class="comment">                 * as implementation of java.sql.Driver but the actual class</span></span><br><span class="line"><span class="comment">                 * may be missing. In that case a java.util.ServiceConfigurationError</span></span><br><span class="line"><span class="comment">                 * will be thrown at runtime by the VM trying to locate</span></span><br><span class="line"><span class="comment">                 * and load the service.</span></span><br><span class="line"><span class="comment">                 *</span></span><br><span class="line"><span class="comment">                 * Adding a try catch block to catch those runtime errors</span></span><br><span class="line"><span class="comment">                 * if driver not available in classpath but it&#x27;s</span></span><br><span class="line"><span class="comment">                 * packaged as service and that service is there in classpath.</span></span><br><span class="line"><span class="comment">                 */</span></span><br><span class="line">                <span class="keyword">try</span>&#123;</span><br><span class="line">                    <span class="keyword">while</span>(driversIterator.hasNext()) &#123;</span><br><span class="line">                        driversIterator.next();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">catch</span>(Throwable t) &#123;</span><br><span class="line">                <span class="comment">// Do nothing</span></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        println(<span class="string">&quot;DriverManager.initialize: jdbc.drivers = &quot;</span> + drivers);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (drivers == <span class="literal">null</span> || drivers.equals(<span class="string">&quot;&quot;</span>)) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        String[] driversList = drivers.split(<span class="string">&quot;:&quot;</span>);</span><br><span class="line">        println(<span class="string">&quot;number of Drivers:&quot;</span> + driversList.length);</span><br><span class="line">        <span class="keyword">for</span> (String aDriver : driversList) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                println(<span class="string">&quot;DriverManager.Initialize: loading &quot;</span> + aDriver);</span><br><span class="line">                Class.forName(aDriver, <span class="literal">true</span>,</span><br><span class="line">                        ClassLoader.getSystemClassLoader());</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">                println(<span class="string">&quot;DriverManager.Initialize: load failed: &quot;</span> + ex);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从上面源码中可见，当类加载器载入 <code>java.sql.DriverManager</code> 类时，会执行其静态代码块，从而执行 <code>loadInitialDrivers()</code> 方法。该方法实现中通过 Java SPI <code>ServiceLoader</code> 查找 classpath 下所有 jar 包内的 <code>META-INF/services</code> 目录，找到 <code>java.sql.Driver</code> 文件，加载其中定义的实现类并通过反射创建实例。以 <code>mysql-connector-java</code> 8.x 为例，该类定义就是 <code>com.mysql.cj.jdbc.Driver</code>，此时由于该 <code>Driver</code> 类内含静态代码块，会用 <code>new</code> 关键字创建自身实例并反向注册到 <code>DriverManager</code>，从而达到自动注册驱动程序的效果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Driver</span> <span class="keyword">extends</span> <span class="title class_">NonRegisteringDriver</span> <span class="keyword">implements</span> <span class="title class_">java</span>.sql.Driver &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Register ourselves with the DriverManager</span></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            java.sql.DriverManager.registerDriver(<span class="keyword">new</span> <span class="title class_">Driver</span>());</span><br><span class="line">        &#125; <span class="keyword">catch</span> (SQLException E) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;Can&#x27;t register driver!&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h3><p>如果有多个不同的驱动程序都被注册，调用 <code>DriverManager.getConnection</code> 方法通过 JDBC URL 获取数据源连接时，会使用第一个可用的驱动程序来创建连接。源码分析如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Connection</span> <span class="variable">conn</span> <span class="operator">=</span> DriverManager.getConnection(<span class="string">&quot;jdbc:mysql://localhost:3306/test?useUnicode=true;characterEncoding=utf-8&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><code>DriverManager</code> 会遍历已注册的驱动程序，尝试获取连接，关键代码：<code>Connection con = aDriver.driver.connect(url, info);</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// DriverManager 源码</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Connection <span class="title function_">getConnection</span><span class="params">(</span></span><br><span class="line"><span class="params">        String url, java.util.Properties info, Class&lt;?&gt; caller)</span> <span class="keyword">throws</span> SQLException &#123;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span>(DriverInfo aDriver : registeredDrivers) &#123;</span><br><span class="line">        <span class="comment">// If the caller does not have permission to load the driver then</span></span><br><span class="line">        <span class="comment">// skip it.</span></span><br><span class="line">        <span class="keyword">if</span>(isDriverAllowed(aDriver.driver, callerCL)) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                println(<span class="string">&quot;    trying &quot;</span> + aDriver.driver.getClass().getName());</span><br><span class="line">                <span class="type">Connection</span> <span class="variable">con</span> <span class="operator">=</span> aDriver.driver.connect(url, info);</span><br><span class="line">                <span class="keyword">if</span> (con != <span class="literal">null</span>) &#123;</span><br><span class="line">                    <span class="comment">// Success!</span></span><br><span class="line">                    println(<span class="string">&quot;getConnection returning &quot;</span> + aDriver.driver.getClass().getName());</span><br><span class="line">                    <span class="keyword">return</span> (con);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (SQLException ex) &#123;</span><br><span class="line">                <span class="keyword">if</span> (reason == <span class="literal">null</span>) &#123;</span><br><span class="line">                    reason = ex;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            println(<span class="string">&quot;    skipping: &quot;</span> + aDriver.getClass().getName());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>MySQL 驱动程序实现类会判断该 JDBC URL 是否支持：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// com.mysql.cj.jdbc.NonRegisteringDriver 源码，实现 java.sql.Driver 接口</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> java.sql.Connection <span class="title function_">connect</span><span class="params">(String url, Properties info)</span> <span class="keyword">throws</span> SQLException &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!ConnectionUrl.acceptsUrl(url)) &#123;</span><br><span class="line">            <span class="comment">/*</span></span><br><span class="line"><span class="comment">             * According to JDBC spec:</span></span><br><span class="line"><span class="comment">             * The driver should return &quot;null&quot; if it realizes it is the wrong kind of driver to connect to the given URL. This will be common, as when the</span></span><br><span class="line"><span class="comment">             * JDBC driver manager is asked to connect to a given URL it passes the URL to each loaded driver in turn.</span></span><br><span class="line"><span class="comment">             */</span></span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">ConnectionUrl</span> <span class="variable">conStr</span> <span class="operator">=</span> ConnectionUrl.getConnectionUrlInstance(url, info);</span><br><span class="line">        <span class="keyword">switch</span> (conStr.getType()) &#123;</span><br><span class="line">            <span class="keyword">case</span> SINGLE_CONNECTION:</span><br><span class="line">                <span class="keyword">return</span> com.mysql.cj.jdbc.ConnectionImpl.getInstance(conStr.getMainHost());</span><br><span class="line"></span><br><span class="line">            <span class="keyword">case</span> LOADBALANCE_CONNECTION:</span><br><span class="line">                <span class="keyword">return</span> LoadBalancedConnectionProxy.createProxyInstance((LoadbalanceConnectionUrl) conStr);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">case</span> FAILOVER_CONNECTION:</span><br><span class="line">                <span class="keyword">return</span> FailoverConnectionProxy.createProxyInstance(conStr);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">case</span> REPLICATION_CONNECTION:</span><br><span class="line">                <span class="keyword">return</span> ReplicationConnectionProxy.createProxyInstance((ReplicationConnectionUrl) conStr);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">catch</span> (UnsupportedConnectionStringException e) &#123;</span><br><span class="line">        <span class="comment">// when Connector/J can&#x27;t handle this connection string the Driver must return null</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">catch</span> (CJException ex) &#123;</span><br><span class="line">        <span class="keyword">throw</span> ExceptionFactory.createException(UnableToConnectException.class,</span><br><span class="line">                  Messages.getString(<span class="string">&quot;NonRegisteringDriver.17&quot;</span>, <span class="keyword">new</span> <span class="title class_">Object</span>[] &#123; ex.toString() &#125;), ex);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>scheme 支持列表：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// com.mysql.cj.conf.Type 枚举源码</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * The database URL type which is determined by the scheme section of the connection string.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">Type</span> &#123;</span><br><span class="line">    SINGLE_CONNECTION(<span class="string">&quot;jdbc:mysql:&quot;</span>, HostsCardinality.SINGLE), <span class="comment">//</span></span><br><span class="line">    FAILOVER_CONNECTION(<span class="string">&quot;jdbc:mysql:&quot;</span>, HostsCardinality.MULTIPLE), <span class="comment">//</span></span><br><span class="line">    LOADBALANCE_CONNECTION(<span class="string">&quot;jdbc:mysql:loadbalance:&quot;</span>, HostsCardinality.ONE_OR_MORE), <span class="comment">//</span></span><br><span class="line">    REPLICATION_CONNECTION(<span class="string">&quot;jdbc:mysql:replication:&quot;</span>, HostsCardinality.ONE_OR_MORE), <span class="comment">//</span></span><br><span class="line">    XDEVAPI_SESSION(<span class="string">&quot;mysqlx:&quot;</span>, HostsCardinality.ONE_OR_MORE);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String scheme;</span><br><span class="line">    <span class="keyword">private</span> HostsCardinality cardinality;</span><br><span class="line">    </span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果该 JDBC URL 没有对应可用的驱动程序，程序将抛出异常：<code>java.sql.SQLException: No suitable driver found for jdbc:...</code>。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/JDBC_driver">https://en.wikipedia.org/wiki/JDBC_driver</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.javatpoint.com/jdbc-driver">https://www.javatpoint.com/jdbc-driver</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/autfish/article/details/52170053">https://blog.csdn.net/autfish/article/details/52170053</a></p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/downloads/connector/j/">https://dev.mysql.com/downloads/connector/j/</a></p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-overview.html">https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-overview.html</a></p>
+<p>《<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/YjzgdkZOf0MYFIsWDoIMfA">MySQL 驱动 Bug 引发的事务不回滚问题</a>》</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/java-jdbc-driver/" title="Java 数据持久化系列（一）JDBC Driver 驱动程序总结">https://qidawu.github.io/posts/java-jdbc-driver/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/JDBC/" rel="tag"># JDBC</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/mysql-select-syntax/" rel="prev" title="MySQL SELECT 语法总结">
+                  <i class="fa fa-chevron-left"></i> MySQL SELECT 语法总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/java-jdbc-api/" rel="next" title="Java 数据持久化系列（二）JDBC API 规范总结">
+                  Java 数据持久化系列（二）JDBC API 规范总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="如何创建调度器？通过工厂类 Schedulers 创建调取器：  https:&#x2F;&#x2F;projectreactor.io&#x2F;docs&#x2F;core&#x2F;release&#x2F;api&#x2F;reactor&#x2F;core&#x2F;scheduler&#x2F;Schedulers.html    Return a shared instance Return a new instance Description Notes    immediate">
+<meta property="og:type" content="article">
+<meta property="og:title" content="响应式编程系列（四）Reactor 调度器总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/java-reactor-scheduler/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="如何创建调度器？通过工厂类 Schedulers 创建调取器：  https:&#x2F;&#x2F;projectreactor.io&#x2F;docs&#x2F;core&#x2F;release&#x2F;api&#x2F;reactor&#x2F;core&#x2F;scheduler&#x2F;Schedulers.html    Return a shared instance Return a new instance Description Notes    immediate">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/java/reactive-stream/reactor/wrap_blocking.png">
+<meta property="article:published_time" content="2020-08-30T13:48:49.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.919Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="响应式编程">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/java/reactive-stream/reactor/wrap_blocking.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/java-reactor-scheduler/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/java-reactor-scheduler/","path":"posts/java-reactor-scheduler/","title":"响应式编程系列（四）Reactor 调度器总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>响应式编程系列（四）Reactor 调度器总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E8%B0%83%E5%BA%A6%E5%99%A8%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">如何创建调度器？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%E8%B0%83%E5%BA%A6%E5%99%A8%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">如何使用调度器？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90%E4%B8%80"><span class="nav-number">2.1.</span> <span class="nav-text">例子一</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90%E4%BA%8C"><span class="nav-number">2.2.</span> <span class="nav-text">例子二</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90%E4%B8%89"><span class="nav-number">2.3.</span> <span class="nav-text">例子三</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%8C%85%E8%A3%85%E5%90%8C%E6%AD%A5%E9%98%BB%E5%A1%9E%E8%B0%83%E7%94%A8%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">如何包装同步阻塞调用？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/java-reactor-scheduler/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="响应式编程系列（四）Reactor 调度器总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          响应式编程系列（四）Reactor 调度器总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-08-30 21:48:49" itemprop="dateCreated datePublished" datetime="2020-08-30T21:48:49+08:00">2020-08-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="如何创建调度器？"><a href="#如何创建调度器？" class="headerlink" title="如何创建调度器？"></a>如何创建调度器？</h1><p>通过工厂类 <code>Schedulers</code> 创建调取器： </p>
+<p><a target="_blank" rel="noopener" href="https://projectreactor.io/docs/core/release/api/reactor/core/scheduler/Schedulers.html">https://projectreactor.io/docs/core/release/api/reactor/core/scheduler/Schedulers.html</a></p>
+<table>
+<thead>
+<tr>
+<th>Return a shared instance</th>
+<th>Return a new instance</th>
+<th>Description</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>immediate()</code></td>
+<td>/</td>
+<td>No execution context</td>
+<td>at processing time, the submitted <code>Runnable</code> will be directly executed, effectively running them on the current <code>Thread</code> (can be seen as a “null object” or no-op <code>Scheduler</code>).</td>
+</tr>
+<tr>
+<td><code>single()</code></td>
+<td><code>newSingle(...)</code></td>
+<td>A single, reusable thread.</td>
+<td>Note that this method reuses the same thread for all callers, until the Scheduler is disposed.</td>
+</tr>
+<tr>
+<td><del><code>elastic()</code></del></td>
+<td><del><code>newElastic(...)</code></del></td>
+<td>An unbounded elastic thread pool.</td>
+<td>This one is no longer preferred with the introduction of <code>Schedulers.boundedElastic()</code>, as it has a tendency to hide backpressure problems and lead to too many threads (see below).</td>
+</tr>
+<tr>
+<td><code>boundedElastic()</code></td>
+<td><code>newBoundedElastic(...)</code></td>
+<td>A bounded elastic thread pool.</td>
+<td>Like its predecessor <code>elastic()</code>, it creates new worker pools as needed and reuses idle ones. Worker pools that stay idle for too long (the default is 60s) are also disposed.<br/> Unlike its predecessor <code>elastic()</code>, it has a cap on the number of backing threads it can create (<strong>default is number of CPU cores x 10</strong>). Up to 100 000 tasks submitted after the cap has been reached are enqueued and will be re-scheduled when a thread becomes available.<br/><strong>This is a better choice for I/O blocking work.</strong> While it is made to help with legacy blocking code if it cannot be avoided. <code>Schedulers.boundedElastic()</code> is a handy way to give a blocking process its own thread so that it does not tie up other resources. See <a target="_blank" rel="noopener" href="https://projectreactor.io/docs/core/release/reference/index.html#faq.wrap-blocking">How Do I Wrap a Synchronous, Blocking Call?</a>, but doesn’t pressure the system too much with new threads.</td>
+</tr>
+<tr>
+<td><code>parallel()</code></td>
+<td><code>newParallel(...)</code></td>
+<td>A fixed pool of workers that is tuned for parallel work.</td>
+<td>It creates as many workers as you have CPU cores.</td>
+</tr>
+<tr>
+<td><code>fromExecutorService(ExecutorService)</code></td>
+<td></td>
+<td>A Customize thread pool.</td>
+<td>Create a <code>Scheduler</code> out of any pre-existing <code>ExecutorService</code></td>
+</tr>
+</tbody></table>
+<p>delayElements<br>    Signals are delayed and continue on the parallel default Scheduler<br>    Signals are delayed and continue on an user-specified Scheduler</p>
+<h1 id="如何使用调度器？"><a href="#如何使用调度器？" class="headerlink" title="如何使用调度器？"></a>如何使用调度器？</h1><blockquote>
+<p>Reactor offers two means of switching the execution context (or <code>Scheduler</code>) in a reactive chain: <code>publishOn</code> and <code>subscribeOn</code>. Both take a <code>Scheduler</code> and let you switch the execution context to that scheduler. But the placement of <code>publishOn</code> in the chain matters, while the placement of <code>subscribeOn</code> does not. To understand that difference, you first have to remember that <a target="_blank" rel="noopener" href="https://projectreactor.io/docs/core/release/reference/index.html#reactive.subscribe">nothing happens until you subscribe</a>.</p>
+<p>Let’s have a closer look at the <code>publishOn</code> and <code>subscribeOn</code> operators:</p>
+</blockquote>
+<h2 id="例子一"><a href="#例子一" class="headerlink" title="例子一"></a>例子一</h2><p>演示流是运行在 <code>subscribe()</code> 方法调用的线程上，且大多数操作符继续在前一个操作符执行的线程中工作。</p>
+<blockquote>
+<p>most operators continue working in the <code>Thread</code> on which the previous operator executed. Unless specified, the topmost operator (the source) itself runs on the <code>Thread</code> in which the <code>subscribe()</code> call was made. The following example runs a <code>Mono</code> in a new thread:</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// The Mono&lt;String&gt; is assembled in thread main.</span></span><br><span class="line"><span class="keyword">final</span> Mono&lt;String&gt; mono =</span><br><span class="line">        Mono.fromSupplier(() -&gt; &#123;</span><br><span class="line">            log.info(<span class="string">&quot;fromSupplier&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">        &#125;)</span><br><span class="line">        .map(msg -&gt; &#123;</span><br><span class="line">            log.info(<span class="string">&quot;map&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> msg + <span class="string">&quot; world&quot;</span>;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line"><span class="type">Thread</span> <span class="variable">t</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt;</span><br><span class="line">        <span class="comment">// However, it is subscribed to in thread Thread-0.</span></span><br><span class="line">        <span class="comment">// As a consequence, all callbacks (fromSupplier, map, onNext) actually run in Thread-0</span></span><br><span class="line">        mono.subscribe(log::info)</span><br><span class="line">);</span><br><span class="line">t.start();</span><br><span class="line">t.join();</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">21:02:18.436 [Thread-0] INFO FluxTest - fromSupplier</span><br><span class="line">21:02:18.436 [Thread-0] INFO FluxTest - map</span><br><span class="line">21:02:18.437 [Thread-0] INFO FluxTest - hello world</span><br></pre></td></tr></table></figure>
+
+<h2 id="例子二"><a href="#例子二" class="headerlink" title="例子二"></a>例子二</h2><p>演示如何使用 <code>subscribeOn</code> 方法，简化上述例子一。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">CountDownLatch</span> <span class="variable">countDownLatch</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CountDownLatch</span>(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// The Mono&lt;String&gt; is assembled in thread main.</span></span><br><span class="line">Mono.fromSupplier(() -&gt; &#123;</span><br><span class="line">            log.info(<span class="string">&quot;fromSupplier&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">        &#125;)</span><br><span class="line">        .map(msg -&gt; &#123;</span><br><span class="line">            log.info(<span class="string">&quot;map&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> msg + <span class="string">&quot; world&quot;</span>;</span><br><span class="line">        &#125;)</span><br><span class="line">        .doOnTerminate(countDownLatch::countDown)</span><br><span class="line">        <span class="comment">// However, the subscribeOn switches the whole sequence on a Thread picked from Scheduler.</span></span><br><span class="line">        .subscribeOn(Schedulers.newSingle(<span class="string">&quot;subscribeOn&quot;</span>))</span><br><span class="line">        .subscribe(log::info);</span><br><span class="line"></span><br><span class="line">countDownLatch.await();</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">21:31:52.563 [subscribeOn-1] INFO FluxTest - fromSupplier</span><br><span class="line">21:31:52.563 [subscribeOn-1] INFO FluxTest - map</span><br><span class="line">21:31:52.563 [subscribeOn-1] INFO FluxTest - hello world</span><br></pre></td></tr></table></figure>
+
+<h2 id="例子三"><a href="#例子三" class="headerlink" title="例子三"></a>例子三</h2><p>演示 <code>publishOn</code> 如何影响其后续操作符的执行线程。</p>
+<blockquote>
+<p><code>publishOn</code> takes signals from upstream and replays them downstream while executing the callback on a worker from the associated <code>Scheduler</code>. Consequently, it <strong>affects where the subsequent operators execute</strong> (until another <code>publishOn</code> is chained in), as follows:</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">CountDownLatch</span> <span class="variable">countDownLatch</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CountDownLatch</span>(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 1、The Mono&lt;String&gt; is assembled in thread main.</span></span><br><span class="line">Mono.fromSupplier(() -&gt; &#123;</span><br><span class="line">            log.info(<span class="string">&quot;fromSupplier&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">        &#125;)</span><br><span class="line">        .map(msg -&gt; &#123;</span><br><span class="line">            log.info(<span class="string">&quot;first map&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> msg + <span class="string">&quot; world&quot;</span>;</span><br><span class="line">        &#125;)</span><br><span class="line">        <span class="comment">// 3、The publishOn affects where the subsequent operators execute.</span></span><br><span class="line">        .publishOn(Schedulers.newSingle(<span class="string">&quot;publishOn&quot;</span>))</span><br><span class="line">        .map(msg -&gt; &#123;</span><br><span class="line">            log.info(<span class="string">&quot;second map&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> msg + <span class="string">&quot; again&quot;</span>;</span><br><span class="line">        &#125;)</span><br><span class="line">        .doOnTerminate(countDownLatch::countDown)</span><br><span class="line">        <span class="comment">// 2、However, the subscribeOn switches the whole sequence on a Thread picked from Scheduler.</span></span><br><span class="line">        .subscribeOn(Schedulers.newSingle(<span class="string">&quot;subscribeOn&quot;</span>))</span><br><span class="line">        .subscribe(log::info);</span><br><span class="line"></span><br><span class="line">countDownLatch.await();</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">21:32:36.975 [subscribeOn-1] INFO FluxTest - fromSupplier</span><br><span class="line">21:32:36.976 [subscribeOn-1] INFO FluxTest - first map</span><br><span class="line">21:32:36.977 [publishOn-2] INFO FluxTest - second map</span><br><span class="line">21:32:36.977 [publishOn-2] INFO FluxTest - hello world again</span><br></pre></td></tr></table></figure>
+
+<h1 id="如何包装同步阻塞调用？"><a href="#如何包装同步阻塞调用？" class="headerlink" title="如何包装同步阻塞调用？"></a>如何包装同步阻塞调用？</h1><p><img src="/img/java/reactive-stream/reactor/wrap_blocking.png" alt="How Do I Wrap a Synchronous, Blocking Call?"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://projectreactor.io/docs/core/release/reference/index.html#schedulers">4.5. Threading and Schedulers</a></p>
+<p><a target="_blank" rel="noopener" href="https://projectreactor.io/docs/core/release/reference/index.html#metrics">8. Exposing Reactor metrics</a></p>
+<p><a target="_blank" rel="noopener" href="https://projectreactor.io/docs/core/release/reference/index.html#faq.wrap-blocking">Appendix C.1. How Do I Wrap a Synchronous, Blocking Call?</a></p>
+<p><a target="_blank" rel="noopener" href="https://projectreactor.io/docs/core/release/reference/index.html#faq.thread-affinity-publishon">Appendix C.6. How Do I Ensure Thread Affinity when I Use <code>publishOn()</code>?</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.woolha.com/tutorials/project-reactor-publishon-vs-subscribeon-difference">https://www.woolha.com/tutorials/project-reactor-publishon-vs-subscribeon-difference</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/java-reactor-scheduler/" title="响应式编程系列（四）Reactor 调度器总结">https://qidawu.github.io/posts/java-reactor-scheduler/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag"># 响应式编程</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/java-reactor-operator/" rel="prev" title="响应式编程系列（三）Reactor 操作符总结">
+                  <i class="fa fa-chevron-left"></i> 响应式编程系列（三）Reactor 操作符总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/java-learning/" rel="next" title="Java 学习资源总结">
+                  Java 学习资源总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

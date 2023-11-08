@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="二进制位运算 十进制运算    &amp; 按位与（AND） $M\&amp;(2^n-1)$ $MOD(M&#x2F;2^n)$   | 按位或（OR）     ~ 按位非（NOT）     ^ 按位异或（XOR）     &lt;&lt; 左位移（LEFT SHIFT） $M&lt;&lt;n$ $M*2^n$   &gt;&gt; 右位移（RIGHT SHIFT） $M&gt;&gt;n$ $">
+<meta property="og:type" content="article">
+<meta property="og:title" content="位运算及使用场景总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/bitwise-operation/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="二进制位运算 十进制运算    &amp; 按位与（AND） $M\&amp;(2^n-1)$ $MOD(M&#x2F;2^n)$   | 按位或（OR）     ~ 按位非（NOT）     ^ 按位异或（XOR）     &lt;&lt; 左位移（LEFT SHIFT） $M&lt;&lt;n$ $M*2^n$   &gt;&gt; 右位移（RIGHT SHIFT） $M&gt;&gt;n$ $">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/bitwise-operation/Common_bitmask_functions.png">
+<meta property="og:image" content="https://qidawu.github.io/img/bitwise-operation/Calculate_subnet_address.png">
+<meta property="og:image" content="https://qidawu.github.io/img/bitwise-operation/Calculate_subnet_address_2.png">
+<meta property="og:image" content="https://qidawu.github.io/img/bitwise-operation/DragonPay.png">
+<meta property="og:image" content="https://qidawu.github.io/img/bitwise-operation/paging_address_structure.png">
+<meta property="og:image" content="https://qidawu.github.io/img/bitwise-operation/TCP_Header_Format_Flags.png">
+<meta property="og:image" content="https://qidawu.github.io/img/bitwise-operation/Unix-like_permissions.png">
+<meta property="og:image" content="https://qidawu.github.io/img/bitwise-operation/FEC.png">
+<meta property="article:published_time" content="2023-11-07T13:31:22.000Z">
+<meta property="article:modified_time" content="2023-11-08T09:28:26.386Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/bitwise-operation/Common_bitmask_functions.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/bitwise-operation/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/bitwise-operation/","path":"posts/bitwise-operation/","title":"位运算及使用场景总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>位运算及使用场景总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E3%80%8C%E6%8C%89%E4%BD%8D%E4%B8%8E-amp-%E3%80%8D%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">「按位与 &amp;」的使用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B1%82%E5%AD%90%E7%BD%91%E5%9C%B0%E5%9D%80"><span class="nav-number">1.1.</span> <span class="nav-text">求子网地址</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E3%80%8C%E6%8C%89%E4%BD%8D%E6%88%96-%E3%80%8D%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">2.</span> <span class="nav-text">「按位或 |」的使用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E4%B8%AA%E5%8F%98%E9%87%8F%E4%BF%9D%E5%AD%98%E5%A4%9A%E4%B8%AA%E5%80%BC%EF%BC%8C%E8%8A%82%E7%9C%81%E5%AD%98%E5%82%A8%E7%A9%BA%E9%97%B4"><span class="nav-number">2.1.</span> <span class="nav-text">单个变量保存多个值，节省存储空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%AA%E8%8A%B1%E7%AE%97%E6%B3%95%E7%9A%84%E6%8B%BC%E6%8E%A5"><span class="nav-number">2.2.</span> <span class="nav-text">雪花算法的拼接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E6%88%90%E5%91%98%E5%B1%9E%E6%80%A7-ctl"><span class="nav-number">2.3.</span> <span class="nav-text">线程池的成员属性 ctl</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%88%86%E9%A1%B5%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86-%E9%80%BB%E8%BE%91%E5%9C%B0%E5%9D%80%E7%BB%93%E6%9E%84"><span class="nav-number">2.4.</span> <span class="nav-text">操作系统 - 分页存储管理 - 逻辑地址结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#epoll-ctl-%E7%9A%84-event-%E5%8F%82%E6%95%B0"><span class="nav-number">2.5.</span> <span class="nav-text">epoll_ctl() 的 event 参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-Header-Format-Flags"><span class="nav-number">2.6.</span> <span class="nav-text">TCP - Header Format - Flags</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Unix-like-permissions"><span class="nav-number">2.7.</span> <span class="nav-text">Unix-like permissions</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E3%80%8C%E6%8C%89%E4%BD%8D%E5%BC%82%E6%88%96-%E3%80%8D%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">3.</span> <span class="nav-text">「按位异或 ^」的使用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E5%90%91%E7%BA%A0%E9%94%99%EF%BC%88FEC-%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">前向纠错（FEC)）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B1%82-hash-%E5%80%BC"><span class="nav-number">3.2.</span> <span class="nav-text">求 hash 值</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%8D%E7%A7%BB"><span class="nav-number">4.</span> <span class="nav-text">位移</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/bitwise-operation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="位运算及使用场景总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          位运算及使用场景总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-11-07 21:31:22" itemprop="dateCreated datePublished" datetime="2023-11-07T21:31:22+08:00">2023-11-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-11-08 17:28:26" itemprop="dateModified" datetime="2023-11-08T17:28:26+08:00">2023-11-08</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <table>
+<thead>
+<tr>
+<th></th>
+<th>二进制位运算</th>
+<th>十进制运算</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&amp;</code> 按位与（AND）</td>
+<td>$M\&amp;(2^n-1)$</td>
+<td>$MOD(M/2^n)$</td>
+</tr>
+<tr>
+<td><code>|</code> 按位或（OR）</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>~</code> 按位非（NOT）</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>^</code> 按位异或（XOR）</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>&lt;&lt;</code> 左位移（LEFT SHIFT）</td>
+<td>$M&lt;&lt;n$</td>
+<td>$M*2^n$</td>
+</tr>
+<tr>
+<td><code>&gt;&gt;</code> 右位移（RIGHT SHIFT）</td>
+<td>$M&gt;&gt;n$</td>
+<td>$M/2^n$</td>
+</tr>
+<tr>
+<td><code>&gt;&gt;&gt;</code> 无符号右移</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Mask_(computing)">https://en.wikipedia.org/wiki/Mask_(computing)</a></p>
+<blockquote>
+<p>Using a mask (bitmask) can be set </p>
+<ul>
+<li>either on or off, </li>
+<li>or inverted from on to off (or vice versa) </li>
+</ul>
+<p>in a single bitwise operation.</p>
+</blockquote>
+<p><img src="/img/bitwise-operation/Common_bitmask_functions.png" alt="Common bitmask functions"></p>
+<h1 id="「按位与-amp-」的使用场景"><a href="#「按位与-amp-」的使用场景" class="headerlink" title="「按位与 &amp;」的使用场景"></a>「按位与 <code>&amp;</code>」的使用场景</h1><h2 id="求子网地址"><a href="#求子网地址" class="headerlink" title="求子网地址"></a>求子网地址</h2><p>求<a target="_blank" rel="noopener" href="https://jodies.de/ipcalc">子网地址</a>（主机地址与子网掩码做按位与运算），参考：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Subnet_mask">subnet mask</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Wildcard_mask">wildcard mask</a></li>
+</ul>
+<p>例子：</p>
+<p><img src="/img/bitwise-operation/Calculate_subnet_address.png" alt="Calculate subnet address"></p>
+<p><img src="/img/bitwise-operation/Calculate_subnet_address_2.png" alt="Calculate subnet address"></p>
+<h1 id="「按位或-」的使用场景"><a href="#「按位或-」的使用场景" class="headerlink" title="「按位或 |」的使用场景"></a>「按位或 <code>|</code>」的使用场景</h1><h2 id="单个变量保存多个值，节省存储空间"><a href="#单个变量保存多个值，节省存储空间" class="headerlink" title="单个变量保存多个值，节省存储空间"></a>单个变量保存多个值，节省存储空间</h2><p><img src="/img/bitwise-operation/DragonPay.png" alt="DragonPay"></p>
+<h2 id="雪花算法的拼接"><a href="#雪花算法的拼接" class="headerlink" title="雪花算法的拼接"></a>雪花算法的拼接</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">     timestamp &lt;&lt; TIMESTAMP_SHIFT</span><br><span class="line">| dataCenterNo &lt;&lt; DATA_CENTER_NO_SHIFT</span><br><span class="line">    | workerNo &lt;&lt; WORKER_NO_SHIFT</span><br><span class="line">       | seqNo &lt;&lt; SEQ_NO_SHIFT</span><br><span class="line">         | ext</span><br></pre></td></tr></table></figure>
+
+<h2 id="线程池的成员属性-ctl"><a href="#线程池的成员属性-ctl" class="headerlink" title="线程池的成员属性 ctl"></a>线程池的成员属性 <code>ctl</code></h2><p>线程池的成员属性 <code>ctl</code>，高 3 位表示 <code>runState</code>，低 29 位表示 <code>workerCnt</code>（按位或运算 bitwise OR）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">runState workerCnt                       runState workerCnt</span><br><span class="line">     000 00000000000000000000000000000   SHUTDOWN empty</span><br><span class="line">‭‭     001 00000000000000000000000000000       STOP empty</span><br><span class="line">     010 00000000000000000000000000000    TIDYING empty</span><br><span class="line">     ‭011 00000000000000000000000000000‬ TERMINATED empty</span><br><span class="line">     111 00000000000000000000000000000    RUNNING empty</span><br><span class="line">‭     111 11111111111111111111111111111    RUNNING full</span><br></pre></td></tr></table></figure>
+
+<h2 id="操作系统-分页存储管理-逻辑地址结构"><a href="#操作系统-分页存储管理-逻辑地址结构" class="headerlink" title="操作系统 - 分页存储管理 - 逻辑地址结构"></a>操作系统 - 分页存储管理 - 逻辑地址结构</h2><ul>
+<li>若用 $m$ 位表示逻辑地址，页大小为 $2^n$ 字节，则低 $n$ 位表示「页内偏移量」，高 $m-n$ 位表示「页号」。</li>
+<li>例如 32 位的逻辑地址中，页大小为 $2^{12}$ (4KB)，则低 12 位表示「页内偏移量」，高 20 位表示「页号」。即：可用内存为「页号量 $2^{20}$」×「页大小 $2^{12}$ B」=「$2^{32}$ B」=「4 GB」</li>
+</ul>
+<p><img src="/img/bitwise-operation/paging_address_structure.png" alt="paging address structure"></p>
+<h2 id="epoll-ctl-的-event-参数"><a href="#epoll-ctl-的-event-参数" class="headerlink" title="epoll_ctl() 的 event 参数"></a><code>epoll_ctl()</code> 的 <code>event</code> 参数</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">EPOLLIN | EPOLLOUT | EPOLLRDHUP | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET | EPOLLONESHOT</span><br><span class="line"></span><br><span class="line">event.events = EPOLLIN | EPOLLET;</span><br><span class="line">epoll_ctl (efd, EPOLL_CTL_ADD, sfd, &amp;event);</span><br></pre></td></tr></table></figure>
+
+<h2 id="TCP-Header-Format-Flags"><a href="#TCP-Header-Format-Flags" class="headerlink" title="TCP - Header Format - Flags"></a>TCP - Header Format - Flags</h2><p><img src="/img/bitwise-operation/TCP_Header_Format_Flags.png" alt="TCP - Header Format - Flags"></p>
+<h2 id="Unix-like-permissions"><a href="#Unix-like-permissions" class="headerlink" title="Unix-like permissions"></a><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/File-system_permissions#Numeric_notation">Unix-like permissions</a></h2><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Chmod">chmod</a>、<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Umask">umask</a></p>
+<p><img src="/img/bitwise-operation/Unix-like_permissions.png" alt="Unix-like permissions"></p>
+<h1 id="「按位异或-」的使用场景"><a href="#「按位异或-」的使用场景" class="headerlink" title="「按位异或 ^」的使用场景"></a>「按位异或 <code>^</code>」的使用场景</h1><p>《<a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2021/01/_xor.html">异或运算 XOR 使用场景 | 阮一峰</a>》</p>
+<h2 id="前向纠错（FEC-）"><a href="#前向纠错（FEC-）" class="headerlink" title="前向纠错（FEC)）"></a>前向纠错（FEC)）</h2><p>TCP 协议实现可靠数据传输的 5 种措施中之一——<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Error_detection_and_correction">差错控制</a>，有两种纠错方案：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Automatic_repeat_request">Automatic repeat request (ARQ)</a> 丢包重传</li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Forward_error_correction">Forward error correction (FEC)</a> 前向纠错</li>
+</ul>
+<p>其中 FEC 的实质就是按位异或运算：</p>
+<p><img src="/img/bitwise-operation/FEC.png" alt="FEC"></p>
+<p>参考：<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/6157e120ef99">https://www.jianshu.com/p/6157e120ef99</a></p>
+<h2 id="求-hash-值"><a href="#求-hash-值" class="headerlink" title="求 hash 值"></a>求 hash 值</h2><p>求 hash 值使用了：</p>
+<ul>
+<li><code>&gt;&gt;&gt;</code> 无符号右移</li>
+<li><code>^</code> 按位异或</li>
+<li><code>&amp;</code> 按位与</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">hash</span><span class="params">(Object key)</span> &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">h</span> <span class="operator">=</span> key.hashCode();</span><br><span class="line">    h = h ^ (h &gt;&gt;&gt; <span class="number">16</span>);</span><br><span class="line">    <span class="keyword">return</span> h &amp; (capitity - <span class="number">1</span>); <span class="comment">//capicity 表示散列表的大小</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="位移"><a href="#位移" class="headerlink" title="位移"></a>位移</h1><p><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E9%99%A4%E4%BB%A5%E4%BA%8C#%E4%BA%8C%E9%80%B2%E5%88%B6">逻辑右移可以处理除数为任意二的幂的除法，即：$M&gt;&gt;n$ 等于 $M/2^n$</a></p>
+<p>更一般地，在特定底数 Base 的进位制中，除数（或分母）为任意 $Base^n$ 的除法（n 为整数）皆可以透过将数字位数向右移 n 位来完成。例如 除以十：</p>
+<table>
+<thead>
+<tr>
+<th>$M/Base^n$</th>
+<th>Base 2</th>
+<th>Base 8</th>
+<th>Base 10</th>
+<th>Base 16</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>230 / 2 = 115</td>
+<td>1110 0110 / 10 = 111 0011</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>230 / 8 = 28</td>
+<td></td>
+<td>346 / 10 = 34</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>230 / 10 = 23</td>
+<td></td>
+<td></td>
+<td>230 / 10 = 23</td>
+<td></td>
+</tr>
+<tr>
+<td>230 / 16 = 14</td>
+<td></td>
+<td></td>
+<td></td>
+<td>0xE6 / 10 = 0xE</td>
+</tr>
+</tbody></table>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Bit">https://en.wikipedia.org/wiki/Bit</a></p>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Bitwise_operation">https://en.wikipedia.org/wiki/Bitwise_operation</a></p>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Bit_array">https://en.wikipedia.org/wiki/Bit_array</a></p>
+<p>《<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/xnT5sBmK9kYlRw2I-vFxWg">计算机中有哪些令人拍案叫绝的设计？ | 良许 Linux</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ZD65OgC1mQv-RNlx4J39AA">C 语言”位运算”有哪些奇特技巧？</a>》</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/bitwise-operation/" title="位运算及使用场景总结">https://qidawu.github.io/posts/bitwise-operation/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/dns/" rel="prev" title="应用层 DNS 协议、相关命令总结">
+                  <i class="fa fa-chevron-left"></i> 应用层 DNS 协议、相关命令总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

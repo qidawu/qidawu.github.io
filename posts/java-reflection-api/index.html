@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="什么是反射？  反射机制是 Java 语言提供的一种基础功能，赋予程序在运行时自省（introspect，官方用语）的能力。通过反射我们可以直接操作类或者对象，比如获取某个对象的类定义，获取类声明的属性和方法，调用方法或者构造对象，甚至可以运行时修改类定义。  主要类： 123456789java.lang.Classjava.lang.Packagejava.lang.reflect.Field">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 反射篇（一）基础 API 总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/java-reflection-api/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="什么是反射？  反射机制是 Java 语言提供的一种基础功能，赋予程序在运行时自省（introspect，官方用语）的能力。通过反射我们可以直接操作类或者对象，比如获取某个对象的类定义，获取类声明的属性和方法，调用方法或者构造对象，甚至可以运行时修改类定义。  主要类： 123456789java.lang.Classjava.lang.Packagejava.lang.reflect.Field">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/java/reflection/main_api.png">
+<meta property="article:published_time" content="2018-11-07T14:53:54.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.920Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/java/reflection/main_api.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/java-reflection-api/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/java-reflection-api/","path":"posts/java-reflection-api/","title":"Java 反射篇（一）基础 API 总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Java 反射篇（一）基础 API 总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Class-%E7%B1%BB"><span class="nav-number">1.</span> <span class="nav-text">Class 类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%97%E6%AE%B5"><span class="nav-number">2.</span> <span class="nav-text">字段</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%B9%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">构造方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB"><span class="nav-number">5.</span> <span class="nav-text">继承关系</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#isInstance"><span class="nav-number">5.1.</span> <span class="nav-text">isInstance</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cast"><span class="nav-number">5.2.</span> <span class="nav-text">cast</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#isAssignableFrom"><span class="nav-number">5.3.</span> <span class="nav-text">isAssignableFrom</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/java-reflection-api/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Java 反射篇（一）基础 API 总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java 反射篇（一）基础 API 总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-11-07 22:53:54" itemprop="dateCreated datePublished" datetime="2018-11-07T22:53:54+08:00">2018-11-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>什么是反射？</p>
+<blockquote>
+<p>反射机制是 Java 语言提供的一种基础功能，赋予程序在<strong>运行时自省</strong>（introspect，官方用语）的能力。通过反射我们可以直接操作类或者对象，比如获取某个对象的类定义，获取类声明的属性和方法，调用方法或者构造对象，甚至可以运行时修改类定义。</p>
+</blockquote>
+<p>主要类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">java.lang.Class</span><br><span class="line">java.lang.Package</span><br><span class="line">java.lang.reflect.Field</span><br><span class="line">java.lang.reflect.Method</span><br><span class="line">java.lang.reflect.Constructor</span><br><span class="line"><span class="comment">// JDK 1.8 新引入，通过该类的 getName 方法能在运行时得到参数的名称（前提是通过 -parameters 指定编译器在编译的时候将参数名编译进去）</span></span><br><span class="line">java.lang.reflect.Parameter</span><br><span class="line"></span><br><span class="line">java.lang.reflect.Array</span><br></pre></td></tr></table></figure>
+
+<p>工具类：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java.lang.reflect.Modifier</span><br></pre></td></tr></table></figure>
+
+<p>继承关系：</p>
+<p><img src="/img/java/reflection/main_api.png" alt="main_api"></p>
+<h1 id="Class-类"><a href="#Class-类" class="headerlink" title="Class 类"></a>Class 类</h1><p>如何获取一个 <code>class</code> 的 <code>Class</code> 实例？有几种方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 方法一：直接通过一个 class 的静态变量 class 获取</span></span><br><span class="line">Class&lt;String&gt; aClass = String.class;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 方法二：通过实例变量提供的 getClass() 方法获取</span></span><br><span class="line">Class&lt;? <span class="keyword">extends</span> <span class="title class_">String</span>&gt; aClass2 = <span class="string">&quot;Hello&quot;</span>.getClass();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 方法三：通过 class 的完整类名获取，底层调用的是应用类加载器 Application ClassLoader (sun.misc.Launcher$AppClassLoader)</span></span><br><span class="line">Class&lt;?&gt; aClass3 = Class.forName(<span class="string">&quot;java.lang.String&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 方法四：通过自定义 ClassLoader 获取</span></span><br><span class="line"><span class="type">URLClassLoader</span> <span class="variable">classLoader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">URLClassLoader</span>(<span class="keyword">new</span> <span class="title class_">URL</span>[] &#123;<span class="keyword">new</span> <span class="title class_">URL</span>(<span class="string">&quot;file:/c:/&quot;</span>)&#125;);</span><br><span class="line">Class&lt;?&gt; aClass4 = classLoader.loadClass(<span class="string">&quot;java.lang.String&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取父类</span></span><br><span class="line">Class&lt;? <span class="built_in">super</span> String&gt; superclass = String.class.getSuperclass();  <span class="comment">// class java.lang.Object</span></span><br><span class="line"><span class="comment">// 获取外部类</span></span><br><span class="line">Class&lt;?&gt; enclosingClass = Map.Entry.class.getEnclosingClass();  <span class="comment">// interface java.util.Map</span></span><br><span class="line"><span class="comment">// 获取内部类</span></span><br><span class="line">Class&lt;?&gt;[] classes = HashMap.class.getClasses();  <span class="comment">// 2 个内部类</span></span><br><span class="line">Class&lt;?&gt;[] declaredClasses = HashMap.class.getDeclaredClasses();  <span class="comment">// 13 个内部类</span></span><br></pre></td></tr></table></figure>
+
+<p>由于 <code>Class</code> 实例在 JVM 中是唯一的，因此，上述方法获取的 <code>Class</code> 实例都是同一个实例。可以用 <code>==</code> 比较两个 <code>Class</code> 实例求证：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// true</span></span><br><span class="line">assertTrue(aClass == aClass2);</span><br><span class="line">assertTrue(aClass == aClass3);</span><br><span class="line">assertTrue(aClass2 == aClass3);</span><br></pre></td></tr></table></figure>
+
+<p>拿到 <code>Class</code> 实例后，可以通过下列方法获取字段、方法、构造方法、注解，以进行后续操作。方法名以 <code>getDeclared</code> 开头的表示仅获取当前类的信息（不包括父类）：</p>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Class API</th>
+<th>Param  type</th>
+<th>Return type</th>
+<th>Inherited members</th>
+<th>Private members</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Class</code></td>
+<td><code>getDeclaredClasses()</code></td>
+<td></td>
+<td>Array</td>
+<td>N</td>
+<td>Y</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getClasses()</code></td>
+<td></td>
+<td>Array</td>
+<td>Y</td>
+<td>N</td>
+</tr>
+<tr>
+<td><code>Field</code></td>
+<td><code>getDeclaredField()</code></td>
+<td><code>String</code></td>
+<td>Single</td>
+<td>N</td>
+<td>Y</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getField()</code></td>
+<td><code>String</code></td>
+<td>Single</td>
+<td>Y</td>
+<td><code>java.lang.NoSuchFieldException</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>getDeclaredFields()</code></td>
+<td></td>
+<td>Array</td>
+<td>N</td>
+<td>Y</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getFields()</code></td>
+<td></td>
+<td>Array</td>
+<td>Y</td>
+<td>N</td>
+</tr>
+<tr>
+<td><code>Method</code></td>
+<td><code>getDeclaredMethod()</code></td>
+<td><code>String</code>, <code>Class&lt;?&gt;...</code></td>
+<td>Single</td>
+<td>N</td>
+<td>Y</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getMethod()</code></td>
+<td><code>String</code>, <code>Class&lt;?&gt;...</code></td>
+<td>Single</td>
+<td>Y</td>
+<td><code>java.lang.NoSuchMethodException</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>getDeclaredMethods()</code></td>
+<td></td>
+<td>Array</td>
+<td>N</td>
+<td>Y</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getMethods()</code></td>
+<td></td>
+<td>Array</td>
+<td>Y</td>
+<td>N</td>
+</tr>
+<tr>
+<td><code>Constructor</code></td>
+<td><code>getDeclaredConstructor()</code></td>
+<td><code>Class&lt;?&gt;...</code></td>
+<td>Single</td>
+<td>N/A</td>
+<td>Y</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getConstructor()</code></td>
+<td><code>Class&lt;?&gt;...</code></td>
+<td>Single</td>
+<td>N/A</td>
+<td><code>java.lang.NoSuchMethodException</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>getDeclaredConstructors()</code></td>
+<td></td>
+<td>Array</td>
+<td>N/A</td>
+<td>Y</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getConstructors()</code></td>
+<td></td>
+<td>Array</td>
+<td>N/A</td>
+<td>N</td>
+</tr>
+<tr>
+<td><code>Annotation</code></td>
+<td><code>getDeclaredAnnotation()</code></td>
+<td><code>Class&lt;T&gt;</code></td>
+<td>Single</td>
+<td>N</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getAnnotation()</code></td>
+<td><code>Class&lt;T&gt;</code></td>
+<td>Single</td>
+<td>Y</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getDeclaredAnnotationsByType()</code></td>
+<td><code>Class&lt;T&gt;</code></td>
+<td>Array</td>
+<td>N</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getAnnotationsByType()</code></td>
+<td><code>Class&lt;T&gt;</code></td>
+<td>Array</td>
+<td>Y</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getDeclaredAnnotations()</code></td>
+<td></td>
+<td>Array</td>
+<td>N</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td></td>
+<td><code>getAnnotations()</code></td>
+<td></td>
+<td>Array</td>
+<td>Y</td>
+<td>N/A</td>
+</tr>
+</tbody></table>
+<h1 id="字段"><a href="#字段" class="headerlink" title="字段"></a>字段</h1><p>一个 <code>Field</code> 对象包含了一个字段的所有信息，例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 字段名称</span></span><br><span class="line">String <span class="title function_">getName</span><span class="params">()</span></span><br><span class="line"><span class="comment">// 字段类型</span></span><br><span class="line">Class&lt;?&gt; getType()</span><br><span class="line"><span class="comment">// 字段的修饰符，返回值是一个int，不同的 bit 表示不同的含义。使用 Modifier 工具类进行解析</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">getModifiers</span><span class="params">()</span></span><br></pre></td></tr></table></figure>
+
+<p>以 <code>String</code> 类的 <code>value</code> 字段为例，它的定义是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">String</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">byte</span>[] value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>用反射获取该字段的信息，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Field</span> <span class="variable">f</span> <span class="operator">=</span> String.class.getDeclaredField(<span class="string">&quot;value&quot;</span>);</span><br><span class="line">f.getName(); <span class="comment">// &quot;value&quot;</span></span><br><span class="line">f.getType(); <span class="comment">// class [B 表示byte[]类型</span></span><br><span class="line"><span class="type">int</span> <span class="variable">m</span> <span class="operator">=</span> f.getModifiers();</span><br><span class="line">Modifier.isFinal(m); <span class="comment">// true</span></span><br><span class="line">Modifier.isPublic(m); <span class="comment">// false</span></span><br><span class="line">Modifier.isProtected(m); <span class="comment">// false</span></span><br><span class="line">Modifier.isPrivate(m); <span class="comment">// true</span></span><br><span class="line">Modifier.isStatic(m); <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+
+<p>获取或设置字段值，使用如下方法。注意如果试图获取非 <code>public</code> 字段，将抛出异常 <code>java.lang.IllegalAccessException</code>，解决办法是先设置 <code>setAccessible(true)</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取字段值</span></span><br><span class="line">Object <span class="title function_">get</span><span class="params">(Object obj)</span></span><br><span class="line"><span class="type">boolean</span> <span class="title function_">getBoolean</span><span class="params">(Object obj)</span></span><br><span class="line"><span class="type">byte</span> <span class="title function_">getByte</span><span class="params">(Object obj)</span></span><br><span class="line"><span class="type">char</span> <span class="title function_">getChar</span><span class="params">(Object obj)</span></span><br><span class="line"><span class="type">short</span> <span class="title function_">getShort</span><span class="params">(Object obj)</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">getInt</span><span class="params">(Object obj)</span></span><br><span class="line"><span class="type">long</span> <span class="title function_">getLong</span><span class="params">(Object obj)</span></span><br><span class="line"><span class="type">float</span> <span class="title function_">getFloat</span><span class="params">(Object obj)</span></span><br><span class="line"><span class="type">double</span> <span class="title function_">getDouble</span><span class="params">(Object obj)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置字段值</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">set</span><span class="params">(Object obj, Object value)</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">setBoolean</span><span class="params">(Object obj, <span class="type">boolean</span> z)</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">setByte</span><span class="params">(Object obj, <span class="type">byte</span> b)</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">setChar</span><span class="params">(Object obj, <span class="type">char</span> c)</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">setShort</span><span class="params">(Object obj, <span class="type">short</span> s)</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">setInt</span><span class="params">(Object obj, <span class="type">int</span> i)</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">setLong</span><span class="params">(Object obj, <span class="type">long</span> l)</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">setFloat</span><span class="params">(Object obj, <span class="type">float</span> f)</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">setDouble</span><span class="params">(Object obj, <span class="type">double</span> d)</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h1><p>一个 <code>Method</code> 对象包含一个方法的所有信息，例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 方法名称</span></span><br><span class="line">String <span class="title function_">getName</span><span class="params">()</span></span><br><span class="line"><span class="comment">// 方法参数个数</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">getParameterCount</span><span class="params">()</span></span><br><span class="line"><span class="comment">// 方法参数类型</span></span><br><span class="line">Class&lt;?&gt;[] getParameterTypes()</span><br><span class="line"><span class="comment">// 方法参数注解</span></span><br><span class="line">Annotation[][] getParameterAnnotations()</span><br><span class="line"><span class="comment">// 方法返回值类型</span></span><br><span class="line">Class&lt;?&gt; getReturnType()</span><br><span class="line"><span class="comment">// 方法异常类型</span></span><br><span class="line">Class&lt;?&gt;[] getExceptionTypes()</span><br><span class="line"><span class="comment">// 方法的修饰符，返回值是一个int，不同的 bit 表示不同的含义。使用 Modifier 工具类进行解析</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">getModifiers</span><span class="params">()</span></span><br></pre></td></tr></table></figure>
+
+<p>方法调用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 第一个参数为指定的实例对象。</span></span><br><span class="line"><span class="comment">// 如果是静态方法，可传 null。</span></span><br><span class="line"><span class="comment">// 如果是非 public 方法，需先设置 setAccessible(true)</span></span><br><span class="line">Object <span class="title function_">invoke</span><span class="params">(Object obj, Object... args)</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a>构造方法</h1><p>创建新实例的几种方式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 方式一：通过 new 操作符</span></span><br><span class="line"><span class="type">Person</span> <span class="variable">p</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Person</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 方式二：通过反射，调用 Class 提供的 newInstance() 方法。局限是只能调用其 public 无参构造方法</span></span><br><span class="line"><span class="type">Person</span> <span class="variable">p</span> <span class="operator">=</span> Person.class.newInstance();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 方式三：通过反射，调用 Constructor 提供的 newInstance() 方法。如果是非 public 方法，需先设置 setAccessible(true)</span></span><br><span class="line"><span class="comment">// 这里通过 private Person(String name) 构造新实例</span></span><br><span class="line">Constructor&lt;Person&gt; constructor = Person.class.getDeclaredConstructor(String.class);</span><br><span class="line">constructor.setAccessible(<span class="literal">true</span>);</span><br><span class="line"><span class="type">Person</span> <span class="variable">peter</span> <span class="operator">=</span> constructor.newInstance(<span class="string">&quot;Peter&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<h1 id="继承关系"><a href="#继承关系" class="headerlink" title="继承关系"></a>继承关系</h1><p>通过以下方法获取父类或已实现接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取父类（Object 的父类是 null，其他任何非 interface 的 Class 都必定存在一个父类类型）</span></span><br><span class="line">Class&lt;? <span class="built_in">super</span> T&gt; getSuperclass()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取已实现接口（只返回当前类直接实现的接口类型，并不包括其父类实现的接口类型）</span></span><br><span class="line">Class&lt;?&gt;[] getInterfaces()</span><br></pre></td></tr></table></figure>
+
+<h2 id="isInstance"><a href="#isInstance" class="headerlink" title="isInstance"></a>isInstance</h2><p>使用 <code>instanceof</code> 操作符或者 <code>Class#isInstance</code> 方法，可以判断一个实例的继承关系：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Object</span> <span class="variable">n</span> <span class="operator">=</span> Integer.valueOf(<span class="number">123</span>);</span><br><span class="line"><span class="type">boolean</span> <span class="variable">isDouble</span> <span class="operator">=</span> n <span class="keyword">instanceof</span> Double; <span class="comment">// false</span></span><br><span class="line"><span class="type">boolean</span> <span class="variable">isInteger</span> <span class="operator">=</span> n <span class="keyword">instanceof</span> Integer; <span class="comment">// true</span></span><br><span class="line"><span class="type">boolean</span> <span class="variable">isNumber</span> <span class="operator">=</span> n <span class="keyword">instanceof</span> Number; <span class="comment">// true</span></span><br><span class="line"><span class="type">boolean</span> <span class="variable">isSerializable</span> <span class="operator">=</span> n <span class="keyword">instanceof</span> java.io.Serializable; <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="type">boolean</span> <span class="variable">isDouble</span> <span class="operator">=</span> Double.class.isInstance(n); <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="cast"><a href="#cast" class="headerlink" title="cast"></a>cast</h2><p>如果 <code>instanceof</code> 为 <code>true</code>，可以使用以下方法对实例进行强制类型转换：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Number</span> <span class="variable">num1</span> <span class="operator">=</span> (Number) n;</span><br><span class="line"><span class="type">Number</span> <span class="variable">num2</span> <span class="operator">=</span> Number.class.cast(n);</span><br></pre></td></tr></table></figure>
+
+<h2 id="isAssignableFrom"><a href="#isAssignableFrom" class="headerlink" title="isAssignableFrom"></a>isAssignableFrom</h2><p>如果是两个 <code>Class</code> 实例，要判断向上转型是否成立，可以调用 <code>Class#isAssignableFrom</code> 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Integer.class.isAssignableFrom(Integer.class); <span class="comment">// true，因为Integer可以赋值给Integer</span></span><br><span class="line">Number.class.isAssignableFrom(Integer.class); <span class="comment">// true，因为Integer可以赋值给Number</span></span><br><span class="line">Object.class.isAssignableFrom(Integer.class); <span class="comment">// true，因为Integer可以赋值给Object</span></span><br><span class="line">Integer.class.isAssignableFrom(Number.class); <span class="comment">// false，因为Number不能赋值给Integer</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/guides/reflection/index.html">https://docs.oracle.com/javase/8/docs/technotes/guides/reflection/index.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/tutorial/reflect/index.html">https://docs.oracle.com/javase/tutorial/reflect/index.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Kidezyq/p/11763988.html">JDK1.8 反射包新增了<code>Parameter</code>类</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.liaoxuefeng.com/wiki/1252599548343744/1255945147512512">https://www.liaoxuefeng.com/wiki/1252599548343744/1255945147512512</a></p>
+<p>API：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/lang/Package.html">https://docs.oracle.com/javase/8/docs/api/java/lang/Package.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html">https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Field.html">https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Field.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Method.html">https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Method.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Constructor.html">https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Constructor.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Parameter.html">https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Parameter.html</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/java-reflection-api/" title="Java 反射篇（一）基础 API 总结">https://qidawu.github.io/posts/java-reflection-api/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/java-spi/" rel="prev" title="Java 类加载篇（三）SPI 动态加载机制总结">
+                  <i class="fa fa-chevron-left"></i> Java 类加载篇（三）SPI 动态加载机制总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/java-reflection-annotation/" rel="next" title="Java 反射篇（二）注解 API 总结">
+                  Java 反射篇（二）注解 API 总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

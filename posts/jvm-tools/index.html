@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Monitoring Tools and CommandsMonitoring Tools and Commands https:&#x2F;&#x2F;www.saashub.com&#x2F;compare-visualvm-vs-jconsole    命令&#x2F;工具 全称 作用    jps JVM Process Status Tool You use the jps command to list the instru">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 虚拟机系列（四）性能监控、故障处理工具总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/jvm-tools/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="Monitoring Tools and CommandsMonitoring Tools and Commands https:&#x2F;&#x2F;www.saashub.com&#x2F;compare-visualvm-vs-jconsole    命令&#x2F;工具 全称 作用    jps JVM Process Status Tool You use the jps command to list the instru">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/java/concurrent/thread_state_visualvm.png">
+<meta property="article:published_time" content="2019-09-16T12:10:12.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.922Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="JVM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/java/concurrent/thread_state_visualvm.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/jvm-tools/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/jvm-tools/","path":"posts/jvm-tools/","title":"Java 虚拟机系列（四）性能监控、故障处理工具总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Java 虚拟机系列（四）性能监控、故障处理工具总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Monitoring-Tools-and-Commands"><span class="nav-number">1.</span> <span class="nav-text">Monitoring Tools and Commands</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#jps"><span class="nav-number">1.1.</span> <span class="nav-text">jps</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jstat"><span class="nav-number">1.2.</span> <span class="nav-text">jstat</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VisualVM"><span class="nav-number">1.3.</span> <span class="nav-text">VisualVM</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Troubleshooting-Tools-and-Commands"><span class="nav-number">2.</span> <span class="nav-text">Troubleshooting Tools and Commands</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#jstack"><span class="nav-number">2.1.</span> <span class="nav-text">jstack</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jmap"><span class="nav-number">2.2.</span> <span class="nav-text">jmap</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%8D%E6%B1%87%E7%BC%96%E5%B7%A5%E5%85%B7"><span class="nav-number">3.</span> <span class="nav-text">反汇编工具</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/jvm-tools/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Java 虚拟机系列（四）性能监控、故障处理工具总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java 虚拟机系列（四）性能监控、故障处理工具总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-09-16 20:10:12" itemprop="dateCreated datePublished" datetime="2019-09-16T20:10:12+08:00">2019-09-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="Monitoring-Tools-and-Commands"><a href="#Monitoring-Tools-and-Commands" class="headerlink" title="Monitoring Tools and Commands"></a>Monitoring Tools and Commands</h1><p><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/11/tools/monitoring-tools-and-commands.html">Monitoring Tools and Commands</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.saashub.com/compare-visualvm-vs-jconsole">https://www.saashub.com/compare-visualvm-vs-jconsole</a></p>
+<table>
+<thead>
+<tr>
+<th>命令/工具</th>
+<th>全称</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/11/tools/jps.html"><code>jps</code></a></td>
+<td>JVM Process Status Tool</td>
+<td>You use the <code>jps</code> command to list the instrumented JVMs on the target system.<br/>显示正在运行的所有 HotSpot VM 进程。</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/11/tools/jstat.html"><code>jstat</code></a></td>
+<td>JVM Statistics Monitoring Tool</td>
+<td>You use the <code>jstat</code> command to monitor JVM statistics.<br/>用于监视本地或远程 HotSpot VM 各方面的运行数据，例如类加载/卸载、运行时数据区、GC、JIT。</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/11/tools/jconsole.html"><code>jconsole</code></a></td>
+<td></td>
+<td>You use the <code>jconsole</code> command to start a graphical console to monitor and manage Java applications.<br/>JDK 5 起免费提供。一款基于 JMX (Java Management Extensions) 的可视化监视、管理工具。它的主要功能是通过 JMX  的 MBean (Managed Bean) 对系统进行信息收集和参数动态调整。</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://visualvm.github.io/">VisualVM</a></td>
+<td></td>
+<td>VisualVM is a visual tool integrating commandline JDK tools and lightweight profiling capabilities.</td>
+</tr>
+</tbody></table>
+<h2 id="jps"><a href="#jps" class="headerlink" title="jps"></a>jps</h2><p><code>jps</code> 命令的功能与 <code>ps</code> 类似，用于列出正在运行的 JVM 进程状态。</p>
+<p>常用参数：</p>
+<ul>
+<li><code>-q</code> 只输出 LVMID，省略主类的名称。</li>
+<li><code>-l</code> 输出主类的全名，如果进程执行的是 JAR 包，则输出 JAR 路径。</li>
+<li><code>-m</code> 输出虚拟机进程启动时传递给主类 <code>main()</code> 函数的参数。</li>
+<li><code>-v</code> 输出虚拟机进程启动时的 JVM 参数。</li>
+</ul>
+<h2 id="jstat"><a href="#jstat" class="headerlink" title="jstat"></a>jstat</h2><p><code>jstat</code> 命令用于监视当前 JVM 的各种运行状态信息。在用户体验上也许不如 JMC、VisualVM 等可视化监控工具以图表形式展示那样直观，但在实际生产环境中不一定可以使用 GUI 图形界面，因此在没有 GUI、只提供命令行界面的服务器上，仍是<strong>运行期</strong>定位虚拟机性能问题的常用工具。</p>
+<p>命令格式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ jstat options vmid [interval[s|ms] [count]]</span><br></pre></td></tr></table></figure>
+
+<p>常用参数：</p>
+<ul>
+<li>options，要查询的虚拟机信息，主要分为三类：<ul>
+<li>类加载<ul>
+<li><code>-class</code> 监视类加载、卸载数量、总空间以及类加载所耗费的时间</li>
+</ul>
+</li>
+<li>运行时数据区、GC<ul>
+<li><code>-gccapacity</code> 查看 GC 情况和 JVM 各区的<strong>容量</strong>（字节）</li>
+<li><code>-gc</code> 查看 GC 情况和 JVM 各区的<strong>容量</strong>和<strong>使用量</strong>（字节）</li>
+<li><code>-gcutil</code> 查看 GC 情况和 JVM 各区的<strong>使用率</strong>（%）</li>
+<li>…</li>
+</ul>
+</li>
+<li>JIT<ul>
+<li><code>-compiler</code> 输出即时编译器编译过的方法、耗时等信息</li>
+<li><code>-printcompilation</code> 输出已经被即时编译的方法</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>vmid，如果是本地虚拟机进程，VMID 与 LVMID 一致；如果是远程虚拟机进程，则 VMID 的格式为：<code>[protocol:][//]lvmid[@hostname[:port]/servername]</code></li>
+<li>interval，间隔时间，单位为秒或者毫秒</li>
+<li>count，打印次数，如果缺省则打印无数次</li>
+</ul>
+<p>示例展示：</p>
+<p>此示例连接到 lvmid 21891，并以 250 毫秒的间隔获取 7 个样本，每 6 行显示一次标题（<code>[-h&lt;lines&gt;]</code>），并显示由 <code>-gcutil</code> 选项指定的输出：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$ jstat -gcutil -h6 21891 250 7</span><br><span class="line"></span><br><span class="line">  S0     S1     E      O      P     YGC    YGCT    FGC    FGCT     GCT</span><br><span class="line"></span><br><span class="line"> 12.44   0.00  27.20   9.49  96.70    78    0.176     5    0.495    0.672</span><br><span class="line"></span><br><span class="line"> 12.44   0.00  62.16   9.49  96.70    78    0.176     5    0.495    0.672</span><br><span class="line"></span><br><span class="line"> 12.44   0.00  83.97   9.49  96.70    78    0.176     5    0.495    0.672</span><br><span class="line"></span><br><span class="line">  0.00   7.74   0.00   9.51  96.70    79    0.177     5    0.495    0.673</span><br><span class="line"></span><br><span class="line">  0.00   7.74  23.37   9.51  96.70    79    0.177     5    0.495    0.673</span><br><span class="line"></span><br><span class="line">  0.00   7.74  43.82   9.51  96.70    79    0.177     5    0.495    0.673</span><br><span class="line"></span><br><span class="line">  S0     S1     E      O      P     YGC    YGCT    FGC    FGCT     GCT</span><br><span class="line"></span><br><span class="line">  0.00   7.74  58.11   9.51  96.71    79    0.177     5    0.495    0.673</span><br></pre></td></tr></table></figure>
+
+<p>该示例结果显示，对象首先都在 Eden 区中创建，在第 3 和第 4 个样本之间由于 Eden 区装满，发生了 Young GC， gc 耗时 0.001 秒，并将对象从 Eden 区（E）提升到 Old 区（O），导致 Old 区的使用率从 9.49％ 增加到 9.51％。</p>
+<p> <code>-gcutil</code> 选项每列说明：</p>
+<table>
+<thead>
+<tr>
+<th>列名</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>S0</td>
+<td>Survivor space 0 区占用率</td>
+</tr>
+<tr>
+<td>S1</td>
+<td>Survivor space 1 区占用率</td>
+</tr>
+<tr>
+<td>E</td>
+<td>Eden space 区占用率</td>
+</tr>
+<tr>
+<td>O</td>
+<td>Old space 区占用率</td>
+</tr>
+<tr>
+<td>P</td>
+<td>Perm space 区占用率</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>列名</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>YGC</td>
+<td>从应用程序启动到采样时发生 Young GC 的次数，<strong>E 区满后触发</strong></td>
+</tr>
+<tr>
+<td>YGCT</td>
+<td>从应用程序启动到采样时 Young GC 所用的时间（单位秒）</td>
+</tr>
+<tr>
+<td>FGC</td>
+<td>从应用程序启动到采样时发生 Full GC 的次数， <strong>O 区满后触发</strong></td>
+</tr>
+<tr>
+<td>FGCT</td>
+<td>从应用程序启动到采样时 Full GC 所用的时间（单位秒）</td>
+</tr>
+<tr>
+<td>GCT</td>
+<td>从应用程序启动到采样时用于垃圾回收的<strong>总时间</strong>（单位秒）</td>
+</tr>
+</tbody></table>
+<h2 id="VisualVM"><a href="#VisualVM" class="headerlink" title="VisualVM"></a>VisualVM</h2><p>VisualVM 脱胎于自 JDK 6 起免费提供的 <a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/jvisualvm.html"><code>jvisualvm</code></a>，目前已经从 Oracle JDK 中分离出来，成为一个独立发展的开源项目：<a target="_blank" rel="noopener" href="https://visualvm.github.io/">https://visualvm.github.io/</a></p>
+<p>功能：</p>
+<ul>
+<li><p>监控进程的 CPU 使用率、内存（运行时数据区）、类加载、线程等统计；</p>
+</li>
+<li><p>监控线程状态。如下图：</p>
+<p><img src="/img/java/concurrent/thread_state_visualvm.png"></p>
+</li>
+<li><p>VisualVM 拥有丰富的<a target="_blank" rel="noopener" href="https://visualvm.github.io/plugins.html">插件</a>扩展。例如：</p>
+<ul>
+<li><p>Visual GC</p>
+<blockquote>
+<p>Integration of the Visual GC tool into VisualVM. Visual GC user interface is displayed for each local or remote application with performance counters available via jvmstat API.</p>
+<p>The Visual GC tool attaches to an instrumented HotSpot JVM and collects and graphically displays garbage     collection, class loader, and HotSpot compiler performance data.</p>
+</blockquote>
+</li>
+<li><p>Threads Inspector</p>
+<blockquote>
+<p>Threads Inspector adds a new section to the Threads tab showing stack traces for the selected live threads.</p>
+</blockquote>
+</li>
+<li><p><em>TDA</em> Plugin</p>
+<blockquote>
+<p>Thread Dump Analyzer is a GUI for analyzing thread dumps generated by the Java VM.</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="Troubleshooting-Tools-and-Commands"><a href="#Troubleshooting-Tools-and-Commands" class="headerlink" title="Troubleshooting Tools and Commands"></a>Troubleshooting Tools and Commands</h1><p><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/11/tools/troubleshooting-tools-and-commands.html">Troubleshooting Tools and Commands</a></p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>全称</th>
+<th>作用</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/11/tools/jinfo.html"><code>jinfo</code></a></td>
+<td>Configuration Info for Java</td>
+<td>You use the <code>jinfo</code> command to generate Java configuration information for a specified Java process.<br/>实时显示或修改虚拟机配置信息。</td>
+<td>在 JDK 9 中已集成到 <code>jhsdb</code></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/11/tools/jstack.html"><code>jstack</code></a></td>
+<td>Stack Trace for Java</td>
+<td>You use the <code>jstack</code> command to print Java stack traces of Java threads for a specified Java process.<br/>显示虚拟机当前时刻的线程快照（thread dump/javacore 文件）。线程快照就是当前虚拟机内每一条线程正在执行的方法堆栈的集合，生成堆栈快照的目的通常是定位线程出现长时间停顿的原因，如线程间死锁、死循环、请求外部资源导致的长时间挂起等，都是导致线程长时间停顿的常见原因。</td>
+<td>在 JDK 9 中已集成到 <code>jhsdb</code></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/11/tools/jmap.html"><code>jmap</code></a></td>
+<td>Memory Map for Java</td>
+<td>You use the <code>jmap</code> command to print details of a specified process.<br/>用于实时生成 JVM 堆内存转储快照（heap dump/hprof 文件），或查看堆内存信息。其它转储方法：<br/><code>-XX:+HeapDumpOnOutOfMemoryError</code><br/><code>-XX:+HeapDumpOnCtrlBreak</code></td>
+<td>在 JDK 9 中已集成到 <code>jhsdb</code></td>
+</tr>
+<tr>
+<td><del><code>jhat</code></del></td>
+<td>JVM Heap Dump Browser</td>
+<td>用于分析 heap dump 文件，它会建立一个 HTTP/HTML 服务器，让用户可以在浏览器上查看分析结果。分析结果默认以包为单位进行分组显示，分析内存泄漏问题主要会使用到其中的 Heap Histogram（与 <code>jmap -histo</code> 功能一样）与 OQL 页签功能，前者可以找到内存中总容量最大的对象，后者是标准的对象查询语言，使用类似 SQL 的语法堆内存中的对象进行查询统计。</td>
+<td>在 JDK 9 中已被  <code>jhsdb</code> 替代</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/11/tools/jhsdb.html"><code>jhsdb</code></a></td>
+<td>Java HotSpot Debugger</td>
+<td>一个基于 Serviceability Agent 的 HotSpot 进程调试器。</td>
+<td>自 JDK 9 起免费提供</td>
+</tr>
+</tbody></table>
+<h2 id="jstack"><a href="#jstack" class="headerlink" title="jstack"></a>jstack</h2><p><code>jstack</code> 命令用于 thread dump（生成虚拟机的线程堆栈快照），根据堆栈信息我们可以定位到具体代码，所以它在 JVM 性能调优中使用得非常多。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">$ jstack 21090 &gt; /tmp/threaddump</span><br><span class="line">$ less /tmp/localfile</span><br><span class="line"></span><br><span class="line">Full thread dump Java HotSpot(TM) 64-Bit Server VM (24.79-b02 mixed mode):</span><br><span class="line"></span><br><span class="line">&quot;Attach Listener&quot; daemon prio=10 tid=0x00007f67e03b4800 nid=0x7bb9 waiting on condition [0x0000000000000000]</span><br><span class="line">   java.lang.Thread.State: RUNNABLE</span><br><span class="line"></span><br><span class="line">&quot;catalina-exec-8000&quot; daemon prio=10 tid=0x00007f67ba4a0000 nid=0x795a waiting on condition [0x00007f6558c0a000]</span><br><span class="line">   java.lang.Thread.State: WAITING (parking)</span><br><span class="line">	at sun.misc.Unsafe.park(Native Method)</span><br><span class="line">	- parking to wait for  &lt;0x00000007886ab360&gt; (a java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject)</span><br><span class="line">	at java.util.concurrent.locks.LockSupport.park(LockSupport.java:186)</span><br><span class="line">	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2043)</span><br><span class="line">	at org.apache.http.pool.PoolEntryFuture.await(PoolEntryFuture.java:139)</span><br><span class="line">	at org.apache.http.pool.AbstractConnPool.getPoolEntryBlocking(AbstractConnPool.java:307)</span><br><span class="line">	at org.apache.http.pool.AbstractConnPool.access$000(AbstractConnPool.java:65)</span><br><span class="line">	at org.apache.http.pool.AbstractConnPool$2.getPoolEntry(AbstractConnPool.java:193)</span><br><span class="line">	at org.apache.http.pool.AbstractConnPool$2.getPoolEntry(AbstractConnPool.java:186)</span><br><span class="line">	at org.apache.http.pool.PoolEntryFuture.get(PoolEntryFuture.java:108)</span><br><span class="line">	at org.apache.http.impl.conn.PoolingClientConnectionManager.leaseConnection(PoolingClientConnectionManager.java:212)</span><br><span class="line">	at org.apache.http.impl.conn.PoolingClientConnectionManager$1.getConnection(PoolingClientConnectionManager.java:199)</span><br><span class="line">	at org.apache.http.impl.client.DefaultRequestDirector.execute(DefaultRequestDirector.java:424)</span><br><span class="line">	at org.apache.http.impl.client.AbstractHttpClient.doExecute(AbstractHttpClient.java:884)</span><br><span class="line">	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:82)</span><br><span class="line">	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:107)</span><br><span class="line">	at com.xxx.xxx.xxx.HttpClientService.doPost(HttpClientService.java:103)</span><br><span class="line">	......</span><br></pre></td></tr></table></figure>
+
+<p>由于导出的 <code>threaddump</code> 文件非常大，可以先统计下所有线程、或关注的线程分别处于什么状态：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ grep /tmp/threaddump | awk <span class="string">&#x27;&#123;print $2$3$4$5&#125;&#x27;</span> | <span class="built_in">sort</span> | <span class="built_in">uniq</span> -c | <span class="built_in">sort</span></span><br><span class="line"></span><br><span class="line">39  RUNNABLE</span><br><span class="line">21  TIMED_WAITING (onobjectmonitor)</span><br><span class="line">6   TIMED_WAITING (parking)</span><br><span class="line">51  TIMED_WAITING (sleeping)</span><br><span class="line">3   WAITING (onobjectmonitor)</span><br><span class="line">305 WAITING (parking)</span><br></pre></td></tr></table></figure>
+
+<p>发现有大量 <code>WAITING (parking)</code> 状态的线程。重新打开 <code>threaddump</code> 文件排查，根据堆栈可以定位到具体的问题代码，可以初步判断是 HTTP 连接耗尽资源导致的问题。</p>
+<h2 id="jmap"><a href="#jmap" class="headerlink" title="jmap"></a>jmap</h2><p>常用参数：</p>
+<ul>
+<li><code>-dump</code> 实时生成 JVM 堆内存转储快照（heap dump/hprof 文件）。格式为 <code>-dump:[live,] format=b, file=&lt;filename&gt;</code>，其中 <code>live</code> 子参数表示是否只 dump 出存活的对象。</li>
+<li><code>-histo[:live]</code> 显示堆中对象统计信息，包括类、实例数量、合计容量。</li>
+<li><code>-heap</code> 查看当前堆内存的详细信息，如 <code>Heap Configuration</code>、<code>Heap Usage</code>。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">$ jmap -heap 7059</span><br><span class="line">Attaching to process ID 7059, please wait...</span><br><span class="line">Debugger attached successfully.</span><br><span class="line">Server compiler detected.</span><br><span class="line">JVM version is 25.221-b11</span><br><span class="line"></span><br><span class="line">using thread-local object allocation.</span><br><span class="line">Parallel GC with 4 thread(s)</span><br><span class="line"></span><br><span class="line">Heap Configuration:</span><br><span class="line">   MinHeapFreeRatio         = 0</span><br><span class="line">   MaxHeapFreeRatio         = 100</span><br><span class="line">   MaxHeapSize              = 7516192768 (7168.0MB)</span><br><span class="line">   NewSize                  = 5368709120 (5120.0MB)</span><br><span class="line">   MaxNewSize               = 5368709120 (5120.0MB)</span><br><span class="line">   OldSize                  = 2147483648 (2048.0MB)</span><br><span class="line">   NewRatio                 = 2</span><br><span class="line">   SurvivorRatio            = 8</span><br><span class="line">   MetaspaceSize            = 21807104 (20.796875MB)</span><br><span class="line">   CompressedClassSpaceSize = 1073741824 (1024.0MB)</span><br><span class="line">   MaxMetaspaceSize         = 17592186044415 MB</span><br><span class="line">   G1HeapRegionSize         = 0 (0.0MB)</span><br><span class="line"></span><br><span class="line">Heap Usage:</span><br><span class="line">PS Young Generation</span><br><span class="line">Eden Space:</span><br><span class="line">   capacity = 5249171456 (5006.0MB)</span><br><span class="line">   used     = 1933544816 (1843.9720306396484MB)</span><br><span class="line">   free     = 3315626640 (3162.0279693603516MB)</span><br><span class="line">   36.835238326800805% used</span><br><span class="line">From Space:</span><br><span class="line">   capacity = 59768832 (57.0MB)</span><br><span class="line">   used     = 44812496 (42.73652648925781MB)</span><br><span class="line">   free     = 14956336 (14.263473510742188MB)</span><br><span class="line">   74.97636226185581% used</span><br><span class="line">To Space:</span><br><span class="line">   capacity = 59768832 (57.0MB)</span><br><span class="line">   used     = 0 (0.0MB)</span><br><span class="line">   free     = 59768832 (57.0MB)</span><br><span class="line">   0.0% used</span><br><span class="line">PS Old Generation</span><br><span class="line">   capacity = 2147483648 (2048.0MB)</span><br><span class="line">   used     = 80178568 (76.46424102783203MB)</span><br><span class="line">   free     = 2067305080 (1971.535758972168MB)</span><br><span class="line">   3.733605518937111% used</span><br></pre></td></tr></table></figure>
+
+<p>注意：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Heap Configuration</th>
+<th>Heap Usage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>JDK 7 及以下版本</td>
+<td><code>PermSize</code>、<code>MaxPermSize</code></td>
+<td>Heap 中包含 Perm Generation</td>
+</tr>
+<tr>
+<td>JDK 8 及以上版本</td>
+<td><code>MetaspaceSize</code>、<code>MaxMetaspaceSize</code></td>
+<td>Heap 不再包含 Perm Generation，取而代之的是在 Heap 之外有一块 Metaspace</td>
+</tr>
+</tbody></table>
+<p>可以进一步分析对象分布。</p>
+<h1 id="反汇编工具"><a href="#反汇编工具" class="headerlink" title="反汇编工具"></a>反汇编工具</h1><blockquote>
+<p>大多数情况下，通过诸如javap等反编译工具来查看源码的字节码已经能够满足我们的日常需求，但是不排除在有些特定场景下，我们需要通过反汇编来查看相应的汇编指令。两个很好用的工具——HSDIS、JITWatch</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>HSDIS (HotSpot disassembler)</td>
+<td>一款 HotSpot 虚拟机 JIT 编译代码的反汇编插件。</td>
+</tr>
+<tr>
+<td>JITWatch</td>
+<td>用于可视化分析。</td>
+</tr>
+</tbody></table>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/158168592?from_voters_page=true">https://zhuanlan.zhihu.com/p/158168592?from_voters_page=true</a></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《深入理解 Java 虚拟机》</p>
+<p><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/11/tools/index.html">https://docs.oracle.com/en/java/javase/11/tools/index.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://openjdk.java.net/tools/">https://openjdk.java.net/tools/</a></p>
+<p>《<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/FiwysEcAEeO4VFh8QHYluA">JDK 内置实用工具：监视、故障排除</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="https://blog.csdn.net/u013970991/article/details/52036253">使用 VisualVM 进行性能分析及调优</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="https://www.cnblogs.com/fengzheng/p/13431845.html">JConsole、VisualVM 依赖的 JMX 技术到底是什么？</a>》</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/jvm-tools/" title="Java 虚拟机系列（四）性能监控、故障处理工具总结">https://qidawu.github.io/posts/jvm-tools/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/JVM/" rel="tag"># JVM</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/jvm-gc/" rel="prev" title="Java 虚拟机系列（三）垃圾收集器总结">
+                  <i class="fa fa-chevron-left"></i> Java 虚拟机系列（三）垃圾收集器总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/mysql-explain/" rel="next" title="MySQL 执行计划总结">
+                  MySQL 执行计划总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

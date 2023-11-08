@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="原则MySQL 支持的数据类型非常多，选择正确的数据类型对于获得高性能至关重要。不管存储哪种类型的数据，下面几个简单的原则都有助于作出更好的选择。 Smaller is usually better更小的通常更好：  In general, try to use the smallest data type that can correctly store and represent your d">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL 常用数据类型">
+<meta property="og:url" content="https://qidawu.github.io/posts/mysql-data-types/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="原则MySQL 支持的数据类型非常多，选择正确的数据类型对于获得高性能至关重要。不管存储哪种类型的数据，下面几个简单的原则都有助于作出更好的选择。 Smaller is usually better更小的通常更好：  In general, try to use the smallest data type that can correctly store and represent your d">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/mysql/charset/ascii.png">
+<meta property="og:image" content="https://qidawu.github.io/img/mysql/datatype/incompatible_change_of_date_and_time_type.png">
+<meta property="og:image" content="https://qidawu.github.io/img/mysql/datatype/date_and_time_type_storage_requirements.png">
+<meta property="article:published_time" content="2018-01-05T14:27:21.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.924Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/mysql/charset/ascii.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/mysql-data-types/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/mysql-data-types/","path":"posts/mysql-data-types/","title":"MySQL 常用数据类型"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>MySQL 常用数据类型 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8E%9F%E5%88%99"><span class="nav-number">1.</span> <span class="nav-text">原则</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Smaller-is-usually-better"><span class="nav-number">1.1.</span> <span class="nav-text">Smaller is usually better</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Simple-is-good"><span class="nav-number">1.2.</span> <span class="nav-text">Simple is good</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Avoid-NULL-if-possible"><span class="nav-number">1.3.</span> <span class="nav-text">Avoid NULL if possible</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">常用数据类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E5%AD%97%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.1.</span> <span class="nav-text">数字类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AF%94%E7%89%B9%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.1.1.</span> <span class="nav-text">比特类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Bit-Value-Literals"><span class="nav-number">2.1.1.1.</span> <span class="nav-text">Bit-Value Literals</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B4%E6%95%B0%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.1.2.</span> <span class="nav-text">整数类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%AE%E7%82%B9%E7%B1%BB%E5%9E%8B%EF%BC%88%E8%BF%91%E4%BC%BC%E5%80%BC%EF%BC%89"><span class="nav-number">2.1.3.</span> <span class="nav-text">浮点类型（近似值）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E7%82%B9%E7%B1%BB%E5%9E%8B%EF%BC%88%E7%B2%BE%E7%A1%AE%E5%80%BC%EF%BC%89"><span class="nav-number">2.1.4.</span> <span class="nav-text">定点类型（精确值）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.2.</span> <span class="nav-text">字符串类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#BINARY-%E5%92%8C-VARBINARY-%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.2.1.</span> <span class="nav-text">BINARY 和 VARBINARY 类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Hexadecimal-Literals"><span class="nav-number">2.2.1.1.</span> <span class="nav-text">Hexadecimal Literals</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CHAR-%E5%92%8C-VARCHAR-%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.2.2.</span> <span class="nav-text">CHAR 和 VARCHAR 类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BLOB-%E5%92%8C-TEXT-%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.2.3.</span> <span class="nav-text">BLOB 和 TEXT 类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A5%E6%9C%9F%E4%B8%8E%E6%97%B6%E9%97%B4%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.3.</span> <span class="nav-text">日期与时间类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TIMESTAMP-fsp"><span class="nav-number">2.3.1.</span> <span class="nav-text">TIMESTAMP[(fsp)]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DATETIME-fsp"><span class="nav-number">2.3.2.</span> <span class="nav-text">DATETIME[(fsp)]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E7%B2%BE%E5%BA%A6%EF%BC%88%E5%B0%8F%E6%95%B0%E7%A7%92%EF%BC%89"><span class="nav-number">2.3.3.</span> <span class="nav-text">存储精度（小数秒）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="nav-number">2.3.4.</span> <span class="nav-text">最佳实践</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%BB%98%E8%AE%A4%E5%80%BC"><span class="nav-number">3.</span> <span class="nav-text">默认值</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/mysql-data-types/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="MySQL 常用数据类型 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL 常用数据类型
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-01-05 22:27:21" itemprop="dateCreated datePublished" datetime="2018-01-05T22:27:21+08:00">2018-01-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="原则"><a href="#原则" class="headerlink" title="原则"></a>原则</h1><p>MySQL 支持的数据类型非常多，选择正确的数据类型对于获得高性能至关重要。不管存储哪种类型的数据，下面几个简单的原则都有助于作出更好的选择。</p>
+<h2 id="Smaller-is-usually-better"><a href="#Smaller-is-usually-better" class="headerlink" title="Smaller is usually better"></a>Smaller is usually better</h2><p>更小的通常更好：</p>
+<blockquote>
+<p>In general, try to use the smallest data type that can correctly store and represent your data. Smaller data types are usually faster, because they use less space on the disk, in memory, and in the CPU cache. They also generally require fewer CPU cycles to process.</p>
+<p>Make sure you don’t underestimate the range of values you need to store, though, because increasing the data type range in multiple places in your schema can be a painful and time-consuming operation. If you’re in doubt as to which is the best data type to use, choose the smallest one that you don’t think you’ll exceed. (If the system is not very busy or doesn’t store much data, or if you’re at an early phase in the design process, you can change it easily later.)</p>
+</blockquote>
+<p>更小的数据类型通常更快，因为占用更少的磁盘、内存和 CPU 缓存，并且处理时需要的 CPU 周期也更少。</p>
+<h2 id="Simple-is-good"><a href="#Simple-is-good" class="headerlink" title="Simple is good"></a>Simple is good</h2><p>简单就好：</p>
+<blockquote>
+<p>Fewer CPU cycles are typically required to process operations on simpler data types. For example, integers are cheaper to compare than characters, because character sets and collations (sorting rules) make character comparisons complicated. Here are two examples: you should store dates and times in MySQL’s builtin types instead of as strings, and you should use integers for IP addresses. We discuss these topics further later.</p>
+</blockquote>
+<p>简单数据类型的操作通常需要更少的 CPU 周期、索引性能更好。例如，整型比字符操作代价更低，因为字符集和校对规则（排序规则）使得字符比整型更复杂。</p>
+<p>有几个例子：</p>
+<ul>
+<li><p>使用日期与时间类型，而不是字符串来存储日期和时间，以便排序和格式转换。</p>
+</li>
+<li><p>IPv4 地址：按十进制标记法（32-bit decimal notation）使用 32 位无符号整型类型（<code>int unsigned</code>）进行存储，而不是按点分十进制标记法（Dot-decimal notation）使用字符串类型（<code>varchar</code>）进行存储。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 测试表（注意使用 int UNSIGNED 类型存储（存储范围：0 ~ 2^32-1））</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `t_iptable` (</span><br><span class="line">  `ip1` <span class="type">int</span>(<span class="number">32</span>) UNSIGNED <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;IPv4 地址&#x27;</span>,</span><br><span class="line">  `ip2` <span class="type">varchar</span>(<span class="number">15</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;IPv4 地址&#x27;</span></span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 测试数据</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> t_iptable(ip1, ip2) <span class="keyword">VALUES</span>(INET_ATON(<span class="string">&#x27;0.0.0.0&#x27;</span>), <span class="string">&#x27;0.0.0.0&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> t_iptable(ip1, ip2) <span class="keyword">VALUES</span>(INET_ATON(<span class="string">&#x27;10.198.1.1&#x27;</span>), <span class="string">&#x27;10.198.1.1&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> t_iptable(ip1, ip2) <span class="keyword">VALUES</span>(INET_ATON(<span class="string">&#x27;255.255.255.255&#x27;</span>), <span class="string">&#x27;255.255.255.255&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 测试结果</span></span><br><span class="line"><span class="comment">-- INET_ATON()	Return the numeric value of an IP address		</span></span><br><span class="line"><span class="comment">-- INET_NTOA()	Return the IP address from a numeric value		</span></span><br><span class="line"><span class="comment">-- INET6_ATON()	Return the numeric value of an IPv6 address		</span></span><br><span class="line"><span class="comment">-- INET6_NTOA()	Return the IPv6 address from a numeric value</span></span><br><span class="line"><span class="keyword">SELECT</span> INET_NTOA(ip1), ip2 <span class="keyword">FROM</span> t_iptable;</span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------+-----------------+</span></span><br><span class="line"><span class="operator">|</span> INET_NTOA(ip1)  <span class="operator">|</span> ip2             <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------+-----------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>         <span class="operator">|</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>         <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">10.198</span><span class="number">.1</span><span class="number">.1</span>      <span class="operator">|</span> <span class="number">10.198</span><span class="number">.1</span><span class="number">.1</span>      <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> <span class="number">255.255</span><span class="number">.255</span><span class="number">.255</span> <span class="operator">|</span> <span class="number">255.255</span><span class="number">.255</span><span class="number">.255</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------+-----------------+</span></span><br></pre></td></tr></table></figure></li>
+<li><p>散列值：使用定长二进制类型（<code>binary</code>），而不是按十六进制标记法使用字符串类型（<code>char</code>）来存储散列值：<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/614476/storing-sha1-hash-values-in-mysql">https://stackoverflow.com/questions/614476/storing-sha1-hash-values-in-mysql</a></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 测试表</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `t_hash` (</span><br><span class="line">  `hash1` <span class="type">binary</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;散列值&#x27;</span>,</span><br><span class="line">  `hash2` <span class="type">char</span>(<span class="number">40</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;散列值&#x27;</span></span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 测试数据</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> t_hash(hash1, hash2) <span class="keyword">VALUES</span>(<span class="number">0xE562F69EC36E625116376F376D991E41613E9BF3</span>, <span class="string">&#x27;E562F69EC36E625116376F376D991E41613E9BF3&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> t_hash(hash1, hash2) <span class="keyword">VALUES</span>(X<span class="string">&#x27;E562F69EC36E625116376F376D991E41613E9BF3&#x27;</span>, <span class="string">&#x27;E562F69EC36E625116376F376D991E41613E9BF3&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> t_hash(hash1, hash2) <span class="keyword">VALUES</span>(UNHEX(<span class="string">&#x27;E562F69EC36E625116376F376D991E41613E9BF3&#x27;</span>), <span class="string">&#x27;E562F69EC36E625116376F376D991E41613E9BF3&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 测试结果</span></span><br><span class="line"><span class="comment">-- BIT_LENGTH()	Return length of a string in bits</span></span><br><span class="line"><span class="comment">-- LENGTH()	Return length of a string in bytes</span></span><br><span class="line"><span class="keyword">SELECT</span> HEX(hash1), BIT_LENGTH(hash1), LENGTH(hash1), hash2, BIT_LENGTH(hash2), LENGTH(hash2) <span class="keyword">FROM</span> t_hash;</span><br><span class="line"><span class="operator">+</span><span class="comment">------------------------------------------+-------------------+---------------+------------------------------------------+-------------------+---------------+</span></span><br><span class="line"><span class="operator">|</span> HEX(hash1)                               <span class="operator">|</span> BIT_LENGTH(hash1) <span class="operator">|</span> LENGTH(hash1) <span class="operator">|</span> hash2                                    <span class="operator">|</span> BIT_LENGTH(hash2) <span class="operator">|</span> LENGTH(hash2) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------------------------------------------+-------------------+---------------+------------------------------------------+-------------------+---------------+</span></span><br><span class="line"><span class="operator">|</span> E562F69EC36E625116376F376D991E41613E9BF3 <span class="operator">|</span>               <span class="number">160</span> <span class="operator">|</span>            <span class="number">20</span> <span class="operator">|</span> E562F69EC36E625116376F376D991E41613E9BF3 <span class="operator">|</span>               <span class="number">320</span> <span class="operator">|</span>            <span class="number">40</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------------------------------------------+-------------------+---------------+------------------------------------------+-------------------+---------------+</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="Avoid-NULL-if-possible"><a href="#Avoid-NULL-if-possible" class="headerlink" title="Avoid NULL if possible"></a>Avoid <code>NULL</code> if possible</h2><p>避免使用 <code>NULL</code>：</p>
+<blockquote>
+<p>A lot of tables include nullable columns even when the application does not need to store <code>NULL</code> (the absence of a value), merely because it’s the default. It’s usually best to specify columns as <code>NOT NULL</code> unless you intend to store <code>NULL</code> in them.</p>
+<p>It’s harder for MySQL to optimize queries that refer to nullable columns, because they make indexes, index statistics, and value comparisons more complicated. A nullable column uses more storage space and requires special processing inside MySQL. When a nullable column is indexed, it requires an extra byte per entry and can even cause a fixed-size index (such as an index on a single integer column) to be converted to a variable-sized one in MyISAM.</p>
+<p>The performance improvement from changing <code>NULL</code> columns to <code>NOT NULL</code> is usually small, so don’t make it a priority to find and change them on an existing schema unless you know they are causing problems. However, if you’re planning to index columns, avoid making them nullable if possible.</p>
+<p>There are exceptions, of course. For example, it’s worth mentioning that InnoDB stores <code>NULL</code> with a single bit, so it can be pretty space-efficient for sparsely populated data. This doesn’t apply to MyISAM, though.</p>
+</blockquote>
+<p><code>NULL</code> 列使得 MySQL 索引、索引统计和值比较都更复杂。值可为 <code>NULL</code> 的列会使用更多的存储空间（例如当可为 <code>NULL</code> 的列被索引时，每个索引记录需要一个额外的字节），在 MySQL 里也需要特殊处理。如果计划在列上建索引，应该尽量避免。</p>
+<p><strong>你应该用 0、一个特殊的值或者一个空串代替 NULL值。</strong> </p>
+<p>参考：《<a target="_blank" rel="noopener" href="https://my.oschina.net/leejun2005/blog/1342985">一千个不用 Null 的理由</a>》</p>
+<h1 id="常用数据类型"><a href="#常用数据类型" class="headerlink" title="常用数据类型"></a>常用数据类型</h1><h2 id="数字类型"><a href="#数字类型" class="headerlink" title="数字类型"></a>数字类型</h2><h3 id="比特类型"><a href="#比特类型" class="headerlink" title="比特类型"></a>比特类型</h3><p><code>BIT[(M)]</code> 比特类型，<em>M</em> 为 1~64 bit(s)。</p>
+<h4 id="Bit-Value-Literals"><a href="#Bit-Value-Literals" class="headerlink" title="Bit-Value Literals"></a>Bit-Value Literals</h4><p><code>b&#39;value&#39;</code> 符号可用于指定比特值。<code>value</code> 是一组使用 0 和 1 编写的二进制值。例如 <code>b&#39;111&#39;</code> 和 <code>b&#39;10000000&#39;</code> 分别代表 <code>7</code> 和 <code>128</code> 。详见《<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/bit-value-literals.html">Bit-Value Literals</a>》。</p>
+<p>如果赋值给小于 <em>M</em> 位长的 <code>BIT(M)</code> 类型列，则该值左侧用零填充。例如，为 <code>BIT(6)</code> 列赋值 <code>b&#39;101&#39;</code> 实际上等于赋值 <code>b&#39;000101&#39;</code>。</p>
+<p><code>BIT(1)</code> 常用来表示<strong>布尔类型</strong>，<code>b&#39;0&#39;</code> 表示 <code>false</code>，<code>b&#39;1&#39;</code> 表示 <code>true</code>。</p>
+<p>1 byte = 8 bit。</p>
+<h3 id="整数类型"><a href="#整数类型" class="headerlink" title="整数类型"></a>整数类型</h3><table>
+<thead>
+<tr>
+<th>Data Type</th>
+<th>Storage Required</th>
+<th>Data Range（<code>signed</code>）</th>
+<th>Data Range（<code>unsigned</code>）</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>TINYINT</code></td>
+<td>8 bits, 1 Byte</td>
+<td>-2^7 ~ 2^7-1</td>
+<td>0 ~ 2^8-1</td>
+<td>同义词 <code>BOOL</code>、<code>BOOLEAN</code> ，0 为 false，!0 为 true</td>
+</tr>
+<tr>
+<td><code>SMALLINT</code></td>
+<td>16 bits, 2 Bytes</td>
+<td>-2^15 ~ 2^15-1</td>
+<td>0 ~ 2^16-1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>MEDIUMINT</code></td>
+<td>24 bits, 3 Bytes</td>
+<td>-2^23 ~ 2^23-1</td>
+<td>0 ~ 2^24-1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>INT</code></td>
+<td>32 bits, 4 Bytes</td>
+<td>-2^31 ~ 2^31-1</td>
+<td>0 ~ 2^32-1</td>
+<td>同义词 <code>INTEGER</code></td>
+</tr>
+<tr>
+<td><code>BIGINT</code></td>
+<td>64 bits, 8 Bytes</td>
+<td>-2^63 ~ 2^63-1</td>
+<td>0 ~ 2^64-1</td>
+<td><code>SERIAL</code> 等于 <code>BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE</code> 的别名 ，适用于创建主键</td>
+</tr>
+</tbody></table>
+<p><code>INT[(M)] [UNSIGNED] [ZEROFILL] [AUTO_INCREMENT]</code> 整数类型</p>
+<ul>
+<li><p><em><code>M</code></em> 最大显示宽度，例如 <code>INT(11)</code> ：</p>
+<p>这个属性对于大多数应用都是没有意义的：它不会限制值的合法范围，只是规定了 MySQL 的一些交互工具用来<strong>显示字符</strong>的个数，最大值为 255，一般配合 <code>ZEROFILL</code> 使用。对于存储和计算来说，<code>INT(1)</code> 和 <code>INT(20)</code> 是相同的，并不会影响该类型的占用字节数。</p>
+</li>
+<li><p><code>ZEROFILL</code> 填充零：</p>
+<p>顾名思义就是用 “0” 填充的意思，也就是在数字位数不够（&lt; <em><code>M</code></em> ）的空间用字符 “0” 填满。只在一些交互工具中有效，例如 MyCli。</p>
+</li>
+</ul>
+<ul>
+<li><p><code>UNSIGNED</code> 无符号：</p>
+<p>整数类型有可选的 <code>UNSIGNED</code> 属性，表示不允许负值，可以使正整数的上限提升一倍：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>公式</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>有符号的取值范围</td>
+<td>-2^(N-1) ~ 2^(N-1)-1</td>
+<td><code>tinyint</code> -2^7 ~ 2^7-1 (-128 ~ 127)</td>
+</tr>
+<tr>
+<td>无符号的取值范围</td>
+<td>0  ~ 2^N-1</td>
+<td><code>tinyint UNSIGNED</code> 0 ~ 2^8-1 (0 ~ 255)</td>
+</tr>
+</tbody></table>
+<p>N 为存储长度的位数（1 Byte = 8 bits）。</p>
+</li>
+</ul>
+<ul>
+<li><p><code>AUTO_INCREMENT</code> 自动递增：</p>
+<p>在需要产生唯一标识符或顺序值时，可利用此属性，这个属性只用于整数类型。<code>AUTO_INCREMENT</code> 值一般从 1 开始，每行增加 1。 一个表中最多只能有一个 <code>AUTO_INCREMENT</code> 列 。对于任何想要使用 <code>AUTO_INCREMENT</code> 的列，应该定义为 <code>NOT NULL</code>，并定义为 <code>PRIMARY KEY</code> 或定义为 <code>UNIQUE</code> 键。</p>
+</li>
+</ul>
+<h3 id="浮点类型（近似值）"><a href="#浮点类型（近似值）" class="headerlink" title="浮点类型（近似值）"></a>浮点类型（近似值）</h3><p><code>FLOAT[(M,D)] [UNSIGNED] [ZEROFILL]</code> 单精度浮点类型（floating-point number），<em>M</em> 是总位数，<em>D</em> 是小数点后面的位数。如果 <em>M</em> 和 <em>D</em> 省略，值将存储到硬件允许的限制。单精度浮点数精确到约 7 位小数。</p>
+<p><code>DOUBLE[(M,D)] [UNSIGNED] [ZEROFILL]</code> 双精度浮点类型（floating-point number），<em>M</em> 是总位数，<em>D</em> 是小数点后面的位数。如果 <em>M</em> 和 <em>D</em> 省略，值将存储到硬件允许的限制。双精度浮点数精确到小数点后 15 位。</p>
+<table>
+<thead>
+<tr>
+<th>Data Type</th>
+<th>Storage Required</th>
+<th>Data Range</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>FLOAT</code></td>
+<td>32 bits, 4 Bytes</td>
+<td><code>-3.402823466E+38</code> to <code>-1.175494351E-38</code>, <code>0</code>, and <code>1.175494351E-38</code> to <code>3.402823466E+38</code></td>
+</tr>
+<tr>
+<td><code>DOUBLE</code></td>
+<td>64 bits, 8 Bytes</td>
+<td><code>-1.7976931348623157E+308</code> to <code>-2.2250738585072014E-308</code>, <code>0</code>, and<code>2.2250738585072014E-308</code> to <code>1.7976931348623157E+308</code></td>
+</tr>
+</tbody></table>
+<p>因为浮点值是近似值而不是作为精确值存储的，比值时可能会导致问题。详见《<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/problems-with-float.html">Problems with Floating-Point Values</a>》。</p>
+<h3 id="定点类型（精确值）"><a href="#定点类型（精确值）" class="headerlink" title="定点类型（精确值）"></a>定点类型（精确值）</h3><p><code>DECIMAL[(M[,D])] [UNSIGNED] [ZEROFILL]</code> 定点类型（fixed-point number），用于存储高精度数值，如货币数据。</p>
+<p><em>M</em> 是总位数（精度，precision），<em>D</em> 是小数点后的位数（标度，scale）。小数点和（对于负数） <code>-</code> 符号不计入 <em>M</em>。如果 <em>D</em> 为 0，则值不包含小数点或小数部分。如果指定 <code>UNSIGNED</code>，则不允许负值。<code>DECIMAL</code> 的所有基本运算 (+, -, *, /) 都以 65 位数的最大精度完成。</p>
+<table>
+<thead>
+<tr>
+<th>Data Type</th>
+<th><em>M</em> 精度范围（总位数）</th>
+<th><em>D</em> 标度范围（小数位数）</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>DECIMAL</code></td>
+<td>0~65，默认 10</td>
+<td>0~30，默认 0</td>
+<td>同义词 <code>DEC</code>、<code>NUMERIC</code>、<code>FIXED</code></td>
+</tr>
+</tbody></table>
+<p>例如 ：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">salary DECIMAL(5,2)</span><br></pre></td></tr></table></figure>
+
+<p>可以存储在 <em>salary</em> 列中的值范围从 -999.99 ~ 999.99。</p>
+<p><code>DECIMAL</code> 以二进制格式存储值，每 4 个字节存 9 个数字。例如，<code>DECIMAL(18,9)</code> 小数点两边各存储 9 个数字，一共使用 9 个字节：小数点前的数字使用 4 个字节，小数点后的数字使用 4 个字节，小数点本身占 1 个字节。详见《<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/precision-math.html">Precision Math</a>》。</p>
+<p>因为需要额外的空间和计算开销，所以应该尽量只在对小数进行精确计算时才使用 <code>DECIMAL</code> —— 例如存储财务数据。但在数据量比较大的时候，可以考虑使用 <code>BIGINT</code> 代替 <code>DECIMAL</code> ，将需要存储的货币单位根据小数的位数乘以相应的倍数即可。假设要存储的财务数据精确到万分之一分，则可以把所有金额乘以一百万，然后将结果存储在 <code>BIGINT</code> 里，这样可以同时避免浮点存储计算不精确和 <code>DECIMAL</code> 精确计算代价高的问题。</p>
+<h2 id="字符串类型"><a href="#字符串类型" class="headerlink" title="字符串类型"></a>字符串类型</h2><p>In the following table</p>
+<ul>
+<li><em><code>M</code></em> represents the declared column length in <ul>
+<li><strong>bytes</strong> for binary string types (<code>BINARY(M)</code>、<code>VARBINARY(M)</code>)</li>
+<li><strong>characters</strong> for nonbinary string types (<code>CHAR(M)</code>、<code>VARCHAR(M)</code>)</li>
+</ul>
+</li>
+<li><em><code>L</code></em> represents the actual length in <strong>bytes</strong> of a given string value.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Binary Strings (Byte Strings)</th>
+<th>Nonbinary Strings (Character Strings)</th>
+<th>Storage Required</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Fixed-length types</strong></td>
+<td></td>
+<td><code>CHAR(M)</code></td>
+<td><em><code>L</code></em> = <em><code>M</code></em> × <em><code>w</code></em> bytes, 0 &lt; <em><code>M</code></em> &lt;= 255, where <em><code>w</code></em> is the number of bytes required for the maximum-length character in the character set.</td>
+</tr>
+<tr>
+<td><strong>Fixed-length types</strong></td>
+<td><code>BINARY(M)</code></td>
+<td></td>
+<td><em><code>M</code></em> bytes, 0 &lt;= <em><code>M</code></em> &lt;= 255</td>
+</tr>
+<tr>
+<td><strong>Variable-length types</strong></td>
+<td><code>VARBINARY(M)</code></td>
+<td><code>VARCHAR(M)</code></td>
+<td><em><code>L</code></em> = <em><code>M</code></em> × <em><code>w</code></em> bytes + 1 bytes if column values require 0 − 255 bytes<br><em><code>L</code></em> = <em><code>M</code></em> × <em><code>w</code></em> bytes + 2 bytes if values may require more than 255 bytes<br/>其有效最大字节长度取决于<strong>行大小限制</strong>（默认 65,535 Bytes，在所有列中共享） ，参考：《<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/column-count-limit.html">表列数量和行数限制</a>》。</td>
+</tr>
+<tr>
+<td><strong>Variable-length types</strong></td>
+<td><code>TINYBLOB</code></td>
+<td><code>TINYTEXT</code></td>
+<td><em><code>L</code></em> + 1 bytes, where <em><code>L</code></em> &lt; 2^8 = 256 bytes</td>
+</tr>
+<tr>
+<td><strong>Variable-length types</strong></td>
+<td><code>BLOB</code></td>
+<td><code>TEXT</code></td>
+<td><em><code>L</code></em> + 2 bytes, where <em><code>L</code></em> &lt; 2^16 = 64 KB</td>
+</tr>
+<tr>
+<td><strong>Variable-length types</strong></td>
+<td><code>MEDIUMBLOB</code></td>
+<td><code>MEDIUMTEXT</code></td>
+<td><em><code>L</code></em> + 3 bytes, where <em><code>L</code></em> &lt; 2^24 = 16 MB</td>
+</tr>
+<tr>
+<td><strong>Variable-length types</strong></td>
+<td><code>LONGBLOB</code></td>
+<td><code>LONGTEXT</code></td>
+<td><em><code>L</code></em> + 4 bytes, where <em><code>L</code></em> &lt; 2^32 = 4 GB</td>
+</tr>
+</tbody></table>
+<p>variable-length types 变长类型需要额外的 1 到 4 个字节记录长度：</p>
+<ul>
+<li>1 Byte = 8 bits 刚好可以记录 0~2^8-1 (255) bytes</li>
+<li>2 Bytes = 16 bits 刚好可以记录 0~2^16-1 (65,535) bytes</li>
+<li>3 Bytes = 24 bits 刚好可以记录 0~2^24 bytes</li>
+<li>4 Bytes = 32 bits 刚好可以记录 0~2^32 bytes</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Description</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Binary Strings (Byte Strings)</strong></td>
+<td>They have the <code>binary</code> character set and collation, and comparison and sorting are based on the numeric values of the bytes in the values.</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Nonbinary Strings (Character Strings)</strong></td>
+<td>They have a <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/charset.html">character set</a> other than <code>binary</code>, and values are sorted and compared based on the collation of the character set.</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>对于 Nonbinary Strings (Character Strings)，<em>M</em> 和 <em>L</em> 换算关系如下：</p>
+<table>
+<thead>
+<tr>
+<th>字符集（Character Sets）</th>
+<th><em>M</em></th>
+<th><em>L</em></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>latin1</code></td>
+<td>1 character</td>
+<td>1 byte</td>
+</tr>
+<tr>
+<td><code>gbk</code></td>
+<td>1 character</td>
+<td>2 bytes</td>
+</tr>
+<tr>
+<td><code>utf8</code></td>
+<td>1 character</td>
+<td>3 bytes</td>
+</tr>
+<tr>
+<td><code>utf8mb4</code></td>
+<td>1 character</td>
+<td>4 bytes</td>
+</tr>
+</tbody></table>
+<h3 id="BINARY-和-VARBINARY-类型"><a href="#BINARY-和-VARBINARY-类型" class="headerlink" title="BINARY 和 VARBINARY 类型"></a><code>BINARY</code> 和 <code>VARBINARY</code> 类型</h3><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/binary-varbinary.html">https://dev.mysql.com/doc/refman/5.7/en/binary-varbinary.html</a></p>
+<blockquote>
+<p>The <code>BINARY</code> and <code>VARBINARY</code> types are similar to <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/char.html"><code>CHAR</code></a> and <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/char.html"><code>VARCHAR</code></a>, except that they store binary strings rather than nonbinary strings. That is, they store byte strings rather than character strings. This means they have the <code>binary</code> character set and collation, and comparison and sorting are based on the numeric values of the bytes in the values.</p>
+</blockquote>
+<h4 id="Hexadecimal-Literals"><a href="#Hexadecimal-Literals" class="headerlink" title="Hexadecimal Literals"></a>Hexadecimal Literals</h4><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Octal">https://en.wikipedia.org/wiki/Octal</a></p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/hexadecimal-literals.html">https://dev.mysql.com/doc/refman/8.0/en/hexadecimal-literals.html</a></p>
+<p>Hexadecimal literal values are written using <code>X&#39;val&#39;</code> or <code>0xval</code> notation, where <em><code>val</code></em> contains hexadecimal digits (<code>0..9</code>, <code>A..F</code>). Lettercase of the digits and of any leading <code>X</code> does not matter. A leading <code>0x</code> is case-sensitive and cannot be written as <code>0X</code>.</p>
+<p>Legal hexadecimal literals:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">X<span class="string">&#x27;01AF&#x27;</span></span><br><span class="line">X<span class="string">&#x27;01af&#x27;</span></span><br><span class="line">x<span class="string">&#x27;01AF&#x27;</span></span><br><span class="line">x<span class="string">&#x27;01af&#x27;</span></span><br><span class="line"><span class="number">0x01AF</span></span><br><span class="line"><span class="number">0x01af</span></span><br></pre></td></tr></table></figure>
+
+<p>By default, a hexadecimal literal is a <strong>binary string</strong>, where <strong>each pair of hexadecimal digits</strong> represents a character:</p>
+<p><img src="/img/mysql/charset/ascii.png" alt="ASCII"></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- BIT_LENGTH()	Return length of a string in bits</span></span><br><span class="line"><span class="comment">-- LENGTH()	Return length of a string in bytes</span></span><br><span class="line"><span class="comment">-- CHARSET()	Returns the character set of the string argument.</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="number">0x41</span>, X<span class="string">&#x27;41&#x27;</span>, UNHEX(<span class="string">&#x27;41&#x27;</span>), BIT_LENGTH(<span class="number">0x41</span>), LENGTH(<span class="number">0x41</span>), CHARSET(<span class="number">0x41</span>);</span><br><span class="line"><span class="operator">+</span><span class="comment">------+-------+-------------+------------------+--------------+---------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="number">0x41</span> <span class="operator">|</span> X<span class="string">&#x27;41&#x27;</span> <span class="operator">|</span> UNHEX(<span class="string">&#x27;41&#x27;</span>) <span class="operator">|</span> BIT_LENGTH(<span class="number">0x41</span>) <span class="operator">|</span> LENGTH(<span class="number">0x41</span>) <span class="operator">|</span> CHARSET(<span class="number">0x41</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------+-------+-------------+------------------+--------------+---------------+</span></span><br><span class="line"><span class="operator">|</span> A    <span class="operator">|</span> A     <span class="operator">|</span> A           <span class="operator">|</span>                <span class="number">8</span> <span class="operator">|</span>            <span class="number">1</span> <span class="operator">|</span> <span class="type">binary</span>        <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------+-------+-------------+------------------+--------------+---------------+</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/string-functions.html#function_unhex"><code>UNHEX(str)</code></a></p>
+<p>For a string argument <em><code>str</code></em>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/string-functions.html#function_unhex"><code>UNHEX(str)</code></a> interprets <strong>each pair of characters in the argument as a hexadecimal number</strong> and converts it to the byte represented by the number. The return value is a <strong>binary string</strong>.</p>
+</blockquote>
+<p>For information about introducers, see <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/charset-introducer.html">Section 10.3.8, “Character Set Introducers”</a>.</p>
+<h3 id="CHAR-和-VARCHAR-类型"><a href="#CHAR-和-VARCHAR-类型" class="headerlink" title="CHAR 和 VARCHAR 类型"></a><code>CHAR</code> 和 <code>VARCHAR</code> 类型</h3><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/char.html">https://dev.mysql.com/doc/refman/5.7/en/char.html</a></p>
+<p><code>CHAR</code> 和 <code>VARCHAR</code> 这两种类型很相似，但它们被存储和检索的方式不同。区别如下：</p>
+<table>
+<thead>
+<tr>
+<th>Data Type</th>
+<th>尾部空格是否保留</th>
+<th>描述</th>
+<th>适用情况</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>CHAR(M)</code></td>
+<td>是</td>
+<td>用于存储定长字符串。字符长度不足时会填充尾部空格到指定的长度。</td>
+<td>存储很短的字符串，或者所有值都接近同一个长度。或经常变更的数据，定长的 <code>CHAR</code> 类型不容易产生碎片。</td>
+</tr>
+<tr>
+<td><code>VARCHAR(M)</code></td>
+<td>否</td>
+<td>用于存储可变长字符串，是最常见的字符串数据类型。它比定长类型更节省空间，因为它仅使用必要的空间。</td>
+<td>字符的最大字节长度比平均长度大很多；列的更新很少，所以碎片不是问题；使用了像 UTF-8 这样复杂的字符集，每个字符都使用不同的字节数进行存储。</td>
+</tr>
+</tbody></table>
+<p>例子：下表通过存储各种字符串值到 <code>CHAR(4)</code> 和 <code>VARCHAR(4)</code> 列展示 <code>CHAR</code> 和 <code>VARCHAR</code> 之间的差别（假设该列使用单字节字符集，例如 <code>latin1</code>）：</p>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th><code>CHAR(4)</code></th>
+<th>实际字节长度</th>
+<th><code>VARCHAR(4)</code></th>
+<th>实际字节长度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&#39;&#39;</code></td>
+<td><code>&#39;    &#39;</code> (四个空格)</td>
+<td>4 bytes</td>
+<td><code>&#39;&#39;</code></td>
+<td>1 byte</td>
+</tr>
+<tr>
+<td><code>&#39;ab&#39;</code></td>
+<td><code>&#39;ab  &#39;</code> (两个空格)</td>
+<td>4 bytes</td>
+<td><code>&#39;ab&#39;</code></td>
+<td>3 bytes</td>
+</tr>
+<tr>
+<td><code>&#39;abcd&#39;</code></td>
+<td><code>&#39;abcd&#39;</code></td>
+<td>4 bytes</td>
+<td><code>&#39;abcd&#39;</code></td>
+<td>5 bytes</td>
+</tr>
+<tr>
+<td><code>&#39;abcdefgh&#39;</code></td>
+<td><code>&#39;abcd&#39;</code></td>
+<td>4 bytes</td>
+<td><code>&#39;abcd&#39;</code></td>
+<td>5 bytes</td>
+</tr>
+</tbody></table>
+<h3 id="BLOB-和-TEXT-类型"><a href="#BLOB-和-TEXT-类型" class="headerlink" title="BLOB 和 TEXT 类型"></a><code>BLOB</code> 和 <code>TEXT</code> 类型</h3><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/blob.html">https://dev.mysql.com/doc/refman/5.7/en/blob.html</a></p>
+<p>与其它类型不同，MySQL 把每个 <code>BLOB</code> 和 <code>TEXT</code> 值当做一个独立的对象处理。存储引擎在存储时通常会做特殊处理。当 <code>BLOB</code> 和 <code>TEXT</code> 值太大时，InnoDB 会使用专门的“外部”存储区域来进行存储，<strong>此时每个值在行内需要 1~4 个字节存储一个指针，然后在外部存储区域存储实际的值</strong>。</p>
+<p>MySQL 不能将 <code>BLOB</code> 和 <code>TEXT</code> 列全部长度的字符串进行索引，也不能使用这些索引消除排序，因此可以使用“前缀索引”解决这个问题。</p>
+<h2 id="日期与时间类型"><a href="#日期与时间类型" class="headerlink" title="日期与时间类型"></a>日期与时间类型</h2><table>
+<thead>
+<tr>
+<th>Data Type</th>
+<th><strong>Storage Required before MySQL 5.6.4</strong></th>
+<th><strong>Storage Required as of MySQL 5.6.4</strong></th>
+<th>0 值</th>
+<th>取值范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/year.html"><code>YEAR</code></a></td>
+<td>1 byte, little endian</td>
+<td>Unchanged</td>
+<td><code>0000</code></td>
+<td><code>1901</code> to <code>2155</code></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/datetime.html"><code>DATE</code></a></td>
+<td>3 bytes, little endian</td>
+<td>Unchanged</td>
+<td><code>0000-00-00</code></td>
+<td><code>1000-01-01</code> to <code>9999-12-31</code></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/time.html"><code>TIME[(fsp)]</code></a></td>
+<td>3 bytes, little endian</td>
+<td>3 bytes + fractional-seconds storage, big endian</td>
+<td><code>00:00:00</code></td>
+<td><code>-838:59:59.000000</code> to <code>838:59:59.000000</code></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/datetime.html"><code>DATETIME[(fsp)]</code></a></td>
+<td>8 bytes, little endian</td>
+<td>5 bytes + fractional-seconds storage, big endian</td>
+<td><code>0000-00-00 00:00:00</code></td>
+<td><code>1000-01-01 00:00:00.000000</code> to <code>9999-12-31 23:59:59.999999</code></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/datetime.html"><code>TIMESTAMP[(fsp)]</code></a></td>
+<td>4 bytes, little endian</td>
+<td>4 bytes + fractional-seconds storage, big endian</td>
+<td><code>0000-00-00 00:00:00</code> UTC</td>
+<td><code>1970-01-01 00:00:01.000000</code> UTC to <code>2038-01-19 03:14:07.999999</code> UTC</td>
+</tr>
+</tbody></table>
+<h3 id="TIMESTAMP-fsp"><a href="#TIMESTAMP-fsp" class="headerlink" title="TIMESTAMP[(fsp)]"></a>TIMESTAMP[(fsp)]</h3><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-type-syntax.html">Section 11.2.1, “Date and Time Data Type Syntax”</a></p>
+<blockquote>
+<p>A timestamp. The range is <code>&#39;1970-01-01 00:00:01.000000&#39;</code> UTC to <code>&#39;2038-01-19 03:14:07.999999&#39;</code> UTC. <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/datetime.html"><code>TIMESTAMP</code></a> values are stored as the number of seconds since the epoch (<code>&#39;1970-01-01 00:00:00&#39;</code> UTC). A <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/datetime.html"><code>TIMESTAMP</code></a> cannot represent the value <code>&#39;1970-01-01 00:00:00&#39;</code> because that is equivalent to 0 seconds from the epoch and the value 0 is reserved for representing <code>&#39;0000-00-00 00:00:00&#39;</code>, the “zero” <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/datetime.html"><code>TIMESTAMP</code></a> value.</p>
+<p>An optional <em><code>fsp</code></em> value in the range from 0 to 6 may be given to specify fractional seconds precision. A value of 0 signifies that there is no fractional part. If omitted, the default precision is 0.</p>
+<p>…</p>
+</blockquote>
+<p><code>TIMESTAMP</code> 类型的范围如下：</p>
+<table>
+<thead>
+<tr>
+<th>时间戳</th>
+<th>二进制字面量</th>
+<th>时间</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>00000000 00000000 00000000 00000000</td>
+<td><code>0000-00-00 00:00:00</code> UTC</td>
+</tr>
+<tr>
+<td>1</td>
+<td>00000000 00000000 00000000 00000001</td>
+<td><code>1970-01-01 00:00:01</code> UTC</td>
+</tr>
+<tr>
+<td>2^31-1, 2147483647</td>
+<td>01111111 11111111 11111111 11111111</td>
+<td><code>2038-01-19 03:14:07</code> UTC</td>
+</tr>
+</tbody></table>
+<p><code>TIMESTAMP</code> 类型的时区处理：</p>
+<blockquote>
+<p>MySQL converts <code>TIMESTAMP</code> values from the current time zone to UTC for storage, and back from UTC to the current time zone for retrieval. (This does not occur for other types such as <code>DATETIME</code>.) By default, the current time zone for each connection is the server’s time. The time zone can be set on a per-connection basis. As long as the time zone setting remains constant, you get back the same value you store. If you store a <code>TIMESTAMP</code> value, and then change the time zone and retrieve the value, the retrieved value is different from the value you stored. This occurs because the same time zone was not used for conversion in both directions. The current time zone is available as the value of the <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_time_zone"><code>time_zone</code></a> system variable. For more information, see <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/time-zone-support.html">Section 5.1.13, “MySQL Server Time Zone Support”</a>.</p>
+</blockquote>
+<p>用无符号 <code>int</code> 或 <code>bigint</code> 存储时间戳也是一种解决方案，两种方案对比如下：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><code>TIMESTAMP</code></th>
+<th><code>INT</code>、<code>BIGINT</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>时间范围</td>
+<td>存在 <a href="/posts/unix-timestamp/#Y2K38-Year-2038-problem">2K38 问题</a></td>
+<td>时间范围更大</td>
+</tr>
+<tr>
+<td>时区支持</td>
+<td>无时区，便于国际化业务</td>
+<td>无时区，便于国际化业务</td>
+</tr>
+<tr>
+<td>自动初始化和更新</td>
+<td>支持</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>是否支持使用时间戳整数查询</td>
+<td>不支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>DBMS 查询显示</td>
+<td>支持用本地时区显示（缺省情况下，每个连接使用服务器时区。也可以为每个连接设置时区）</td>
+<td>需通过 <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_from-unixtime"><code>FROM_UNIXTIME(unix_timestamp[,format])</code></a> 函数转换，否则阅读困难</td>
+</tr>
+</tbody></table>
+<h3 id="DATETIME-fsp"><a href="#DATETIME-fsp" class="headerlink" title="DATETIME[(fsp)]"></a>DATETIME[(fsp)]</h3><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/date-and-time-type-syntax.html">Section 11.2.1, “Date and Time Data Type Syntax”</a></p>
+<blockquote>
+<p>A <code>date</code> and <code>time</code> combination. The supported range is <code>&#39;1000-01-01 00:00:00.000000&#39;</code> to <code>&#39;9999-12-31 23:59:59.999999&#39;</code>. MySQL displays <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/datetime.html"><code>DATETIME</code></a> values in <code>YYYY-MM-DD hh:mm:ss[.fraction]</code> format, but permits assignment of values to <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/datetime.html"><code>DATETIME</code></a> columns using either strings or numbers.</p>
+<p>An optional <em><code>fsp</code></em> value in the range from 0 to 6 may be given to specify fractional seconds precision. A value of 0 signifies that there is no fractional part. If omitted, the default precision is 0.</p>
+</blockquote>
+<p><code>DATETIME</code> 类型是一个本地时间，<strong>与时区无关</strong>。</p>
+<p>默认情况下，MySQL 以一种可排序的、无歧义的格式显示 <code>DATETIME</code> 值，例如“2018-01-16 22:37:08”。这是 ANSI 标准定义的日期和时间显示方法。</p>
+<p><code>DATETIME</code> 类型允许使用字符串类型或整数类型进行<strong>赋值</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-- TODO</span><br></pre></td></tr></table></figure>
+
+<p>当 <code>DATETIME</code> 类型与整型比较时，<code>DATETIME</code> 类型会自动转为整型。利用这个特性可以方便快速比较，例如查询时间范围为 2018-02-15 00:00:00 到 2018-02-16 00:00:00：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select count(1) </span><br><span class="line">from t_table </span><br><span class="line">where createTime between 20180215 and 20180216;</span><br></pre></td></tr></table></figure>
+
+<p><code>DATETIME</code> 类型非小数部分的编码如下。参考：<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Section 10.9, “Date and Time Data Type Representation”</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"> 1 bit  sign           (1= non-negative, 0= negative)</span><br><span class="line">17 bits year*13+month  (year 0-9999, month 0-12)</span><br><span class="line"> 5 bits day            (0-31)</span><br><span class="line"> 5 bits hour           (0-23)</span><br><span class="line"> 6 bits minute         (0-59)</span><br><span class="line"> 6 bits second         (0-59)</span><br><span class="line">---------------------------</span><br><span class="line">40 bits = 5 bytes</span><br></pre></td></tr></table></figure>
+
+<h3 id="存储精度（小数秒）"><a href="#存储精度（小数秒）" class="headerlink" title="存储精度（小数秒）"></a>存储精度（小数秒）</h3><p>需要注意的是，MySQL 升级到 5.6 之后对日期与时间类型做过调整，可以精确到微秒并指定其精度（最多 6 位），参考 <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.6/en/upgrading-from-previous-series.html">Changes in MySQL 5.6</a>：</p>
+<p><img src="/img/mysql/datatype/incompatible_change_of_date_and_time_type.png" alt="incompatible_change_of_date_and_time_type"></p>
+<p>参考 <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.6/en/storage-requirements.html#data-types-storage-reqs-date-time">Date and Time Type Storage Requirements</a> 下表列明了日期与时间类型在 MySQL 5.6.4 前后的变化：</p>
+<p><img src="/img/mysql/datatype/date_and_time_type_storage_requirements.png" alt="date_and_time_type_storage_requirements"></p>
+<p>通过分析精确到小数部分的秒（Fractional Seconds Precision）所支持的最大十进制数值，并将其转换为二进制表示，可知为什么精度越高所需的存储空间越多：</p>
+<table>
+<thead>
+<tr>
+<th>Fractional Seconds Precision</th>
+<th>Maximum Decimal Representation</th>
+<th>Maximum Binary Representation</th>
+<th>Storage Required</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>0</td>
+<td>0 (0 bit)</td>
+<td>0 byte</td>
+</tr>
+<tr>
+<td>1, 2</td>
+<td>99</td>
+<td>0110 0011 (8 bits)</td>
+<td>1 byte</td>
+</tr>
+<tr>
+<td>3, 4</td>
+<td>9,999</td>
+<td>0010 0111 0000 1111 (16 bits)</td>
+<td>2 bytes</td>
+</tr>
+<tr>
+<td>5, 6</td>
+<td>999,999</td>
+<td>0000 1111 0100 0010 0011 1111 (24 bits)</td>
+<td>3 bytes</td>
+</tr>
+</tbody></table>
+<p>有关于时间值的内部表示的详细信息，参考 <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">MySQL Internals: Important Algorithms and Structures - Date and Time Data Type Representation</a></p>
+<h3 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a>最佳实践</h3><ul>
+<li><p>MySQL 有多种表示日期的数据类型，比如，当只记录年信息的时候，可以使用 <code>YEAR</code> 类型，而没有必要使用 <code>DATE</code> 类型。</p>
+</li>
+<li><p>节省存储空间，仅在必要时为 <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/time.html"><code>TIME</code></a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/datetime.html"><code>DATETIME</code></a>, and <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/datetime.html"><code>TIMESTAMP</code></a> 指定精度：</p>
+<blockquote>
+<p>A <code>DATETIME</code> or <code>TIMESTAMP</code> value can include a trailing fractional seconds part in up to microseconds (6 digits) precision. In particular, any fractional part in a value inserted into a <code>DATETIME</code> or <code>TIMESTAMP</code> column is stored rather than discarded. With the fractional part included, the format for these values is <code>&#39;YYYY-MM-DD hh:mm:ss[.fraction]&#39;</code>, the range for <code>DATETIME</code> values is <code>&#39;1000-01-01 00:00:00.000000&#39;</code> to <code>&#39;9999-12-31 23:59:59.999999&#39;</code>, and the range for <code>TIMESTAMP</code> values is <code>&#39;1970-01-01 00:00:01.000000&#39;</code> to <code>&#39;2038-01-19 03:14:07.999999&#39;</code>. The fractional part should always be separated from the rest of the time by a decimal point; no other fractional seconds delimiter is recognized. For information about fractional seconds support in MySQL, see <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/fractional-seconds.html">Section 11.2.7, “Fractional Seconds in Time Values”</a>.</p>
+</blockquote>
+</li>
+<li><p>利用自动初始化和更新功能，为 <code>create_time</code>、<code>update_time</code> 字段赋值：</p>
+<blockquote>
+<p>The <code>TIMESTAMP</code> and <code>DATETIME</code> data types offer automatic initialization and updating to the current date and time. For more information, see <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/timestamp-initialization.html">Section 11.2.6, “Automatic Initialization and Updating for TIMESTAMP and DATETIME”</a>.</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> t1 (</span><br><span class="line">  ts <span class="type">TIMESTAMP</span> <span class="keyword">DEFAULT</span> <span class="built_in">CURRENT_TIMESTAMP</span> <span class="keyword">ON</span> <span class="keyword">UPDATE</span> <span class="built_in">CURRENT_TIMESTAMP</span>,</span><br><span class="line">  dt DATETIME <span class="keyword">DEFAULT</span> <span class="built_in">CURRENT_TIMESTAMP</span> <span class="keyword">ON</span> <span class="keyword">UPDATE</span> <span class="built_in">CURRENT_TIMESTAMP</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure></li>
+<li><p>注意每一个类型都有合法的取值范围，当指定确实不合法的值时系统将 “零” 值插入到数据库中。但要注意开启相关 <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_sql_mode">SQL mode</a>：</p>
+<blockquote>
+<p>Invalid <code>DATE</code>, <code>DATETIME</code>, or <code>TIMESTAMP</code> values are converted to the “zero” value of the appropriate type (<code>&#39;0000-00-00&#39;</code> or <code>&#39;0000-00-00 00:00:00&#39;</code>), if the SQL mode permits this conversion. The precise behavior depends on which if any of strict SQL mode and the <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html#sqlmode_no_zero_date"><code>NO_ZERO_DATE</code></a> SQL mode are enabled; see <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html">Section 5.1.10, “Server SQL Modes”</a>.</p>
+</blockquote>
+</li>
+</ul>
+<h1 id="默认值"><a href="#默认值" class="headerlink" title="默认值"></a>默认值</h1><ul>
+<li>默认值必须是常量，而不能是一个函数或表达式。举个栗子，这意味着你不能将日期列的默认值设置为诸如 <code>NOW()</code> 或 <code>CURRENT_DATE</code> 之类的函数的值。唯一例外是你可以指定 <code>CURRENT_TIMESTAMP</code> 为 <code>TIMESTAMP</code> 和 <code>DATETIME</code> 列的默认值。</li>
+<li>隐式默认值定义如下：<ul>
+<li>数字类型<ul>
+<li>对于使用 <code>AUTO_INCREMENT</code> 属性声明的整数类型或浮点类型，默认值为下一个序列值。</li>
+<li>否则默认值为 <code>0</code> 。</li>
+</ul>
+</li>
+<li>字符串类型<ul>
+<li><code>ENUM</code> 的默认值为第一个枚举值。</li>
+<li><code>BLOB</code> 、<code>TEXT</code> 列无法指定默认值。</li>
+<li>其它类型的默认值为空字符串。</li>
+</ul>
+</li>
+<li>日期与时间类型<ul>
+<li><code>TIMESTAMP</code><ul>
+<li>如果系统变量 <code>explicit_defaults_for_timestamp</code> 开启，其默认值为 0 值。</li>
+<li>否则表中第一列 <code>TIMESTAMP</code> 的默认值为当前时间。</li>
+</ul>
+</li>
+<li>其它类型的默认值为相应的 0 值。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/data-types.html">https://dev.mysql.com/doc/refman/5.7/en/data-types.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/literals.html">https://dev.mysql.com/doc/refman/5.7/en/literals.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/column-count-limit.html">https://dev.mysql.com/doc/refman/5.7/en/column-count-limit.html</a></p>
+<p>《<a target="_blank" rel="noopener" href="https://www.cnblogs.com/blankqdb/archive/2012/11/03/blank_qdb.html">MySQL 数据类型：UNSIGNED 注意事项</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="https://blog.csdn.net/u011794238/article/details/50962702">MySQL 数据类型：二进制类型</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="http://tech.it168.com/a2013/1013/1544/000001544067.shtml">MySQL 5.6 时间数据类型功能获得改进</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Zc2X-K7SCXEJq_EhgAI8ig">一只天价股票把纳斯达克系统搞“崩了”!</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/n2vEImxO_AfE28H9dETw4A">如果要存ip地址，用什么数据类型比较好？</a>》</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/mysql-data-types/" title="MySQL 常用数据类型">https://qidawu.github.io/posts/mysql-data-types/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/mysql-cli/" rel="prev" title="MySQL 常用命令">
+                  <i class="fa fa-chevron-left"></i> MySQL 常用命令
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/mysql-date-and-time-functions/" rel="next" title="MySQL 常用日期与时间函数">
+                  MySQL 常用日期与时间函数 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

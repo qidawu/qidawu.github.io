@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="各个类加载器的类路径（Classpath）Java Launcher（即 java 命令）启动 Java 虚拟机时，各个类加载器按以下顺序及类路径加载类：  三个类加载器使用的类路径，从以下系统属性中获取，可以通过 System.getProperty(...) 获取查看： 123456&#x2F;&#x2F; Bootstrap ClassLoaderString property1 &#x3D; System.getPro">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 类加载篇（二）Classpath 类路径总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/java-classpath/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="各个类加载器的类路径（Classpath）Java Launcher（即 java 命令）启动 Java 虚拟机时，各个类加载器按以下顺序及类路径加载类：  三个类加载器使用的类路径，从以下系统属性中获取，可以通过 System.getProperty(...) 获取查看： 123456&#x2F;&#x2F; Bootstrap ClassLoaderString property1 &#x3D; System.getPro">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/java/classloader/classloader_hierarchy.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/classloader/ext_classpath.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/classloader/User_Classpath.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/idea/platform_sdks.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/idea/project_sdk.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/idea/external_libraries.png">
+<meta property="article:published_time" content="2018-11-04T13:04:43.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.916Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/java/classloader/classloader_hierarchy.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/java-classpath/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/java-classpath/","path":"posts/java-classpath/","title":"Java 类加载篇（二）Classpath 类路径总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Java 类加载篇（二）Classpath 类路径总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%84%E4%B8%AA%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E7%9A%84%E7%B1%BB%E8%B7%AF%E5%BE%84%EF%BC%88Classpath%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">各个类加载器的类路径（Classpath）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Bootstrap-ClassLoader"><span class="nav-number">1.1.</span> <span class="nav-text">Bootstrap ClassLoader</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Extension-ClassLoader"><span class="nav-number">1.2.</span> <span class="nav-text">Extension ClassLoader</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Application-ClassLoader"><span class="nav-number">1.3.</span> <span class="nav-text">Application ClassLoader</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Unpacked-Classes"><span class="nav-number">1.3.1.</span> <span class="nav-text">Unpacked Classes</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JAR-files"><span class="nav-number">1.3.2.</span> <span class="nav-text">JAR files</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#META-INF-MANIFEST-MF"><span class="nav-number">1.3.3.</span> <span class="nav-text">META-INF&#x2F;MANIFEST.MF</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">2.</span> <span class="nav-text">例子</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring-Boot-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">2.1.</span> <span class="nav-text">Spring Boot 配置文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IDEA-%E5%A6%82%E4%BD%95%E6%9F%A5%E6%89%BE%E7%B1%BB%EF%BC%9F"><span class="nav-number">2.2.</span> <span class="nav-text">IDEA 如何查找类？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/java-classpath/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Java 类加载篇（二）Classpath 类路径总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java 类加载篇（二）Classpath 类路径总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-11-04 21:04:43" itemprop="dateCreated datePublished" datetime="2018-11-04T21:04:43+08:00">2018-11-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="各个类加载器的类路径（Classpath）"><a href="#各个类加载器的类路径（Classpath）" class="headerlink" title="各个类加载器的类路径（Classpath）"></a>各个类加载器的类路径（Classpath）</h1><p>Java Launcher（即 <a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/11/tools/java.html"><code>java</code></a> 命令）启动 Java 虚拟机时，各个类加载器按以下<strong>顺序</strong>及<strong>类路径</strong>加载类：</p>
+<p><img src="/img/java/classloader/classloader_hierarchy.png" alt="Class Loader"></p>
+<p>三个类加载器使用的类路径，从以下系统属性中获取，可以通过 <code>System.getProperty(...)</code> 获取查看：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Bootstrap ClassLoader</span></span><br><span class="line"><span class="type">String</span> <span class="variable">property1</span> <span class="operator">=</span> System.getProperty(<span class="string">&quot;sun.boot.class.path&quot;</span>);</span><br><span class="line"><span class="comment">// Extension ClassLoader</span></span><br><span class="line"><span class="type">String</span> <span class="variable">property2</span> <span class="operator">=</span> System.getProperty(<span class="string">&quot;java.ext.dirs&quot;</span>);</span><br><span class="line"><span class="comment">// Application ClassLoader</span></span><br><span class="line"><span class="type">String</span> <span class="variable">property3</span> <span class="operator">=</span> System.getProperty(<span class="string">&quot;java.class.path&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>下面详细介绍各个类加载器：</p>
+<h2 id="Bootstrap-ClassLoader"><a href="#Bootstrap-ClassLoader" class="headerlink" title="Bootstrap ClassLoader"></a>Bootstrap ClassLoader</h2><p>负责加载构成 Java 平台的基础类（Bootstrap classes），位于 <code>$JAVA_HOME/jre/lib</code> 目录，包括 <code>rt.jar</code> 和其它几个重要 jar 文件中的类。这些基础类包括 Java 类库（<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Java_Class_Library">Java Class Library (JCL)</a>）的公共类，以及此库可用的私有类。</p>
+<p>几乎所有的 Java 类库（JCL） 都存储在一个名为“<code>rt.jar</code>”的 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/JAR_(file_format)">Java archive (jar)</a> 归档文件中，该文件随 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Java_Runtime_Environment">JRE</a> 和 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Java_Development_Kit">JDK</a> 发行版一起提供。Java 类库（<code>rt.jar</code>）位于默认的 bootstrap classpath（<code>$JAVA_HOME/jre/lib</code>）下，不必出现在为应用程序声明的 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Classpath_(Java)">classpath</a> 中。JRE 会使用引导类加载器（bootstrap class loader）找到 JCL。</p>
+<p>Java 9 的<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Java_Module_System">模块系统</a>目前已将这个单块的 <code>rt.jar</code> jar 包拆分并模块化。</p>
+<h2 id="Extension-ClassLoader"><a href="#Extension-ClassLoader" class="headerlink" title="Extension ClassLoader"></a>Extension ClassLoader</h2><p>负责加载扩展 Java 平台的扩展类（Extension classes）。位于 <code>$JAVA_HOME/jre/lib/ext</code> 扩展目录的每个 <code>.jar</code> 文件都被假定为扩展文件，并使用 <a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/guides/extensions/index.html">Java Extension Framework</a> 扩展机制加载。</p>
+<p><code>sun.misc.Launcher$ExtClassLoader</code> 执行过程中，<code>URLClassPath</code> 的值如下：</p>
+<p><img src="/img/java/classloader/ext_classpath.png" alt="ext_classpath"></p>
+<p>例如，可以将 MySQL 厂商驱动程序 <code>mysql-connector-java</code> 放到该扩展目录中。</p>
+<h2 id="Application-ClassLoader"><a href="#Application-ClassLoader" class="headerlink" title="Application ClassLoader"></a>Application ClassLoader</h2><p>负责加载由开发人员和第三方定义的未利用 Java 扩展机制的用户类（User classes）。</p>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Classpath">https://en.wikipedia.org/wiki/Classpath</a></p>
+<blockquote>
+<p><strong>Classpath</strong> is a parameter in the <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Java_virtual_machine">Java Virtual Machine</a> or the <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Java_compiler">Java compiler</a> that specifies the location of user-defined <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Class_(computer_science)">classes</a> and <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Java_package">packages</a>. The parameter may be set either on the <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Command_line_interface">command-line</a>, or through an <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Environment_variable">environment variable</a>.</p>
+</blockquote>
+<p>为了查找 User classes，Java Launcher（即 <a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/11/tools/java.html"><code>java</code></a> 命令）将引用 <em>User Classpath</em> —— 一个包含了用户定义的类文件的目录、jar 包和 zip 包列表。Java Launcher（即 <a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/11/tools/java.html"><code>java</code></a> 命令）将这个 <em>User Classpath</em> 字符串放到 <code>java.class.path</code> 系统属性中。该值的来源及优先级如下：</p>
+<ul>
+<li><p>默认值“ <code>.</code>”，表示当前工作目录下的所有类文件（如果在 jar 包中，则位于其下）。</p>
+</li>
+<li><p><code>CLASSPATH</code> 环境变量，覆盖默认值。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看 CLASSPATH 环境变量</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$CLASSPATH</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置 CLASSPATH 环境变量</span></span><br><span class="line"><span class="built_in">set</span> CLASSPATH=</span><br></pre></td></tr></table></figure></li>
+<li><p><code>-cp</code> 或 <code>-classpath</code> 命令行选项，覆盖默认值以及 <code>CLASSPATH</code> 环境变量。</p>
+<blockquote>
+<p>A semicolon (<code>;</code>) separated list of directories, JAR archives, and ZIP archives to search for class files.</p>
+<p>Specifying <code>classpath</code> overrides any setting of the <code>CLASSPATH</code> environment variable. If the <code>classpath</code> option isn’t used and <code>CLASSPATH</code> isn’t set, then the user class path consists of the current directory (<code>.</code>).</p>
+</blockquote>
+</li>
+<li><p>由 <code>-jar</code> 选项指定的 jar 包，它覆盖上述所有值。如果使用此选项，则所有用户类必须来自指定的 jar 包。</p>
+<blockquote>
+<p>Executes a program encapsulated in a JAR file. The <code>jarfile</code> argument is the name of a JAR file with a manifest that contains a line in the form <code>Main-Class:classname</code> that defines the class with the <code>public static void main(String[] args)</code> method that serves as your application’s starting point.</p>
+<p>When you use <code>-jar</code>, the specified JAR file is the source of all user classes, and <strong>other class path settings are ignored</strong>.</p>
+<p>If you’re using JAR files, then see <a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/11/tools/jar.html#GUID-51C11B76-D9F6-4BC2-A805-3C847E857867">jar</a>.</p>
+</blockquote>
+</li>
+</ul>
+<p>参考：Setting the Class Path on <a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/tools/windows/classpath.html">Windows</a> or <a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/classpath.html">Unix</a></p>
+<p>⭐️ 注意点 1：<em>User Classpath</em> 使用字符串格式指定，路径不要含有空格，否则转义为 <code>%20</code> 之后会报错，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java.lang.RuntimeException: Cannot resolve classpath entry: java.lang.RuntimeException: Cannot resolve classpath entry: D:\myprogram\mybatis%20tool\mybatis-generator-gui-0.8.4\target\classes\lib\mysql-connector-java-5.1.38.jar</span><br></pre></td></tr></table></figure>
+
+<p>⭐️ 注意点 2：每个路径使用以下方式进行分隔：</p>
+<ul>
+<li>在类 Unix 系统中，以冒号（<code>:</code>）分隔</li>
+<li>在 Windows 系统中，以分号（<code>;</code>）分隔</li>
+</ul>
+<p>⭐️ 注意点 3：类文件具有反映“类的完全限定名称（class’s fully-qualified name）”的子路径名。例如 <code>com.mypackage.MyClass</code>：</p>
+<ul>
+<li>如果类存储在 <code>/myclasses</code> 目录，则 <code>/myclasses</code> 必须在 <em>User Classpath</em> 中，并且类文件的完整路径必须为 <code>/myclasses/com/mypackage/MyClass.class</code>。</li>
+<li>如果类存储在 <code>myclasses.jar</code> 中，则 <code>myclasses.jar</code> 必须在  <em>User Classpath</em>  中，并且类文件必须存储 <code>myclasses.jar/com/mypackage/MyClass.class</code>。</li>
+</ul>
+<p>下面来看几个例子，总结如下：</p>
+<p><img src="/img/java/classloader/User_Classpath.png" alt="CLASSPATH 例子"></p>
+<h3 id="Unpacked-Classes"><a href="#Unpacked-Classes" class="headerlink" title="Unpacked Classes"></a>Unpacked Classes</h3><p>假设我们有一个名为主类：HelloWorld，存储在 <em>D:\myprogram</em> 目录下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">D:\myprogram\</span><br><span class="line">      |</span><br><span class="line">      ---&gt; org\  </span><br><span class="line">            |</span><br><span class="line">            ---&gt; mypackage\</span><br><span class="line">                     |</span><br><span class="line">                     ---&gt; HelloWorld.class       </span><br><span class="line">                     ---&gt; SupportClass.class   </span><br><span class="line">                     ---&gt; UtilClass.class </span><br></pre></td></tr></table></figure>
+
+<p>查看 Windows 下 <code>CLASSPATH</code> 环境变量：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">echo</span> <span class="variable">$CLASSPATH</span></span><br><span class="line">.;E:\Developer\Java\jdk1.8.0_191\lib;</span><br></pre></td></tr></table></figure>
+
+<p>由于 <code>CLASSPATH</code> 环境变量默认包含当前目录（<code>.</code>），这意味着当我们的工作目录为 <code>D:\myprogram\</code> 时，我们不需要显式指定 <code>CLASSPATH</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> /D/myprogram</span><br><span class="line">$ java org.mypackage.HelloWorld</span><br><span class="line">hello world</span><br></pre></td></tr></table></figure>
+
+<p>否则，需要使用 <code>-classpath</code> 参数显式指定如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ java -classpath D:\myprogram org.mypackage.HelloWorld</span><br><span class="line">hello world</span><br></pre></td></tr></table></figure>
+
+<p>总结，设置 <em>Classpath</em> 的两种方式：</p>
+<ul>
+<li>使用 <code>CLASSPATH</code> 环境变量</li>
+<li>使用 <code>-cp</code> 或 <code>-classpath</code> 命令行选项</li>
+</ul>
+<h3 id="JAR-files"><a href="#JAR-files" class="headerlink" title="JAR files"></a>JAR files</h3><ul>
+<li>单个 jar 包：使用绝对路径指定具体某个 jar 包</li>
+<li>多个 jar 包：使用绝对路径加上通配符 <code>*</code></li>
+</ul>
+<h3 id="META-INF-MANIFEST-MF"><a href="#META-INF-MANIFEST-MF" class="headerlink" title="META-INF/MANIFEST.MF"></a>META-INF/MANIFEST.MF</h3><p>如果程序已经打成 jar 包，需要使用<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Manifest_file">清单文件</a>指定入口类及 <code>CLASSPATH</code>，并使用 <code>java -jar</code> 命令启动。例如 Tomcat 的 <code>bootstrap.jar</code> 引导包：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">......</span><br><span class="line">Main-Class: org.apache.catalina.startup.Bootstrap</span><br><span class="line">Class-Path: commons-daemon.jar</span><br></pre></td></tr></table></figure>
+
+<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><h2 id="Spring-Boot-配置文件"><a href="#Spring-Boot-配置文件" class="headerlink" title="Spring Boot 配置文件"></a>Spring Boot 配置文件</h2><blockquote>
+<p>Spring Boot will automatically find and load <code>application.properties</code> and <code>application.yaml</code> files from the following locations when your application starts:</p>
+<ol>
+<li>The classpath root</li>
+<li>The classpath <code>/config</code> package</li>
+</ol>
+<p>The list is ordered by precedence (with values from <strong>lower items overriding earlier ones</strong>).</p>
+</blockquote>
+<p>参考：<a href="/posts/spring-boot-getting-started/#External-Application-Properties">External Application Properties</a></p>
+<h2 id="IDEA-如何查找类？"><a href="#IDEA-如何查找类？" class="headerlink" title="IDEA 如何查找类？"></a>IDEA 如何查找类？</h2><p>首先，为 IDEA 平台配置上你所拥有的 JDK 及路径：</p>
+<p><img src="/img/java/idea/platform_sdks.png" alt="Platform Settings SDKs"></p>
+<p>然后，为你的项目指定一个默认 SDK：</p>
+<p><img src="/img/java/idea/project_sdk.png" alt="Project SDK"></p>
+<p>搞掂之后，IDEA 会为项目载入指定版本的 SDK，将基础目录  <code>jre/lib/</code> 的 Bootstrap classes 和扩展目录  <code>jre/lib/ext/</code> 的 Extension classes 加入 classpath：</p>
+<p><img src="/img/java/idea/external_libraries.png" alt="External Libraries"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/11/tools/java.html">https://docs.oracle.com/en/java/javase/11/tools/java.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/11/tools/jar.html">https://docs.oracle.com/en/java/javase/11/tools/jar.html</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Lists the table of contents for the archive.</span></span><br><span class="line">$ jar tf jar-file</span><br><span class="line"></span><br><span class="line"><span class="comment"># [Extracting the Contents of a JAR File](https://docs.oracle.com/javase/tutorial/deployment/jar/unpack.html)</span></span><br><span class="line">$ jar xf jar-file [archived-file(s)]</span><br></pre></td></tr></table></figure>
+
+<p>Setting the Class Path on <a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/tools/windows/classpath.html">Windows</a> or <a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/classpath.html">Unix</a></p>
+<p><a target="_blank" rel="noopener" href="http://cr.openjdk.java.net/~mr/jigsaw/ea/module-summary.html">http://cr.openjdk.java.net/~mr/jigsaw/ea/module-summary.html</a></p>
+<p>Wikipedia</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Classpath_(Java)">https://en.wikipedia.org/wiki/Classpath_(Java)</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Java_class_file">https://en.wikipedia.org/wiki/Java_class_file</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Java_Class_Library">https://en.wikipedia.org/wiki/Java_Class_Library</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/java-classpath/" title="Java 类加载篇（二）Classpath 类路径总结">https://qidawu.github.io/posts/java-classpath/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/java-classloader/" rel="prev" title="Java 类加载篇（一）ClassLoader 类加载机制总结">
+                  <i class="fa fa-chevron-left"></i> Java 类加载篇（一）ClassLoader 类加载机制总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/java-spi/" rel="next" title="Java 类加载篇（三）SPI 动态加载机制总结">
+                  Java 类加载篇（三）SPI 动态加载机制总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

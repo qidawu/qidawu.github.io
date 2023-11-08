@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="高安全的生产环境下只能使用命令行操作数据库，下面介绍一些常用命令。 连接 DB12345$ mysql -h192.168.0.221 -P3306 -u账号 -p密码 [db_name]or better:$ mycli -h192.168.0.221 -P3306 -u账号 -p密码 [db_name]  查看库123456789101112&#x2F;&#x2F; 查看所有库$ show databases;+">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL 常用命令">
+<meta property="og:url" content="https://qidawu.github.io/posts/mysql-cli/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="高安全的生产环境下只能使用命令行操作数据库，下面介绍一些常用命令。 连接 DB12345$ mysql -h192.168.0.221 -P3306 -u账号 -p密码 [db_name]or better:$ mycli -h192.168.0.221 -P3306 -u账号 -p密码 [db_name]  查看库123456789101112&#x2F;&#x2F; 查看所有库$ show databases;+">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-01-03T07:16:33.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.924Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/mysql-cli/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/mysql-cli/","path":"posts/mysql-cli/","title":"MySQL 常用命令"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>MySQL 常用命令 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5-DB"><span class="nav-number">1.</span> <span class="nav-text">连接 DB</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E5%BA%93"><span class="nav-number">2.</span> <span class="nav-text">查看库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E8%A1%A8"><span class="nav-number">3.</span> <span class="nav-text">查看表</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%80%E6%9C%89%E8%A1%A8"><span class="nav-number">3.1.</span> <span class="nav-text">所有表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%80%E6%9C%89%E8%A1%A8%E7%8A%B6%E6%80%81"><span class="nav-number">3.2.</span> <span class="nav-text">所有表状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A8%E7%BB%93%E6%9E%84"><span class="nav-number">3.3.</span> <span class="nav-text">表结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95"><span class="nav-number">3.4.</span> <span class="nav-text">索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%BA%E8%A1%A8%E8%AF%AD%E5%8F%A5"><span class="nav-number">3.5.</span> <span class="nav-text">建表语句</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90"><span class="nav-number">4.</span> <span class="nav-text">查看用户权限</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%85%B3"><span class="nav-number">5.</span> <span class="nav-text">查看系统相关</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E7%8A%B6%E6%80%81"><span class="nav-number">5.1.</span> <span class="nav-text">系统状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E5%8F%98%E9%87%8F"><span class="nav-number">5.2.</span> <span class="nav-text">系统变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DB-%E8%BF%9B%E7%A8%8B"><span class="nav-number">5.3.</span> <span class="nav-text">DB 进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9D%83%E9%99%90"><span class="nav-number">5.4.</span> <span class="nav-text">权限</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-number">5.5.</span> <span class="nav-text">存储引擎</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AD%A6%E5%91%8A%E4%B8%8E%E9%94%99%E8%AF%AF"><span class="nav-number">5.6.</span> <span class="nav-text">警告与错误</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/mysql-cli/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="MySQL 常用命令 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL 常用命令
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-01-03 15:16:33" itemprop="dateCreated datePublished" datetime="2018-01-03T15:16:33+08:00">2018-01-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>高安全的生产环境下只能使用命令行操作数据库，下面介绍一些常用命令。</p>
+<h1 id="连接-DB"><a href="#连接-DB" class="headerlink" title="连接 DB"></a>连接 DB</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -h192.168.0.221 -P3306 -u账号 -p密码 [db_name]</span><br><span class="line"></span><br><span class="line">or better:</span><br><span class="line"></span><br><span class="line">$ mycli -h192.168.0.221 -P3306 -u账号 -p密码 [db_name]</span><br></pre></td></tr></table></figure>
+
+<h1 id="查看库"><a href="#查看库" class="headerlink" title="查看库"></a>查看库</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// 查看所有库</span><br><span class="line">$ show databases;</span><br><span class="line"></span><br><span class="line">+------------------+</span><br><span class="line">| Database         |</span><br><span class="line">|------------------|</span><br><span class="line">| db_name_1        |</span><br><span class="line">| db_name_2        |</span><br><span class="line">+------------------+</span><br><span class="line"></span><br><span class="line">// 进入某个库</span><br><span class="line">$ use db_name_1;</span><br></pre></td></tr></table></figure>
+
+<h1 id="查看表"><a href="#查看表" class="headerlink" title="查看表"></a>查看表</h1><h2 id="所有表"><a href="#所有表" class="headerlink" title="所有表"></a>所有表</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ show tables [from db_name];</span><br><span class="line"></span><br><span class="line">+---------------------+</span><br><span class="line">| Tables_in_db_name   |</span><br><span class="line">|---------------------|</span><br><span class="line">| table_name_1        |</span><br><span class="line">| table_name_2        |</span><br><span class="line">+---------------------+</span><br></pre></td></tr></table></figure>
+
+<h2 id="所有表状态"><a href="#所有表状态" class="headerlink" title="所有表状态"></a>所有表状态</h2><p>显示当前使用或者指定的 DB 中的每个表的信息。</p>
+<p>由于字段较多，可用 <code>\G</code> 参数按列显示（行转列），起到显示美化的作用，方便查看：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ show table status [from db_name] \G;</span><br><span class="line"></span><br><span class="line">Name            | table_name</span><br><span class="line">Engine          | InnoDB</span><br><span class="line">Version         | 10</span><br><span class="line">Row_format      | Compact</span><br><span class="line">Rows            | 59079</span><br><span class="line">Avg_row_length  | 133</span><br><span class="line">Data_length     | 7880704</span><br><span class="line">Max_data_length | 0</span><br><span class="line">Index_length    | 21069824</span><br><span class="line">Data_free       | 5242880</span><br><span class="line">Auto_increment  | 75437</span><br><span class="line">Create_time     | 2017-04-13 20:51:55</span><br><span class="line">Update_time     | None</span><br><span class="line">Check_time      | None</span><br><span class="line">Collation       | utf8_general_ci</span><br><span class="line">Checksum        | None</span><br><span class="line">Create_options  |</span><br><span class="line">Comment         | 测试表</span><br></pre></td></tr></table></figure>
+
+<p>比较重要的字段：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Rows</code></td>
+<td>行的数目。部分存储引擎，如 <code>MyISAM</code>，存储精确的数目。<br/>对于其它存储引擎，比如 <code>InnoDB</code>，是一个大约的值，与实际值相差可达40到50％。在这些情况下，使用 <code>SELECT COUNT(*)</code> 来获得准确的数目。</td>
+</tr>
+<tr>
+<td><code>Avg_row_length</code></td>
+<td>平均的行长度。</td>
+</tr>
+<tr>
+<td><code>Data_length</code></td>
+<td>对于 <code>MyISAM</code>，<code>Data_length</code> 是数据文件的长度（以字节为单位）。<br/>对于 <code>InnoDB</code>，<code>Data_length</code> 是聚簇索引 <code>clustered index</code> 大约分配的内存量（以字节为单位）。</td>
+</tr>
+<tr>
+<td><code>Index_length</code></td>
+<td>对于 <code>MyISAM</code>，<code>Index_length</code> 是索引文件的长度（以字节为单位）。<br/>对于 <code>InnoDB</code>，<code>Index_length</code> 是非聚簇索引 <code>non-clustered index</code> 大约分配的内存量（以字节为单位）。</td>
+</tr>
+<tr>
+<td><code>Auto_increment</code></td>
+<td>下一个 <code>AUTO_INCREMENT</code> 值。</td>
+</tr>
+</tbody></table>
+<h2 id="表结构"><a href="#表结构" class="headerlink" title="表结构"></a>表结构</h2><p>查看列名（三者等价）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ show columns from table_name [from db_name];</span><br><span class="line">$ show columns from [db_name.]table_name;</span><br><span class="line">$ desc table_name;  // 简写形式</span><br></pre></td></tr></table></figure>
+
+<h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ show index from table_name;</span><br></pre></td></tr></table></figure>
+
+<h2 id="建表语句"><a href="#建表语句" class="headerlink" title="建表语句"></a>建表语句</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ show create table table_name;</span><br></pre></td></tr></table></figure>
+
+<h1 id="查看用户权限"><a href="#查看用户权限" class="headerlink" title="查看用户权限"></a>查看用户权限</h1><p>显示一个用户的权限，显示结果类似于 <code>GRANT</code> 命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ show grants [for user_name@&#x27;192.168.0.%&#x27;];</span><br><span class="line"></span><br><span class="line">+---------------------------------------------------------------------------------------------+</span><br><span class="line">| Grants for user_name@192.168.0.%                                                            |</span><br><span class="line">+---------------------------------------------------------------------------------------------+</span><br><span class="line">| GRANT SELECT, INSERT, UPDATE, DELETE ON `db_name`.`table_name` TO &#x27;user_name&#x27;@&#x27;192.168.0.%&#x27; |</span><br><span class="line">+---------------------------------------------------------------------------------------------+</span><br></pre></td></tr></table></figure>
+
+<h1 id="查看系统相关"><a href="#查看系统相关" class="headerlink" title="查看系统相关"></a>查看系统相关</h1><h2 id="系统状态"><a href="#系统状态" class="headerlink" title="系统状态"></a>系统状态</h2><p>显示一些系统特定资源的信息，例如，正在运行的线程数量。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ show status;</span><br></pre></td></tr></table></figure>
+
+<h2 id="系统变量"><a href="#系统变量" class="headerlink" title="系统变量"></a>系统变量</h2><p>显示系统变量的名称和值。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ show variables;</span><br></pre></td></tr></table></figure>
+
+<h2 id="DB-进程"><a href="#DB-进程" class="headerlink" title="DB 进程"></a>DB 进程</h2><p>显示系统中正在运行的所有进程，也就是当前正在执行的查询。大多数用户可以查看他们自己的进程，但是如果他们拥有process权限，就可以查看所有人的进程，包括密码。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 查看当前 DB 进程</span><br><span class="line">$ show processlist;</span><br><span class="line">$ show full processlist;</span><br><span class="line">+----------+-----------+--------------------+---------+---------+------+-------+------------------+</span><br><span class="line">| Id       | User      | Host               | db      | Command | Time | State | Info             |</span><br><span class="line">+----------+-----------+--------------------+---------+---------+------+-------+------------------+</span><br><span class="line">| 33702451 | user_name | 192.168.0.200:49764 | db_name | Query   |    0 | init  | show processlist |</span><br><span class="line">+----------+-----------+--------------------+---------+---------+------+-------+------------------+</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Id</code></td>
+<td>标识，用途：<code>kill 33702451 </code> 杀死指定进程。</td>
+</tr>
+<tr>
+<td><code>User</code></td>
+<td>显示执行 SQL 的用户。</td>
+</tr>
+<tr>
+<td><code>Host</code></td>
+<td>显示这个账号是从哪个 IP 连过来的。</td>
+</tr>
+<tr>
+<td><code>db</code></td>
+<td>显示这个进程目前连接的是哪个数据库 。</td>
+</tr>
+<tr>
+<td><code>command</code></td>
+<td>显示当前连接的执行命令，一般就是休眠（ sleep ），查询（ query ），连接（ connect ）。</td>
+</tr>
+<tr>
+<td><code>Time</code></td>
+<td>这个状态持续的时间，单位是秒。</td>
+</tr>
+<tr>
+<td><code>State</code></td>
+<td>显示使用当前连接的 SQL 语句的状态。</td>
+</tr>
+<tr>
+<td><code>Info</code></td>
+<td>显示执行的 SQL 语句。</td>
+</tr>
+</tbody></table>
+<h2 id="权限"><a href="#权限" class="headerlink" title="权限"></a>权限</h2><p>显示服务器所支持的不同权限。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ show privileges;</span><br></pre></td></tr></table></figure>
+
+<h2 id="存储引擎"><a href="#存储引擎" class="headerlink" title="存储引擎"></a>存储引擎</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ show engies; // 显示安装以后可用的存储引擎和默认引擎。 </span><br><span class="line"></span><br><span class="line">$ show innodb status; // 显示innoDB存储引擎的状态 </span><br><span class="line"></span><br><span class="line">$ show logs; // 显示BDB存储引擎的日志 </span><br></pre></td></tr></table></figure>
+
+<h2 id="警告与错误"><a href="#警告与错误" class="headerlink" title="警告与错误"></a>警告与错误</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ show warnings; // 显示最后一个执行的语句所产生的错误、警告和通知 </span><br><span class="line"></span><br><span class="line">$ show errors; // 只显示最后一个执行语句所产生的错误</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/mysql-cli/" title="MySQL 常用命令">https://qidawu.github.io/posts/mysql-cli/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/frontend-roadmap/" rel="prev" title="前端技术栈演进之路">
+                  <i class="fa fa-chevron-left"></i> 前端技术栈演进之路
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/mysql-data-types/" rel="next" title="MySQL 常用数据类型">
+                  MySQL 常用数据类型 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

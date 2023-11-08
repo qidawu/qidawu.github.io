@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="总览首先，来总览下 JDBC API：  JDBC API 规范JDBC API 作为 Java SE™（Java 标准版）的一部分，由以下部分组成：  JDBC 核心 API —— java.sql package。  JDBC 可选 API —— javax.sql package，是 Java EE™（Java 企业版）的重要组成部分。   其中，java.sql package 包含下列">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 数据持久化系列（二）JDBC API 规范总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/java-jdbc-api/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="总览首先，来总览下 JDBC API：  JDBC API 规范JDBC API 作为 Java SE™（Java 标准版）的一部分，由以下部分组成：  JDBC 核心 API —— java.sql package。  JDBC 可选 API —— javax.sql package，是 Java EE™（Java 企业版）的重要组成部分。   其中，java.sql package 包含下列">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/java/jdbc/jdbc-api.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/jdbc/rowset.jpg">
+<meta property="og:image" content="https://qidawu.github.io/img/java/jdbc/steps-to-connect-to-the-database-in-java.jpg">
+<meta property="article:published_time" content="2018-02-06T13:42:30.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.918Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="JDBC">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/java/jdbc/jdbc-api.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/java-jdbc-api/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/java-jdbc-api/","path":"posts/java-jdbc-api/","title":"Java 数据持久化系列（二）JDBC API 规范总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Java 数据持久化系列（二）JDBC API 规范总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E8%A7%88"><span class="nav-number">1.</span> <span class="nav-text">总览</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JDBC-API-%E8%A7%84%E8%8C%83"><span class="nav-number">2.</span> <span class="nav-text">JDBC API 规范</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#DriverManager-%E7%B1%BB"><span class="nav-number">2.1.</span> <span class="nav-text">DriverManager 类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Connection-%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.2.</span> <span class="nav-text">Connection 接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Statement-%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.3.</span> <span class="nav-text">Statement 接口</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%B9%E5%A4%84%E7%90%86"><span class="nav-number">2.3.1.</span> <span class="nav-text">批处理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PreparedStatement-%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.4.</span> <span class="nav-text">PreparedStatement 接口</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E9%94%AE%E5%9B%9E%E5%86%99"><span class="nav-number">2.4.1.</span> <span class="nav-text">主键回写</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%B9%E5%A4%84%E7%90%86-1"><span class="nav-number">2.4.2.</span> <span class="nav-text">批处理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ResultSet-%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.5.</span> <span class="nav-text">ResultSet 接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ResultSetMetaData-%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.6.</span> <span class="nav-text">ResultSetMetaData 接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DatabaseMetaData-%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.7.</span> <span class="nav-text">DatabaseMetaData 接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RowSet-%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.8.</span> <span class="nav-text">RowSet 接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DataSource-%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.9.</span> <span class="nav-text">DataSource 接口</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JDBC-API-%E7%A4%BA%E4%BE%8B"><span class="nav-number">3.</span> <span class="nav-text">JDBC API 示例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E5%9B%BE%E7%89%87"><span class="nav-number">3.1.</span> <span class="nav-text">存储图片</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A3%80%E7%B4%A2%E5%9B%BE%E7%89%87"><span class="nav-number">3.2.</span> <span class="nav-text">检索图片</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/java-jdbc-api/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Java 数据持久化系列（二）JDBC API 规范总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java 数据持久化系列（二）JDBC API 规范总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-02-06 21:42:30" itemprop="dateCreated datePublished" datetime="2018-02-06T21:42:30+08:00">2018-02-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="总览"><a href="#总览" class="headerlink" title="总览"></a>总览</h1><p>首先，来总览下 JDBC API：</p>
+<p><img src="/img/java/jdbc/jdbc-api.png" alt="JDBC"></p>
+<h1 id="JDBC-API-规范"><a href="#JDBC-API-规范" class="headerlink" title="JDBC API 规范"></a>JDBC API 规范</h1><p>JDBC API 作为 Java SE™（Java 标准版）的一部分，由以下部分组成：</p>
+<ul>
+<li><p>JDBC 核心 API —— <code>java.sql</code> package。</p>
+</li>
+<li><p>JDBC 可选 API —— <code>javax.sql</code> package，是 Java EE™（Java 企业版）的重要组成部分。</p>
+</li>
+</ul>
+<p>其中，<code>java.sql</code> package 包含下列 API：</p>
+<ul>
+<li><p>通过 <code>java.sql.DriverManager</code> 与数据库建立连接</p>
+<ul>
+<li><code>java.sql.DriverManager</code> 类 - 用于与驱动程序建立连接</li>
+<li><code>java.sql.SQLPermission</code> 类</li>
+<li><code>java.sql.Driver</code> 接口 - 提供用于注册和连接驱动程序的 API。</li>
+<li><code>java.sql.DriverPropertyInfo</code> 类 - 提供 JDBC 驱动程序的属性。</li>
+</ul>
+</li>
+<li><p>发送 SQL 语句到数据库</p>
+<ul>
+<li><code>java.sql.Connection</code> 接口 - 提供创建语句、管理连接及其属性的方法</li>
+<li><code>java.sql.Statement</code> 接口 - 用于发送基本的 SQL 语句</li>
+<li><code>java.sql.PreparedStatement</code> 接口 - 用于发送预编译语句或基本 SQL 语句（继承自<code>Statement</code>）</li>
+<li><code>java.sql.CallableStatement</code> 接口 - 用于调用数据库存储过程（继承自<code>PreparedStatement</code>）</li>
+<li><code>java.sql.Savepoint</code> 接口 - 在事务中提供保存点</li>
+</ul>
+</li>
+<li><p>检索和更新查询结果</p>
+<ul>
+<li><code>java.sql.ResultSet</code> 接口</li>
+</ul>
+</li>
+<li><p>标准映射（SQL 数据类型到 Java 类或接口）</p>
+</li>
+<li><p>自定义映射（SQL user-defined type (UDT) 到 Java 类）</p>
+</li>
+<li><p>元数据</p>
+<ul>
+<li><code>java.sql.DatabaseMetaData</code> 接口 - 提供有关数据库的信息</li>
+<li><code>java.sql.ResultSetMetaData</code> 接口 - 提供有关 <code>ResultSet</code> 对象的列信息</li>
+<li><code>java.sql.ParameterMetaData</code> 接口 - 提供有关 <code>PreparedStatement</code> 命令的参数信息</li>
+</ul>
+</li>
+<li><p>异常</p>
+<ul>
+<li><code>java.sql.SQLException</code> 类 - 被大多数方法抛出，当数据访问出现问题或出于其它原因</li>
+<li><code>java.sql.SQLWarning</code> 类 - 抛出表示警告</li>
+<li><code>java.sql.DataTruncation</code> 类 - 抛出表示数据可能已被截断</li>
+<li><code>java.sql.BatchUpdateException</code> 类 - 抛出表示批量更新中的部分命令未执行成功</li>
+</ul>
+</li>
+</ul>
+<p>下面重点看下常用的接口和类。</p>
+<h2 id="DriverManager-类"><a href="#DriverManager-类" class="headerlink" title="DriverManager 类"></a>DriverManager 类</h2><p><code>java.sql.DriverManager</code> 类充当用户和驱动程序之间的接口。它跟踪可用的驱动程序并处理数据库与相应驱动程序之间的连接。<code>DriverManager</code> 类维护了一个通过调用 <code>DriverManager.registerDriver()</code> 方法来注册自己的 <code>java.sql.Driver</code> 类列表。</p>
+<p>常用方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">registerDriver</span><span class="params">(Driver driver)</span> <span class="comment">// 用于通过 `DriverManager` 注册给定的驱动程序。</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">deregisterDriver</span><span class="params">(Driver driver)</span>  <span class="comment">// 用于从 `DriverManager` 取消注册给定的驱动程序（从列表中删除驱动程序）。</span></span><br><span class="line"><span class="keyword">static</span> Connection <span class="title function_">getConnection</span><span class="params">(String url)</span>  <span class="comment">// 用于与指定的 URL 建立连接。</span></span><br><span class="line"><span class="keyword">static</span> Connection <span class="title function_">getConnection</span><span class="params">(String url, String userName, String password)</span>  <span class="comment">// 用于与指定的 URL 建立连接，通过用户名和密码。</span></span><br></pre></td></tr></table></figure>
+
+<p>关于 Driver 驱动程序注册，详见《<a href="/2019/01/23/java-jdbc-driver/">注册驱动程序</a>》。</p>
+<h2 id="Connection-接口"><a href="#Connection-接口" class="headerlink" title="Connection 接口"></a>Connection 接口</h2><p><code>java.sql.Connection</code> 接口表示 Java 应用程序和数据库之间的会话（Session），它提供了许多事务管理方法如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> <span class="title function_">setAutoCommit</span><span class="params">(<span class="type">boolean</span> status)</span>  <span class="comment">// 修改当前 `Connection` 对象的事务自动提交模式。默认为 `true`。</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">setReadOnly</span><span class="params">(<span class="type">boolean</span> readOnly)</span>  <span class="comment">// 修改当前 `Connection` 对象的只读状态以提示驱动程序开启数据库优化。</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">setTransactionIsolation</span><span class="params">(<span class="type">int</span> level)</span>  <span class="comment">// 修改当前 `Connection` 对象的事务隔离级别。</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">commit</span><span class="params">()</span>  <span class="comment">// 保存自上次提交/回滚以来所做的所有更改。</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">rollback</span><span class="params">()</span>  <span class="comment">// 丢弃自上次提交/回滚以来所做的所有更改。</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 在当前事务中设置或移除保存点。</span></span><br><span class="line">Savepoint <span class="title function_">setSavepoint</span><span class="params">()</span></span><br><span class="line">Savepoint <span class="title function_">setSavepoint</span><span class="params">(String name)</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">releaseSavepoint</span><span class="params">(Savepoint savepoint)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">close</span><span class="params">()</span>  <span class="comment">// 关闭连接并立即释放 JDBC 资源。</span></span><br></pre></td></tr></table></figure>
+
+<p><code>Connection</code> 接口同时也是一个工厂类，用于获取 <code>Statement</code>、<code>PreparedStatement</code> 和 <code>DatabaseMetaData</code> 对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Statement <span class="title function_">createStatement</span><span class="params">(...)</span>  <span class="comment">// 创建一个可用于执行 SQL 查询或更新的语句对象。</span></span><br><span class="line">PreparedStatement <span class="title function_">prepareStatement</span><span class="params">(...)</span>  <span class="comment">// 创建一个可用于执行 SQL 参数化查询或更新的语句对象。</span></span><br><span class="line">CallableStatement <span class="title function_">prepareCall</span><span class="params">(...)</span>  <span class="comment">// 用于调用存储过程和函数。</span></span><br><span class="line">DatabaseMetaData <span class="title function_">getMetaData</span><span class="params">()</span>  <span class="comment">// 用于获取数据库的元数据，例如数据库产品名称，数据库产品版本，驱动程序名称，表总数名称，总视图名称等。</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Statement-接口"><a href="#Statement-接口" class="headerlink" title="Statement 接口"></a>Statement 接口</h2><p><code>java.sql.Statement</code> 接口提供用于执行数据库查询与更新的方法。<code>Statement</code>  接口是 <code>ResultSet</code> 的工厂，即它提供工厂方法来获取 <code>ResultSet</code> 的对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ResultSet <span class="title function_">executeQuery</span><span class="params">(String sql)</span>  <span class="comment">// 用于执行 `SELECT` 查询并返回 `ResultSet` 的对象。</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">executeUpdate</span><span class="params">(String sql)</span>  <span class="comment">// 用于执行指定的更新，如 `create`，`drop`，`insert`，`update`，`delete` 等。</span></span><br><span class="line"><span class="type">boolean</span> <span class="title function_">execute</span><span class="params">(String sql)</span>  <span class="comment">// 用于执行可能返回多种结果的查询。</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="批处理"><a href="#批处理" class="headerlink" title="批处理"></a>批处理</h3><p>除了通过上述方法来执行单个查询或更新，还可以通过下列方法执行批量命令：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> <span class="title function_">addBatch</span><span class="params">(String sql)</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">clearBatch</span><span class="params">()</span></span><br><span class="line"><span class="type">int</span>[] executeBatch()</span><br></pre></td></tr></table></figure>
+
+<p>使用批量命令前，记得先使用 <code>setAutoCommit()</code> 将事务的自动提交模式设置为 <code>false</code> 。</p>
+<p>批处理允许您将相关的 SQL 语句分组到批处理中，并通过一次调用数据库来提交它们。当您一次性向数据库发送多个 SQL 语句时，可以减少通信开销，从而提高性能。参考：<a target="_blank" rel="noopener" href="https://www.tutorialspoint.com/jdbc/jdbc-batch-processing.htm">JDBC - Batch Processing</a>。</p>
+<h2 id="PreparedStatement-接口"><a href="#PreparedStatement-接口" class="headerlink" title="PreparedStatement 接口"></a>PreparedStatement 接口</h2><p><code>java.sql.PreparedStatement</code> 接口是 <code>java.sql.Statement</code> 的子接口。它用于执行参数化查询（parameterized query），例如：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PreparedStatement ps <span class="operator">=</span> connection.prepareStatement(&quot;insert into emp values(?, ?, ?)&quot;);</span><br></pre></td></tr></table></figure>
+
+<p>为什么要使用 <code>PreparedStatement</code>？</p>
+<ul>
+<li><strong>提升性能</strong>：应用程序的性能会更快，因为 SQL 语句只会编译一次。</li>
+<li><strong>提升安全</strong>：预防 SQL 注入</li>
+</ul>
+<p>创建预编译的参数化查询语句后，需要通过 <code>setXxx</code> 方法设置对应参数。参数设置完毕后，就可以通过下列方法执行 SQL 语句：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ResultSet <span class="title function_">executeQuery</span><span class="params">()</span>  <span class="comment">// 用于执行 `SELECT` 查询并返回 `ResultSet` 的对象。</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">executeUpdate</span><span class="params">()</span>  <span class="comment">// 用于执行指定的更新，如 `create`，`drop`，`insert`，`update`，`delete` 等。</span></span><br><span class="line"><span class="type">boolean</span> <span class="title function_">execute</span><span class="params">()</span>  <span class="comment">// 用于执行可能返回多种结果的查询。</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="主键回写"><a href="#主键回写" class="headerlink" title="主键回写"></a>主键回写</h3><p><code>java.sql.Connection</code> 创建 <code>java.sql.PreparedStatement</code> 时，允许通过 <code>autoGeneratedKeys</code> 指定是否返回自增主键：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PreparedStatement <span class="title function_">prepareStatement</span><span class="params">(String sql, <span class="type">int</span> autoGeneratedKeys)</span> <span class="keyword">throws</span> SQLException;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>autoGeneratedKeys</code> - a flag indicating whether auto-generated keys should be returned; one of <code>Statement.RETURN_GENERATED_KEYS</code> or <code>Statement.NO_GENERATED_KEYS</code></p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * The constant indicating that generated keys should be made available for retrieval.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 1.4</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">int</span> <span class="variable">RETURN_GENERATED_KEYS</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * The constant indicating that generated keys should not be made available for retrieval.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 1.4</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">int</span> <span class="variable">NO_GENERATED_KEYS</span> <span class="operator">=</span> <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 构造 PreparedStatement 时，多了第二个参数，指定了需要主键回写</span></span><br><span class="line"><span class="type">PreparedStatement</span> <span class="variable">ps</span> <span class="operator">=</span> connection.prepareStatement(<span class="string">&quot;insert into emp values(?, ?, ?)&quot;</span>, </span><br><span class="line">                                                   Statement.RETURN_GENERATED_KEYS);</span><br><span class="line">ps.setString(name);</span><br><span class="line">ps.setLong(id);</span><br><span class="line">ps.setInt(salary);</span><br><span class="line">ps.executeUpdate();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用 getGeneratedKeys ，然后又会获取到一个 ResultSet 对象，从这个游标中就可以获取到刚刚插入数据的 id</span></span><br><span class="line"><span class="type">ResultSet</span> <span class="variable">rs</span> <span class="operator">=</span> ps.getGeneratedKeys();</span><br><span class="line"><span class="type">int</span> <span class="variable">id</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"><span class="keyword">if</span> (rs.next()) &#123;</span><br><span class="line">    id = rs.getInt(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> id;</span><br></pre></td></tr></table></figure>
+
+<h3 id="批处理-1"><a href="#批处理-1" class="headerlink" title="批处理"></a>批处理</h3><p><code>PreparedStatement</code> 还提供了批处理方式，减少网络请求，提升性能，API 如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Adds a set of parameters to this &lt;code&gt;PreparedStatement&lt;/code&gt;</span></span><br><span class="line"><span class="comment"> * object&#x27;s batch of commands.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@exception</span> SQLException if a database access error occurs or</span></span><br><span class="line"><span class="comment"> * this method is called on a closed &lt;code&gt;PreparedStatement&lt;/code&gt;</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> Statement#addBatch</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 1.2</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">addBatch</span><span class="params">()</span> <span class="keyword">throws</span> SQLException;</span><br></pre></td></tr></table></figure>
+
+<p>未使用批处理方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">PreparedStatement</span> <span class="variable">ps</span> <span class="operator">=</span> conn.prepareStatement(<span class="string">&quot;INSERT into employees values (?, ?, ?)&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (n = <span class="number">0</span>; n &lt; <span class="number">100</span>; n++) &#123;</span><br><span class="line">    ps.setString(name[n]);</span><br><span class="line">    ps.setLong(id[n]);</span><br><span class="line">    ps.setInt(salary[n]);</span><br><span class="line">    <span class="comment">// 多次执行PreparedStatement，多次数据库请求（网络请求）</span></span><br><span class="line">    ps.executeUpdate();  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用批处理方法，一次性执行多条 SQL：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">PreparedStatement</span> <span class="variable">ps</span> <span class="operator">=</span> conn.prepareStatement(<span class="string">&quot;INSERT into employees values (?, ?, ?)&quot;</span>);</span><br><span class="line">  </span><br><span class="line"><span class="keyword">for</span> (n = <span class="number">0</span>; n &lt; <span class="number">100</span>; n++) &#123;</span><br><span class="line">    ps.setString(name[n]);</span><br><span class="line">    ps.setLong(id[n]);</span><br><span class="line">    ps.setInt(salary[n]);</span><br><span class="line">    <span class="comment">// 添加批次</span></span><br><span class="line">    ps.addBatch();</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 调用父接口 Statement#executeBatch() 执行批次</span></span><br><span class="line">ps.executeBatch();</span><br></pre></td></tr></table></figure>
+
+<h2 id="ResultSet-接口"><a href="#ResultSet-接口" class="headerlink" title="ResultSet 接口"></a>ResultSet 接口</h2><p><code>java.sql.ResultSet</code> 对象维护了一个指向 table 行的游标。游标初始值指向第 0 行。默认情况下，<code>ResultSet</code> 对象只能向前移动，并且不可更新。可以通过在 <code>createStatement(int, int)</code> 方法中传递指定参数修改该默认行为。</p>
+<p>可以通过以下方法操作游标：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">boolean</span> <span class="title function_">next</span><span class="params">()</span>  <span class="comment">// 将游标移动到当前位置的下一行。</span></span><br><span class="line"><span class="type">boolean</span> <span class="title function_">previous</span><span class="params">()</span>  <span class="comment">// 将游标移动到当前位置之前的一行。</span></span><br><span class="line"><span class="type">boolean</span> <span class="title function_">first</span><span class="params">()</span>  <span class="comment">// 将游标移动到结果集的第一行。</span></span><br><span class="line"><span class="type">boolean</span> <span class="title function_">last</span><span class="params">()</span>  <span class="comment">// 将游标移动到结果集的最后一行。</span></span><br><span class="line"><span class="type">boolean</span> <span class="title function_">absolute</span><span class="params">(<span class="type">int</span> row)</span>  <span class="comment">// 将游标移动到结果集的指定行号。</span></span><br><span class="line"><span class="type">boolean</span> <span class="title function_">relative</span><span class="params">(<span class="type">int</span> row)</span>  <span class="comment">// 将游标移动到结果集的相对行号，它可以是正数或负数。</span></span><br></pre></td></tr></table></figure>
+
+<p>将游标移动到指定行之后，可以通过 <code>getXxx</code> 方法获取当前行的指定列的数据。</p>
+<p>此外，还可以直接获取 table 的元数据，例如列的总数，列名，列类型等：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ResultSetMetaData <span class="title function_">getMetaData</span><span class="params">()</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="ResultSetMetaData-接口"><a href="#ResultSetMetaData-接口" class="headerlink" title="ResultSetMetaData 接口"></a>ResultSetMetaData 接口</h2><p><code>java.sql.ResultSetMetaData</code> 用于获取 table 的元数据，例如列的总数，列名，列类型等。</p>
+<h2 id="DatabaseMetaData-接口"><a href="#DatabaseMetaData-接口" class="headerlink" title="DatabaseMetaData 接口"></a>DatabaseMetaData 接口</h2><p><code>java.sql.DatabaseMetaData</code> 用于获取数据库的元数据，例如数据库产品名称，数据库产品版本，驱动程序名称，表总数名称，总视图名称等。</p>
+<h2 id="RowSet-接口"><a href="#RowSet-接口" class="headerlink" title="RowSet 接口"></a>RowSet 接口</h2><p><code>javax.sql.RowSet</code> 继承自 <code>java.sql.ResultSet</code>，是其包装器类。它包含类似 <code>ResultSet</code> 的表格数据，但使用起来非常简单灵活。其实现类如下：</p>
+<p><img src="/img/java/jdbc/rowset.jpg" alt="RowSet"></p>
+<p>下面是一个不含事件处理代码的 <code>JdbcRowSet</code> 的简单示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (<span class="type">JdbcRowSet</span> <span class="variable">rowSet</span> <span class="operator">=</span> RowSetProvider.newFactory().createJdbcRowSet()) &#123;</span><br><span class="line">    rowSet.setUrl(url);</span><br><span class="line">    rowSet.setCommand(<span class="string">&quot;SELECT * FROM test&quot;</span>);</span><br><span class="line">    rowSet.execute();</span><br><span class="line">    <span class="keyword">while</span> (rowSet.next()) &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">id</span> <span class="operator">=</span> rowSet.getInt(<span class="string">&quot;id&quot;</span>);</span><br><span class="line">        <span class="type">String</span> <span class="variable">name</span> <span class="operator">=</span> rowSet.getString(<span class="string">&quot;name&quot;</span>);</span><br><span class="line">        log.info(<span class="string">&quot;Result is &#123;&#125; &#123;&#125;&quot;</span>, id, name);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对比下面传统的 JDBC API，代码更加直观，需要直接管理的资源也更少：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (<span class="type">Connection</span> <span class="variable">conn</span> <span class="operator">=</span> DriverManager.getConnection(url)) &#123;</span><br><span class="line">    <span class="keyword">try</span> (<span class="type">Statement</span> <span class="variable">stmt</span> <span class="operator">=</span> conn.createStatement()) &#123;</span><br><span class="line">        <span class="keyword">try</span> (<span class="type">ResultSet</span> <span class="variable">rs</span> <span class="operator">=</span> stmt.executeQuery(<span class="string">&quot;SELECT * FROM test&quot;</span>)) &#123;</span><br><span class="line">            <span class="keyword">while</span> (rs.next()) &#123;</span><br><span class="line">                <span class="type">int</span> <span class="variable">id</span> <span class="operator">=</span> rs.getInt(<span class="string">&quot;id&quot;</span>);</span><br><span class="line">                <span class="type">String</span> <span class="variable">name</span> <span class="operator">=</span> rs.getString(<span class="string">&quot;name&quot;</span>);</span><br><span class="line">                log.info(<span class="string">&quot;Result is &#123;&#125;, &#123;&#125;&quot;</span>, id, name);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>要使用 <code>JdbcRowSet</code> 执行事件处理，需要在 <code>JdbcRowSet</code> 的 <code>addRowSetListener</code> 方法中添加 <code>RowSetListener</code> 的实例。<code>RowSetListener</code> 接口提供了必须实现的三个方法，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> <span class="title function_">cursorMoved</span><span class="params">(RowSetEvent event)</span>;</span><br><span class="line"><span class="keyword">void</span> <span class="title function_">rowChanged</span><span class="params">(RowSetEvent event)</span>;</span><br><span class="line"><span class="keyword">void</span> <span class="title function_">rowSetChanged</span><span class="params">(RowSetEvent event)</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="DataSource-接口"><a href="#DataSource-接口" class="headerlink" title="DataSource 接口"></a>DataSource 接口</h2><h1 id="JDBC-API-示例"><a href="#JDBC-API-示例" class="headerlink" title="JDBC API 示例"></a>JDBC API 示例</h1><p>JDBC API 的使用步骤如下：</p>
+<p><img src="/img/java/jdbc/steps-to-connect-to-the-database-in-java.jpg" alt="JDBC 使用步骤"></p>
+<p>其中：</p>
+<ol>
+<li>步骤一：JDBC API 从 4.0 开始利用 Java SPI 机制自动加载驱动程序，可以省略该步骤。</li>
+<li>步骤二、三：如果使用如 Spring <code>JdbcTempate</code>、MyBatis 等框架，可以省略该步骤。</li>
+<li>步骤五：使用 <code>try-with-resources</code> 语句，可以省略该步骤。</li>
+</ol>
+<p>下面来两个示例：</p>
+<h2 id="存储图片"><a href="#存储图片" class="headerlink" title="存储图片"></a>存储图片</h2><p>下例通过 <code>PreparedStatement</code> 接口的 <code>setBinaryStream()</code> 方法将图片（二进制信息）存储到数据库中。为了将图片存储到数据库中，需要在表中使用 <code>BLOB</code>（Binary Large Object）数据类型。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (<span class="type">Connection</span> <span class="variable">conn</span> <span class="operator">=</span> DriverManager.getConnection(url)) &#123;</span><br><span class="line">    <span class="keyword">try</span> (<span class="type">PreparedStatement</span> <span class="variable">stmt</span> <span class="operator">=</span> conn.prepareStatement(<span class="string">&quot;INSERT INTO test(title, photo) VALUES(?, ?)&quot;</span>)) &#123;</span><br><span class="line">        <span class="type">FileInputStream</span> <span class="variable">fileInputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(<span class="string">&quot;F:\\test.jpg&quot;</span>);</span><br><span class="line">        stmt.setString(<span class="number">1</span>, <span class="string">&quot;pic1&quot;</span>);</span><br><span class="line">        stmt.setBinaryStream(<span class="number">2</span>, fileInputStream);</span><br><span class="line">        assertTrue(<span class="number">1</span> == stmt.executeUpdate());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意：这只是一个例子，生产环境中是不会将这类二进制信息存储到数据库中的，而是存储到专门的文件系统，以提升性能，并节省宝贵的数据库资源 :)</p>
+<h2 id="检索图片"><a href="#检索图片" class="headerlink" title="检索图片"></a>检索图片</h2><p>Using <code>try-with-resources</code> Statements to Automatically Close JDBC Resources: </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (<span class="type">Connection</span> <span class="variable">conn</span> <span class="operator">=</span> DriverManager.getConnection(url)) &#123;</span><br><span class="line">    <span class="keyword">try</span> (<span class="type">PreparedStatement</span> <span class="variable">stmt</span> <span class="operator">=</span> conn.prepareStatement(<span class="string">&quot;SELECT title, photo FROM test&quot;</span>)) &#123;</span><br><span class="line">        <span class="keyword">try</span> (<span class="type">ResultSet</span> <span class="variable">rs</span> <span class="operator">=</span> stmt.executeQuery()) &#123;</span><br><span class="line">            <span class="keyword">while</span> (rs.next()) &#123;</span><br><span class="line">                <span class="type">String</span> <span class="variable">title</span> <span class="operator">=</span> rs.getString(<span class="number">1</span>);</span><br><span class="line">                log.info(<span class="string">&quot;title is &#123;&#125;&quot;</span>, title);</span><br><span class="line"></span><br><span class="line">                <span class="type">Blob</span> <span class="variable">photo</span> <span class="operator">=</span> rs.getBlob(<span class="number">2</span>);</span><br><span class="line">                <span class="type">byte</span>[] bytes = photo.getBytes(<span class="number">1</span>, (<span class="type">int</span>) photo.length());</span><br><span class="line">                <span class="type">String</span> <span class="variable">fileName</span> <span class="operator">=</span> String.format(<span class="string">&quot;F:\\%s.png&quot;</span>, title);</span><br><span class="line">                <span class="keyword">try</span> (<span class="type">FileOutputStream</span> <span class="variable">fileOutputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(fileName)) &#123;</span><br><span class="line">                    fileOutputStream.write(bytes);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>JDBC 4.1 (Java SE 7) introduces the ability to use a <code>try-with-resources</code> statement to automatically close <code>java.sql.Connection</code>, <code>java.sql.Statement</code>, and <code>java.sql.ResultSet</code> objects, regardless of whether a <code>SQLException</code> or any other exception has been thrown. See <a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/guides/language/try-with-resources.html">The try-with-resources Statement</a> for more information.</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/6/docs/technotes/guides/jdbc/getstart/GettingStartedTOC.fm.html">Getting Started with the JDBC API</a>》</p>
+<p><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/guides/jdbc/jdbc_41.html">https://docs.oracle.com/javase/8/docs/technotes/guides/jdbc/jdbc_41.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/guides/jdbc/jdbc_42.html">https://docs.oracle.com/javase/8/docs/technotes/guides/jdbc/jdbc_42.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/9/docs/api/java/sql/package-summary.html">https://docs.oracle.com/javase/9/docs/api/java/sql/package-summary.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.javatpoint.com/java-jdbc">https://www.javatpoint.com/java-jdbc</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.tutorialspoint.com/jdbc/index.htm">https://www.tutorialspoint.com/jdbc/index.htm</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.tutorialspoint.com/dbutils/index.htm">https://www.tutorialspoint.com/dbutils/index.htm</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/java-jdbc-api/" title="Java 数据持久化系列（二）JDBC API 规范总结">https://qidawu.github.io/posts/java-jdbc-api/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/JDBC/" rel="tag"># JDBC</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/java-jdbc-driver/" rel="prev" title="Java 数据持久化系列（一）JDBC Driver 驱动程序总结">
+                  <i class="fa fa-chevron-left"></i> Java 数据持久化系列（一）JDBC Driver 驱动程序总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/java-jdbc-mapping-sql-and-java-types/" rel="next" title="Java 数据持久化系列（三）JDBC SQL 和 Java 数据类型映射总结">
+                  Java 数据持久化系列（三）JDBC SQL 和 Java 数据类型映射总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

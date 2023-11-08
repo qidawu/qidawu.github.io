@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Apache Commons 是一个 Apache 项目，专注于可重用 Java 组件的方方面面。 Apache Commons 项目由三个部分组成：     其中，Apache Commons Lang 是 Java 开发过程中很常用的一个类库，可以理解为它是对 Java Lang and Util Base  Libraries 的增强。 Commons Lang 安装方法： 123456&amp;l">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 开发必备类库 Apache Commons Lang">
+<meta property="og:url" content="https://qidawu.github.io/posts/apache-commons-lang/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="Apache Commons 是一个 Apache 项目，专注于可重用 Java 组件的方方面面。 Apache Commons 项目由三个部分组成：     其中，Apache Commons Lang 是 Java 开发过程中很常用的一个类库，可以理解为它是对 Java Lang and Util Base  Libraries 的增强。 Commons Lang 安装方法： 123456&amp;l">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/java/commons/apache-commons.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/commons/commons-lang/commons-lang.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/commons/commons-lang/StringUtils.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/commons/commons-lang/substring.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/commons/commons-lang/replaceChars.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/commons/commons-lang/difference.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/commons/commons-lang/BooleanUtils.png">
+<meta property="article:published_time" content="2017-12-25T14:29:16.000Z">
+<meta property="article:modified_time" content="2023-11-07T08:39:43.376Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/java/commons/apache-commons.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/apache-commons-lang/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/apache-commons-lang/","path":"posts/apache-commons-lang/","title":"Java 开发必备类库 Apache Commons Lang"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Java 开发必备类库 Apache Commons Lang | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#StringUtils"><span class="nav-number">1.</span> <span class="nav-text">StringUtils</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A4%E7%A9%BA%E5%87%BD%E6%95%B0"><span class="nav-number">1.1.</span> <span class="nav-text">判空函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A4%E6%96%AD%E6%98%AF%E5%90%A6%E7%9B%B8%E7%AD%89%E5%87%BD%E6%95%B0"><span class="nav-number">1.2.</span> <span class="nav-text">判断是否相等函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%98%AF%E5%90%A6%E5%8C%85%E5%90%AB%E5%87%BD%E6%95%B0"><span class="nav-number">1.3.</span> <span class="nav-text">是否包含函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E4%B8%8B%E6%A0%87%E5%87%BD%E6%95%B0"><span class="nav-number">1.4.</span> <span class="nav-text">索引下标函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%AA%E5%8F%96%E5%87%BD%E6%95%B0"><span class="nav-number">1.5.</span> <span class="nav-text">截取函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E5%87%BD%E6%95%B0"><span class="nav-number">1.6.</span> <span class="nav-text">删除函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E7%A9%BA%E7%99%BD%E5%87%BD%E6%95%B0"><span class="nav-number">1.7.</span> <span class="nav-text">删除空白函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%BF%E6%8D%A2%E5%87%BD%E6%95%B0"><span class="nav-number">1.8.</span> <span class="nav-text">替换函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E8%BD%AC%E5%87%BD%E6%95%B0"><span class="nav-number">1.9.</span> <span class="nav-text">反转函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E9%9A%94%E5%87%BD%E6%95%B0"><span class="nav-number">1.10.</span> <span class="nav-text">分隔函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%88%E5%B9%B6%E5%87%BD%E6%95%B0"><span class="nav-number">1.11.</span> <span class="nav-text">合并函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%A7%E5%B0%8F%E5%86%99%E8%BD%AC%E6%8D%A2%E5%92%8C%E5%88%A4%E6%96%AD"><span class="nav-number">1.12.</span> <span class="nav-text">大小写转换和判断</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%A9%E7%9F%AD%E7%9C%81%E7%95%A5%E5%87%BD%E6%95%B0"><span class="nav-number">1.13.</span> <span class="nav-text">缩短省略函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E4%BC%BC%E5%BA%A6%E5%87%BD%E6%95%B0"><span class="nav-number">1.14.</span> <span class="nav-text">相似度函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BooleanUtils"><span class="nav-number">2.</span> <span class="nav-text">BooleanUtils</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ArrayUtils"><span class="nav-number">3.</span> <span class="nav-text">ArrayUtils</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E6%96%B9%E6%B3%95"><span class="nav-number">3.1.</span> <span class="nav-text">添加方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%8B%E9%9A%86%E6%96%B9%E6%B3%95"><span class="nav-number">3.2.</span> <span class="nav-text">克隆方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8C%85%E5%90%AB%E6%96%B9%E6%B3%95"><span class="nav-number">3.3.</span> <span class="nav-text">包含方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E9%95%BF%E5%BA%A6%E6%96%B9%E6%B3%95"><span class="nav-number">3.4.</span> <span class="nav-text">获取长度方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E7%B4%A2%E5%BC%95%E6%96%B9%E6%B3%95"><span class="nav-number">3.5.</span> <span class="nav-text">获取索引方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A4%E7%A9%BA%E6%96%B9%E6%B3%95"><span class="nav-number">3.6.</span> <span class="nav-text">判空方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%95%BF%E5%BA%A6%E7%9B%B8%E7%AD%89%E5%88%A4%E6%96%AD%E6%96%B9%E6%B3%95"><span class="nav-number">3.7.</span> <span class="nav-text">长度相等判断方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A9%BA%E6%95%B0%E7%BB%84%E8%BD%AC%E6%8D%A2"><span class="nav-number">3.8.</span> <span class="nav-text">空数组转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E5%85%83%E7%B4%A0%E6%96%B9%E6%B3%95"><span class="nav-number">3.9.</span> <span class="nav-text">删除元素方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E8%BD%AC%E6%96%B9%E6%B3%95"><span class="nav-number">3.10.</span> <span class="nav-text">反转方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%AA%E5%8F%96%E6%95%B0%E7%BB%84"><span class="nav-number">3.11.</span> <span class="nav-text">截取数组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%93%E5%8D%B0%E6%95%B0%E7%BB%84%E6%96%B9%E6%B3%95"><span class="nav-number">3.12.</span> <span class="nav-text">打印数组方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/apache-commons-lang/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Java 开发必备类库 Apache Commons Lang | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java 开发必备类库 Apache Commons Lang
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2017-12-25 22:29:16" itemprop="dateCreated datePublished" datetime="2017-12-25T22:29:16+08:00">2017-12-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-11-07 16:39:43" itemprop="dateModified" datetime="2023-11-07T16:39:43+08:00">2023-11-07</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>Apache Commons 是一个 Apache 项目，专注于可重用 Java 组件的方方面面。</p>
+<p>Apache Commons 项目由三个部分组成：</p>
+<p><img src="/img/java/commons/apache-commons.png" alt="Apache Commons">   </p>
+<p>其中，Apache Commons Lang 是 Java 开发过程中很常用的一个类库，可以理解为它是对 Java Lang and Util Base  Libraries 的增强。</p>
+<p>Commons Lang 安装方法：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.commons<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>commons-lang3<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>x.x.x<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>Commons Lang 总览：</p>
+<p><img src="/img/java/commons/commons-lang/commons-lang.png" alt="Commons Lang"></p>
+<p>Commons Lang 提供了以下 package：</p>
+<ul>
+<li><code>org.apache.commons.lang3</code></li>
+<li><code>org.apache.commons.lang3.builder</code></li>
+<li><code>org.apache.commons.lang3.concurrent</code></li>
+<li><code>org.apache.commons.lang3.event</code></li>
+<li><code>org.apache.commons.lang3.exception</code></li>
+<li><code>org.apache.commons.lang3.math</code></li>
+<li><code>org.apache.commons.lang3.mutable</code></li>
+<li><code>org.apache.commons.lang3.reflect</code></li>
+<li><code>org.apache.commons.lang3.text</code></li>
+<li><code>org.apache.commons.lang3.text.translate</code></li>
+<li><code>org.apache.commons.lang3.time</code></li>
+<li><code>org.apache.commons.lang3.tuple</code><ul>
+<li><code>Pair</code>、<code>MutablePair</code>、<code>ImmutablePair</code></li>
+<li><code>Triple</code>、<code>MutableTriple</code>、<code>ImmutableTriple</code></li>
+</ul>
+</li>
+</ul>
+<p>下面重点来看下最常用的几个工具：</p>
+<p><code>org.apache.commons.lang3</code></p>
+<ul>
+<li><code>StringUtils</code></li>
+<li><code>ArrayUtils</code></li>
+<li><code>BooleanUtils</code></li>
+</ul>
+<h1 id="StringUtils"><a href="#StringUtils" class="headerlink" title="StringUtils"></a>StringUtils</h1><p><img src="/img/java/commons/commons-lang/StringUtils.png" alt="StringUtils"></p>
+<h2 id="判空函数"><a href="#判空函数" class="headerlink" title="判空函数"></a>判空函数</h2><p>API：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">StringUtils.isEmpty(String str)</span><br><span class="line">StringUtils.isNotEmpty(String str)</span><br><span class="line">StringUtils.isBlank(String str)</span><br><span class="line">StringUtils.isNotBlank(String str)</span><br><span class="line">StringUtils.isAnyBlank(CharSequence… css)</span><br><span class="line">StringUtils.isAnyEmpty(CharSequence… css)</span><br><span class="line">StringUtils.isNoneBlank(CharSequence… css)</span><br><span class="line">StringUtils.isNoneEmpty(CharSequence… css)</span><br><span class="line">StringUtils.isWhitespace(CharSequence cs)</span><br></pre></td></tr></table></figure>
+
+<p>看下 <code>isBlank</code> 和 <code>isEmpty</code> 的区别：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">StringUtils.isBlank(<span class="literal">null</span>) <span class="comment">// true</span></span><br><span class="line">StringUtils.isEmpty(<span class="literal">null</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line">StringUtils.isBlank(<span class="string">&quot;&quot;</span>) <span class="comment">// true</span></span><br><span class="line">StringUtils.isEmpty(<span class="string">&quot;&quot;</span>) <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line">StringUtils.isBlank(<span class="string">&quot; &quot;</span>) <span class="comment">// true</span></span><br><span class="line">StringUtils.isEmpty(<span class="string">&quot; &quot;</span>) <span class="comment">// false</span></span><br><span class="line"></span><br><span class="line">StringUtils.isBlank(<span class="string">&quot;\n\t&quot;</span>) <span class="comment">// true</span></span><br><span class="line">StringUtils.isEmpty(<span class="string">&quot;\n\t&quot;</span>) <span class="comment">// false</span></span><br><span class="line"></span><br><span class="line">isNotEmpty = !isEmpty, isBlank同理</span><br></pre></td></tr></table></figure>
+
+<p>使用 <code>isAnyBlank</code> 和 <code>isAnyEmpty</code> 进行多维判空：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">StringUtils.isAnyBlank(<span class="string">&quot;&quot;</span>, <span class="string">&quot;bar&quot;</span>, <span class="string">&quot;foo&quot;</span>); <span class="comment">// true</span></span><br><span class="line">StringUtils.isAnyEmpty(<span class="string">&quot; &quot;</span>, <span class="string">&quot;bar&quot;</span>, <span class="string">&quot;foo&quot;</span>); <span class="comment">// false</span></span><br><span class="line"></span><br><span class="line">isNoneBlank = !isAnyBlank；isNoneEmpty同理</span><br></pre></td></tr></table></figure>
+
+<p>使用 <code>isWhitespace</code> 判断空白：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">StringUtils.isWhitespace(<span class="literal">null</span>); <span class="comment">// false</span></span><br><span class="line">StringUtils.isWhitespace(<span class="string">&quot;&quot;</span>); <span class="comment">// true</span></span><br><span class="line">StringUtils.isWhitespace(<span class="string">&quot; &quot;</span>); <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="判断是否相等函数"><a href="#判断是否相等函数" class="headerlink" title="判断是否相等函数"></a>判断是否相等函数</h2><p>API：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">equals(CharSequence cs1,CharSequence cs2)</span><br><span class="line">equalsIgnoreCase(CharSequence str1, CharSequence str2)</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">StringUtils.equals(<span class="string">&quot;abc&quot;</span>, <span class="literal">null</span>)  = <span class="literal">false</span></span><br><span class="line">StringUtils.equals(<span class="string">&quot;abc&quot;</span>, <span class="string">&quot;abc&quot;</span>) = <span class="literal">true</span></span><br><span class="line">StringUtils.equals(<span class="string">&quot;abc&quot;</span>, <span class="string">&quot;ABC&quot;</span>) = <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<p>忽略大小写判断：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">StringUtils.equalsIgnoreCase(<span class="string">&quot;abc&quot;</span>, <span class="literal">null</span>)  = <span class="literal">false</span></span><br><span class="line">StringUtils.equalsIgnoreCase(<span class="string">&quot;abc&quot;</span>, <span class="string">&quot;abc&quot;</span>) = <span class="literal">true</span></span><br><span class="line">StringUtils.equalsIgnoreCase(<span class="string">&quot;abc&quot;</span>, <span class="string">&quot;ABC&quot;</span>) = <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="是否包含函数"><a href="#是否包含函数" class="headerlink" title="是否包含函数"></a>是否包含函数</h2><p>API：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">containsOnly(CharSequence cs,<span class="type">char</span>… valid)</span><br><span class="line">containsNone(CharSequence cs,<span class="type">char</span>… searchChars)</span><br><span class="line"></span><br><span class="line">startsWith(CharSequence str,CharSequence prefix)</span><br><span class="line">startsWithIgnoreCase(CharSequence str,CharSequence prefix)</span><br><span class="line">startsWithAny(CharSequence string,CharSequence… searchStrings)</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//判断字符串中所有字符，是否都是出自参数2中</span></span><br><span class="line">StringUtils.containsOnly(<span class="string">&quot;ab&quot;</span>, <span class="string">&quot;&quot;</span>)      = <span class="literal">false</span></span><br><span class="line">StringUtils.containsOnly(<span class="string">&quot;abab&quot;</span>, <span class="string">&quot;abc&quot;</span>) = <span class="literal">true</span></span><br><span class="line">StringUtils.containsOnly(<span class="string">&quot;ab1&quot;</span>, <span class="string">&quot;abc&quot;</span>)  = <span class="literal">false</span></span><br><span class="line">StringUtils.containsOnly(<span class="string">&quot;abz&quot;</span>, <span class="string">&quot;abc&quot;</span>)  = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//判断字符串中所有字符，都不在参数2中。</span></span><br><span class="line">StringUtils.containsNone(<span class="string">&quot;abab&quot;</span>, <span class="string">&#x27;xyz&#x27;</span>) = <span class="literal">true</span></span><br><span class="line">StringUtils.containsNone(<span class="string">&quot;ab1&quot;</span>, <span class="string">&#x27;xyz&#x27;</span>)  = <span class="literal">true</span></span><br><span class="line">StringUtils.containsNone(<span class="string">&quot;abz&quot;</span>, <span class="string">&#x27;xyz&#x27;</span>)  = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//判断字符串是否以第二个参数开始</span></span><br><span class="line">StringUtils.startsWith(<span class="string">&quot;abcdef&quot;</span>, <span class="string">&quot;abc&quot;</span>) = <span class="literal">true</span></span><br><span class="line">StringUtils.startsWith(<span class="string">&quot;ABCDEF&quot;</span>, <span class="string">&quot;abc&quot;</span>) = <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="索引下标函数"><a href="#索引下标函数" class="headerlink" title="索引下标函数"></a>索引下标函数</h2><p>API：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">indexOf(CharSequence seq,CharSequence searchSeq)</span><br><span class="line">indexOf(CharSequence seq,CharSequence searchSeq,<span class="type">int</span> startPos)</span><br><span class="line">indexOfIgnoreCase/lastIndexOfIgnoreCase(CharSequence str,CharSequence searchStr)</span><br><span class="line">lastIndexOf(CharSequence seq,<span class="type">int</span> searchChar)</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//返回第二个参数开始出现的索引值</span></span><br><span class="line">StringUtils.indexOf(<span class="string">&quot;aabaabaa&quot;</span>, <span class="string">&quot;a&quot;</span>)  = <span class="number">0</span></span><br><span class="line">StringUtils.indexOf(<span class="string">&quot;aabaabaa&quot;</span>, <span class="string">&quot;b&quot;</span>)  = <span class="number">2</span></span><br><span class="line">StringUtils.indexOf(<span class="string">&quot;aabaabaa&quot;</span>, <span class="string">&quot;ab&quot;</span>) = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//从第三个参数索引开始找起，返回第二个参数开始出现的索引值</span></span><br><span class="line">StringUtils.indexOf(<span class="string">&quot;aabaabaa&quot;</span>, <span class="string">&quot;a&quot;</span>, <span class="number">0</span>)  = <span class="number">0</span></span><br><span class="line">StringUtils.indexOf(<span class="string">&quot;aabaabaa&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="number">0</span>)  = <span class="number">2</span></span><br><span class="line">StringUtils.indexOf(<span class="string">&quot;aabaabaa&quot;</span>, <span class="string">&quot;ab&quot;</span>, <span class="number">0</span>) = <span class="number">1</span></span><br><span class="line">StringUtils.indexOf(<span class="string">&quot;aabaabaa&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="number">3</span>)  = <span class="number">5</span></span><br><span class="line">StringUtils.indexOf(<span class="string">&quot;aabaabaa&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="number">9</span>)  = -<span class="number">1</span>  </span><br><span class="line"></span><br><span class="line"><span class="comment">//返回第二个参数出现的最后一个索引值        </span></span><br><span class="line">StringUtils.lastIndexOf(<span class="string">&quot;aabaabaa&quot;</span>, <span class="string">&#x27;a&#x27;</span>) = <span class="number">7</span></span><br><span class="line">StringUtils.lastIndexOf(<span class="string">&quot;aabaabaa&quot;</span>, <span class="string">&#x27;b&#x27;</span>) = <span class="number">5</span></span><br><span class="line"></span><br><span class="line">StringUtils.lastIndexOfIgnoreCase(<span class="string">&quot;aabaabaa&quot;</span>, <span class="string">&quot;A&quot;</span>, <span class="number">8</span>)  = <span class="number">7</span></span><br><span class="line">StringUtils.lastIndexOfIgnoreCase(<span class="string">&quot;aabaabaa&quot;</span>, <span class="string">&quot;B&quot;</span>, <span class="number">8</span>)  = <span class="number">5</span></span><br><span class="line">StringUtils.lastIndexOfIgnoreCase(<span class="string">&quot;aabaabaa&quot;</span>, <span class="string">&quot;AB&quot;</span>, <span class="number">8</span>) = <span class="number">4</span></span><br><span class="line">StringUtils.lastIndexOfIgnoreCase(<span class="string">&quot;aabaabaa&quot;</span>, <span class="string">&quot;B&quot;</span>, <span class="number">9</span>)  = <span class="number">5</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="截取函数"><a href="#截取函数" class="headerlink" title="截取函数"></a>截取函数</h2><p>API：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">substring(String str,<span class="type">int</span> start)</span><br><span class="line">substringAfter(String str,String separator)</span><br><span class="line">substringBeforeLast(String str,String separator)</span><br><span class="line">substringAfterLast(String str,String separator)</span><br><span class="line">substringBetween(String str,String tag)</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//start&gt;0表示从左向右, start&lt;0表示从右向左, start=0则从左第一位开始</span></span><br><span class="line">StringUtils.substring(<span class="string">&quot;abcdefg&quot;</span>, <span class="number">0</span>)  = <span class="string">&quot;abcdefg&quot;</span></span><br><span class="line">StringUtils.substring(<span class="string">&quot;abcdefg&quot;</span>, <span class="number">2</span>)  = <span class="string">&quot;cdefg&quot;</span></span><br><span class="line">StringUtils.substring(<span class="string">&quot;abcdefg&quot;</span>, <span class="number">4</span>)  = <span class="string">&quot;efg&quot;</span></span><br><span class="line">StringUtils.substring(<span class="string">&quot;abcdefg&quot;</span>, -<span class="number">2</span>) = <span class="string">&quot;fg&quot;</span></span><br><span class="line">StringUtils.substring(<span class="string">&quot;abcdefg&quot;</span>, -<span class="number">4</span>) = <span class="string">&quot;defg&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>// start&gt;0&amp;&amp;end&gt;0从左开始(包括左)到右结束(不包括右),</p>
+<p>//start&lt;0&amp;&amp;end&lt;0从右开始(包括右),再向左数到end结束(包括end)</p>
+<p><img src="/img/java/commons/commons-lang/substring.png" alt="substring"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//从第二个参数字符串开始截取，排除第二个字符串</span></span><br><span class="line">StringUtils.substringAfter(<span class="string">&quot;abc&quot;</span>, <span class="string">&quot;a&quot;</span>)   = <span class="string">&quot;bc&quot;</span></span><br><span class="line">StringUtils.substringAfter(<span class="string">&quot;abcba&quot;</span>, <span class="string">&quot;b&quot;</span>) = <span class="string">&quot;cba&quot;</span></span><br><span class="line">StringUtils.substringAfter(<span class="string">&quot;abc&quot;</span>, <span class="string">&quot;c&quot;</span>)   = <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//从最后一个字母出现开始截取</span></span><br><span class="line">StringUtils.substringBeforeLast(<span class="string">&quot;abcba&quot;</span>, <span class="string">&quot;b&quot;</span>) = <span class="string">&quot;abc&quot;</span></span><br><span class="line">StringUtils.substringBeforeLast(<span class="string">&quot;abc&quot;</span>, <span class="string">&quot;c&quot;</span>)   = <span class="string">&quot;ab&quot;</span></span><br><span class="line">StringUtils.substringBeforeLast(<span class="string">&quot;a&quot;</span>, <span class="string">&quot;a&quot;</span>)     = <span class="string">&quot;&quot;</span></span><br><span class="line">StringUtils.substringBeforeLast(<span class="string">&quot;a&quot;</span>, <span class="string">&quot;z&quot;</span>)     = <span class="string">&quot;a&quot;</span></span><br><span class="line"></span><br><span class="line">StringUtils.substringAfterLast(<span class="string">&quot;abc&quot;</span>, <span class="string">&quot;a&quot;</span>)   = <span class="string">&quot;bc&quot;</span></span><br><span class="line">StringUtils.substringAfterLast(<span class="string">&quot;abcba&quot;</span>, <span class="string">&quot;b&quot;</span>) = <span class="string">&quot;a&quot;</span></span><br><span class="line">StringUtils.substringAfterLast(<span class="string">&quot;abc&quot;</span>, <span class="string">&quot;c&quot;</span>)   = <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">StringUtils.substringBetween(<span class="string">&quot;tagabctag&quot;</span>, <span class="literal">null</span>)  = <span class="literal">null</span></span><br><span class="line">StringUtils.substringBetween(<span class="string">&quot;tagabctag&quot;</span>, <span class="string">&quot;&quot;</span>)    = <span class="string">&quot;&quot;</span></span><br><span class="line">StringUtils.substringBetween(<span class="string">&quot;tagabctag&quot;</span>, <span class="string">&quot;tag&quot;</span>) = <span class="string">&quot;abc&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="删除函数"><a href="#删除函数" class="headerlink" title="删除函数"></a>删除函数</h2><p>API：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">StringUtils.remove(String str, <span class="type">char</span> remove)</span><br><span class="line">StringUtils.remove(String str, String remove)</span><br><span class="line">StringUtils.removeEnd(String str, String remove)</span><br><span class="line">StringUtils.removeEndIgnoreCase(String str, String remove)</span><br><span class="line">StringUtils.removePattern(String source, String regex)</span><br><span class="line">StringUtils.removeStart(String str, String remove)</span><br><span class="line">StringUtils.removeStartIgnoreCase(String str, String remove)</span><br><span class="line">StringUtils.deleteWhitespace(String str)</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//删除字符</span></span><br><span class="line">StringUtils.remove(<span class="string">&quot;queued&quot;</span>, <span class="string">&#x27;u&#x27;</span>) = <span class="string">&quot;qeed&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//删除字符串</span></span><br><span class="line">StringUtils.remove(<span class="string">&quot;queued&quot;</span>, <span class="string">&quot;ue&quot;</span>) = <span class="string">&quot;qd&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//删除结尾匹配的字符串     </span></span><br><span class="line">StringUtils.removeEnd(<span class="string">&quot;www.domain.com&quot;</span>, <span class="string">&quot;.com&quot;</span>)   = <span class="string">&quot;www.domain&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//删除结尾匹配的字符串,找都不到返回原字符串</span></span><br><span class="line">StringUtils.removeEnd(<span class="string">&quot;www.domain.com&quot;</span>, <span class="string">&quot;domain&quot;</span>) = <span class="string">&quot;www.domain.com&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//忽略大小写的</span></span><br><span class="line">StringUtils.removeEndIgnoreCase(<span class="string">&quot;www.domain.com&quot;</span>, <span class="string">&quot;.COM&quot;</span>) = <span class="string">&quot;www.domain&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">//删除所有空白（好用）</span></span><br><span class="line">StringUtils.deleteWhitespace(<span class="string">&quot;abc&quot;</span>)        = <span class="string">&quot;abc&quot;</span></span><br><span class="line">StringUtils.deleteWhitespace(<span class="string">&quot;   ab  c  &quot;</span>) = <span class="string">&quot;abc&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="删除空白函数"><a href="#删除空白函数" class="headerlink" title="删除空白函数"></a>删除空白函数</h2><p>API：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">trim(String str)</span><br><span class="line">trimToEmpty(String str)</span><br><span class="line">trimToNull(String str)</span><br><span class="line">deleteWhitespace(String str)</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">StringUtils.trim(<span class="string">&quot;     &quot;</span>)       = <span class="string">&quot;&quot;</span></span><br><span class="line">StringUtils.trim(<span class="string">&quot;abc&quot;</span>)         = <span class="string">&quot;abc&quot;</span></span><br><span class="line">StringUtils.trim(<span class="string">&quot;    abc    &quot;</span>) = <span class="string">&quot;abc&quot;</span></span><br><span class="line"></span><br><span class="line">StringUtils.trimToNull(<span class="string">&quot;     &quot;</span>)       = <span class="literal">null</span></span><br><span class="line">StringUtils.trimToNull(<span class="string">&quot;abc&quot;</span>)         = <span class="string">&quot;abc&quot;</span></span><br><span class="line">StringUtils.trimToNull(<span class="string">&quot;    abc    &quot;</span>) = <span class="string">&quot;abc&quot;</span></span><br><span class="line">StringUtils.trimToEmpty(<span class="string">&quot;     &quot;</span>)       = <span class="string">&quot;&quot;</span></span><br><span class="line">StringUtils.trimToEmpty(<span class="string">&quot;abc&quot;</span>)         = <span class="string">&quot;abc&quot;</span></span><br><span class="line">StringUtils.trimToEmpty(<span class="string">&quot;    abc    &quot;</span>) = <span class="string">&quot;abc&quot;</span></span><br><span class="line"></span><br><span class="line">StringUtils.deleteWhitespace(<span class="string">&quot;&quot;</span>)           = <span class="string">&quot;&quot;</span></span><br><span class="line">StringUtils.deleteWhitespace(<span class="string">&quot;abc&quot;</span>)        = <span class="string">&quot;abc&quot;</span></span><br><span class="line">StringUtils.deleteWhitespace(<span class="string">&quot;   ab  c  &quot;</span>) = <span class="string">&quot;abc&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="替换函数"><a href="#替换函数" class="headerlink" title="替换函数"></a>替换函数</h2><p>API：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">replace(String text, String searchString, String replacement)</span><br><span class="line">replace(String text, String searchString, String replacement, <span class="type">int</span> max)</span><br><span class="line">replaceChars(String str, <span class="type">char</span> searchChar, <span class="type">char</span> replaceChar)</span><br><span class="line">replaceChars(String str, String searchChars, String replaceChars)</span><br><span class="line">replaceEach(String text, String[] searchList, String[] replacementList)</span><br><span class="line">replaceEachRepeatedly(String text, String[] searchList, String[] replacementList)</span><br><span class="line">replaceOnce(String text, String searchString, String replacement)</span><br><span class="line">replacePattern(String source, String regex, String replacement)</span><br><span class="line">overlay(String str,String overlay,<span class="type">int</span> start,<span class="type">int</span> end)</span><br></pre></td></tr></table></figure>
+
+<p><code>replace</code> 例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">StringUtils.replace(<span class="string">&quot;aba&quot;</span>, <span class="string">&quot;a&quot;</span>, <span class="string">&quot;&quot;</span>)    = <span class="string">&quot;b&quot;</span></span><br><span class="line">StringUtils.replace(<span class="string">&quot;aba&quot;</span>, <span class="string">&quot;a&quot;</span>, <span class="string">&quot;z&quot;</span>)   = <span class="string">&quot;zbz&quot;</span>    </span><br><span class="line"></span><br><span class="line"><span class="comment">//数字就是替换个数，0代表不替换，1代表从开始数起第一个，-1代表全部替换</span></span><br><span class="line">StringUtils.replace(<span class="string">&quot;abaa&quot;</span>, <span class="string">&quot;a&quot;</span>, <span class="string">&quot;&quot;</span>, -<span class="number">1</span>)   = <span class="string">&quot;b&quot;</span></span><br><span class="line">StringUtils.replace(<span class="string">&quot;abaa&quot;</span>, <span class="string">&quot;a&quot;</span>, <span class="string">&quot;z&quot;</span>, <span class="number">0</span>)   = <span class="string">&quot;abaa&quot;</span></span><br><span class="line">StringUtils.replace(<span class="string">&quot;abaa&quot;</span>, <span class="string">&quot;a&quot;</span>, <span class="string">&quot;z&quot;</span>, <span class="number">1</span>)   = <span class="string">&quot;zbaa&quot;</span></span><br><span class="line">StringUtils.replace(<span class="string">&quot;abaa&quot;</span>, <span class="string">&quot;a&quot;</span>, <span class="string">&quot;z&quot;</span>, <span class="number">2</span>)   = <span class="string">&quot;zbza&quot;</span></span><br><span class="line">StringUtils.replace(<span class="string">&quot;abaa&quot;</span>, <span class="string">&quot;a&quot;</span>, <span class="string">&quot;z&quot;</span>, -<span class="number">1</span>)  = <span class="string">&quot;zbzz&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>replaceEach</code> 是对 <code>replace</code> 的增强版，用于一次性替换多个字符。搜索列表和替换长度必须一致，否则报 <code>IllegalArgumentException</code> 异常：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">StringUtils.replaceEach(<span class="string">&quot;abcde&quot;</span>, <span class="keyword">new</span> <span class="title class_">String</span>[]&#123;<span class="string">&quot;ab&quot;</span>, <span class="string">&quot;d&quot;</span>&#125;, <span class="keyword">new</span> <span class="title class_">String</span>[]&#123;<span class="string">&quot;w&quot;</span>, <span class="string">&quot;t&quot;</span>&#125;)  = <span class="string">&quot;wcte&quot;</span></span><br><span class="line">StringUtils.replaceEach(<span class="string">&quot;abcde&quot;</span>, <span class="keyword">new</span> <span class="title class_">String</span>[]&#123;<span class="string">&quot;ab&quot;</span>, <span class="string">&quot;d&quot;</span>&#125;, <span class="keyword">new</span> <span class="title class_">String</span>[]&#123;<span class="string">&quot;d&quot;</span>, <span class="string">&quot;t&quot;</span>&#125;)  = <span class="string">&quot;dcte&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>replaceChars</code> 用于对单个字符逐一替换，其操作如下：</p>
+<p><img src="/img/java/commons/commons-lang/replaceChars.png" alt="replaceChars"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">StringUtils.replaceChars(<span class="string">&quot;dabcba&quot;</span>, <span class="string">&quot;bcd&quot;</span>, <span class="string">&quot;yzx&quot;</span>) = <span class="string">&quot;xayzya&quot;</span></span><br><span class="line">StringUtils.replaceChars(<span class="string">&quot;abcba&quot;</span>, <span class="string">&quot;bc&quot;</span>, <span class="string">&quot;y&quot;</span>)   = <span class="string">&quot;ayya&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>replaceOnce</code> 例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">StringUtils.replaceOnce(<span class="string">&quot;aba&quot;</span>, <span class="string">&quot;a&quot;</span>, <span class="string">&quot;&quot;</span>)    = <span class="string">&quot;ba&quot;</span></span><br><span class="line">StringUtils.replaceOnce(<span class="string">&quot;aba&quot;</span>, <span class="string">&quot;a&quot;</span>, <span class="string">&quot;z&quot;</span>)   = <span class="string">&quot;zba&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>overlay</code> 例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">StringUtils.overlay(<span class="string">&quot;abcdef&quot;</span>, <span class="string">&quot;zzzz&quot;</span>, <span class="number">2</span>, <span class="number">4</span>)   = <span class="string">&quot;abzzzzef&quot;</span></span><br><span class="line">StringUtils.overlay(<span class="string">&quot;abcdef&quot;</span>, <span class="string">&quot;zzzz&quot;</span>, <span class="number">4</span>, <span class="number">2</span>)   = <span class="string">&quot;abzzzzef&quot;</span></span><br><span class="line">StringUtils.overlay(<span class="string">&quot;abcdef&quot;</span>, <span class="string">&quot;zzzz&quot;</span>, -<span class="number">1</span>, <span class="number">4</span>)  = <span class="string">&quot;zzzzef&quot;</span></span><br><span class="line">StringUtils.overlay(<span class="string">&quot;abcdef&quot;</span>, <span class="string">&quot;zzzz&quot;</span>, <span class="number">2</span>, <span class="number">8</span>)   = <span class="string">&quot;abzzzz&quot;</span></span><br><span class="line">StringUtils.overlay(<span class="string">&quot;abcdef&quot;</span>, <span class="string">&quot;zzzz&quot;</span>, -<span class="number">2</span>, -<span class="number">3</span>) = <span class="string">&quot;zzzzabcdef&quot;</span></span><br><span class="line">StringUtils.overlay(<span class="string">&quot;abcdef&quot;</span>, <span class="string">&quot;zzzz&quot;</span>, <span class="number">8</span>, <span class="number">10</span>)  = <span class="string">&quot;abcdefzzzz&quot;</span>  </span><br></pre></td></tr></table></figure>
+
+<h2 id="反转函数"><a href="#反转函数" class="headerlink" title="反转函数"></a>反转函数</h2><p>API：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">reverse(String str)</span><br><span class="line">reverseDelimited(String str, <span class="type">char</span> separatorChar)</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">StringUtils.reverse(<span class="string">&quot;bat&quot;</span>) = <span class="string">&quot;tab&quot;</span></span><br><span class="line">StringUtils.reverseDelimited(<span class="string">&quot;a.b.c&quot;</span>, <span class="string">&#x27;x&#x27;</span>) = <span class="string">&quot;a.b.c&quot;</span></span><br><span class="line">StringUtils.reverseDelimited(<span class="string">&quot;a.b.c&quot;</span>, <span class="string">&quot;.&quot;</span>) = <span class="string">&quot;c.b.a&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="分隔函数"><a href="#分隔函数" class="headerlink" title="分隔函数"></a>分隔函数</h2><p>API：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">split(String str)</span><br><span class="line">split(String str, <span class="type">char</span> separatorChar)</span><br><span class="line">split(String str, String separatorChars)</span><br><span class="line">split(String str, String separatorChars, <span class="type">int</span> max)</span><br><span class="line">splitByCharacterType(String str)</span><br><span class="line">splitByCharacterTypeCamelCase(String str)</span><br><span class="line">splitByWholeSeparator(String str, String separator)</span><br><span class="line">splitByWholeSeparator(String str, String separator, <span class="type">int</span> max)</span><br><span class="line">splitByWholeSeparatorPreserveAllTokens(String str, String separator)</span><br><span class="line">splitByWholeSeparatorPreserveAllTokens(String str, String separator, <span class="type">int</span> max)</span><br><span class="line">splitPreserveAllTokens(String str)</span><br><span class="line">splitPreserveAllTokens(String str, <span class="type">char</span> separatorChar)</span><br><span class="line">splitPreserveAllTokens(String str, String separatorChars)</span><br><span class="line">splitPreserveAllTokens(String str, String separatorChars, <span class="type">int</span> max)</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//用空白符做空格</span></span><br><span class="line">StringUtils.split(<span class="string">&quot;abc def&quot;</span>)  = [<span class="string">&quot;abc&quot;</span>, <span class="string">&quot;def&quot;</span>]</span><br><span class="line">StringUtils.split(<span class="string">&quot;abc  def&quot;</span>) = [<span class="string">&quot;abc&quot;</span>, <span class="string">&quot;def&quot;</span>]</span><br><span class="line">StringUtils.split(<span class="string">&quot;a..b.c&quot;</span>, <span class="string">&#x27;.&#x27;</span>)   = [<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="string">&quot;c&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment">//用字符分割</span></span><br><span class="line">StringUtils.split(<span class="string">&quot;a:b:c&quot;</span>, <span class="string">&#x27;.&#x27;</span>)    = [<span class="string">&quot;a:b:c&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment">//0 或者负数代表没有限制</span></span><br><span class="line">StringUtils.split(<span class="string">&quot;ab:cd:ef&quot;</span>, <span class="string">&quot;:&quot;</span>, <span class="number">0</span>)    = [<span class="string">&quot;ab&quot;</span>, <span class="string">&quot;cd&quot;</span>, <span class="string">&quot;ef&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment">//分割字符串 ,可以设定得到数组的长度，限定为2</span></span><br><span class="line">StringUtils.split(<span class="string">&quot;ab:cd:ef&quot;</span>, <span class="string">&quot;:&quot;</span>, <span class="number">2</span>)    = [<span class="string">&quot;ab&quot;</span>, <span class="string">&quot;cd:ef&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment">//null也可以作为分隔</span></span><br><span class="line">StringUtils.splitByWholeSeparator(<span class="string">&quot;ab de fg&quot;</span>, <span class="literal">null</span>)      = [<span class="string">&quot;ab&quot;</span>, <span class="string">&quot;de&quot;</span>, <span class="string">&quot;fg&quot;</span>]</span><br><span class="line">StringUtils.splitByWholeSeparator(<span class="string">&quot;ab   de fg&quot;</span>, <span class="literal">null</span>)    = [<span class="string">&quot;ab&quot;</span>, <span class="string">&quot;de&quot;</span>, <span class="string">&quot;fg&quot;</span>]</span><br><span class="line">StringUtils.splitByWholeSeparator(<span class="string">&quot;ab:cd:ef&quot;</span>, <span class="string">&quot;:&quot;</span>)       = [<span class="string">&quot;ab&quot;</span>, <span class="string">&quot;cd&quot;</span>, <span class="string">&quot;ef&quot;</span>]</span><br><span class="line">StringUtils.splitByWholeSeparator(<span class="string">&quot;ab-!-cd-!-ef&quot;</span>, <span class="string">&quot;-!-&quot;</span>) = [<span class="string">&quot;ab&quot;</span>, <span class="string">&quot;cd&quot;</span>, <span class="string">&quot;ef&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment">//带有限定长度的分隔</span></span><br><span class="line">StringUtils.splitByWholeSeparator(<span class="string">&quot;ab:cd:ef&quot;</span>, <span class="string">&quot;:&quot;</span>, <span class="number">2</span>)       = [<span class="string">&quot;ab&quot;</span>, <span class="string">&quot;cd:ef&quot;</span>]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="合并函数"><a href="#合并函数" class="headerlink" title="合并函数"></a>合并函数</h2><p>API：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">join(<span class="type">byte</span>[] array,<span class="type">char</span> separator)</span><br><span class="line">join(Object[] array,<span class="type">char</span> separator)</span><br><span class="line">join(Object[] array,<span class="type">char</span> separator,<span class="type">int</span> startIndex,<span class="type">int</span> endIndex)</span><br></pre></td></tr></table></figure>
+
+<p>例子</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//只有一个参数的join，简单合并在一起</span></span><br><span class="line">StringUtils.join([<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="string">&quot;c&quot;</span>]) = <span class="string">&quot;abc&quot;</span></span><br><span class="line">StringUtils.join([<span class="literal">null</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;a&quot;</span>]) = <span class="string">&quot;a&quot;</span>    </span><br><span class="line"></span><br><span class="line"><span class="comment">//null的话，就是把字符合并在一起</span></span><br><span class="line">StringUtils.join([<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="string">&quot;c&quot;</span>], <span class="literal">null</span>) = <span class="string">&quot;abc&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//从index为0到3合并，注意是排除3的</span></span><br><span class="line">StringUtils.join([<span class="literal">null</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;a&quot;</span>], <span class="string">&#x27;,&#x27;</span>, <span class="number">0</span>, <span class="number">3</span>)   = <span class="string">&quot;,,a&quot;</span></span><br><span class="line">StringUtils.join([<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="string">&quot;c&quot;</span>], <span class="string">&quot;--&quot;</span>, <span class="number">0</span>, <span class="number">3</span>)  = <span class="string">&quot;a--b--c&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//从index为1到3合并，注意是排除3的</span></span><br><span class="line">StringUtils.join([<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="string">&quot;c&quot;</span>], <span class="string">&quot;--&quot;</span>, <span class="number">1</span>, <span class="number">3</span>)  = <span class="string">&quot;b--c&quot;</span></span><br><span class="line">StringUtils.join([<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="string">&quot;c&quot;</span>], <span class="string">&quot;--&quot;</span>, <span class="number">2</span>, <span class="number">3</span>)  = <span class="string">&quot;c&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="大小写转换和判断"><a href="#大小写转换和判断" class="headerlink" title="大小写转换和判断"></a>大小写转换和判断</h2><p>API：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">StringUtils.capitalize(String str)</span><br><span class="line">StringUtils.uncapitalize(String str)</span><br><span class="line">StringUtils.upperCase(String str)</span><br><span class="line">StringUtils.upperCase(String str,Locale locale)</span><br><span class="line">StringUtils.lowerCase(String str)</span><br><span class="line">StringUtils.lowerCase(String str,Locale locale)</span><br><span class="line">StringUtils.swapCase(String str)</span><br><span class="line"></span><br><span class="line">StringUtils.isAllUpperCase(CharSequence cs)</span><br><span class="line">StringUtils.isAllLowerCase(CharSequence cs)</span><br></pre></td></tr></table></figure>
+
+<p>大小写转换：</p>
+<ul>
+<li><code>capitalize</code> 首字母大写</li>
+<li><code>upperCase</code> 全部转化为大写</li>
+<li><code>swapCase</code> 大小写互转</li>
+</ul>
+<p>大小写判断：</p>
+<ul>
+<li><code>isAllUpperCase</code> 是否全部大写</li>
+<li><code>isAllLowerCase</code> 是否全部小写</li>
+</ul>
+<h2 id="缩短省略函数"><a href="#缩短省略函数" class="headerlink" title="缩短省略函数"></a>缩短省略函数</h2><p>API：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">abbreviate(String str, <span class="type">int</span> maxWidth)</span><br><span class="line">abbreviate(String str, <span class="type">int</span> offset, <span class="type">int</span> maxWidth)</span><br><span class="line">abbreviateMiddle(String str, String middle, <span class="type">int</span> length)</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">StringUtils.abbreviate(<span class="string">&quot;abcdefg&quot;</span>, <span class="number">6</span>) = <span class="string">&quot;abc...&quot;</span></span><br><span class="line">StringUtils.abbreviate(<span class="string">&quot;abcdefg&quot;</span>, <span class="number">7</span>) = <span class="string">&quot;abcdefg&quot;</span></span><br><span class="line">StringUtils.abbreviate(<span class="string">&quot;abcdefg&quot;</span>, <span class="number">8</span>) = <span class="string">&quot;abcdefg&quot;</span></span><br><span class="line">StringUtils.abbreviate(<span class="string">&quot;abcdefg&quot;</span>, <span class="number">4</span>) = <span class="string">&quot;a...&quot;</span></span><br><span class="line">StringUtils.abbreviate(<span class="string">&quot;abcdefg&quot;</span>, <span class="number">3</span>) = IllegalArgumentException</span><br><span class="line"></span><br><span class="line">StringUtils.abbreviate(<span class="string">&quot;abcdefghijklmno&quot;</span>, <span class="number">6</span>, <span class="number">10</span>)  = <span class="string">&quot;...ghij...&quot;</span></span><br><span class="line"></span><br><span class="line">StringUtils.abbreviateMiddle(<span class="string">&quot;abcdef&quot;</span>, <span class="string">&quot;.&quot;</span>, <span class="number">4</span>)     = <span class="string">&quot;ab.f&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>字符串的长度小于或等于最大长度，返回该字符串。</p>
+<p>运算规律：<code>(substring(str, 0, max-3) + “…”)</code></p>
+<p>如果最大长度小于 4，则抛出异常 <code>IllegalArgumentException</code>。</p>
+<h2 id="相似度函数"><a href="#相似度函数" class="headerlink" title="相似度函数"></a>相似度函数</h2><p>API：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">difference(String str1,String str2)</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//在str1中寻找str2中没有的的字符串，并返回     </span></span><br><span class="line">StringUtils.difference(<span class="string">&quot;&quot;</span>, <span class="string">&quot;abc&quot;</span>) = <span class="string">&quot;abc&quot;</span></span><br><span class="line">StringUtils.difference(<span class="string">&quot;abc&quot;</span>, <span class="string">&quot;&quot;</span>) = <span class="string">&quot;&quot;</span></span><br><span class="line">StringUtils.difference(<span class="string">&quot;abc&quot;</span>, <span class="string">&quot;abc&quot;</span>) = <span class="string">&quot;&quot;</span></span><br><span class="line">StringUtils.difference(<span class="string">&quot;abc&quot;</span>, <span class="string">&quot;ab&quot;</span>) = <span class="string">&quot;&quot;</span></span><br><span class="line">StringUtils.difference(<span class="string">&quot;ab&quot;</span>, <span class="string">&quot;abxyz&quot;</span>) = <span class="string">&quot;xyz&quot;</span></span><br><span class="line">StringUtils.difference(<span class="string">&quot;abcde&quot;</span>, <span class="string">&quot;abxyz&quot;</span>) = <span class="string">&quot;xyz&quot;</span></span><br><span class="line">StringUtils.difference(<span class="string">&quot;abcde&quot;</span>, <span class="string">&quot;xyz&quot;</span>) = <span class="string">&quot;xyz&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/img/java/commons/commons-lang/difference.png" alt="difference"></p>
+<h1 id="BooleanUtils"><a href="#BooleanUtils" class="headerlink" title="BooleanUtils"></a>BooleanUtils</h1><p><img src="/img/java/commons/commons-lang/BooleanUtils.png" alt="BooleanUtils"></p>
+<h1 id="ArrayUtils"><a href="#ArrayUtils" class="headerlink" title="ArrayUtils"></a>ArrayUtils</h1><h2 id="添加方法"><a href="#添加方法" class="headerlink" title="添加方法"></a>添加方法</h2><p>add(boolean[] array,boolean element)<br>add(T[] array,int index,T element)<br>addAll(boolean[] array1,boolean… array2)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//添加元素到数组中        </span></span><br><span class="line">ArrayUtils.add([<span class="literal">true</span>, <span class="literal">false</span>], <span class="literal">true</span>) = [<span class="literal">true</span>, <span class="literal">false</span>, <span class="literal">true</span>]    </span><br><span class="line"></span><br><span class="line"><span class="comment">//将元素插入到指定位置的数组中</span></span><br><span class="line">ArrayUtils.add([<span class="string">&quot;a&quot;</span>], <span class="number">1</span>, <span class="literal">null</span>)     = [<span class="string">&quot;a&quot;</span>, <span class="literal">null</span>]</span><br><span class="line">ArrayUtils.add([<span class="string">&quot;a&quot;</span>], <span class="number">1</span>, <span class="string">&quot;b&quot;</span>)      = [<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>]</span><br><span class="line">ArrayUtils.add([<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>], <span class="number">3</span>, <span class="string">&quot;c&quot;</span>) = [<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="string">&quot;c&quot;</span>]</span><br><span class="line">ArrayUtils.add([<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>], [<span class="string">&quot;c&quot;</span>, <span class="string">&quot;d&quot;</span>]) = [<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="string">&quot;c&quot;</span>,<span class="string">&quot;d&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<h2 id="克隆方法"><a href="#克隆方法" class="headerlink" title="克隆方法"></a>克隆方法</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ArrayUtils.clone(<span class="keyword">new</span> <span class="title class_">int</span>[] &#123; <span class="number">3</span>, <span class="number">2</span>, <span class="number">4</span> &#125;); = &#123;<span class="number">3</span>,<span class="number">2</span>,<span class="number">4</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="包含方法"><a href="#包含方法" class="headerlink" title="包含方法"></a>包含方法</h2><p>contains(boolean[] array,boolean valueToFind)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 查询某个Object是否在数组中</span></span><br><span class="line">ArrayUtils.contains(<span class="keyword">new</span> <span class="title class_">int</span>[] &#123; <span class="number">3</span>, <span class="number">1</span>, <span class="number">2</span> &#125;, <span class="number">1</span>); =  <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="获取长度方法"><a href="#获取长度方法" class="headerlink" title="获取长度方法"></a>获取长度方法</h2><p>getLength(Object array)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ArrayUtils.getLength([<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="string">&quot;c&quot;</span>]) = <span class="number">3</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="获取索引方法"><a href="#获取索引方法" class="headerlink" title="获取索引方法"></a>获取索引方法</h2><p>indexOf(boolean[] array,boolean valueToFind)<br>indexOf(boolean[] array,boolean valueToFind,int startIndex)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//查询某个Object在数组中的位置,可以指定起始搜索位置,找不到返回-1</span></span><br><span class="line"><span class="comment">//从正序开始搜索,搜到就返回当前的index否则返回-1</span></span><br><span class="line">ArrayUtils.indexOf(<span class="keyword">new</span> <span class="title class_">int</span>[] &#123; <span class="number">1</span>, <span class="number">3</span>, <span class="number">6</span> &#125;, <span class="number">6</span>); =  <span class="number">2</span></span><br><span class="line">ArrayUtils.indexOf(<span class="keyword">new</span> <span class="title class_">int</span>[] &#123; <span class="number">1</span>, <span class="number">3</span>, <span class="number">6</span> &#125;, <span class="number">2</span>); =  -<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//从逆序开始搜索,搜到就返回当前的index,否则返回-1</span></span><br><span class="line">ArrayUtils.lastIndexOf(<span class="keyword">new</span> <span class="title class_">int</span>[] &#123; <span class="number">1</span>, <span class="number">3</span>, <span class="number">6</span> &#125;, <span class="number">6</span>); =  <span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//从逆序索引为2开始搜索,,搜到就返回当前的index,否则返回-1</span></span><br><span class="line">ArrayUtils.lastIndexOf(<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;33&quot;</span>,<span class="string">&quot;yy&quot;</span>,<span class="string">&quot;uu&quot;</span>&#125;, <span class="string">&quot;33&quot;</span>,<span class="number">2</span> ) = <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="判空方法"><a href="#判空方法" class="headerlink" title="判空方法"></a>判空方法</h2><p>isEmpty(boolean[] array)等等<br>isNotEmpty(T[] array)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//判断数组是否为空(null和length=0的时候都为空)</span></span><br><span class="line">ArrayUtils.isEmpty(<span class="keyword">new</span> <span class="title class_">int</span>[<span class="number">0</span>]); =  <span class="literal">true</span></span><br><span class="line">ArrayUtils.isEmpty(<span class="keyword">new</span> <span class="title class_">Object</span>[] &#123; <span class="literal">null</span> &#125;); = <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="长度相等判断方法"><a href="#长度相等判断方法" class="headerlink" title="长度相等判断方法"></a>长度相等判断方法</h2><p>isSameLength(boolean[] array1,boolean[] array2)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//判断两个数组的长度是否相等</span></span><br><span class="line">ArrayUtils.isSameLength(<span class="keyword">new</span> <span class="title class_">Integer</span>[] &#123; <span class="number">1</span>, <span class="number">3</span>, <span class="number">5</span> &#125;, <span class="keyword">new</span> <span class="title class_">Long</span>[] &#123; <span class="string">&quot;1&quot;</span>, <span class="string">&quot;3&quot;</span>, <span class="string">&quot;5&quot;</span>&#125;); = <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="空数组转换"><a href="#空数组转换" class="headerlink" title="空数组转换"></a>空数组转换</h2><p>nullToEmpty(Object[] array)等等</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//讲null转化为相应数组</span></span><br><span class="line"><span class="type">int</span> [] arr1 = <span class="literal">null</span>;</span><br><span class="line"><span class="type">int</span> [] arr2 = ArrayUtils.nullToEmpty(arr1);</span><br></pre></td></tr></table></figure>
+
+<h2 id="删除元素方法"><a href="#删除元素方法" class="headerlink" title="删除元素方法"></a>删除元素方法</h2><p>remove(boolean[] array,int index)等等<br>removeElement(boolean[] array,boolean element)<br>removeAll(T[] array,int… indices)<br>removeElements(T[] array,T… values)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//删除指定下标的元素        </span></span><br><span class="line">ArrayUtils.remove([<span class="literal">true</span>, <span class="literal">false</span>], <span class="number">1</span>)       = [<span class="literal">true</span>]</span><br><span class="line">ArrayUtils.remove([<span class="literal">true</span>, <span class="literal">true</span>, <span class="literal">false</span>], <span class="number">1</span>) = [<span class="literal">true</span>, <span class="literal">false</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment">//删除第一次出现的元素</span></span><br><span class="line">ArrayUtils.removeElement([<span class="literal">true</span>, <span class="literal">false</span>], <span class="literal">false</span>)      = [<span class="literal">true</span>]</span><br><span class="line">ArrayUtils.removeElement([<span class="literal">true</span>, <span class="literal">false</span>, <span class="literal">true</span>], <span class="literal">true</span>) = [<span class="literal">false</span>, <span class="literal">true</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment">//删除所有出现的下标的元素</span></span><br><span class="line">ArrayUtils.removeAll([<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="string">&quot;c&quot;</span>], <span class="number">0</span>, <span class="number">2</span>) = [<span class="string">&quot;b&quot;</span>]</span><br><span class="line">ArrayUtils.removeAll([<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="string">&quot;c&quot;</span>], <span class="number">1</span>, <span class="number">2</span>) = [<span class="string">&quot;a&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment">//删除数组出现的所有元素</span></span><br><span class="line">ArrayUtils.removeElements([<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>], <span class="string">&quot;a&quot;</span>, <span class="string">&quot;c&quot;</span>)      = [<span class="string">&quot;b&quot;</span>]</span><br><span class="line">ArrayUtils.removeElements([<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="string">&quot;a&quot;</span>], <span class="string">&quot;a&quot;</span>)      = [<span class="string">&quot;b&quot;</span>, <span class="string">&quot;a&quot;</span>]</span><br><span class="line">ArrayUtils.removeElements([<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="string">&quot;a&quot;</span>], <span class="string">&quot;a&quot;</span>, <span class="string">&quot;a&quot;</span>) = [<span class="string">&quot;b&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<h2 id="反转方法"><a href="#反转方法" class="headerlink" title="反转方法"></a>反转方法</h2><p>reverse(boolean[] array)等等<br>reverse(boolean[] array,int startIndexInclusive,int endIndexExclusive)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//反转数组</span></span><br><span class="line"><span class="type">int</span>[] array =<span class="keyword">new</span> <span class="title class_">int</span>[] &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">5</span> &#125;;</span><br><span class="line">ArrayUtils.reverse(array);<span class="comment">// &#123;5,2,1&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//指定范围的反转数组，排除endIndexExclusive的</span></span><br><span class="line"><span class="type">int</span>[] array =<span class="keyword">new</span> <span class="title class_">int</span>[] &#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">5</span> ,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>&#125;;</span><br><span class="line">ArrayUtils.reverse(array,<span class="number">2</span>,<span class="number">5</span>);</span><br><span class="line">System.out.println(ArrayUtils.toString(array)); = &#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">3</span>,<span class="number">5</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="截取数组"><a href="#截取数组" class="headerlink" title="截取数组"></a>截取数组</h2><p>subarray(boolean[] array,int startIndexInclusive,int endIndexExclusive)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//起始index为2(即第三个数据)结束index为4的数组</span></span><br><span class="line">ArrayUtils.subarray(newint[] &#123; <span class="number">3</span>, <span class="number">4</span>, <span class="number">1</span>, <span class="number">5</span>, <span class="number">6</span> &#125;, <span class="number">2</span>, <span class="number">4</span>); =  &#123;<span class="number">1</span>,<span class="number">5</span>&#125;</span><br><span class="line"><span class="comment">//如果endIndex大于数组的长度,则取beginIndex之后的所有数据</span></span><br><span class="line">ArrayUtils.subarray(newint[] &#123; <span class="number">3</span>, <span class="number">4</span>, <span class="number">1</span>, <span class="number">5</span>, <span class="number">6</span> &#125;, <span class="number">2</span>, <span class="number">10</span>); =  &#123;<span class="number">1</span>,<span class="number">5</span>,<span class="number">6</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="打印数组方法"><a href="#打印数组方法" class="headerlink" title="打印数组方法"></a>打印数组方法</h2><p>toString(Object array)<br>toString(Object array,String stringIfNull)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//打印数组</span></span><br><span class="line">ArrayUtils.toString(newint[] &#123; <span class="number">1</span>, <span class="number">4</span>, <span class="number">2</span>, <span class="number">3</span> &#125;); =  &#123;<span class="number">1</span>,<span class="number">4</span>,<span class="number">2</span>,<span class="number">3</span>&#125;</span><br><span class="line">ArrayUtils.toString(<span class="keyword">new</span> <span class="title class_">Integer</span>[] &#123; <span class="number">1</span>, <span class="number">4</span>, <span class="number">2</span>, <span class="number">3</span> &#125;); =  &#123;<span class="number">1</span>,<span class="number">4</span>,<span class="number">2</span>,<span class="number">3</span>&#125;</span><br><span class="line"><span class="comment">//如果为空，返回默认信息</span></span><br><span class="line">ArrayUtils.toString(<span class="literal">null</span>, <span class="string">&quot;I&#x27;m nothing!&quot;</span>); =  I<span class="string">&#x27;m nothing!</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://commons.apache.org/">https://commons.apache.org/</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.tutorialspoint.com/commons_collections/index.htm">https://www.tutorialspoint.com/commons_collections/index.htm</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.tutorialspoint.com/commons_io/index.htm">https://www.tutorialspoint.com/commons_io/index.htm</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/apache-commons-lang/" title="Java 开发必备类库 Apache Commons Lang">https://qidawu.github.io/posts/apache-commons-lang/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/dubbo-protocol/" rel="prev" title="Dubbo 协议小结">
+                  <i class="fa fa-chevron-left"></i> Dubbo 协议小结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/frontend-roadmap/" rel="next" title="前端技术栈演进之路">
+                  前端技术栈演进之路 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="在 JSP 标签中指定一个属性值 value 时，可以使用字符串： 1&lt;jsp:setProperty name&#x3D;&quot;box&quot; property&#x3D;&quot;perimeter&quot; value&#x3D;&quot;100&quot;&#x2F;&gt;  也可以使用 EL 表达式： 1&lt;jsp:setProperty name&#x3D;&quot;box&quot; property&#x3D;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JSP EL 表达式总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/java-el/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="在 JSP 标签中指定一个属性值 value 时，可以使用字符串： 1&lt;jsp:setProperty name&#x3D;&quot;box&quot; property&#x3D;&quot;perimeter&quot; value&#x3D;&quot;100&quot;&#x2F;&gt;  也可以使用 EL 表达式： 1&lt;jsp:setProperty name&#x3D;&quot;box&quot; property&#x3D;">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-05-03T01:29:06.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.918Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/java-el/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/java-el/","path":"posts/java-el/","title":"JSP EL 表达式总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>JSP EL 表达式总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="nav-number">1.</span> <span class="nav-text">操作符</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="nav-number">1.1.</span> <span class="nav-text">基本操作符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%9C%AF%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="nav-number">1.2.</span> <span class="nav-text">算术操作符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%BB%E8%BE%91%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="nav-number">1.3.</span> <span class="nav-text">逻辑操作符</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9A%90%E5%BC%8F%E5%AF%B9%E8%B1%A1"><span class="nav-number">2.</span> <span class="nav-text">隐式对象</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%9C%E7%94%A8%E5%9F%9F"><span class="nav-number">2.1.</span> <span class="nav-text">作用域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0"><span class="nav-number">2.2.</span> <span class="nav-text">HTTP 请求参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-%E8%AF%B7%E6%B1%82%E5%A4%B4"><span class="nav-number">2.3.</span> <span class="nav-text">HTTP 请求头</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-Cookie"><span class="nav-number">2.4.</span> <span class="nav-text">HTTP Cookie</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="nav-number">2.5.</span> <span class="nav-text">上下文</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%87%BD%E6%95%B0"><span class="nav-number">3.</span> <span class="nav-text">函数</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/java-el/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="JSP EL 表达式总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JSP EL 表达式总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2015-05-03 09:29:06" itemprop="dateCreated datePublished" datetime="2015-05-03T09:29:06+08:00">2015-05-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>在 JSP 标签中指定一个属性值 <code>value</code> 时，可以使用字符串：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;jsp:setProperty name=&quot;box&quot; property=&quot;perimeter&quot; value=&quot;100&quot;/&gt;</span><br></pre></td></tr></table></figure>
+
+<p>也可以使用 EL 表达式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;jsp:setProperty name=&quot;box&quot; property=&quot;perimeter&quot; value=&quot;$&#123;expr&#125;&quot;/&gt;</span><br></pre></td></tr></table></figure>
+
+<p>那么，EL 表达式 <code>$&#123;expr&#125;</code> 中可以放些什么呢？</p>
+<h1 id="操作符"><a href="#操作符" class="headerlink" title="操作符"></a>操作符</h1><p>EL 表达式支持大部分 Java 所提供的算术和逻辑操作符：</p>
+<h2 id="基本操作符"><a href="#基本操作符" class="headerlink" title="基本操作符"></a>基本操作符</h2><table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>.</code></td>
+<td>访问一个 Bean 的属性或者一个映射条目</td>
+</tr>
+<tr>
+<td><code>[]</code></td>
+<td>访问一个数组或者链表的元素</td>
+</tr>
+<tr>
+<td><code>()</code></td>
+<td>组织一个子表达式以改变优先级</td>
+</tr>
+</tbody></table>
+<h2 id="算术操作符"><a href="#算术操作符" class="headerlink" title="算术操作符"></a>算术操作符</h2><table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>操作符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>+</code></td>
+<td></td>
+<td>加</td>
+</tr>
+<tr>
+<td><code>-</code></td>
+<td></td>
+<td>减或负</td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td></td>
+<td>乘</td>
+</tr>
+<tr>
+<td><code>/</code></td>
+<td><code>div</code></td>
+<td>除</td>
+</tr>
+<tr>
+<td><code>%</code></td>
+<td><code>mod</code></td>
+<td>取模</td>
+</tr>
+</tbody></table>
+<h2 id="逻辑操作符"><a href="#逻辑操作符" class="headerlink" title="逻辑操作符"></a>逻辑操作符</h2><table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>操作符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>==</code></td>
+<td><code>eq</code></td>
+<td>测试是否相等</td>
+</tr>
+<tr>
+<td><code>!=</code></td>
+<td><code>ne</code></td>
+<td>测试是否不等</td>
+</tr>
+<tr>
+<td><code>&lt;</code></td>
+<td><code>lt</code></td>
+<td>测试是否小于</td>
+</tr>
+<tr>
+<td><code>&gt;</code></td>
+<td><code>gt</code></td>
+<td>测试是否大于</td>
+</tr>
+<tr>
+<td><code>&lt;=</code></td>
+<td><code>le</code></td>
+<td>测试是否小于等于</td>
+</tr>
+<tr>
+<td><code>&gt;=</code></td>
+<td><code>ge</code></td>
+<td>测试是否大于等于</td>
+</tr>
+<tr>
+<td><code>&amp;&amp;</code></td>
+<td><code>and</code></td>
+<td>测试逻辑与</td>
+</tr>
+<tr>
+<td><code>&#124;&#124;</code></td>
+<td><code>or</code></td>
+<td>测试逻辑或</td>
+</tr>
+<tr>
+<td><code>!</code></td>
+<td><code>not</code></td>
+<td>测试取反</td>
+</tr>
+<tr>
+<td></td>
+<td><code>empty</code></td>
+<td>测试是否空值</td>
+</tr>
+</tbody></table>
+<h1 id="隐式对象"><a href="#隐式对象" class="headerlink" title="隐式对象"></a>隐式对象</h1><p>JSP 隐式对象（也称为预定义变量）是 JSP 容器为每个页面提供的 Java 对象，开发者可以直接使用它们而不用显式声明。</p>
+<h2 id="作用域"><a href="#作用域" class="headerlink" title="作用域"></a>作用域</h2><table>
+<thead>
+<tr>
+<th>对象</th>
+<th>等价物</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>pageScope</code></td>
+<td><code>this</code></td>
+<td>page 作用域</td>
+</tr>
+<tr>
+<td><code>requestScope</code></td>
+<td><code>javax.servlet.http.HttpServletRequest</code></td>
+<td>request 作用域</td>
+</tr>
+<tr>
+<td><code>sessionScope</code></td>
+<td><code>javax.servlet.http.HttpSession</code></td>
+<td>session 作用域</td>
+</tr>
+<tr>
+<td><code>applicationScope</code></td>
+<td><code>javax.servlet.ServletContext</code></td>
+<td>application 作用域</td>
+</tr>
+</tbody></table>
+<h2 id="HTTP-请求参数"><a href="#HTTP-请求参数" class="headerlink" title="HTTP 请求参数"></a>HTTP 请求参数</h2><table>
+<thead>
+<tr>
+<th>对象</th>
+<th>等价物</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>param</code></td>
+<td><code>request.getParameter(...)</code></td>
+<td>获取指定 HTTP 请求参数，字符串</td>
+</tr>
+<tr>
+<td><code>paramValues</code></td>
+<td><code>request.getParameterValues()</code></td>
+<td>获取所有 HTTP 请求参数，字符串数组</td>
+</tr>
+</tbody></table>
+<p>例如，要判断 HTTP 请求参数 <code>from</code> 是否为空，可以结合使用 JSTL <code>&lt;c:if&gt;</code> 和 EL 操作符 <code>not</code>、<code>empty</code>、EL 隐式对象 <code>param</code> 进行判断：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;c:if test=&quot;$&#123;not empty param.from&#125;&quot;&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="HTTP-请求头"><a href="#HTTP-请求头" class="headerlink" title="HTTP 请求头"></a>HTTP 请求头</h2><table>
+<thead>
+<tr>
+<th>对象</th>
+<th>等价物</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>header</code></td>
+<td><code>request.getHeader(...)</code></td>
+<td>获取指定 HTTP 请求头，字符串</td>
+</tr>
+<tr>
+<td><code>headerValues</code></td>
+<td><code>request.getHeaders()</code></td>
+<td>获取所有 HTTP 请求头，字符串数组</td>
+</tr>
+</tbody></table>
+<p>例如，获取请求来源：<code>$&#123;header.Referer&#125;</code>。</p>
+<h2 id="HTTP-Cookie"><a href="#HTTP-Cookie" class="headerlink" title="HTTP Cookie"></a>HTTP Cookie</h2><table>
+<thead>
+<tr>
+<th>对象</th>
+<th>等价物</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>cookie</code></td>
+<td><code>request.getCookies()</code></td>
+<td><code>javax.servlet.http.Cookie</code> 数组</td>
+</tr>
+</tbody></table>
+<p>例如，获取指定 <code>Cookie</code> 的值：<code>$&#123;cookie.key.value&#125;</code>。这段 EL 表达式会被 JSP 容器解析成：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Cookie[] cookies = request.getCookies();</span><br><span class="line"><span class="type">Cookie</span> <span class="variable">current</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span>(Cookie cookie : cookies) &#123; </span><br><span class="line">    <span class="keyword">if</span>(cookie.getName().equals(<span class="string">&quot;key&quot;</span>)) &#123;</span><br><span class="line">        current = cookie;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(current != <span class="literal">null</span>) &#123; </span><br><span class="line">    out.print(current.getValue());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="上下文"><a href="#上下文" class="headerlink" title="上下文"></a>上下文</h2><table>
+<thead>
+<tr>
+<th>对象</th>
+<th>等价物</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>initParam</code></td>
+<td></td>
+<td>上下文初始化参数，即 <code>web.xml</code> 的 <code>&lt;context-param&gt;</code></td>
+</tr>
+<tr>
+<td><code>pageContext</code></td>
+<td><code>javax.servlet.jsp.PageContext</code></td>
+<td>提供对 JSP 页面所有对象以及命名空间的访问</td>
+</tr>
+</tbody></table>
+<h1 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h1><p>EL 表达式支持使用函数，其使用语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$&#123;ns:fn(param1, param2, ...)&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>ns</code> 指的是命名空间（namespace），<code>fn</code> 指的是函数的名称，<code>param1</code> 指的是第一个参数，<code>param2</code> 指的是第二个参数，以此类推。</p>
+<p>例如，要获取一个字符串的长度，可以使用 JSTL 的 <code>length</code> 函数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$&#123;fn:length(&quot;Get my length&quot;)&#125;</span><br></pre></td></tr></table></figure>
+
+<p>更多 JSTL 函数，参考<a target="_blank" rel="noopener" href="http://www.cnblog.me/2015/05/02/java-jstl/#%E5%87%BD%E6%95%B0%E6%A0%87%E7%AD%BE%E5%BA%93">这里</a>。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/java-el/" title="JSP EL 表达式总结">https://qidawu.github.io/posts/java-el/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/java-jstl/" rel="prev" title="JSP 标准标签库（JSTL）总结">
+                  <i class="fa fa-chevron-left"></i> JSP 标准标签库（JSTL）总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/optimizing-hexo-speed/" rel="next" title="优化 Hexo 博客的访问速度">
+                  优化 Hexo 博客的访问速度 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

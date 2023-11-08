@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"qidawu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"right","display":"always","padding":18,"offset":12,"width":305,"onmobile":false,"dimmer":false},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="集合接口中的许多修改方法都被标记为可选（optional）。实现类允许按需实现，未实现的方法需抛出运行时异常 UnsupportedOperationException。每个实现类的文档必须指明支持哪些可选操作。集合框架引入下列术语来帮助阐述本规范： 定长&#x2F;变长长度保证不变（即使元素可以更改）的列表称为 fixed-size 定长列表。反之则称为 variable-size 变长列表。 开发中接触">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 集合框架系列（二）集合特性总结">
+<meta property="og:url" content="https://qidawu.github.io/posts/java-collections-framework-features/index.html">
+<meta property="og:site_name" content="Qida&#39;s Blog">
+<meta property="og:description" content="集合接口中的许多修改方法都被标记为可选（optional）。实现类允许按需实现，未实现的方法需抛出运行时异常 UnsupportedOperationException。每个实现类的文档必须指明支持哪些可选操作。集合框架引入下列术语来帮助阐述本规范： 定长&#x2F;变长长度保证不变（即使元素可以更改）的列表称为 fixed-size 定长列表。反之则称为 variable-size 变长列表。 开发中接触">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://qidawu.github.io/img/java/collection/arrays_aslist.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/collection/immutable_collections.PNG">
+<meta property="og:image" content="https://qidawu.github.io/img/java/collection/methods_of_Pair_and_Triple.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/collection/RandomAccess.png">
+<meta property="og:image" content="https://qidawu.github.io/img/java/collection/map/alibaba_map_element_of_null.png">
+<meta property="article:published_time" content="2018-04-14T01:13:11.000Z">
+<meta property="article:modified_time" content="2023-02-21T12:32:28.917Z">
+<meta property="article:author" content="Qida&#39;s Blog">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="数据结构">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qidawu.github.io/img/java/collection/arrays_aslist.png">
+
+
+<link rel="canonical" href="https://qidawu.github.io/posts/java-collections-framework-features/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://qidawu.github.io/posts/java-collections-framework-features/","path":"posts/java-collections-framework-features/","title":"Java 集合框架系列（二）集合特性总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Java 集合框架系列（二）集合特性总结 | Qida's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Qida's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9A%E9%95%BF-%E5%8F%98%E9%95%BF"><span class="nav-number">1.</span> <span class="nav-text">定长&#x2F;变长</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%AF%E6%94%B9-%E4%B8%8D%E5%8F%AF%E6%94%B9"><span class="nav-number">2.</span> <span class="nav-text">可改&#x2F;不可改</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%AF%E5%8F%98-%E4%B8%8D%E5%8F%AF%E5%8F%98"><span class="nav-number">3.</span> <span class="nav-text">可变&#x2F;不可变</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5-%E9%9D%9E%E5%90%8C%E6%AD%A5"><span class="nav-number">4.</span> <span class="nav-text">线程同步&#x2F;非同步</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9A%8F%E6%9C%BA-%E9%A1%BA%E5%BA%8F%E8%AE%BF%E9%97%AE"><span class="nav-number">5.</span> <span class="nav-text">随机&#x2F;顺序访问</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%83%E7%B4%A0%E9%99%90%E5%88%B6"><span class="nav-number">6.</span> <span class="nav-text">元素限制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%BD%E5%90%A6%E4%B8%BA-null"><span class="nav-number">6.1.</span> <span class="nav-text">能否为 null</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B1%BB%E5%9E%8B%E9%99%90%E5%88%B6"><span class="nav-number">6.2.</span> <span class="nav-text">类型限制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qida's Blog"
+      src="/img/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Qida's Blog</p>
+  <div class="site-description" itemprop="description">学习笔记 知识总结 思考感悟</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/qidawu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;qidawu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:cynthia903@qq.com" title="E-Mail → mailto:cynthia903@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
+<!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
+
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qidawu.github.io/posts/java-collections-framework-features/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+      <meta itemprop="name" content="Qida's Blog">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Qida's Blog">
+      <meta itemprop="description" content="学习笔记 知识总结 思考感悟">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Java 集合框架系列（二）集合特性总结 | Qida's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java 集合框架系列（二）集合特性总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-04-14 09:13:11" itemprop="dateCreated datePublished" datetime="2018-04-14T09:13:11+08:00">2018-04-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-21 20:32:28" itemprop="dateModified" datetime="2023-02-21T20:32:28+08:00">2023-02-21</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>集合接口中的许多修改方法都被标记为<em>可选（optional）</em>。实现类允许按需实现，未实现的方法需抛出运行时异常 <code>UnsupportedOperationException</code>。每个实现类的文档必须指明支持哪些可选操作。集合框架引入下列术语来帮助阐述本规范：</p>
+<h1 id="定长-变长"><a href="#定长-变长" class="headerlink" title="定长/变长"></a>定长/变长</h1><p>长度保证不变（即使元素可以更改）的列表称为 <em><strong>fixed-size</strong></em> 定长列表。反之则称为 <em><strong>variable-size</strong></em> 变长列表。</p>
+<p>开发中接触最多的定长集合是通过 <code>Arrays.asList()</code> 创建的，该方法是一个适配器接口，将数组适配为定长列表，返回的对象是一个 <code>Arrays</code> 内部类，源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a fixed-size list backed by the specified array.  (Changes to</span></span><br><span class="line"><span class="comment"> * the returned list &quot;write through&quot; to the array.)  This method acts</span></span><br><span class="line"><span class="comment"> * as bridge between array-based and collection-based APIs, in</span></span><br><span class="line"><span class="comment"> * combination with &#123;<span class="doctag">@link</span> Collection#toArray&#125;.  The returned list is</span></span><br><span class="line"><span class="comment"> * serializable and implements &#123;<span class="doctag">@link</span> RandomAccess&#125;.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;This method also provides a convenient way to create a fixed-size</span></span><br><span class="line"><span class="comment"> * list initialized to contain several elements:</span></span><br><span class="line"><span class="comment"> * &lt;pre&gt;</span></span><br><span class="line"><span class="comment"> *     List&lt;String&gt; stooges = Arrays.asList(&quot;Larry&quot;, &quot;Moe&quot;, &quot;Curly&quot;);</span></span><br><span class="line"><span class="comment"> * &lt;/pre&gt;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> &lt;T&gt; the class of the objects in the array</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> a the array by which the list will be backed</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> a list view of the specified array</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@SafeVarargs</span></span><br><span class="line"><span class="meta">@SuppressWarnings(&quot;varargs&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; List&lt;T&gt; <span class="title function_">asList</span><span class="params">(T... a)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;(a);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">ArrayList</span>&lt;E&gt; <span class="keyword">extends</span> <span class="title class_">AbstractList</span>&lt;E&gt;</span><br><span class="line">    <span class="keyword">implements</span> <span class="title class_">RandomAccess</span>, java.io.Serializable</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">long</span> <span class="variable">serialVersionUID</span> <span class="operator">=</span> -<span class="number">2764017481108945198L</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> E[] a;</span><br><span class="line"></span><br><span class="line">    ArrayList(E[] array) &#123;</span><br><span class="line">        a = Objects.requireNonNull(array);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ......</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>分析发现，涉及元素增删的操作（如 <code>add()、remove()、clear()</code>）该内部类并没有实现，而是使用了父类 <code>AbstractList</code> 的方法，默认抛出 <code>UnsupportedOperationException</code> 异常：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title class_">AbstractList</span>&lt;E&gt; <span class="keyword">extends</span> <span class="title class_">AbstractCollection</span>&lt;E&gt; <span class="keyword">implements</span> <span class="title class_">List</span>&lt;E&gt; &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">add</span><span class="params">(<span class="type">int</span> index, E element)</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">UnsupportedOperationException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> E <span class="title function_">remove</span><span class="params">(<span class="type">int</span> index)</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">UnsupportedOperationException</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>参考手册：</p>
+<p><img src="/img/java/collection/arrays_aslist.png" alt="arrays_aslist"></p>
+<h1 id="可改-不可改"><a href="#可改-不可改" class="headerlink" title="可改/不可改"></a>可改/不可改</h1><p>不支持修改操作（例如 <code>add</code>、<code>remove</code> 和 <code>clear</code>）的集合称为 <em><strong>unmodifiable</strong></em> 不可修改集合。反之则称为 <em><strong>modifiable</strong></em> 可修改集合。<code>Collections</code> 工具类提供了一组静态工厂方法，用于包装并返回指定集合的不可修改视图（<em>unmodifiable view</em>），如果尝试修改，则会抛出<code> UnsupportedOperationException</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Collections.unmodifiableCollection</span><br><span class="line">Collections.unmodifiableSet</span><br><span class="line">Collections.unmodifiableSortedSet</span><br><span class="line">Collections.unmodifiableNavigableSet</span><br><span class="line">Collections.unmodifiableList</span><br><span class="line">Collections.unmodifiableMap</span><br><span class="line">Collections.unmodifiableSortedMap</span><br><span class="line">Collections.unmodifiableNavigableMap	</span><br></pre></td></tr></table></figure>
+
+<p>从源码分析，该包装类覆盖了所有修改方法并抛出异常 <code>UnsupportedOperationException</code>，实现非常简单：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">UnmodifiableCollection</span>&lt;E&gt; <span class="keyword">implements</span> <span class="title class_">Collection</span>&lt;E&gt;, Serializable &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">long</span> <span class="variable">serialVersionUID</span> <span class="operator">=</span> <span class="number">1820017752578914078L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> Collection&lt;? <span class="keyword">extends</span> <span class="title class_">E</span>&gt; c;</span><br><span class="line"></span><br><span class="line">    UnmodifiableCollection(Collection&lt;? <span class="keyword">extends</span> <span class="title class_">E</span>&gt; c) &#123;</span><br><span class="line">        <span class="keyword">if</span> (c==<span class="literal">null</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">NullPointerException</span>();</span><br><span class="line">        <span class="built_in">this</span>.c = c;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">add</span><span class="params">(E e)</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">UnsupportedOperationException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">remove</span><span class="params">(Object o)</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">UnsupportedOperationException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">addAll</span><span class="params">(Collection&lt;? extends E&gt; coll)</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">UnsupportedOperationException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">removeAll</span><span class="params">(Collection&lt;?&gt; coll)</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">UnsupportedOperationException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">retainAll</span><span class="params">(Collection&lt;?&gt; coll)</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">UnsupportedOperationException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">clear</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">UnsupportedOperationException</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ......</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="可变-不可变"><a href="#可变-不可变" class="headerlink" title="可变/不可变"></a>可变/不可变</h1><p>在 <em>unmodifiable</em> 的基础上，加之保证 <code>Collection</code> 实现类的底层数据为 <code>final</code> 的集合称为 <em><strong>immutable</strong></em> 不可变集合。反之则称为 <em><strong>mutable</strong></em> 可变集合。</p>
+<p>Java 9 为 <code>List</code>、<code>Set</code> 和 <code>Map</code> 接口提供了新的静态工厂方法，可以创建这些集合的不可变实例，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; list = List.of(<span class="string">&quot;apple&quot;</span>, <span class="string">&quot;orange&quot;</span>, <span class="string">&quot;banana&quot;</span>);</span><br><span class="line">Set&lt;String&gt; set = Set.of(<span class="string">&quot;aggie&quot;</span>, <span class="string">&quot;alley&quot;</span>, <span class="string">&quot;steely&quot;</span>);</span><br><span class="line">Map&lt;String, String&gt; map = Map.of(<span class="string">&quot;A&quot;</span>, <span class="string">&quot;Apple&quot;</span>, <span class="string">&quot;B&quot;</span>, <span class="string">&quot;Boy&quot;</span>, <span class="string">&quot;C&quot;</span>, <span class="string">&quot;Cat&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>而 Java 9 之前，要实现不可变集合只能通过第三方库，例如用 Guava 实现相同效果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; list = ImmutableList.of(<span class="string">&quot;apple&quot;</span>, <span class="string">&quot;orange&quot;</span>, <span class="string">&quot;banana&quot;</span>);</span><br><span class="line">Set&lt;String&gt; set = ImmutableSet.of(<span class="string">&quot;aggie&quot;</span>, <span class="string">&quot;alley&quot;</span>, <span class="string">&quot;steely&quot;</span>);</span><br><span class="line">Map&lt;String, String&gt; map = ImmutableMap.of(<span class="string">&quot;A&quot;</span>, <span class="string">&quot;Apple&quot;</span>, <span class="string">&quot;B&quot;</span>, <span class="string">&quot;Boy&quot;</span>, <span class="string">&quot;C&quot;</span>, <span class="string">&quot;Cat&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>Guava 提供的不可变集合 API 如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">ImmutableAsList</span><br><span class="line">ImmutableBiMap</span><br><span class="line">ImmutableClassToInstanceMap</span><br><span class="line">ImmutableCollection</span><br><span class="line">ImmutableEntry</span><br><span class="line">ImmutableEnumMap</span><br><span class="line">ImmutableEnumSet</span><br><span class="line">ImmutableList</span><br><span class="line">ImmutableListMultimap</span><br><span class="line">ImmutableMap</span><br><span class="line">ImmutableMapEntry</span><br><span class="line">ImmutableMapEntrySet</span><br><span class="line">ImmutableMapKeySet</span><br><span class="line">ImmutableMapValues</span><br><span class="line">ImmutableMultimap</span><br><span class="line">ImmutableMultiset</span><br><span class="line">ImmutableRangeMap</span><br><span class="line">ImmutableRangeSet</span><br><span class="line">ImmutableSet</span><br><span class="line">ImmutableSetMultimap</span><br><span class="line">ImmutableSortedAsList</span><br><span class="line">ImmutableSortedMap</span><br><span class="line">ImmutableSortedMapFauxverideShim</span><br><span class="line">ImmutableSortedMultiset</span><br><span class="line">ImmutableSortedMultisetFauxverideShim</span><br><span class="line">ImmutableSortedSet</span><br><span class="line">ImmutableSortedSetFauxverideShim</span><br><span class="line">ImmutableTable</span><br></pre></td></tr></table></figure>
+
+<p><img src="/img/java/collection/immutable_collections.PNG" alt="immutable_collections"></p>
+<p>使用如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; list = ImmutableList.of(<span class="string">&quot;apple&quot;</span>, <span class="string">&quot;orange&quot;</span>, <span class="string">&quot;banana&quot;</span>);</span><br><span class="line">Set&lt;String&gt; set = ImmutableSet.of(<span class="string">&quot;aggie&quot;</span>, <span class="string">&quot;alley&quot;</span>, <span class="string">&quot;steely&quot;</span>);</span><br><span class="line">Map&lt;String, String&gt; map = ImmutableMap.of(<span class="string">&quot;A&quot;</span>, <span class="string">&quot;Apple&quot;</span>, <span class="string">&quot;B&quot;</span>, <span class="string">&quot;Boy&quot;</span>, <span class="string">&quot;C&quot;</span>, <span class="string">&quot;Cat&quot;</span>);</span><br><span class="line"></span><br><span class="line">log.info(<span class="string">&quot;list=&#123;&#125;, set=&#123;&#125;, map=&#123;&#125;&quot;</span>, fruits, marbles, map);  <span class="comment">// list=[apple, orange, banana], set=[aggie, alley, steely], map=&#123;A=Apple, B=Boy, C=Cat&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>除此之外，Apache Commons Lang 也提供了两个好用的类 <code>Pair</code> 和 <code>Triple</code>，可用于存放指定个数的临时数据：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Triple.of(<span class="string">&quot;left&quot;</span>, <span class="string">&quot;middle&quot;</span>, <span class="string">&quot;right&quot;</span>)</span><br><span class="line">Pair.of(<span class="string">&quot;left&quot;</span>, <span class="string">&quot;right&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/img/java/collection/methods_of_Pair_and_Triple.png" alt="methods_of_Pair_and_Triple"></p>
+<h1 id="线程同步-非同步"><a href="#线程同步-非同步" class="headerlink" title="线程同步/非同步"></a>线程同步/非同步</h1><p>参考<a href="/2018/05/25/java-collections-framework-concurrent-impl/">线程同步包装器</a></p>
+<h1 id="随机-顺序访问"><a href="#随机-顺序访问" class="headerlink" title="随机/顺序访问"></a>随机/顺序访问</h1><p>支持根据下标索引快速（时间复杂度 <code>0(1)</code>）访问元素的列表称为 <em><strong>random access</strong></em> 随机访问列表。反之则称为 <em><strong>sequential access</strong></em> 顺序访问列表。</p>
+<p>标记接口 <code>java.util.RandomAccess</code> 用于标记列表类支持随机访问，其实现类如下：</p>
+<p><img src="/img/java/collection/RandomAccess.png" alt="RandomAccess"></p>
+<p>该标记接口使得 <code>Collections</code> 工具类中的通用算法实现能够据此更改其行为以提升性能：</p>
+<ul>
+<li><code>binarySearch</code></li>
+<li><code>reverse</code></li>
+<li><code>shuffle</code></li>
+<li><code>fill</code></li>
+<li><code>copy</code></li>
+<li><code>rotate</code></li>
+<li><code>replaceAll</code></li>
+<li><code>indexOfSubList</code></li>
+<li><code>lastIndexOfSubList</code></li>
+<li><code>checkedList</code></li>
+</ul>
+<p>以 <code>binarySearch</code> 为例，源码判断如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="type">int</span> <span class="title function_">binarySearch</span><span class="params">(List&lt;? extends Comparable&lt;? <span class="built_in">super</span> T&gt;&gt; list, T key)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (list <span class="keyword">instanceof</span> RandomAccess || list.size()&lt;BINARYSEARCH_THRESHOLD)</span><br><span class="line">        <span class="keyword">return</span> Collections.indexedBinarySearch(list, key);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">return</span> Collections.iteratorBinarySearch(list, key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="元素限制"><a href="#元素限制" class="headerlink" title="元素限制"></a>元素限制</h1><p>某些集合实现限制了可以存储哪些元素。可能的限制包括：</p>
+<ul>
+<li>元素不能为 <code>null</code>。</li>
+<li>元素必须属于特定类型。</li>
+<li>元素必须匹配某些断言。</li>
+</ul>
+<p>尝试添加违反集合实现限制的元素将导致运行时异常，如 <code>ClassCastException</code>、<code>IllegalArgumentException</code> 或 <code>NullPointerException</code>。</p>
+<h2 id="能否为-null"><a href="#能否为-null" class="headerlink" title="能否为 null"></a>能否为 null</h2><p>参考手册：</p>
+<p><img src="/img/java/collection/map/alibaba_map_element_of_null.png" alt="map_element_of_null"></p>
+<h2 id="类型限制"><a href="#类型限制" class="headerlink" title="类型限制"></a>类型限制</h2><p>泛型机制虽然为集合提供了编译期类型检查，但仍然可以在运行期绕过此机制（通过反射也能绕过编译期类型检查）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test4</span><span class="params">()</span> &#123;</span><br><span class="line">    List&lt;Integer&gt; intList = Lists.newArrayList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);</span><br><span class="line">    add(intList);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 循环到第四个元素时，报错：java.lang.ClassCastException: java.lang.String cannot be cast to java.lang.Integer</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> item : intList) &#123;</span><br><span class="line">        log.info(<span class="string">&quot;result is &#123;&#125;&quot;</span>, item);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">add</span><span class="params">(List list)</span> &#123;</span><br><span class="line">    list.add(<span class="string">&quot;4&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>集合框架提供了一组包装器实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Collections.checkedCollection</span><br><span class="line">Collections.checkedQueue</span><br><span class="line">Collections.checkedSet</span><br><span class="line">Collections.checkedSortedSet</span><br><span class="line">Collections.checkedNavigableSet</span><br><span class="line">Collections.checkedList</span><br><span class="line">Collections.checkedMap</span><br><span class="line">Collections.checkedSortedMap</span><br><span class="line">Collections.checkedNavigableMap</span><br></pre></td></tr></table></figure>
+
+<p>这些包装器实现用于返回指定集合的动态类型安全视图（<em>dynamically type-safe view</em>），核心源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">CheckedCollection</span>&lt;E&gt; <span class="keyword">implements</span> <span class="title class_">Collection</span>&lt;E&gt;, Serializable &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">long</span> <span class="variable">serialVersionUID</span> <span class="operator">=</span> <span class="number">1578914078182001775L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> Collection&lt;E&gt; c;</span><br><span class="line">    <span class="keyword">final</span> Class&lt;E&gt; type;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">    E <span class="title function_">typeCheck</span><span class="params">(Object o)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (o != <span class="literal">null</span> &amp;&amp; !type.isInstance(o))</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">ClassCastException</span>(badElementMsg(o));</span><br><span class="line">        <span class="keyword">return</span> (E) o;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String <span class="title function_">badElementMsg</span><span class="params">(Object o)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Attempt to insert &quot;</span> + o.getClass() +</span><br><span class="line">            <span class="string">&quot; element into collection with element type &quot;</span> + type;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    CheckedCollection(Collection&lt;E&gt; c, Class&lt;E&gt; type) &#123;</span><br><span class="line">        <span class="built_in">this</span>.c = Objects.requireNonNull(c, <span class="string">&quot;c&quot;</span>);</span><br><span class="line">        <span class="built_in">this</span>.type = Objects.requireNonNull(type, <span class="string">&quot;type&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">add</span><span class="params">(E e)</span> &#123; </span><br><span class="line">        <span class="keyword">return</span> c.add(typeCheck(e));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ......</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以 <code>add</code> 方法为例，每次添加元素时，都会调用 <code>typeCheck</code> 私有方法进行类型检查，如果尝试添加错误类型的元素，则会抛出 <code>ClassCastException</code>，通过 fail fast 防止后续出错：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test</span><span class="params">()</span> &#123;</span><br><span class="line">    List&lt;Integer&gt; intList = Collections.checkedList(Lists.newArrayList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>), Integer.class);</span><br><span class="line">    add(intList);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> item : intList) &#123;</span><br><span class="line">        log.info(<span class="string">&quot;result is &#123;&#125;&quot;</span>, item);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">add</span><span class="params">(List list)</span> &#123;</span><br><span class="line">    <span class="comment">// java.lang.ClassCastException: Attempt to insert class java.lang.String element into collection with element type class java.lang.Integer</span></span><br><span class="line">    list.add(<span class="string">&quot;4&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>《<a target="_blank" rel="noopener" href="https://www.cnblogs.com/peida/p/Guava_ImmutableCollections.html">Guava学习笔记：Immutable(不可变)集合</a>》</p>
+<p>《<a target="_blank" rel="noopener" href="https://blog.csdn.net/Seriousplus/article/details/79750581">Java 中的 Mutable 和 Immutable</a>》（<a target="_blank" rel="noopener" href="http://web.mit.edu/6.031/www/sp17/classes/09-immutability/">en_US</a>）</p>
+<p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/7713274/java-immutable-collections">https://stackoverflow.com/questions/7713274/java-immutable-collections</a></p>
+<ul>
+<li>Unmodifiable collections are usually read-only views (wrappers) of other collections. You can’t add, remove or clear them, but <strong>the underlying collection can change</strong>.</li>
+<li>Immutable collections can’t be changed at all - they don’t wrap another collection - they have their own <code>final</code> elements.</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Qida's Blog
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://qidawu.github.io/posts/java-collections-framework-features/" title="Java 集合框架系列（二）集合特性总结">https://qidawu.github.io/posts/java-collections-framework-features/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag"># 数据结构</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/java-collections-framework/" rel="prev" title="Java 集合框架系列（一）框架总结">
+                  <i class="fa fa-chevron-left"></i> Java 集合框架系列（一）框架总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/java-collections-framework-enhancements/" rel="next" title="Java 集合框架系列（三）各版本功能增强总结">
+                  Java 集合框架系列（三）各版本功能增强总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="150" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
