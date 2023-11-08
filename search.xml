@@ -334,6 +334,11 @@
 <p>例子：</p>
 <p><img src="/img/bitwise-operation/Calculate_subnet_address.png" alt="Calculate subnet address"></p>
 <p><img src="/img/bitwise-operation/Calculate_subnet_address_2.png" alt="Calculate subnet address"></p>
+<h2 id="实现循环队列"><a href="#实现循环队列" class="headerlink" title="实现循环队列"></a>实现循环队列</h2><p>编程的时候，很多时候都会要求一个数在某一个范围内进行反复循环，例如实现循环队列。如果使用 <code>if</code> 语句，当判断达到最大值的时候回到开始处，效率较低。是否有更简单更高效的方法？</p>
+<ul>
+<li><code>&amp;</code> 按位与（AND）。比如说我想让一个数在 0-7 内循环，该如何做呢？<code>temp = (temp++)&amp;0x07</code>，如此就简单的实现了 0-7 循环。因为要实现 0-7 的循环，其实只要提取一个变量递增的<strong>低三位</strong>即可。不管这个变量如何变化，它的低三位始终都是在 0-7 循环变化的。同理，它也可以实现 0-15、0-31 变化。但是这个方法有局限，<strong>它只能按照连续 bit 位的最大值进行循环</strong>。</li>
+<li><code>%</code> 取余运算（Modulo），它不存在上述限制。可以在 0-任意数循环。比如 0-5 循环，只要 <code>temp = (temp++)%6</code>（注意是 6 而不是 5），那么 temp 就会在 0-5 之间循环了。</li>
+</ul>
 <h1 id="「按位或-」的使用场景"><a href="#「按位或-」的使用场景" class="headerlink" title="「按位或 |」的使用场景"></a>「按位或 <code>|</code>」的使用场景</h1><h2 id="单个变量保存多个值，节省存储空间"><a href="#单个变量保存多个值，节省存储空间" class="headerlink" title="单个变量保存多个值，节省存储空间"></a>单个变量保存多个值，节省存储空间</h2><p><img src="/img/bitwise-operation/DragonPay.png" alt="DragonPay"></p>
 <h2 id="雪花算法的拼接"><a href="#雪花算法的拼接" class="headerlink" title="雪花算法的拼接"></a>雪花算法的拼接</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">     timestamp &lt;&lt; TIMESTAMP_SHIFT</span><br><span class="line">| dataCenterNo &lt;&lt; DATA_CENTER_NO_SHIFT</span><br><span class="line">    | workerNo &lt;&lt; WORKER_NO_SHIFT</span><br><span class="line">       | seqNo &lt;&lt; SEQ_NO_SHIFT</span><br><span class="line">         | ext</span><br></pre></td></tr></table></figure>
 
@@ -411,6 +416,7 @@
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://en.wikipedia.org/wiki/Bit">https://en.wikipedia.org/wiki/Bit</a></p>
 <p><a href="https://en.wikipedia.org/wiki/Bitwise_operation">https://en.wikipedia.org/wiki/Bitwise_operation</a></p>
 <p><a href="https://en.wikipedia.org/wiki/Bit_array">https://en.wikipedia.org/wiki/Bit_array</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/bit-functions.html">https://dev.mysql.com/doc/refman/5.7/en/bit-functions.html</a></p>
 <p>《<a href="https://mp.weixin.qq.com/s/xnT5sBmK9kYlRw2I-vFxWg">计算机中有哪些令人拍案叫绝的设计？ | 良许 Linux</a>》</p>
 <p>《<a href="https://mp.weixin.qq.com/s/ZD65OgC1mQv-RNlx4J39AA">C 语言”位运算”有哪些奇特技巧？</a>》</p>
 ]]></content>
