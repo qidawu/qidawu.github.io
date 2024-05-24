@@ -178,7 +178,14 @@ https://stackoverflow.com/questions/2603692/what-is-the-difference-between-tree-
   * 二叉树后序遍历（PostOrderTraverse）
   * 层次遍历（LevelOrder）：从上往下逐层遍历，同一层中结点从左往右
 
-### 已知二叉树，求遍历序列
+### 遍历
+
+https://en.wikipedia.org/wiki/Tree_traversal
+
+* https://en.wikipedia.org/wiki/Depth-first_search
+* https://en.wikipedia.org/wiki/Breadth-first_search
+
+#### 已知二叉树，求遍历序列
 
 二叉树的遍历（traversing binary tree），是指从根结点出发，按照某种次序依次访问二叉树中所有的结点，使得每个结点被访问有且仅被访问一次。
 
@@ -200,7 +207,7 @@ https://stackoverflow.com/questions/2603692/what-is-the-difference-between-tree-
 * 若一棵具有 n (n>0) 个结点的二叉树的**先序序列和后序序列正好相反**，则该二叉树一定是：高度为 n 的二叉树。
 * 若一棵二叉树的**先序序列和中序序列正好相反**，则二叉树上每个结点的右子树都是空二叉树。
 
-### 已知遍历序列，求二叉树
+#### 已知遍历序列，求二叉树
 
 由二叉树的遍历可知，任意一棵二叉树结点的先序序列、中序序列和后序序列都是唯一的。已知先序或后序序列 + 中序序列，可以确定一棵二叉树：
 
@@ -212,7 +219,7 @@ https://stackoverflow.com/questions/2603692/what-is-the-difference-between-tree-
 
 ![二叉树恢复](/img/data-structure/tree/binary_tree_creating.png)
 
-### 二叉树遍历的实现方式
+#### 二叉树遍历的实现方式
 
 * 递归实现
 * 非递归实现（栈）
@@ -268,6 +275,12 @@ B-tree 的阶（Order），来自 Knuth (1998) 的定义：
 
 # 树和森林
 
+https://en.wikipedia.org/wiki/Tree_structure
+
+## 逻辑结构
+
+无回路的连通图（Connected Graph）即为树。
+
 ## 存储结构
 
 森林（Forest）：n 棵互不相交的树的集合。
@@ -284,7 +297,7 @@ https://slidetodoc.com/left-childright-sibling-representation-instructor-prof-jy
 
 ![List Representation](/img/data-structure/tree/list_representation_of_tree.png)
 
-# 使用场景
+# 树的应用
 
 ## 分类算法
 
@@ -301,6 +314,8 @@ https://en.wikipedia.org/wiki/Huffman_tree
 《[灵光一现的创造 霍夫曼编码](http://www.360doc.com/content/21/0927/19/32196507_997366430.shtml)》
 
 【霍夫曼编码原理 文本压缩、ZIP压缩文件原理 Huffman Encoding by Tom Scott-哔哩哔哩】 https://b23.tv/wFatkFc
+
+【Huffman 编码动画演示】 https://www.bilibili.com/video/BV18V411v7px/
 
 ## 查找
 
