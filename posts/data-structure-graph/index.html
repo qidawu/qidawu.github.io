@@ -28,7 +28,6 @@
 <meta property="og:image" content="https://qidawu.github.io/img/data-structure/graph/undirected_graph.png">
 <meta property="og:image" content="https://qidawu.github.io/img/data-structure/graph/directed_graph.png">
 <meta property="og:image" content="https://qidawu.github.io/img/data-structure/graph/weighted_graph.png">
-<meta property="og:image" content="https://qidawu.github.io/img/data-structure/graph/connected_components.png">
 <meta property="og:image" content="https://qidawu.github.io/img/data-structure/graph/adjacency_matrix.jpeg">
 <meta property="og:image" content="https://qidawu.github.io/img/data-structure/graph/adjacency_list.jpeg">
 <meta property="og:image" content="https://qidawu.github.io/img/data-structure/graph/dfs.webp">
@@ -37,13 +36,17 @@
 <meta property="og:image" content="https://qidawu.github.io/img/data-structure/graph/bfs_1.webp">
 <meta property="og:image" content="https://qidawu.github.io/img/data-structure/graph/bfs_2.webp">
 <meta property="og:image" content="https://qidawu.github.io/img/data-structure/graph/bfs_3.webp">
+<meta property="og:image" content="https://qidawu.github.io/img/data-structure/graph/connected_components.png">
 <meta property="og:image" content="https://qidawu.github.io/img/data-structure/graph/undirected_graph.png">
-<meta property="og:image" content="https://qidawu.github.io/img/data-structure/graph/spanning_tree.png">
 <meta property="og:image" content="https://qidawu.github.io/img/data-structure/graph/weighted_graph.png">
 <meta property="og:image" content="https://qidawu.github.io/img/data-structure/graph/minimum_spanning_tree.png">
+<meta property="og:image" content="https://qidawu.github.io/img/data-structure/graph/prim.png">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/9/9b/PrimAlgDemo.gif">
+<meta property="og:image" content="https://qidawu.github.io/img/data-structure/graph/kruskal.png">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/b/bb/KruskalDemo.gif">
 <meta property="og:image" content="https://qidawu.github.io/img/data-structure/graph/topological_sorting.png">
 <meta property="article:published_time" content="2021-10-07T09:13:35.000Z">
-<meta property="article:modified_time" content="2023-11-08T09:15:59.756Z">
+<meta property="article:modified_time" content="2024-05-29T07:28:03.660Z">
 <meta property="article:author" content="Qida&#39;s Blog">
 <meta property="article:tag" content="数据结构">
 <meta name="twitter:card" content="summary">
@@ -106,7 +109,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">194</span></a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">196</span></a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -157,7 +160,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">逻辑结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E7%9A%84%E7%A7%8D%E7%B1%BB"><span class="nav-number">1.1.</span> <span class="nav-text">图的种类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A0%E5%90%91%E5%9B%BE%EF%BC%88Undirected-Graph%EF%BC%89"><span class="nav-number">1.1.1.</span> <span class="nav-text">无向图（Undirected Graph）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%89%E5%90%91%E5%9B%BE%EF%BC%88Directed-Graph%EF%BC%89"><span class="nav-number">1.1.2.</span> <span class="nav-text">有向图（Directed Graph）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%A6%E6%9D%83%E5%9B%BE%EF%BC%88Weighted-Graph%EF%BC%89"><span class="nav-number">1.1.3.</span> <span class="nav-text">带权图（Weighted Graph）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E7%9A%84%E7%9B%B8%E5%85%B3%E6%9C%AF%E8%AF%AD"><span class="nav-number">1.2.</span> <span class="nav-text">图的相关术语</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9E%E9%80%9A%E5%88%86%E9%87%8F"><span class="nav-number">1.2.1.</span> <span class="nav-text">连通分量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E6%A0%91"><span class="nav-number">1.2.2.</span> <span class="nav-text">生成树</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">存储结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%82%BB%E6%8E%A5%E7%9F%A9%E9%98%B5%EF%BC%88Adjacency-Matrix%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">邻接矩阵（Adjacency Matrix）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E7%A7%B0%E7%9F%A9%E9%98%B5%EF%BC%88Symmetric-Matrix%EF%BC%89"><span class="nav-number">2.1.1.</span> <span class="nav-text">对称矩阵（Symmetric Matrix）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E8%A7%92%E7%9F%A9%E9%98%B5%EF%BC%88Triangular-Matrix%EF%BC%89"><span class="nav-number">2.1.2.</span> <span class="nav-text">三角矩阵（Triangular Matrix）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A8%80%E7%96%8F%E7%9F%A9%E9%98%B5%EF%BC%88Sparse-Matrix%EF%BC%89"><span class="nav-number">2.1.3.</span> <span class="nav-text">稀疏矩阵（Sparse Matrix）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%82%BB%E6%8E%A5%E8%A1%A8%EF%BC%88Adjacency-List%EF%BC%89"><span class="nav-number">2.2.</span> <span class="nav-text">邻接表（Adjacency List）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E8%BF%90%E7%AE%97"><span class="nav-number">3.</span> <span class="nav-text">基本运算</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E7%9A%84%E9%81%8D%E5%8E%86"><span class="nav-number">3.1.</span> <span class="nav-text">图的遍历</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E6%90%9C%E7%B4%A2%EF%BC%88DFS%EF%BC%89"><span class="nav-number">3.1.1.</span> <span class="nav-text">深度优先搜索（DFS）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E6%90%9C%E7%B4%A2%EF%BC%88BFS%EF%BC%89"><span class="nav-number">3.1.2.</span> <span class="nav-text">广度优先搜索（BFS）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">4.</span> <span class="nav-text">使用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BE%E4%BA%A4%E7%BD%91%E7%BB%9C"><span class="nav-number">4.1.</span> <span class="nav-text">社交网络</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91"><span class="nav-number">4.2.</span> <span class="nav-text">最小生成树</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Prim-%E7%AE%97%E6%B3%95"><span class="nav-number">4.2.1.</span> <span class="nav-text">Prim 算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Kruskal-%E7%AE%97%E6%B3%95"><span class="nav-number">4.2.2.</span> <span class="nav-text">Kruskal 算法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F"><span class="nav-number">4.3.</span> <span class="nav-text">拓扑排序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84"><span class="nav-number">4.4.</span> <span class="nav-text">最短路径</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Dijkstra-%E7%AE%97%E6%B3%95"><span class="nav-number">4.4.1.</span> <span class="nav-text">Dijkstra 算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-%E7%AE%97%E6%B3%95"><span class="nav-number">4.4.2.</span> <span class="nav-text">A* 算法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">逻辑结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E7%9A%84%E7%A7%8D%E7%B1%BB"><span class="nav-number">1.1.</span> <span class="nav-text">图的种类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A0%E5%90%91%E5%9B%BE%EF%BC%88Undirected-Graph%EF%BC%89"><span class="nav-number">1.1.1.</span> <span class="nav-text">无向图（Undirected Graph）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%89%E5%90%91%E5%9B%BE%EF%BC%88Directed-Graph%EF%BC%89"><span class="nav-number">1.1.2.</span> <span class="nav-text">有向图（Directed Graph）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%A6%E6%9D%83%E5%9B%BE%EF%BC%88Weighted-Graph%EF%BC%89"><span class="nav-number">1.1.3.</span> <span class="nav-text">带权图（Weighted Graph）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E7%9A%84%E7%9B%B8%E5%85%B3%E6%9C%AF%E8%AF%AD"><span class="nav-number">1.2.</span> <span class="nav-text">图的相关术语</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">存储结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%82%BB%E6%8E%A5%E7%9F%A9%E9%98%B5%EF%BC%88Adjacency-Matrix%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">邻接矩阵（Adjacency Matrix）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E7%A7%B0%E7%9F%A9%E9%98%B5%EF%BC%88Symmetric-Matrix%EF%BC%89"><span class="nav-number">2.1.1.</span> <span class="nav-text">对称矩阵（Symmetric Matrix）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E8%A7%92%E7%9F%A9%E9%98%B5%EF%BC%88Triangular-Matrix%EF%BC%89"><span class="nav-number">2.1.2.</span> <span class="nav-text">三角矩阵（Triangular Matrix）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A8%80%E7%96%8F%E7%9F%A9%E9%98%B5%EF%BC%88Sparse-Matrix%EF%BC%89"><span class="nav-number">2.1.3.</span> <span class="nav-text">稀疏矩阵（Sparse Matrix）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%82%BB%E6%8E%A5%E8%A1%A8%EF%BC%88Adjacency-List%EF%BC%89"><span class="nav-number">2.2.</span> <span class="nav-text">邻接表（Adjacency List）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%BE%E7%9A%84%E5%BA%94%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">图的应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E7%9A%84%E6%90%9C%E7%B4%A2%EF%BC%88%E9%81%8D%E5%8E%86%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">图的搜索（遍历）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E6%90%9C%E7%B4%A2%EF%BC%88DFS%EF%BC%89"><span class="nav-number">3.1.1.</span> <span class="nav-text">深度优先搜索（DFS）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E6%90%9C%E7%B4%A2%EF%BC%88BFS%EF%BC%89"><span class="nav-number">3.1.2.</span> <span class="nav-text">广度优先搜索（BFS）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9E%E9%80%9A%E5%88%86%E9%87%8F"><span class="nav-number">3.2.</span> <span class="nav-text">连通分量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91%E9%97%AE%E9%A2%98%EF%BC%88MST-problem%EF%BC%89"><span class="nav-number">3.3.</span> <span class="nav-text">最小生成树问题（MST problem）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Prim-%E7%AE%97%E6%B3%95"><span class="nav-number">3.3.1.</span> <span class="nav-text">Prim 算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Kruskal-%E7%AE%97%E6%B3%95%EF%BC%88%E5%8A%A0%E8%BE%B9%E6%B3%95%EF%BC%89"><span class="nav-number">3.3.2.</span> <span class="nav-text">Kruskal 算法（加边法）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E9%97%AE%E9%A2%98%EF%BC%88Shortest-path-problem%EF%BC%89"><span class="nav-number">3.4.</span> <span class="nav-text">最短路径问题（Shortest path problem）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Dijkstra-%E7%AE%97%E6%B3%95"><span class="nav-number">3.4.1.</span> <span class="nav-text">Dijkstra 算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-%E7%AE%97%E6%B3%95"><span class="nav-number">3.4.2.</span> <span class="nav-text">A* 算法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%A4%A7%E6%B5%81%E9%97%AE%E9%A2%98%EF%BC%88Maximum-flow-problem%EF%BC%89"><span class="nav-number">3.5.</span> <span class="nav-text">最大流问题（Maximum flow problem）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOV-%E7%BD%91%EF%BC%88Activity-On-Vertex-Network%EF%BC%89"><span class="nav-number">3.6.</span> <span class="nav-text">AOV 网（Activity On Vertex Network）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F%EF%BC%88Topological-sorting%EF%BC%89"><span class="nav-number">3.7.</span> <span class="nav-text">拓扑排序（Topological sorting）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BE%E4%BA%A4%E7%BD%91%E7%BB%9C%EF%BC%88Social-network%EF%BC%89"><span class="nav-number">3.8.</span> <span class="nav-text">社交网络（Social network）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%EF%BC%88Knowledge-graph%EF%BC%89"><span class="nav-number">3.9.</span> <span class="nav-text">知识图谱（Knowledge graph）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -172,7 +175,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">194</span>
+          <span class="site-state-item-count">196</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -197,7 +200,7 @@
 <!-- https://hexo.io/zh-cn/docs/helpers.html#list-tags -->
 <!-- https://theme-next.js.org/pisces/docs/advanced-settings/custom-files.html -->
 
-  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GNU-Linux/" rel="tag">GNU&#x2F;Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-C/" rel="tag">C&#x2F;C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/" rel="tag">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag">并发编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%BA%E7%AB%99/" rel="tag">建站</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/" rel="tag">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%87%91%E8%9E%8D/" rel="tag">金融</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%A1%E7%90%86/" rel="tag">管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">响应式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="tag">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
 
 
         </div>
@@ -261,7 +264,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-11-08 17:15:59" itemprop="dateModified" datetime="2023-11-08T17:15:59+08:00">2023-11-08</time>
+      <time title="修改时间：2024-05-29 15:28:03" itemprop="dateModified" datetime="2024-05-29T15:28:03+08:00">2024-05-29</time>
     </span>
 
   
@@ -299,9 +302,6 @@
 </blockquote>
 <p>图（graph）是高度抽象后的逻辑结构，而网（network）在此之上可以通过在顶点（vertex）和边（edge）上增加属性来包含更多的信息，更偏重于对实际问题的建模。</p>
 <h2 id="图的相关术语"><a href="#图的相关术语" class="headerlink" title="图的相关术语"></a>图的相关术语</h2><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Glossary_of_graph_theory">https://en.wikipedia.org/wiki/Glossary_of_graph_theory</a></p>
-<h3 id="连通分量"><a href="#连通分量" class="headerlink" title="连通分量"></a>连通分量</h3><p>无向图中的<strong>极大连通子图（Maximal connected subgraph）</strong>称为原图的<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Component_(graph_theory)">连通分量（Connected Components）</a>。</p>
-<p><img src="/img/data-structure/graph/connected_components.png" alt="连通分量"></p>
-<p>连通图只有一个极大连通子图，就是它本身。</p>
 <p>What’s the difference between Adjacency and Connectivity ?</p>
 <blockquote>
 <p>在无向图中，邻接是点与点或者边与边之间的关系。在无向图中，如果两个点之间至少有一条边相连，则称这两个点是邻接的。同样，如果两条边有共同的顶点，则两条边也是邻接的。关联是点与边之自的关系。一个点如果是一条边的顶点之一，则称为点与该边关联。</p>
@@ -310,7 +310,7 @@
 <li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Connectivity_(graph_theory)">https://en.wikipedia.org/wiki/Connectivity_(graph_theory)</a></li>
 <li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Glossary_of_graph_theory#adjacent">https://en.wikipedia.org/wiki/Glossary_of_graph_theory#adjacent</a></li>
 </ul>
-<h3 id="生成树"><a href="#生成树" class="headerlink" title="生成树"></a>生成树</h3><h1 id="存储结构"><a href="#存储结构" class="headerlink" title="存储结构"></a>存储结构</h1><h2 id="邻接矩阵（Adjacency-Matrix）"><a href="#邻接矩阵（Adjacency-Matrix）" class="headerlink" title="邻接矩阵（Adjacency Matrix）"></a>邻接矩阵（Adjacency Matrix）</h2><p>维基百科对<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Matrix_(mathematics)">矩阵（Matrix）</a>的定义：</p>
+<h1 id="存储结构"><a href="#存储结构" class="headerlink" title="存储结构"></a>存储结构</h1><h2 id="邻接矩阵（Adjacency-Matrix）"><a href="#邻接矩阵（Adjacency-Matrix）" class="headerlink" title="邻接矩阵（Adjacency Matrix）"></a>邻接矩阵（Adjacency Matrix）</h2><p>维基百科对<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Matrix_(mathematics)">矩阵（Matrix）</a>的定义：</p>
 <blockquote>
 <p>In mathematics, a <strong>matrix</strong> (plural matrices) is a rectangular array or table of numbers, symbols, or expressions, arranged in rows and columns, which is used to represent a mathematical object or a property of such an object.</p>
 </blockquote>
@@ -375,10 +375,11 @@
 <p>在基于链表法解决冲突的散列表中，如果链过长，为了提高查找效率，我们可以将链表换成其他更加高效的数据结构，比如平衡二叉查找树等。<strong>所以，我们也可以将邻接表同散列表一样进行 “改进升级”。</strong></p>
 <p>我们可以将邻接表中的链表改成平衡二叉查找树。实际开发中，我们可以选择用红黑树。<strong>这样，我们就可以更加快速地查找两个顶点之间是否存在边了。</strong>当然，这里的二叉查找树可以换成其他动态数据结构，比如跳表、散列表等。除此之外，我们还可以将链表改成有序动态数组，可以通过二分查找的方法来快速定位两个顶点之间否是存在边。</p>
 </blockquote>
-<h1 id="基本运算"><a href="#基本运算" class="headerlink" title="基本运算"></a>基本运算</h1><blockquote>
+<h1 id="图的应用"><a href="#图的应用" class="headerlink" title="图的应用"></a>图的应用</h1><h2 id="图的搜索（遍历）"><a href="#图的搜索（遍历）" class="headerlink" title="图的搜索（遍历）"></a>图的搜索（遍历）</h2><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Graph_traversal">https://en.wikipedia.org/wiki/Graph_traversal</a></p>
+<blockquote>
 <p>图上的搜索算法，最直接的理解就是，在图中找出从一个顶点出发，到另一个顶点的路径。具体方法有很多，比如两种最简单、最 “暴力” 的深度优先、广度优先搜索，还有 A*、IDA* 等启发式搜索算法。</p>
 </blockquote>
-<h2 id="图的遍历"><a href="#图的遍历" class="headerlink" title="图的遍历"></a>图的遍历</h2><p>连通图的两种搜索方式：</p>
+<p>连通图的两种搜索方式：</p>
 <table>
 <thead>
 <tr>
@@ -428,8 +429,96 @@
 <p><img src="/img/data-structure/graph/bfs_1.webp" alt="广度优先搜索"></p>
 <p><img src="/img/data-structure/graph/bfs_2.webp" alt="广度优先搜索"></p>
 <p><img src="/img/data-structure/graph/bfs_3.webp" alt="广度优先搜索"></p>
-<h1 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h1><p>图的使用场景，例如：社交网络（Social Network）、知识图谱（Knowledge Graph）、…</p>
-<h2 id="社交网络"><a href="#社交网络" class="headerlink" title="社交网络"></a>社交网络</h2><p>图的两种存储结构，在社交应用的优缺点对比如下。例如在微博（有向图）中，设我为 $v_i$，ta 为 $v_j$：</p>
+<h2 id="连通分量"><a href="#连通分量" class="headerlink" title="连通分量"></a>连通分量</h2><p>无向图中的<strong>极大连通子图（Maximal connected subgraph）</strong>称为原图的<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Component_(graph_theory)">连通分量（Connected Components）</a>。</p>
+<p><img src="/img/data-structure/graph/connected_components.png" alt="连通分量"></p>
+<p>连通图只有一个极大连通子图，就是它本身。</p>
+<h2 id="最小生成树问题（MST-problem）"><a href="#最小生成树问题（MST-problem）" class="headerlink" title="最小生成树问题（MST problem）"></a>最小生成树问题（MST problem）</h2><p>如果无向图中，任意两个顶点都连通，称为<strong>连通图（Connected Graph）</strong>。如下图：</p>
+<p><img src="/img/data-structure/graph/undirected_graph.png" alt="无向图"></p>
+<p>如果连通图中，边上有权值，称为<strong>连通网（Connected Network）</strong>。如下图：</p>
+<p><img src="/img/data-structure/graph/weighted_graph.png" alt="带权图"></p>
+<p>连通图的一次<strong>遍历</strong>所经过的点和边的集合，构成一棵<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Spanning_tree">生成树（Spanning Tree）</a>。</p>
+<blockquote>
+<p>一个连通图的生成树，是含有该连通图的全部顶点的一个<strong>极小连通子图（Minimum connected subgraph）</strong>。</p>
+<p>一个具有 $n$ 个顶点的连通图，它的生成树的边数为 $n-1$。</p>
+</blockquote>
+<p>连通图的遍历序列不是唯一的，所以能得到不同的生成树。其中权值总和最小的生成树，称为<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Minimum_spanning_tree">最小生成树（Minimum Spanning Tree, MST）</a>。如下图：</p>
+<blockquote>
+<p>A <strong>minimum spanning tree</strong> (<strong>MST</strong>) or <strong>minimum weight spanning tree</strong> is a subset of the edges of a <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Connected_graph">connected</a>, edge-weighted undirected graph that connects all the <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Vertex_(graph_theory)">vertices</a> together, without any <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Cycle_(graph_theory)">cycles</a> and with the minimum possible total edge weight. That is, it is a <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Spanning_tree">spanning tree</a> whose sum of edge weights is as small as possible.</p>
+</blockquote>
+<p><img src="/img/data-structure/graph/minimum_spanning_tree.png" alt="最小生成树"></p>
+<p>最小生成树的准则：</p>
+<ul>
+<li>必须使用且仅使用连通网中的 <code>n-1</code> 条边来联结网络中的 <code>n</code> 个顶点；</li>
+<li><strong>不能使用产生回路的边</strong>；</li>
+<li>各边上的权值总和达到最小。</li>
+</ul>
+<p>最小生成树的应用：<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Minimum_spanning_tree#Applications">https://en.wikipedia.org/wiki/Minimum_spanning_tree#Applications</a></p>
+<ul>
+<li>例如工程领域设计，如最小成本的铺设网线、电缆、管道、道路、…</li>
+</ul>
+<h3 id="Prim-算法"><a href="#Prim-算法" class="headerlink" title="Prim 算法"></a>Prim 算法</h3><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Prim%27s_algorithm">https://en.wikipedia.org/wiki/Prim%27s_algorithm</a></p>
+<p>假设 $N=(V,\ E)$ 是连通网，$TE$ 是 $N$ 上最小生成树中边的集合：</p>
+<ol>
+<li><p>初始态：$U={u_0},\ (u_0∈V),\ TE={}$</p>
+</li>
+<li><p>在所有 $u∈U,\ v∈V-U$ 的边 $(u,\ v)∈E$ 中找一条代价最小的边 $(u,\ v_0)$ 并入集合 $TE$，<br>同时 $v_0$ 并入 $U$</p>
+</li>
+<li><p>重复 2，直到 $U=V$</p>
+</li>
+</ol>
+<blockquote>
+<p>形象化理解：由点找边再找点的过程。</p>
+</blockquote>
+<p><img src="/img/data-structure/graph/prim.png" alt="Prim 算法"></p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/9/9b/PrimAlgDemo.gif" alt="Prim 算法"></p>
+<h3 id="Kruskal-算法（加边法）"><a href="#Kruskal-算法（加边法）" class="headerlink" title="Kruskal 算法（加边法）"></a>Kruskal 算法（加边法）</h3><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Kruskal%27s_algorithm">https://en.wikipedia.org/wiki/Kruskal%27s_algorithm</a></p>
+<p>假设 $N=(V,\ E)$ 是连通网</p>
+<ol>
+<li>非连通图 $T={V,\ {}}$，图中每个顶点自成一个连通分量</li>
+<li>在 $E$ 中找一条代价最小，且其两个顶点分别依附不同的连通分量的边（即不形成回路的边），将其<br> 加入 $T$ 中</li>
+<li>重复 2，直到 $T$ 中所有顶点都在同一连通分量上</li>
+</ol>
+<blockquote>
+<p>形象化理解：由边找点。</p>
+</blockquote>
+<p><img src="/img/data-structure/graph/kruskal.png" alt="Kruskal 算法"></p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/b/bb/KruskalDemo.gif" alt="Kruskal 算法"></p>
+<h2 id="最短路径问题（Shortest-path-problem）"><a href="#最短路径问题（Shortest-path-problem）" class="headerlink" title="最短路径问题（Shortest path problem）"></a>最短路径问题（Shortest path problem）</h2><p>在图论中，最短路径问题是在连通图中寻找<strong>两个顶点之间</strong>的一条路径，使得其组成边的权重（如时间、距离、费用等）之和最小化的问题。</p>
+<p>最短路径的应用：<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Shortest_path_problem#Applications">https://en.wikipedia.org/wiki/Shortest_path_problem#Applications</a></p>
+<ul>
+<li>例如规划交通路线、解决运输问题、编制生产计划、…</li>
+</ul>
+<p>最短路径的计算方法：可以从终点开始，逐步逆向推算。</p>
+<blockquote>
+<p>最短路径算法还有很多，比如 Bellford 算法、Floyd 算法等等。</p>
+</blockquote>
+<h3 id="Dijkstra-算法"><a href="#Dijkstra-算法" class="headerlink" title="Dijkstra 算法"></a>Dijkstra 算法</h3><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm">https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm</a></p>
+<p>《<a target="_blank" rel="noopener" href="https://time.geekbang.org/column/article/76468">44 | 最短路径：地图软件是如何计算出最优出行路径的？</a>》</p>
+<blockquote>
+<ol>
+<li>每次只看一步</li>
+<li>不走回头路</li>
+</ol>
+</blockquote>
+<blockquote>
+<p>从终点到起点的逆向回溯过程。</p>
+</blockquote>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=586430293&bvid=BV1zz4y1m7Nq&cid=289260026&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+
+<h3 id="A-算法"><a href="#A-算法" class="headerlink" title="A* 算法"></a>A* 算法</h3><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/A*_search_algorithm">https://en.wikipedia.org/wiki/A*_search_algorithm</a></p>
+<p>《<a target="_blank" rel="noopener" href="https://time.geekbang.org/column/article/78175">49 | 搜索：如何用 A * 搜索算法实现游戏中的寻路功能？</a>》</p>
+<h2 id="最大流问题（Maximum-flow-problem）"><a href="#最大流问题（Maximum-flow-problem）" class="headerlink" title="最大流问题（Maximum flow problem）"></a>最大流问题（Maximum flow problem）</h2><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Maximum_flow_problem">https://en.wikipedia.org/wiki/Maximum_flow_problem</a></p>
+<h2 id="AOV-网（Activity-On-Vertex-Network）"><a href="#AOV-网（Activity-On-Vertex-Network）" class="headerlink" title="AOV 网（Activity On Vertex Network）"></a>AOV 网（Activity On Vertex Network）</h2><h2 id="拓扑排序（Topological-sorting）"><a href="#拓扑排序（Topological-sorting）" class="headerlink" title="拓扑排序（Topological sorting）"></a>拓扑排序（Topological sorting）</h2><p>拓扑排序算法：</p>
+<ol>
+<li>在有向图中选一个<strong>入度为 0 的顶点</strong>并输出。</li>
+<li>从图中删除该顶点和所有以它为尾的弧。</li>
+</ol>
+<p>重复 1、2 两步，直到所有顶点输出为止，最终结果不唯一。</p>
+<p>设某有向图中有 n 个顶点和 e 条边，进行拓扑排序时，总的计算时间为 $O(n+e)$。</p>
+<p><img src="/img/data-structure/graph/topological_sorting.png" alt="拓扑排序"></p>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Topological_sorting">https://en.wikipedia.org/wiki/Topological_sorting</a></p>
+<p>《<a target="_blank" rel="noopener" href="https://time.geekbang.org/column/article/76207">43 | 拓扑排序：如何确定代码源文件的编译依赖关系？</a>》</p>
+<h2 id="社交网络（Social-network）"><a href="#社交网络（Social-network）" class="headerlink" title="社交网络（Social network）"></a>社交网络（Social network）</h2><p>图的两种存储结构，在社交应用的优缺点对比如下。例如在微博（有向图）中，设我为 $v_i$，ta 为 $v_j$：</p>
 <ul>
 <li>邻接矩阵<ul>
 <li>优点：<ul>
@@ -500,72 +589,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 求共同关注</span></span><br><span class="line">A[i] ∩ A[j]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 我关注的人也关注 ta</span></span><br><span class="line">foreach(member <span class="keyword">in</span> A[i]) &#123;</span><br><span class="line">  <span class="comment"># 我每个关注的人，他们关注的人中，是否有 ta</span></span><br><span class="line">  A[member] ∩ vj</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 我可能认识的人</span></span><br><span class="line">foreach(member <span class="keyword">in</span> A[i]) &#123;</span><br><span class="line">  <span class="comment"># 我每个关注的人，他们关注的人中，有我还没关注的</span></span><br><span class="line">  A[member] - A[i]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>《<a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_37145844/article/details/102802562">图应用：微博系统中的好友关系</a>》</p>
-<h2 id="最小生成树"><a href="#最小生成树" class="headerlink" title="最小生成树"></a>最小生成树</h2><p>如果无向图中，任意两个顶点都连通，称为<strong>连通图（Connected Graph）</strong>。如下图：</p>
-<p><img src="/img/data-structure/graph/undirected_graph.png" alt="无向图"></p>
-<p>连通图的一次遍历所经过的点和边的集合，构成一棵<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Spanning_tree">生成树（Spanning Tree）</a>。如下图：</p>
-<blockquote>
-<p>一个连通图的生成树，是含有该连通图的全部顶点的一个<strong>极小连通子图（Minimum connected subgraph）</strong>。</p>
-<p>一个具有 $n$ 个顶点的连通图，它的生成树的边数为 $n-1$。</p>
-</blockquote>
-<p><img src="/img/data-structure/graph/spanning_tree.png" alt="生成树"></p>
-<p>如果连通图中，边上有权值，称为<strong>连通网</strong>。如下图：</p>
-<p><img src="/img/data-structure/graph/weighted_graph.png" alt="带权图"></p>
-<p>权值总和最小的生成树，称为<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Minimum_spanning_tree">最小生成树（Minimum Spanning Tree, MST）</a>。如下图：</p>
-<blockquote>
-<p>A <strong>minimum spanning tree</strong> (<strong>MST</strong>) or <strong>minimum weight spanning tree</strong> is a subset of the edges of a <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Connected_graph">connected</a>, edge-weighted undirected graph that connects all the <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Vertex_(graph_theory)">vertices</a> together, without any <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Cycle_(graph_theory)">cycles</a> and with the minimum possible total edge weight. That is, it is a <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Spanning_tree">spanning tree</a> whose sum of edge weights is as small as possible.</p>
-</blockquote>
-<p><img src="/img/data-structure/graph/minimum_spanning_tree.png" alt="最小生成树"></p>
-<p>最小生成树准则：</p>
-<ul>
-<li>必须使用且仅使用连通网中的 <code>n-1</code> 条边来联结网络中的 <code>n</code> 个顶点；</li>
-<li><strong>不能使用产生回路的边</strong>；</li>
-<li>各边上的权值总和达到最小。</li>
-</ul>
-<h3 id="Prim-算法"><a href="#Prim-算法" class="headerlink" title="Prim 算法"></a>Prim 算法</h3><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Prim%27s_algorithm">https://en.wikipedia.org/wiki/Prim%27s_algorithm</a></p>
-<p>假设 $N=(V,\ E)$ 是连通网，$TE$ 是 $N$ 上最小生成树中边的集合：</p>
-<ol>
-<li><p>初始态：$U={u_0},\ (u_0∈V),\ TE={}$</p>
-</li>
-<li><p>在所有 $u∈U,\ v∈V-U$ 的边 $(u,\ v)∈E$ 中找一条代价最小的边 $(u,\ v_0)$ 并入集合 $TE$，<br>同时 $v_0$ 并入 $U$</p>
-</li>
-<li><p>重复 2，直到 $U=V$</p>
-</li>
-</ol>
-<blockquote>
-<p>形象化理解：由点找边再找点的过程。</p>
-</blockquote>
-<h3 id="Kruskal-算法"><a href="#Kruskal-算法" class="headerlink" title="Kruskal 算法"></a>Kruskal 算法</h3><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Kruskal%27s_algorithm">https://en.wikipedia.org/wiki/Kruskal%27s_algorithm</a></p>
-<p>假设 $N=(V,\ E)$ 是连通网</p>
-<ol>
-<li>非连通图 $T={V,\ {}}$，图中每个顶点自成一个连通分量</li>
-<li>在 $E$ 中找一条代价最小，且其两个顶点分别依附不同的连通分量的边（即不形成回路的边），将其<br> 加入 $T$ 中</li>
-<li>重复 2，直到 $T$ 中所有顶点都在同一连通分量上</li>
-</ol>
-<blockquote>
-<p>形象化理解：由边找点。</p>
-</blockquote>
-<h2 id="拓扑排序"><a href="#拓扑排序" class="headerlink" title="拓扑排序"></a>拓扑排序</h2><p>拓扑排序算法：</p>
-<ol>
-<li>在有向图中选一个<strong>入度为 0 的顶点</strong>并输出。</li>
-<li>从图中删除该顶点和所有以它为尾的弧。</li>
-</ol>
-<p>重复 1、2 两步，直到所有顶点输出为止，最终结果不唯一。</p>
-<p>设某有向图中有 n 个顶点和 e 条边，进行拓扑排序时，总的计算时间为 $O(n+e)$。</p>
-<p><img src="/img/data-structure/graph/topological_sorting.png" alt="拓扑排序"></p>
-<p>《<a target="_blank" rel="noopener" href="https://time.geekbang.org/column/article/76207">43 | 拓扑排序：如何确定代码源文件的编译依赖关系？</a>》</p>
-<h2 id="最短路径"><a href="#最短路径" class="headerlink" title="最短路径"></a>最短路径</h2><blockquote>
-<p>最短路径算法还有很多，比如 Bellford 算法、Floyd 算法等等。</p>
-</blockquote>
-<h3 id="Dijkstra-算法"><a href="#Dijkstra-算法" class="headerlink" title="Dijkstra 算法"></a>Dijkstra 算法</h3><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm">https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm</a></p>
-<p>《<a target="_blank" rel="noopener" href="https://time.geekbang.org/column/article/76468">44 | 最短路径：地图软件是如何计算出最优出行路径的？</a>》</p>
-<blockquote>
-<ol>
-<li>每次只看一步</li>
-<li>不走回头路</li>
-</ol>
-</blockquote>
-<h3 id="A-算法"><a href="#A-算法" class="headerlink" title="A* 算法"></a>A* 算法</h3><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/A*_search_algorithm">https://en.wikipedia.org/wiki/A*_search_algorithm</a></p>
-<p>《<a target="_blank" rel="noopener" href="https://time.geekbang.org/column/article/78175">49 | 搜索：如何用 A * 搜索算法实现游戏中的寻路功能？</a>》</p>
+<h2 id="知识图谱（Knowledge-graph）"><a href="#知识图谱（Knowledge-graph）" class="headerlink" title="知识图谱（Knowledge graph）"></a>知识图谱（Knowledge graph）</h2><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Knowledge_graph">https://en.wikipedia.org/wiki/Knowledge_graph</a></p>
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Graph_theory">https://en.wikipedia.org/wiki/Graph_theory</a></p>
 <p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Network_theory">https://en.wikipedia.org/wiki/Network_theory</a></p>
 <p>《<a target="_blank" rel="noopener" href="https://time.geekbang.org/column/article/70537">30 | 图的表示：如何存储微博、微信等社交网络中的好友关系？</a>》</p>
@@ -631,7 +655,7 @@
 
 <div class="copyright">
   &copy; 2015 – 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
