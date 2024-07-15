@@ -109,6 +109,16 @@ Reference
 
   * ...
 
+## JRE
+
+> 不需要考虑 JDK 与 JRE 的关系了
+>
+> JDK 和 JRE 都是 Java 的重要组成部分，但它们的角色和用途是不同的。JDK 是 Java 开发工具包，主要用于开发 Java 应用。它包含了 JRE，同时还提供了一些额外的工具，如编译器（`javac`）、调试器（`jdb`）等。JRE 则是运行 Java 应用程序所需的环境。它包含了 Java 虚拟机（JVM）和 Java 类库，也就是 Java 应用程序运行时所需的核心类和其他支持文件。﻿
+>
+> 在 JDK 8 及之前的版本中，Oracle 会提供独立的 JRE 和 JDK 供用户下载。也就是说，你可以只安装 JRE 来运行 Java 程序，也可以安装 JDK 来开发 Java 程序。
+>
+> 然而从 JDK 9 开始，Oracle **不再单独发布 JRE**。取而代之的是 `jlink` 工具，可以使用这个工具来生成 **定制的运行时镜像**。这种方式简化了 Java 应用的部署，因你只需要分发包含你的应用和定制运行时镜像的包，不需要单独安装 JRE。
+
 ## JVM
 
 除了官方 HotSpotVM、GraalVM 实现，其它厂商实现如下：
@@ -273,7 +283,12 @@ https://jakarta.ee/specifications/platform/9/jakarta-platform-spec-9.html#a84
 
 2022 年
 
+- 《[InfoQ 2022 年趋势报告：Java 篇](https://www.infoq.cn/article/vl9UfPTm6oOPAUgYpN5c)》
 - 《[2022 年 Java 将何去何从？](https://www.infoq.cn/article/Ckvyawmfma127oiA6Lt7)》
+
+2023 年：
+
+* 《[InfoQ 2023 年趋势报告：Java 篇](https://www.infoq.cn/article/PgTo5YAyrPszGXHiTbss)》
 
 
 

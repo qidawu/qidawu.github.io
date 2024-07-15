@@ -17,9 +17,11 @@ typora-root-url: ..
 
 这两种机制或者锁并不是 MySQL 或者数据库中独有的概念，而是并发编程的基本概念。
 
-## 乐观并发控制
+## 乐观并发控制（Optimistic concurrency control）
 
-顾名思义，就是很乐观，每次去拿数据的时候都认为别人不会修改，所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数据，没有才能更新成功。
+https://en.wikipedia.org/wiki/Optimistic_concurrency_control
+
+顾名思义，就是很乐观，每次去拿数据的时候都认为别人不会修改（低冲突和低争用），所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数据，没有才能更新成功；否则更新失败，重新拿数据并重试。
 
 适用场景：
 
@@ -29,23 +31,23 @@ typora-root-url: ..
 
 ### CAS（Compare And Set）
 
-CAS（Compare And Set）：实现思路是在 `set` 的时候，加上初始状态的 `compare` 条件判断，只有初始状态不变时，才 `set` 成功。
+[CAS（Compare And Set）](https://en.wikipedia.org/wiki/Compare-and-swap)：实现思路是在 `set` 的时候，加上初始状态的 `compare` 条件判断，只有初始状态不变时，才 `set` 成功。
 
-为了避免 ABA 问题（例如 CAS 过程中只简单进行“值”的校验，在有些情况下，“值”相同不会引入错误的业务逻辑（例如余额），但有些情况下，“值”虽然相同，却已经不是原来的数据了），CAS 不能只比对“值”，还**必须确保数据是原来的数据**，才能修改成功。实现方式是采用“数据版本”机制，例如通过版本号（version）、时间戳（update_time），来做乐观锁的判断条件，一个数据一个版本，版本变化，即使值相同，也不应该修改成功。
+为了避免 [ABA 问题](https://en.wikipedia.org/wiki/ABA_problem)（例如 CAS 过程中只简单进行“值”的校验，在有些情况下，“值”相同不会引入错误的业务逻辑（例如余额），但有些情况下，“值”虽然相同，却已经不是原来的数据了），CAS 不能只比对“值”，还**必须确保数据是原来的数据**，才能修改成功。实现方式是采用“数据版本”机制，例如通过版本号（version）、时间戳（update_time），来做乐观锁的判断条件，一个数据一个版本，版本变化，即使值相同，也不应该修改成功。
 
 例如：
 
 * Java 原子类 [`AtomicStampedReference`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicStampedReference.html) 进行值与版本号的双重校验，而不是 `AtomicInteger`、`AtomicLong`、`AtomicBoolean`、`AtomicReference` 等等只基于值的校验。
-* [MySQL 乐观锁](https://baomidou.com/guide/interceptor-optimistic-locker.html#optimisticlockerinnerinterceptor)：
+* MySQL 乐观锁，例如使用 [MyBatis Plus 乐观锁插件 `OptimisticLockerInnerInterceptor`](https://baomidou.com/pages/0d93c0/)：
 
     ```SQL
     SELECT * FROM table_name WHERE condition=#condition#;
     UPDATE table_name SET name=#name#, version=version+1 WHERE version=#version#；
     ```
 
-## 悲观并发控制
+## 悲观并发控制（Pessimistic concurrency control）
 
-顾名思义，就是很悲观，每次去拿数据的时候都认为别人会修改，所以每次在拿数据的时候都会上锁，直到使用完毕才会解锁，这样别人想拿这个数据就会 block 住直到它拿到锁。
+顾名思义，就是很悲观，每次去拿数据的时候都认为别人会修改，所以每次在拿数据的时候都会上互斥锁，直到使用完毕才会解锁，这样别人想拿这个数据就会 block 住直到它拿到锁。
 
 适用场景：
 

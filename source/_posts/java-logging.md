@@ -400,3 +400,5 @@ https://github.com/logstash/logstash-logback-encoder
 《[Java 中打印日志的正确姿势](https://mp.weixin.qq.com/s/v3aF1zVwsP5g8KcuJFP4fQ)》
 
 《[实战总结 | 系统日志规范及最佳实践 | 阿里技术](https://mp.weixin.qq.com/s/V-TIT1Cw5fH8xSYAEMyukQ)》
+
+《[浅析 JAVA 日志中的几则性能实践与原理解释 | 阿里技术](https://mp.weixin.qq.com/s/uhlBOIHrDuE2P8GX1gam6w)》
