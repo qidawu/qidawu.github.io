@@ -206,7 +206,12 @@ https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-connp-props-performance
 >
 > Please be aware using `rewriteBatchedStatements=true` with `INSERT .. ON DUPLICATE KEY UPDATE` that for rewritten statement server returns only one value as sum of all affected (or found) rows in batch and it isn't possible to map it correctly to initial statements; in this case driver returns 0 as a result of each batch statement if total count was 0, and the `Statement.SUCCESS_NO_INFO` as a result of each batch statement if total count was > 0.
 
-要减少 JDBC 的网络调用次数改善性能，你可以设置 `rewriteBatchedStatements=true`，并使用 `PreparedStatement` 的 `addBatch()` 方法并执行 `executeBatch()` 批量发送多个操作给数据库。
+在 MySQL 中，`rewriteBatchedStatements` 的默认值取决于 MySQL 版本和 JDBC 驱动程序的配置。
+
+* 在 MySQL 8.0 版本之前，`rewriteBatchedStatements` 的默认值是 `false`，这意味着批处理语句不会被重写优化。
+* 从 MySQL 8.0 版本开始，`rewriteBatchedStatements` 的默认值被更改为 `true`，以提高默认情况下的性能。
+
+要减少 JDBC 的网络调用次数改善性能，你可以设置 `rewriteBatchedStatements=true`，[并使用 `PreparedStatement` 的 `addBatch()` 方法并执行 `executeBatch()` 批量发送多个操作给数据库](/posts/java-jdbc-api/#批处理-1)。
 
 根据执行的 DML 语句类型，使用不同的处理方法：
 
@@ -220,6 +225,8 @@ https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-connp-props-performance
 #### maxAllowedPacket
 
 > Maximum allowed packet size to send to server. If not set, the value of system variable `max_allowed_packet` will be used to initialize this upon connecting. This value will not take effect if set larger than the value of `max_allowed_packet`. Also, due to an internal dependency with the property "`blobSendChunkSize`", this setting has a minimum value of "8203" if "`useServerPrepStmts`" is set to "`true`".
+
+参考：《[MySQL 批量插入数据，一次插入多少行数据效率最高？](https://blog.csdn.net/LJFPHP/article/details/99708888)》
 
 ## 注册驱动程序
 

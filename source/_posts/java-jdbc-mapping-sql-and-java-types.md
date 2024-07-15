@@ -88,8 +88,6 @@ Java 程序从数据库中检索数据时，都必然会有某种形式的数据
 
   例如 MyBatis Plus [`com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler`](https://github.com/baomidou/mybatis-plus/blob/master/mybatis-plus-core/src/main/java/com/baomidou/mybatisplus/core/handlers/MybatisEnumTypeHandler.java#L118) 就使用到了 `ResultSet#getObject` 方法，如果类型转换失败则报错如上。
   
-  例如 MyBatis 自动映射（automatic mapping）时，如果构造方法未指定 `@AutomapConstructor`，会按字段类型查找匹配的构造方法。如果找不到该构造方法，则会报错。
-  
   关于 MySQL 类型与 Java 类型的映射关系，参考：https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-reference-type-conversions.html
 
 示例代码如下：

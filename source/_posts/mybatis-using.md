@@ -27,13 +27,35 @@ https://mybatis.org/mybatis-3/configuration.html#typeHandlers
 * [Binary-to-text encoding](https://en.wikipedia.org/wiki/Binary-to-text_encoding)
 * ...
 
+参考例子：https://github.com/qidawu/mybatis-test/tree/master/src/main/java/org/mybatis/example/typehandler
+
+使用方式：
+
+```XML
+<!-- 手动结果映射 -->
+<result column="..." jdbcType="..." typehandler="..." />
+```
+
+```java
+// 自动结果映射（MyBatis Plus）
+@TableField(typeHandler = ...class)
+```
+
 # Mapper XML Files
 
 https://mybatis.org/mybatis-3/sqlmap-xml.html
 
 ## 查询
 
-### 结果映射
+```XML
+<!-- 手动结果映射 -->
+<select id="selectPage" resultMap="BaseResultMap">
+
+<!-- 自动结果映射（automatic mapping） -->
+<select id="selectPage" resultType="...">
+```
+
+### 手动结果映射
 
 https://mybatis.org/mybatis-3/sqlmap-xml.html#Result_Maps
 
@@ -298,6 +320,16 @@ https://mybatis.org/mybatis-3/sqlmap-xml.html#Auto-mapping
 | `mapUnderscoreToCamelCase`                                   | 是否开启驼峰命名自动映射，即从经典数据库列名 A_COLUMN 映射到经典 Java 属性名 aColumn。 | `true`, `false`              | `false`   |
 | [`argNameBasedConstructorAutoMapping`](https://github.com/mybatis/mybatis-3/blob/mybatis-3.5.10/src/main/java/org/apache/ibatis/executor/resultset/DefaultResultSetHandler.java#L742) | 当应用构造器自动映射时，参数名称被用来搜索要映射的列，而不再依赖列的顺序。（新增于 3.5.10） | `true`, `false`              | `false`   |
 
+自动结果映射常用于搭配 MyBatis 注解 `@Select` 使用。
+
+MyBatis 自动结果映射时，如果有多个构造方法，可以通过 `@AutomapConstructor` 指定自动映射使用哪个。例如搭配 lombok 使用：
+
+```
+@AllArgsConstructor(onConstructor=@__({@AutomapConstructor}))
+```
+
+如果构造方法未指定 [`@AutomapConstructor`](https://mybatis.org/mybatis-3/apidocs/org/apache/ibatis/annotations/AutomapConstructor.html)，会按字段类型查找匹配的构造方法。如果找不到该构造方法，则会报错。
+
 ### 缓存
 
 #### 一级缓存
@@ -511,6 +543,10 @@ public class MyBatisConfig {
 ```
 
 http://www.mybatis.org/spring-boot-starter/mybatis-spring-boot-autoconfigure/
+
+# 插件
+
+[深入理解 Mybatis 插件开发](https://www.cnblogs.com/chenpi/p/10498921.html)
 
 # 扩展
 
