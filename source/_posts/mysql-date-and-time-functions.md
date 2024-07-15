@@ -94,8 +94,23 @@ $ service mysql restart
 `CONVERT_TZ(dt, from_tz, to_tz)` 函数用于将 `DATETIME` 类型转为指定时区，例如：
 
 ```SQL
--- TIMESTAMP 类型（UTC±00:00） > DATETIME 类型（UTC±00:00） > DATETIME 类型（UTC+08:00）
+-- TIMESTAMP 类型
+-- 1218124800，获取当前时间戳
+SELECT UNIX_TIMESTAMP();
+
+-- DATETIME 类型
+-- 2008-08-07 16:00:00 UTC±00:00
+SELECT FROM_UNIXTIME( UNIX_TIMESTAMP() );
+
+-- TIMESTAMP 类型 > DATETIME 类型 > DATETIME 类型
+-- 2008-08-08 00:00:00 UTC+08:00
 SELECT CONVERT_TZ( FROM_UNIXTIME( UNIX_TIMESTAMP() ), '+00:00', '+08:00' ) AS NOW;
+```
+
+```SQL
+-- DATETIME 类型
+-- 2008-08-08 00:00:00 UTC+08:00
+SELECT CONVERT_TZ( '2008-08-07 16:00:00', '+00:00', '+08:00' );
 ```
 
 `TIMESTAMP` 类型的时区显示，参考：https://dev.mysql.com/doc/refman/5.7/en/datetime.html
@@ -174,9 +189,14 @@ SELECT FROM_UNIXTIME(1447430881, '%Y %D %M %h:%i:%s %x');
 例子：
 
 ```sql
-SELECT UNIX_TIMESTAMP();                -- 1218124800，获取当前时间戳
-SELECT UNIX_TIMESTAMP(now());           -- 1218124800，将当前时间转换为时间戳，等价于上例
-SELECT UNIX_TIMESTAMP('2008-08-08');    -- 1219125100，将指定参数转换为时间戳
+-- 1218124800，获取当前时间戳
+SELECT UNIX_TIMESTAMP();
+-- 1218124800，将当前时间转换为时间戳，等价于上例
+SELECT UNIX_TIMESTAMP(now());
+-- 1218153600，即：2008-08-08 00:00:00 UTC
+SELECT UNIX_TIMESTAMP('2008-08-08 00:00:00');
+-- 1218128400，即：2008-08-07 17:00:00 UTC
+SELECT UNIX_TIMESTAMP( CONVERT_TZ( '2008-08-08 00:00:00', '+07:00', '+00:00' ) );
 ```
 
 ### DATETIME → String
