@@ -298,12 +298,20 @@ select microsecond(@dt); -- 123456
 
 # 例子
 
-## 按天统计订单量
+## 按年/月/日/时统计订单量
 
-按天统计订单量（同理，按小时统计：`DATE_FORMAT(create_time,'%Y-%m-%d %H:00:00')`）：
+按年统计：`DATE_FORMAT(create_time,'%Y')`
+
+按月统计：`DATE_FORMAT(create_time,'%Y-%m')`
+
+按日统计：`DATE_FORMAT(create_time,'%Y-%m-%d')`
+
+按时统计：`DATE_FORMAT(create_time,'%Y-%m-%d %H:00:00')`
+
+按日统计订单量，如下：
 
 ```sql
-select count(*), DATE_FORMAT(create_time,'%Y-%m-%d') days 
+select count(*), DATE_FORMAT(create_time,'%Y-%m-%d') AS days 
 from t_order 
 where create_time BETWEEN '2008-9-29' AND '2008-9-30' 
 group by days;
