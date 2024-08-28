@@ -223,6 +223,16 @@ SSH 相关文件和配置：
 
 https://en.wikipedia.org/wiki/ASCII_art
 
+### 保持会话不掉线
+
+```
+Host *
+    ServerAliveInterval 240
+    ServerAliveCountMax 2
+```
+
+`ServerAliveInterval` 设置了客户端在发送保持连接信号之前的等待时间。
+
 # OpenSSL
 
 [OpenSSL](https://www.openssl.org/) 加密库 ( `libcrypto`) 实现了各种 Internet 标准中使用的各种加密算法。该库提供的服务被 TLS 和 CMS 的 OpenSSL 实现使用，它们也被用于实现许多其它第三方产品和协议。
