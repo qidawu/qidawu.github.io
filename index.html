@@ -238,7 +238,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-02-19 10:53:39" itemprop="dateModified" datetime="2024-02-19T10:53:39+08:00">2024-02-19</time>
+      <time title="修改时间：2024-07-26 17:42:17" itemprop="dateModified" datetime="2024-07-26T17:42:17+08:00">2024-07-26</time>
     </span>
 
   
@@ -297,7 +297,7 @@
 
 <p>State names vary with UNIX dialects, so it’s not possible to provide a complete list. Some common TCP state names are: <code>CLOSED</code>, <code>IDLE</code>, <code>BOUND</code>, <code>LISTEN</code>, <code>ESTABLISHED</code>, <code>SYN_SENT</code>, <code>SYN_RCDV</code>, <code>ESTABLISHED</code>, <code>CLOSE_WAIT</code>, <code>FIN_WAIT1</code>, <code>CLOSING</code>, <code>LAST_ACK</code>, <code>FIN_WAIT_2</code>, and <code>TIME_WAIT</code>.</p>
 </blockquote>
-<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 按端口号查询（端口占用）</span></span><br><span class="line">$ lsof -i:端口号</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看某个进程的 open files，等价于 /proc/PID/fd/</span></span><br><span class="line">$ lsof -p PID</span><br><span class="line"></span><br><span class="line"><span class="comment"># 按 TCP + 端口号 + PID 查询</span></span><br><span class="line">$ lsof -nP -iTCP:端口号 -a -p PID</span><br><span class="line"></span><br><span class="line"><span class="comment"># 按 TCP (LISTEN) + PID 查询</span></span><br><span class="line">$ lsof -nP -iTCP -sTCP:LISTEN -a -p PID</span><br></pre></td></tr></table></figure>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 按端口号查询（端口占用）</span></span><br><span class="line">$ lsof -i:端口号</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看某个进程的 open files，等价于 /proc/PID/fd/</span></span><br><span class="line">$ lsof -p PID</span><br><span class="line"></span><br><span class="line"><span class="comment"># 按 TCP + 端口号 + PID 查询</span></span><br><span class="line">$ lsof -nP -iTCP:端口号 -a -p PID</span><br><span class="line"></span><br><span class="line"><span class="comment"># 按 TCP (LISTEN) + PID 查询</span></span><br><span class="line">$ lsof -nP -iTCP -sTCP:LISTEN -a -p PID</span><br><span class="line">COMMAND  PID    USER   FD   TYPE     DEVICE SIZE/OFF NODE NAME</span><br><span class="line">java    6276    dev   36u  IPv4 1097042515      0t0  TCP *:8720 (LISTEN)</span><br><span class="line">java    6276    dev  150u  IPv4 1097044387      0t0  TCP *:8171 (LISTEN)</span><br><span class="line">java    6276    dev  187u  IPv4 1097042576      0t0  TCP *:58077 (LISTEN)</span><br><span class="line">java    6276    dev  202u  IPv4 1097042587      0t0  TCP *:8062 (LISTEN)</span><br></pre></td></tr></table></figure>
 
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://linux.die.net/man/8/lsof">https://linux.die.net/man/8/lsof</a></p>
 
@@ -2714,24 +2714,6 @@
   </span>
   <span class="author" itemprop="copyrightHolder">Qida's Blog</span>
 </div>
-<div class="busuanzi-count">
-    <span class="post-meta-item" id="busuanzi_container_site_uv">
-      <span class="post-meta-item-icon">
-        <i class="fa fa-user"></i>
-      </span>
-      <span class="site-uv" title="总访客量">
-        <span id="busuanzi_value_site_uv"></span>
-      </span>
-    </span>
-    <span class="post-meta-item" id="busuanzi_container_site_pv">
-      <span class="post-meta-item-icon">
-        <i class="fa fa-eye"></i>
-      </span>
-      <span class="site-pv" title="总访问量">
-        <span id="busuanzi_value_site_pv"></span>
-      </span>
-    </span>
-</div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
 
@@ -2759,7 +2741,6 @@
 
 
   
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
 
