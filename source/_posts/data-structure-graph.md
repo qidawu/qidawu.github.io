@@ -251,9 +251,10 @@ https://en.wikipedia.org/wiki/Breadth-first_search
 * **不能使用产生回路的边**；
 * 各边上的权值总和达到最小。
 
-最小生成树的应用：https://en.wikipedia.org/wiki/Minimum_spanning_tree#Applications
+最小生成树的应用：**规划出总长度最小的网络**
 
 * 例如工程领域设计，如最小成本的铺设网线、电缆、管道、道路、…
+* https://en.wikipedia.org/wiki/Minimum_spanning_tree#Applications
 
 ### Prim 算法
 
@@ -272,6 +273,12 @@ https://en.wikipedia.org/wiki/Prim%27s_algorithm
 ![Prim 算法](/img/data-structure/graph/prim.png)
 
 ![Prim 算法](https://upload.wikimedia.org/wikipedia/commons/9/9b/PrimAlgDemo.gif)
+
+------
+
+📝 习题 📝
+
+![习题](/img/data-structure/graph/problem/MST_problem_Prim_algo.png)
 
 ### Kruskal 算法（加边法）
 
@@ -293,13 +300,18 @@ https://en.wikipedia.org/wiki/Kruskal%27s_algorithm
 
 在图论中，最短路径问题是在连通图中寻找**两个顶点之间**的一条路径，使得其组成边的权重（如时间、距离、费用等）之和最小化的问题。
 
-最短路径的应用：https://en.wikipedia.org/wiki/Shortest_path_problem#Applications
+最短路径的应用：
 
 * 例如规划交通路线、解决运输问题、编制生产计划、…
+* https://en.wikipedia.org/wiki/Shortest_path_problem#Applications
 
-最短路径的计算方法：可以从终点开始，逐步逆向推算。
+最短路径的计算方法：
 
 > 最短路径算法还有很多，比如 Bellford 算法、Floyd 算法等等。
+
+### 回溯算法
+
+> 从终点开始，逐步逆向推算。（从终点到起点的逆向回溯过程。）
 
 ### Dijkstra 算法
 
@@ -307,12 +319,22 @@ https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
 
 《[44 | 最短路径：地图软件是如何计算出最优出行路径的？](https://time.geekbang.org/column/article/76468)》
 
-> 1. 每次只看一步
-> 2. 不走回头路
-
-> 从终点到起点的逆向回溯过程。
-
 <iframe src="//player.bilibili.com/player.html?isOutside=true&aid=586430293&bvid=BV1zz4y1m7Nq&cid=289260026&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+
+------
+
+📝 习题 📝
+
+![习题](/img/data-structure/graph/problem/Shortest_path_problem_Dijkstra_algo.png)
+
+| 目的地    | 起点：甲    | 前驱     | 最短路径            |
+| --------- | ----------- | -------- | ------------------- |
+| 1 ✅（2️⃣）  | 33          | 甲       | 甲 - 1              |
+| 2 ✅（1️⃣）  | 27          | 甲       | 甲 - 2              |
+| 3 ✅（4️⃣）  | 52          | 甲       | 甲 - 3              |
+| 4 ✅（3️⃣）  | 47          | 2        | 甲 - 2 - 4          |
+| 5 ✅（6️⃣）  | ~~122~~ 100 | ~~3~~ 乙 | 甲 - 2 - 4 - 乙 - 5 |
+| 乙 ✅（5️⃣） | ~~73~~ 67   | ~~1~~ 4  | 甲 - 2 - 4 - 乙     |
 
 ### A* 算法
 
@@ -324,7 +346,15 @@ https://en.wikipedia.org/wiki/A*_search_algorithm
 
 https://en.wikipedia.org/wiki/Maximum_flow_problem
 
-## AOV 网（Activity On Vertex Network）
+当以物体、能量或信息等作为流量流过网络时，怎样使流过网络的流量最大，或者使流过网络的流量的费用或时间最小。通常，把设计这样的流量模型问题，叫作网络的流量问题。
+
+最大流量问题，就是在一定条件下，要求流过网络的流量为最大的问题。
+
+------
+
+📝 习题 📝
+
+![习题](/img/data-structure/graph/problem/Maximum_flow_problem.png)
 
 ## 拓扑排序（Topological sorting）
 
