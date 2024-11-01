@@ -44,6 +44,10 @@ typora-root-url: ..
 
 ![normalized_form](/img/db/data-model/normalized_form.png)
 
+![normalized_form](/img/db/data-model/normalized_form.jpg)
+
+![normalized_form](/img/db/data-model/normalized_form_examples.jpg)
+
 # 参考
 
 [数学符号表（维基百科）](https://zh.wikipedia.org/wiki/%E6%95%B0%E5%AD%A6%E7%AC%A6%E5%8F%B7%E8%A1%A8)
