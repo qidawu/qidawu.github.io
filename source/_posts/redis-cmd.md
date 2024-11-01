@@ -12,10 +12,10 @@ typora-root-url: ..
 
 |                | 单个                                                         | 批量                                                         |
 | -------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| 获取           | `GET` key<br/>`STRLEN` key<br/>`GETRANGE` key start end      | `MGET` key [key ...]                                         |
-| 设值           | `SET` key value [EX seconds&#124;PX milliseconds] [NX&#124;XX] [KEEPTTL]<br/>`SETNX` key value<br/>`SETEX` key seconds value<br/>`PSETEX` key milliseconds value<br/>`GETSET` key value<br/>`SETRANGE` key offset value | `MSET` key value [key value ...]<br/>`MSETNX` key value [key value ...] |
+| 设值           | `SET` key value [NX &#124; XX] [GET] [EX seconds &#124; PX milliseconds &#124; EXAT unix-time-seconds &#124; PXAT unix-time-milliseconds &#124; KEEPTTL]<br/>~~`SETNX` key value<br/>`SETEX` key seconds value<br/>`PSETEX` key milliseconds value<br/>`GETSET` key value<br/>~~`SETRANGE` key offset value | `MSET` key value [key value ...]<br/>`MSETNX` key value [key value ...] |
+| 取值           | `GET` key<br/>`GETDEL` key<br/>`GETRANGE` key start end<br/>`STRLEN` key | `MGET` key [key ...]                                         |
 | 原子递增、递减 | `INCR` key<br/>`INCRBY` key increment<br/>`INCRBYFLOAT` key increment<br/>`DECR` key<br/>`DECRBY` key decrement |                                                              |
-| 追加           | `APPEND`                                                     |                                                              |
+| 追加           | `APPEND` key value                                           |                                                              |
 | 位操作         | `SETBIT` key offset value<br/>`GETBIT` key offset<br/>`BITCOUNT` key [start end]<br/>`BITOP` operation destkey key [key ...]<br/>`BITFIELD` ...<br/>`BITPOS` key bit [start] [end] |                                                              |
 
 使用场景：
@@ -30,8 +30,8 @@ typora-root-url: ..
 
     ```bash
     -- 返回 1 表示加锁成功，0 表示加锁失败
-    $ SETNX key value
     $ SET key value NX
+    $ SETNX key value
 
     -- 解锁
     $ DEL key
@@ -76,14 +76,14 @@ public synchronized int nextId() {
 
 |                           | 单个                                                         | 批量                                          |
 | ------------------------- | ------------------------------------------------------------ | --------------------------------------------- |
+| 设置 field 的 value       | `HSET` key field value [field value ...]<br/>`HSETNX` key field value | ~~`HMSET` key field value [field value ...]~~ |
+| 获取 field 的 value       | `HGET` key field<br/>`HSCAN` key cursor [MATCH pattern] [COUNT count]<br/>`HSTRLEN` key field | `HMGET` key field [field ...]                 |
 | 获取所有 fields           | `HKEYS` key                                                  |                                               |
 | 获取所有 values           | `HVALS` key                                                  |                                               |
 | 获取所有 fields 和 values | `HGETALL` key                                                |                                               |
 | 获取 field 的个数         | `HLEN` key                                                   |                                               |
 | 判断 field 是否存在       | `HEXISTS` key field                                          |                                               |
 | 删除 field                | `HDEL` key field [field ...]                                 |                                               |
-| 获取 field 的 value       | `HGET` key field<br/>`HSCAN` key cursor [MATCH pattern] [COUNT count]<br/>`HSTRLEN` key field | `HMGET` key field [field ...]                 |
-| 设置 field 的 value       | `HSET` key field value [field value ...]<br/>`HSETNX` key field value | ~~`HMSET` key field value [field value ...]~~ |
 | 原子递增、递减指定 field  | `HINCRBY` key field increment<br/>`HINCRBYFLOAT` key field increment |                                               |
 
 ## Lists
@@ -146,7 +146,7 @@ public synchronized int nextId() {
 
 使用场景：
 
-* 抽奖、秒杀、抢红包 —— 本质上都是同一类问题，解决思路类似。为了减少对临界资源的竞争，避免使用各种锁进行并发控制，可以预先对临界资源进行拆分，以提升性能：
+* 抢红包、抽奖、秒杀 —— 本质上都是同一类问题，解决思路类似。为了减少对临界资源的竞争，避免使用各种锁进行并发控制，可以预先对临界资源进行拆分，以提升性能：
 
   ```bash
   # 预拆红包，放入集合
