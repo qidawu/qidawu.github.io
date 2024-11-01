@@ -31,3 +31,7 @@ $ cd hexo-site
 $ npm install hexo-theme-next@latest
 ```
 
+# GitHub Actions 自动化部署
+
+参考：https://hexo.io/docs/github-pages
+注意：GitHub Pages 要求该仓库必须是 public 权限
