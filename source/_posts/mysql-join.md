@@ -10,6 +10,8 @@ typora-root-url: ..
 
 # 连接语法
 
+![join](/img/sql/join/join_5.jpg)
+
 ![join](/img/sql/join/join.png)
 
 ![join](/img/sql/join/join_0.png)
