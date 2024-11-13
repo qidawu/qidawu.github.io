@@ -38,9 +38,16 @@ typora-root-url: ..
 
 ### 单链表节点实现
 
-单链表节点的散列表结构如下图，散列函数为 `index=hash(key) % 16`，链地址法解决散列冲突后，结果如下：
+单链表节点的散列表结构，简化如下图。其中
+
+* 散列函数（Hash function）为 `index=hash(key) % 16`
+* 散列冲突（Hash collision）的解决方案为：链地址法（[separate chaining](https://en.wikipedia.org/wiki/Hash_table#Separate_chaining_with_linked_lists)）
 
 ![HashTable Collision resolution](/img/data-structure/hashtable/hashtable_collision_resolution_separate_chaining.png)
+
+实际存储结构如下图，bucket 的 slot 指向的是一个个完整的 entry，如果有多个 entry（如 152），则逐一比较 entry 的 `key` 与查询中的 `key` 是否相同，相同则返回该 entry 的 `value`。
+
+![HashTable Collision resolution](/img/data-structure/hashtable/separate_chaining.webp)
 
 源码如下：
 
@@ -90,6 +97,8 @@ typora-root-url: ..
 ```
 
 ### 红黑树节点实现
+
+![](/img/java/collection/map/LinkedHashMap_Entry_sorted.png)
 
 源码如下：
 

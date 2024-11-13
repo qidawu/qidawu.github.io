@@ -321,9 +321,9 @@ for (Map.Entry<String, String> entry : map.entrySet()) {}
 
 [Merging Two Maps with Java 8](https://www.baeldung.com/java-merge-maps)
 
-# 实现计数
+# 实现计数器
 
-Java 8 为 `Map` 接口引入了一组新的 `default` 默认方法，如下：
+Java 8 为 `Map` 接口引入了一组新的 `default` 默认方法，用于简化 `Map` 的日常使用。API 如下：
 
 | Modifier and Type | Method and Description                                       |
 | ----------------- | ------------------------------------------------------------ |
@@ -332,53 +332,42 @@ Java 8 为 `Map` 接口引入了一组新的 `default` 默认方法，如下：
 | `default V`       | `computeIfPresent(K key, BiFunction<? super K,? super V,? extends V> remappingFunction)`<br>If the value for the specified key is present and non-null, attempts to compute a new mapping given the key and its current mapped value. |
 | `default V`       | `compute(K key, BiFunction<? super K,? super V,? extends V> remappingFunction)`<br>Attempts to compute a mapping for the specified key and its current mapped value (or `null` if there is no current mapping). |
 
-实现计数如下：
-
-`putIfAbsent` 和 `computeIfAbsent`：
+要实现类似 Redis 散列表的原子递增命令 `HINCRBY` key field increment 的效果，使用 `compute` 实现的代码，对比传统代码更紧凑：
 
 ```Java
-Map<Integer, Integer> ipStats = new HashMap<>();
+private static final Map<String, Integer> IP_STATS = new HashMap<>();
 
-// previousValue is null
-Integer previousValue = ipStats.putIfAbsent(100000000, 1);
-
-// currentValue is 1
-Integer currentValue = ipStats.computeIfAbsent(200000000, key -> {
-    // key = 200000000
-    log.info("key = {}", key);
-    return 1;
-});
-```
-
-`computeIfPresent` ：
-
-```Java
-// newValue is 2
-Integer newValue = ipStats.computeIfPresent(200000000, (key, oldValue) -> {
-    // key = 200000000, oldValue = 1
-    log.info("key = {}, oldValue = {}", key, oldValue);
-    return oldValue += 1;
-});
-```
-
-使用 `compute` 实现类似 Redis 散列表的原子递增命令 `HINCRBY` key field increment 的效果：
-
-```Java
-// newValue2 is 1
-Integer newValue2 = ipStats.compute(300000000, (key, oldValue) -> {
-    if (oldValue == null) {
-        return 1;
+// 老版本
+public synchronized int oldIpStats(String ip) {
+    if (!IP_STATS.containsKey(ip)) {
+        IP_STATS.put(ip, 1);
     } else {
-        return oldValue += 1;
+        IP_STATS.put(ip, IP_STATS.get(ip) + 1);
     }
-});
+    return IP_STATS.get(ip);
+}
+
+// 新版本
+public synchronized int newIpStats(String ip) {
+    return IP_STATS.compute(ip, (key, oldValue) -> {
+        if (oldValue == null) {
+            return 1;
+        } else {
+            return oldValue + 1;
+        }
+    });
+}
 ```
 
 最终结果：
 
 ```Java
-// result is {300000000=1, 100000000=1, 200000000=2}
-log.info("result is {}", ipStats.toString());
+// result is 1
+log.info("result is {}", newIpStats("127.0.0.1"));
+// result is 2
+log.info("result is {}", newIpStats("127.0.0.1"));
+// result is 3
+log.info("result is {}", newIpStats("127.0.0.1"));
 ```
 
 # 解决 Top K 问题
