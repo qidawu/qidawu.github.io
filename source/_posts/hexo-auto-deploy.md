@@ -1,5 +1,5 @@
 ---
-title: Hexo & Travis CI 搭建博客
+title: Hexo 博客搭建 & 自动化构建、部署
 date: 2019-05-26 21:56:00
 updated:
 tags: 建站
@@ -8,7 +8,7 @@ typora-root-url: ..
 
 Hexo 博客使用好多年了，总结下日常使用的一些内容。
 
-# Hexo
+# Hexo 博客搭建
 
 ## 安装配置
 
@@ -42,14 +42,21 @@ https://hexo-next.readthedocs.io/zh_CN/latest/
 
 ![Hexo 常用命令](/img/hexo/hexo_cmd.png)
 
-# GitHub
+# 自动化构建 & 部署
 
-为了方便随时随地可以编写博客，搭建好的本地仓库及其源文件一般会推送到 GitHub 远程仓库中保管，而构建出来的 `./public` 目录会部署到 GitHub Pages 服务。因此需要在 GitHub 中新建两个仓库：
+推荐使用 GitHub Actions，简单、免费，而 Travis CI 收费了。
 
-* 仓库一：存放源文件，名字随意
-* 仓库二：存放构建文件（`./public`），GitHub Pages 服务要求名字为 `yourname.github.io`
+## GitHub Actions
 
-# Travis CI
+为了方便随时随地可以编写博客，搭建好的本地仓库及其源文件一般会推送到 GitHub 远程仓库中保管，并自动构建 & 部署到 GitHub Pages 服务。步骤如下：
+
+1. 创建 GitHub Pages 服务所需的仓库 `yourname.github.io`，注意该仓库必须是 public 权限。
+2. 创建 `.github/workflows/pages.yml` 配置文件。
+3. 推送源文件至该仓库。
+
+参考：https://hexo.io/docs/github-pages
+
+## Travis CI
 
 完成上面两步就可以开始创作了。但毕竟命令还是有些繁琐，因此可以利用持续集成服务代替人工来做重复的事情。引入 Travis CI 后，整体流程如下：
 
@@ -59,11 +66,11 @@ https://hexo-next.readthedocs.io/zh_CN/latest/
 
 下面来看下如何配置：
 
-## GitHub 创建 access token
+### GitHub 创建 access token
 
 登录 GitHub - Settings - Developer Settings 选项，找到 Personal access tokens 页面，创建个人 access token，创建时权限 `repo` 权限和 `user:email` 权限。
 
-## Travis CI 仓库配置
+### Travis CI 仓库配置
 
 1. 使用 GitHub 账户登录 [Travis CI](https://travis-ci.org/) 官网并进行 OAuth 授权
 2. 同步仓库一，过程中会在 GitHub 账户下安装 Travis CI 的 GitHub App，用于触发持续集成
@@ -71,7 +78,7 @@ https://hexo-next.readthedocs.io/zh_CN/latest/
    - `GH_TOKEN` 值为 GitHub access token
    - `GH_REF` 值为 GitHub 仓库二地址
 
-## 创建 .travis.yml 配置
+### 创建 .travis.yml 配置
 
 ```YML
 # 设置语言
@@ -103,7 +110,7 @@ after_script:
   - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:master
 ```
 
-## 自动构建
+### 自动构建
 
 创作并推送到仓库一即可，其它构建、部署的事都由 Travis CI 来完成，过程如下：
 
