@@ -2,7 +2,7 @@
 title: 《微观经济学》读书笔记
 date: 2024-10-25 17:48:49
 updated:
-tags: 金融
+tags: [读书笔记, 金融]
 typora-root-url: ..
 ---
 

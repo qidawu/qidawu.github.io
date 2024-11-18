@@ -2,7 +2,7 @@
 title: 几种认证技术总结
 date: 2019-11-29 22:32:51
 updated:
-tags: [安全, 读书笔记]
+tags: 安全
 typora-root-url: ..
 ---
 
