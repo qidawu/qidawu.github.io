@@ -3,6 +3,7 @@ title: Java 集合框架系列（一）框架总结
 date: 2018-04-10 22:19:15
 updated:
 tags: [Java, 数据结构]
+mathjax: true
 typora-root-url: ..
 ---
 
@@ -95,6 +96,15 @@ typora-root-url: ..
 | `Deque` | [`ArrayDeque`](https://docs.oracle.com/javase/8/docs/api/java/util/ArrayDeque.html) | [`LinkedList`](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html)<br/>`LinkedBlockingDeque`<br/>`ConcurrentLinkedDeque` |                                                              |                                                              |                                                              |                                                              |
 | `Set`   |                                                              |                                                              | [`HashSet`](https://docs.oracle.com/javase/8/docs/api/java/util/HashSet.html) | [`LinkedHashSet`](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashSet.html) | [`TreeSet`](https://docs.oracle.com/javase/8/docs/api/java/util/TreeSet.html) |                                                              |
 | `Map`   |                                                              |                                                              | [`HashMap`](https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html) | [`LinkedHashMap`](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html) | [`TreeMap`](https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html) |                                                              |
+
+时间复杂度：
+
+|      | **Resizable Array** | **Linked List** | **Hash Table**                                        | **Balanced Tree** |
+| ---- | ------------------- | --------------- | ----------------------------------------------------- | ----------------- |
+| 插入 | $O(n)$              | $O(1)$          | $O(1)$（平均情况）<br/>$O(n)$（最坏情况，散列冲突时） | $O(log_{}{n})$    |
+| 删除 | $O(n)$              | $O(1)$          | $O(1)$（平均情况）<br/>$O(n)$（最坏情况，散列冲突时） | $O(log_{}{n})$    |
+| 查找 | $O(n)$              | $O(n)$          | $O(1)$（平均情况）<br/>$O(n)$（最坏情况，散列冲突时） | $O(log_{}{n})$    |
+| 读取 | $O(1)$              | $O(n)$          | $O(1)$（平均情况）<br/>$O(n)$（最坏情况，散列冲突时） | $O(log_{}{n})$    |
 
 通用实现的特性如下：
 

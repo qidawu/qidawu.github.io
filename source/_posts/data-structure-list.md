@@ -1,6 +1,6 @@
 ---
 title: 数据结构系列（二）线性结构总结
-date: 2021-10-03 17:13:35
+date: 2024-05-03 17:13:35
 updated:
 tags: 数据结构
 mathjax: true

@@ -117,7 +117,7 @@ public synchronized int nextId() {
 
 ## Sets
 
-无序集合。
+无序集合（散列表实现）。
 
 集合操作：
 
@@ -210,7 +210,7 @@ public synchronized int nextId() {
 
 ## Sorted Sets
 
-有序集合。
+有序集合（复合数据结构实现：散列表+跳表）。
 
 使用场景：
 

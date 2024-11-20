@@ -590,9 +590,9 @@ int hash(Object key) {
      */
     final Node<K,V> getNode(int hash, Object key) {
         Node<K,V>[] tab; Node<K,V> first, e; int n; K k;
-        // 判断散列表是否为空，且散列值对应头节点是否为空
+        // 判断散列表不为空，且通过散列函数（hash % n）得到的头节点存在
         if ((tab = table) != null && (n = tab.length) > 0 && (first = tab[(n - 1) & hash]) != null) {
-            // 头节点散列值、键值匹配，则返回该节点
+            // 如是，且头节点散列值、key 都匹配，则返回该命中节点
             if (first.hash == hash && // always check first node
                 ((k = first.key) == key || (key != null && key.equals(k))))
                 return first;

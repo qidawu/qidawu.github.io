@@ -90,11 +90,21 @@ for (Map.Entry<String, String> entry : map.entrySet()) {}
 
 遍历顺序取决于 `Map` 接口使用了何种**数据结构**实现。
 
+众所周知，散列表这种动态数据结构虽然支持非常高效的数据插入、删除、查找操作（平均时间复杂度都为常数阶 `O(1)`），但由于散列表中的数据都是**通过散列函数运算之后无序存储的**，因此散列表的遍历结果也是无序的，例如 `HashMap`。
+
+要实现某种有序遍历的解决方案：
+
+* 排序算法。每当我们希望按照某种顺序遍历散列表中的数据时，自行将散列表中的数据拷贝到数组中，然后通过某种排序算法完成排序，再进行遍历。但如此一来，效率势必会很低。
+
+* 换一种数据结构实现，例如：红黑树（`TreeMap`）。
+
+* 设计一种复合型数据结构，例如将散列表与链式队列结合在一起（`LinkedHashMap`），实现某种排序，从而达到有序遍历。
+
 ### 无序（no order）
 
 ```java
     /**
-     * HashMap 按散列函数（取余运算）后的顺序进行排序
+     * HashMap 按散列函数（取余运算）后获得的索引顺序进行存储
      *
      * (32, 1), 32 % 16 = 0
      * (16, 2), 16 % 16 = 0
@@ -113,14 +123,6 @@ for (Map.Entry<String, String> entry : map.entrySet()) {}
         map.forEach((key, value) -> log.info("({}, {}), {} % 16 = {}", key, value, key, key % 16));
     }
 ```
-
-众所周知，散列表这种动态数据结构虽然支持非常高效的数据插入、删除、查找操作（时间复杂度都为常数阶 `O(1)`），但由于散列表中的数据都是**通过散列函数打乱之后无序存储的**，因此散列表遍历结果是无序的，例如 `HashMap`。
-
-有两种有序遍历的解决方案：
-
-* 实现排序算法。每当我们希望按照某种顺序遍历散列表中的数据时，自行将散列表中的数据拷贝到数组中，然后通过某种排序算法完成排序，再进行遍历。但如此一来，效率势必会很低。
-
-* 设计一种复合型数据结构，例如将散列表与红黑树（例如 `TreeMap` 实现）、与链式队列（例如 `LinkedHashMap` 实现）、或者与跳表结合在一起，实现某种排序，从而达到有序遍历。
 
 ### 按自然顺序（natual order）
 
@@ -375,7 +377,11 @@ log.info("result is {}", newIpStats("127.0.0.1"));
 解题思路：
 
 * 数据规模大的，就先分而治之（hash 映射）；
-* 数据规模小的，直接 hash 统计 (关键字, 统计次数) + 排序（按统计次数倒序）。
+* 数据规模小的：
+  * 首先，按「键值对」保存统计数据（key 为关键字，value 为统计次数）
+  * 然后，按「值」倒序
+  * 最后，取 Top K 个「键」
+
 
 ```java
     /**
@@ -384,12 +390,13 @@ log.info("result is {}", newIpStats("127.0.0.1"));
     @Test
     public void topK() {
         int N = 100;
+        // 「键值对」底层实现使用散列表即可，因为无须有序
         Map<Integer, Integer> numStats = Maps.newHashMapWithExpectedSize(N);
 
         Random random = new Random();
         for (int i = 0; i < N; i++) {
             int num = random.nextInt(10);
-            // 先 hash 统计 (关键字, 统计次数)
+            // 首先，按「键值对」保存统计数据（key 为关键字，value 为统计次数）
             numStats.compute(num, (key, oldVal) -> {
                 if (oldVal == null) {
                     return 1;
@@ -402,10 +409,10 @@ log.info("result is {}", newIpStats("127.0.0.1"));
         numStats.forEach((key, val) -> log.info("({}, {})", key, val));
 
         log.info("After sorted by statistics desc:");
-        // 然后排序（按统计次数倒序）
+        // 然后，按「值」倒序
         List<Map.Entry<Integer, Integer>> entries = new ArrayList<>(numStats.entrySet());
         entries.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
-        // 最后保留 Top K
+        // 最后，取 Top K 个「键」
         entries.forEach(entry -> log.info("({}, {})", entry.getKey(), entry.getValue()));
     }
 ```
