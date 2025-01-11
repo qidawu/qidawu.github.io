@@ -8,7 +8,7 @@ typora-root-url: ..
 
 # ss
 
-![ss](/img/network/transport-layer/ss.png)
+![ss](/img/network/transport-layer/tools/ss.png)
 
 https://man7.org/linux/man-pages/man8/ss.8.html
 
@@ -17,7 +17,7 @@ ss [options] [ FILTER ]
 其中，FILTER := [ state STATE-FILTER ] [ EXPRESSION ]
 ```
 
-![ss](/img/network/transport-layer/ss_filter.png)
+![ss](/img/network/transport-layer/tools/ss_filter.png)
 
 ## 例子
 
@@ -51,7 +51,7 @@ $ ss -tnp | grep 7059 | awk '{print $5}' | sort -n | uniq -c
 
 `ss` 直接读 `/proc/net` 下面的统计信息。所以 `ss` 执行的时候消耗资源以及消耗的时间都比 `netstat` 少很多。
 
-![输出结果对比](/img/network/transport-layer/difference_between_ss_netstat_lsof.png)
+![输出结果对比](/img/network/transport-layer/tools/difference_between_ss_netstat_lsof.png)
 
 # netstat
 
@@ -90,7 +90,7 @@ $ taskkill /f /t /im /javaw.exe
 
 # lsof
 
-![lsof](/img/network/transport-layer/lsof.png)
+![lsof](/img/network/transport-layer/tools/lsof.png)
 
 https://en.wikipedia.org/wiki/Lsof
 
@@ -203,11 +203,11 @@ java    6276    dev  202u  IPv4 1097042587      0t0  TCP *:8062 (LISTEN)
 > NODE：索引节点（文件在磁盘上的标识〉
 > NAME：打开文件的确切名称
 
-![lsof 例子](/img/network/transport-layer/lsof_1.png)
+![lsof 例子](/img/network/transport-layer/tools/lsof_1.png)
 
-![lsof 例子](/img/network/transport-layer/lsof_2.png)
+![lsof 例子](/img/network/transport-layer/tools/lsof_2.png)
 
-![lsof 例子](/img/network/transport-layer/lsof_3.png)
+![lsof 例子](/img/network/transport-layer/tools/lsof_3.png)
 
 # 参考
 
