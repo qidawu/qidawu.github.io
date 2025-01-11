@@ -38,13 +38,13 @@ command [ | command2 ... ]
 
 ## 重定向（Redirection）
 
-### 描述符（Descriptor Number）
+### 文件描述符（File Descriptor Number）
 
-| 描述符 | 名称                                                         | 描述                           |
-| ------ | ------------------------------------------------------------ | ------------------------------ |
-| `0`    | [`stdin`](https://en.wikipedia.org/wiki/Standard_streams#Standard_input_(stdin)) | 标准输入（Standard input）     |
-| `1`    | [`stdout`](https://en.wikipedia.org/wiki/Standard_streams#Standard_output_(stdout)) | 标准输出（Standard output）    |
-| `2`    | [`stderr`](https://en.wikipedia.org/wiki/Standard_streams#Standard_error_(stderr)) | 标准错误输出（Standard error） |
+| 文件描述符 | 名称                                                         | 描述                           |
+| ---------- | ------------------------------------------------------------ | ------------------------------ |
+| `0`        | [`stdin`](https://en.wikipedia.org/wiki/Standard_streams#Standard_input_(stdin)) | 标准输入（Standard input）     |
+| `1`        | [`stdout`](https://en.wikipedia.org/wiki/Standard_streams#Standard_output_(stdout)) | 标准输出（Standard output）    |
+| `2`        | [`stderr`](https://en.wikipedia.org/wiki/Standard_streams#Standard_error_(stderr)) | 标准错误输出（Standard error） |
 
 ![file descriptors](https://wizardzines.com/comics/file-descriptors/file-descriptors.png)
 
