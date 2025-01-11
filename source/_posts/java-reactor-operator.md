@@ -362,7 +362,7 @@ Note: all of these methods except [Mono#toFuture](https://projectreactor.io/docs
 
 [Reactor 框架](https://projectreactor.io/)，实现 Reactive Streams 规范，并扩展大量特性
 
-[Appendix A: Which operator do I need?](https://projectreactor.io/docs/core/release/reference/docs/index.html#which-operator)
+[Appendix A: Which operator do I need?](https://projectreactor.io/docs/core/release/reference/apdx-operatorChoice.html)
 
 https://zhuanlan.zhihu.com/p/35964846
 
