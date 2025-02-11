@@ -35,6 +35,10 @@ TCP 连接管理（三次握手、四次挥手）的流程及状态机如下：
 
 ![TCP connection management](/img/network/transport-layer/tcp/connection-management/tcp_state_machine.png)
 
+通过 Wireshark 抓包演示如下：在客户端 61151 向服务端 9000 发送两个报文的整个过程，发送之前须三次握手建立连接，发送完毕须四次挥手拆除连接：
+
+![Wireshark](/img/network/transport-layer/tcp/connection-management/Wireshark.png)
+
 # socket API
 
 https://man7.org/linux/man-pages/man7/socket.7.html
