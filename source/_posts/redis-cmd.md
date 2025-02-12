@@ -29,15 +29,17 @@ typora-root-url: ..
 * 分布式锁：
 
     ```bash
-    -- 返回 1 表示加锁成功，0 表示加锁失败
-    $ SET key value NX
-    $ SETNX key value
-
-    -- 解锁
+    # 返回 1 表示加锁成功，0 表示加锁失败
+    # 为了实现持锁人解锁（当前应用线程占有的锁不会被其它线程释放），可以将 value 参数设置为一个随机数，释放锁时先匹配随机数是否一致，一致再删除 key
+    $ SET key value EX 5 NX
+    
+    #  do something critical ...
+    
+    # 解锁
     $ DEL key
     ```
 
-* 全局计数器：
+* 全局计数器（例如 PV 统计）：
 
   ```bash
   $ INCR key
@@ -146,7 +148,9 @@ public synchronized int nextId() {
 
 使用场景：
 
-* 抢红包、抽奖、秒杀 —— 本质上都是同一类问题，解决思路类似。为了减少对临界资源的竞争，避免使用各种锁进行并发控制，可以预先对临界资源进行拆分，以提升性能：
+* UV 统计（缺点是随着用户量增长，会出现大 key。建议使用 `HyperLogLog`）
+
+* 抢红包、抽奖、秒杀 —— 本质上都是同一类问题，解决思路类似。为了减少对临界资源的竞争，避免使用各种锁进行并发控制，可以预先对临界资源进行拆分并加入到缓存，以提升性能：
 
   ```bash
   # 预拆红包，放入集合
@@ -198,6 +202,8 @@ public synchronized int nextId() {
   ```bash
   # 1、分类筛选维度，每个维度都为一个集合
   # 2、将商品按维度加入所属集合
+  $ SADD key member
+  
   # 3、多选筛选条件时，求交集
   $ SINTER key [key ...]
   
@@ -210,11 +216,55 @@ public synchronized int nextId() {
 
 ## Sorted Sets
 
-有序集合（复合数据结构实现：散列表+跳表）。
+有序集合（复合数据结构：散列表 + 跳表）。
+
+集合操作：
+
+| 集合操作                                                     | 命令                                                         |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 添加元素                                                     | `ZADD` key [NX \| XX] [GT \| LT] [CH] [INCR] score member [score member ...] |
+| 移除元素                                                     | `ZREM` key member [member ...]                               |
+| 获取元素个数                                                 | `ZCARD` key                                                  |
+| 增量式遍历集合元素                                           | `ZSCAN` key cursor [MATCH pattern] [COUNT count]             |
+| 获取指定个数的**随机元素**                                   | `ZRANDMEMBER` key [count [WITHSCORES]]                       |
+| 获取指定范围的**元素**（by index (rank), by the score, or by lexicographical order.） | `ZRANGE` key start stop [BYSCORE \| BYLEX] [REV] [LIMIT offset count]   [WITHSCORES] |
+| ~~获取指定范围的**元素**（by the score）~~                   | ~~`ZRANGEBYSCORE` key min max [WITHSCORES] [LIMIT offset count]<br/>`ZREVRANGEBYSCORE` key max min [WITHSCORES] [LIMIT offset count]~~ |
+| ~~获取指定范围的**元素**（by lexicographical order）~~       | ~~`ZRANGEBYLEX` key min max [LIMIT offset count]<br/>`ZREVRANGEBYLEX` key max min [LIMIT offset count]~~ |
+| 移除指定个数的**分值最高的元素**，并返回                     | `ZPOPMAX` key [count]                                        |
+| 移除指定个数的**分值最低的元素**，并返回                     | `ZPOPMIN` key [count]                                        |
 
 使用场景：
 
 * Top K（例如排行榜）。实现思路：利用集合的三大特性之一——互异性，进行去重，相同元素只进行计数，形成一个二元组集合（key 为元素，value 为计数）。最后按计数结果对集合进行倒序排序，取前 N 个元素。
+
+  ```bash
+  redis> ZADD myzset 1 "one"
+  (integer) 1
+  redis> ZADD myzset 2 "two"
+  (integer) 1
+  redis> ZADD myzset 3 "three"
+  (integer) 1
+  
+  redis> ZRANGE myzset -inf +inf BYSCORE LIMIT 0 -1
+  1) "one"
+  2) "two"
+  3) "three"
+  
+  redis> ZRANGE myzset +inf -inf BYSCORE REV LIMIT 0 -1
+  1) "three"
+  2) "two"
+  3) "one"
+  
+  redis> ZRANGEBYSCORE myzset -inf +inf LIMIT 0 -1
+  1) "one"
+  2) "two"
+  3) "three"
+  
+  redis> ZREVRANGEBYSCORE myzset +inf -inf LIMIT 0 -1
+  1) "three"
+  2) "two"
+  3) "one"
+  ```
 
 # 其它命令
 

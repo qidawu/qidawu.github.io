@@ -15,6 +15,42 @@ typora-root-url: ..
 * 如何解决 Top K 问题。
 * ...
 
+# 通用实现类
+
+首先看看在 Java 中，默认为 `Map` 接口提供了哪些通用实现类：
+
+## HashMap（散列表实现）
+
+参考：《[Map 接口的散列表实现总结](/posts/java-collections-hashmap/)》
+
+## TreeMap（红黑树实现）
+
+红黑树实现。
+
+## LinkedHashMap（散列表 + 双向链表实现）
+
+`LinkedHashMap` 继承自 `HashMap`，是一种复合型数据结构。它在散列表的基础上，通过维护一个**有界队列（双向链表实现）**来实现「键值对」排序。
+
+> 注意：`LinkedHashMap` 中的“Linked”实际上是指「链式队列」，而非指用链表法解决散列冲突。
+
+这种行为适用于一些特定应用场景，例如：构建一个空间占用敏感的有限资源池，按某种淘汰策略自动淘汰「过期」元素：
+
+| 排序方式                            | 使用场景               |
+| ----------------------------------- | ---------------------- |
+| 按插入顺序（`accessOrder = false`） | 实现 FIFO 缓存淘汰策略 |
+| 按访问顺序（`accessOrder = true`）  | 实现 LRU 缓存淘汰策略  |
+
+通过源码分析，`LinkedHashMap` 继承自 `HashMap`，同时 `LinkedHashMap` 的节点 `Entry` 也继承自 `HashMap` 的 `Node`，并且在此基础上增加了两个属性：
+
+* 前驱节点 `Entry<K, V> before`
+* 后继节点 `Entry<K, V> after`
+
+![LinkedHashMap Entry](/img/java/collection/map/LinkedHashMap_Entry.png)
+
+通过这两个属性就可以维护一条有序排列的双向链表，如下图：
+
+![LinkedHashMap Entry](/img/java/collection/map/LinkedHashMap_Entry_sorted.png)
+
 # 创建 Map
 
 使用 Guava 快速创建不可变的 Map：
@@ -202,40 +238,6 @@ for (Map.Entry<String, String> entry : map.entrySet()) {}
         map.forEach((key, value) -> log.info("({}, {})", key, value));
     }
 ```
-
-## 数据结构实现
-
-### HashMap
-
-参考：《[Map 接口的散列表实现总结](/2018/05/16/java-collections-hashmap/)》
-
-### TreeMap
-
-红黑树实现。
-
-### LinkedHashMap
-
-`LinkedHashMap` 继承自 `HashMap`，是一种复合型数据结构。它在散列表的基础上，通过维护一个**有界队列（双向链表实现）**来实现「键值对」排序。
-
-> 注意：`LinkedHashMap` 中的“Linked”实际上是指「链式队列」，而非指用链表法解决散列冲突。
-
-这种行为适用于一些特定应用场景，例如：构建一个空间占用敏感的有限资源池，按某种淘汰策略自动淘汰「过期」元素：
-
-| 排序方式                            | 使用场景               |
-| ----------------------------------- | ---------------------- |
-| 按插入顺序（`accessOrder = false`） | 实现 FIFO 缓存淘汰策略 |
-| 按访问顺序（`accessOrder = true`）  | 实现 LRU 缓存淘汰策略  |
-
-通过源码分析，`LinkedHashMap` 继承自 `HashMap`，同时 `LinkedHashMap` 的节点 `Entry` 也继承自 `HashMap` 的 `Node`，并且在此基础上增加了两个属性：
-
-* 前驱节点 `Entry<K, V> before`
-* 后继节点 `Entry<K, V> after`
-
-![LinkedHashMap Entry](/img/java/collection/map/LinkedHashMap_Entry.png)
-
-通过这两个属性就可以维护一条有序排列的双向链表，如下图：
-
-![LinkedHashMap Entry](/img/java/collection/map/LinkedHashMap_Entry_sorted.png)
 
 # 实现缓存淘汰策略
 

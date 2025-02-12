@@ -202,7 +202,7 @@ Pair.of("left", "right")
 
 # 线程同步/非同步
 
-参考[线程同步包装器](/2018/05/25/java-collections-framework-concurrent-impl/)
+参考[线程同步包装器](/posts/java-collections-framework-concurrent-impl/)
 
 # 随机/顺序访问
 
